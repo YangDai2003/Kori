@@ -9,10 +9,9 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import org.yangdai.kori.Platform
-import org.yangdai.kori.currentPlatform
+import org.yangdai.kori.presentation.rememberCurrentPlatform
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,7 +24,7 @@ fun AdaptiveTopAppBar(
     colors: TopAppBarColors = TopAppBarDefaults.largeTopAppBarColors(),
     scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
-    val platform = remember { currentPlatform() }
+    val platform = rememberCurrentPlatform()
     if (platform is Platform.JVM) {
         TopAppBar(
             title = title,

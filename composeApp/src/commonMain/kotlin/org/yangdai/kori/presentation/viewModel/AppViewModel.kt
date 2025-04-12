@@ -1,4 +1,4 @@
-package org.yangdai.kori
+package org.yangdai.kori.presentation.viewModel
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
@@ -14,8 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import org.yangdai.kori.data.local.dao.FolderDao.FolderWithNoteCount
-import org.yangdai.kori.data.local.entity.FolderEntity
+import org.yangdai.kori.data.local.dao.FolderDao
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.FolderRepository
@@ -49,18 +48,19 @@ class AppViewModel(
     val searchResults: StateFlow<List<NoteEntity>> = _searchResults
 
     // 添加 foldersWithNoteCounts
-    private val _foldersWithNoteCounts = MutableStateFlow<List<FolderWithNoteCount>>(emptyList())
-    val foldersWithNoteCounts: StateFlow<List<FolderWithNoteCount>> = _foldersWithNoteCounts
+    private val _foldersWithNoteCounts =
+        MutableStateFlow<List<FolderDao.FolderWithNoteCount>>(emptyList())
+    val foldersWithNoteCounts: StateFlow<List<FolderDao.FolderWithNoteCount>> = _foldersWithNoteCounts
 
     // 计数
     val activeNotesCount = noteRepository.getActiveNotesCount()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
+        .stateIn(viewModelScope, SharingStarted.Companion.Eagerly, 0)
 
     val trashNotesCount = noteRepository.getTrashNotesCount()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
+        .stateIn(viewModelScope, SharingStarted.Companion.Eagerly, 0)
 
     val templateNotesCount = noteRepository.getTemplatesCount()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
+        .stateIn(viewModelScope, SharingStarted.Companion.Eagerly, 0)
 
     // 排序相关
     var noteSortType by mutableStateOf(NoteSortType.UPDATED)
@@ -74,9 +74,6 @@ class AppViewModel(
 
     var folderSortDirection by mutableStateOf(SortDirection.ASC)
         private set
-
-    private var _currentFolderId = MutableStateFlow<String?>(null)
-    val currentFolderId: StateFlow<String?> = _currentFolderId
 
     init {
         loadAllNotes()
@@ -105,7 +102,6 @@ class AppViewModel(
 
     fun loadNotesByFolder(folderId: String) {
         viewModelScope.launch {
-            _currentFolderId.value = folderId
             noteRepository.getNotesByFolderId(folderId, noteSortType, noteSortDirection)
                 .collect { notes ->
                     _currentFolderNotes.value = notes
@@ -126,7 +122,7 @@ class AppViewModel(
     fun createNote(title: String, content: String, folderId: String? = null) {
         viewModelScope.launch {
             val note = NoteEntity(
-                id = Uuid.random().toString(),
+                id = Uuid.Companion.random().toString(),
                 title = title,
                 content = content,
                 folderId = folderId,
@@ -163,7 +159,6 @@ class AppViewModel(
         viewModelScope.launch {
             noteRepository.deleteNoteById(noteId)
             loadAllNotes()
-            _currentFolderId.value?.let { loadNotesByFolder(it) }
         }
     }
 
@@ -206,7 +201,6 @@ class AppViewModel(
             noteRepository.restoreAllFromTrash()
             loadAllNotes()
             loadTrashNotes()
-            _currentFolderId.value?.let { loadNotesByFolder(it) }
         }
     }
 
@@ -236,50 +230,11 @@ class AppViewModel(
         }
     }
 
-    fun createFolder(folderEntity: FolderEntity) {
-        viewModelScope.launch {
-            folderRepository.insertFolder(folderEntity)
-        }
-    }
-
-    fun updateFolder(
-        folderId: String,
-        name: String,
-        colorValue: Long = FolderEntity.defaultColorValue
-    ) {
-        viewModelScope.launch {
-            val folder = FolderEntity(
-                id = folderId,
-                name = name,
-                colorValue = colorValue
-            )
-            folderRepository.updateFolder(folder)
-            loadFoldersWithNoteCounts() // 更新文件夹及笔记数量
-        }
-    }
-
-    fun deleteFolder(folderId: String) {
-        viewModelScope.launch {
-            folderRepository.deleteFolderById(folderId)
-            if (_currentFolderId.value == folderId) {
-                _currentFolderId.value = null
-                _currentFolderNotes.value = emptyList()
-            }
-        }
-    }
-
     // 排序设置
     fun setNoteSorting(sortType: NoteSortType, direction: SortDirection) {
         noteSortType = sortType
         noteSortDirection = direction
         loadAllNotes()
         loadTrashNotes()
-        _currentFolderId.value?.let { loadNotesByFolder(it) }
-    }
-
-    fun setFolderSorting(sortType: FolderSortType, direction: SortDirection) {
-        folderSortType = sortType
-        folderSortDirection = direction
-        loadFoldersWithNoteCounts() // 更新文件夹及笔记数量
     }
 }

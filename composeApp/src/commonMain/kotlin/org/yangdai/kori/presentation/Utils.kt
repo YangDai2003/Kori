@@ -8,6 +8,8 @@ import androidx.compose.runtime.remember
 import androidx.window.core.layout.WindowHeightSizeClass
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
+import org.yangdai.kori.Platform
+import org.yangdai.kori.currentPlatform
 
 @Composable
 fun rememberIsScreenSizeLarge(): Boolean {
@@ -19,4 +21,19 @@ fun rememberIsScreenSizeLarge(): Boolean {
         }
     }
     return isLargeScreen
+}
+
+@Composable
+fun rememberCurrentPlatform(): Platform = remember { currentPlatform() }
+
+fun Int.toHexColor(): String {
+    val r = (this shr 16) and 0xFF
+    val g = (this shr 8) and 0xFF
+    val b = this and 0xFF
+    val a = (this shr 24) and 0xFF
+    return "#${a.toHexByte()}${r.toHexByte()}${g.toHexByte()}${b.toHexByte()}"
+}
+
+private fun Int.toHexByte(): String {
+    return this.toString(16).padStart(2, '0').uppercase()
 }

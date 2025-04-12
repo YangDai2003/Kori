@@ -17,7 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.yangdai.kori.AppViewModel
+import org.yangdai.kori.presentation.viewModel.AppViewModel
 import org.yangdai.kori.presentation.navigation.Screen
 
 @Composable

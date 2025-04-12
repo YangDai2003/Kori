@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -13,11 +14,11 @@ import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
@@ -39,8 +40,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import kori.composeapp.generated.resources.Res
+import kori.composeapp.generated.resources.all_notes
+import kori.composeapp.generated.resources.app_name
+import kori.composeapp.generated.resources.folders
+import kori.composeapp.generated.resources.manage_folders
+import kori.composeapp.generated.resources.settings
+import kori.composeapp.generated.resources.templates
+import kori.composeapp.generated.resources.trash
+import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.dao.FolderDao.FolderWithNoteCount
 import org.yangdai.kori.data.local.entity.FolderEntity
+import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.navigation.Screen
 
 /**
@@ -63,13 +74,16 @@ private fun DrawerItem(
     isSelected: Boolean,
     onClick: () -> Unit
 ) = NavigationDrawerItem(
-    modifier = Modifier.padding(bottom = 2.dp).padding(NavigationDrawerItemDefaults.ItemPadding),
+    modifier = Modifier
+        .padding(bottom = 4.dp)
+        .padding(NavigationDrawerItemDefaults.ItemPadding)
+        .height(48.dp),
     icon = {
         Icon(
             modifier = Modifier.padding(horizontal = 4.dp),
             imageVector = icon,
             tint = iconTint,
-            contentDescription = "Leading Icon"
+            contentDescription = null
         )
     },
     label = {
@@ -146,11 +160,11 @@ fun DrawerContent(
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
 
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Kori",
+                text = stringResource(Res.string.app_name),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.SemiBold,
@@ -158,17 +172,16 @@ fun DrawerContent(
                 modifier = Modifier.weight(1f)
             )
 
-            IconButton(onClick = { navigateToScreen(Screen.Settings) }) {
-                Icon(
-                    imageVector = Icons.Outlined.Settings,
-                    contentDescription = "Open Settings"
-                )
-            }
+            TooltipIconButton(
+                tipText = stringResource(Res.string.settings),
+                icon = Icons.Outlined.Settings,
+                onClick = { navigateToScreen(Screen.Settings) }
+            )
         }
 
         DrawerItem(
             icon = Icons.Outlined.Book,
-            label = "All Notes",
+            label = stringResource(Res.string.all_notes),
             badge = drawerState.allNotesCount.toString(),
             isSelected = drawerState.selectedItem == DrawerItem.AllNotes,
             onClick = { onItemClick(DrawerItem.AllNotes) }
@@ -176,7 +189,7 @@ fun DrawerContent(
 
         DrawerItem(
             icon = Icons.AutoMirrored.Outlined.TextSnippet,
-            label = "Templates",
+            label = stringResource(Res.string.templates),
             badge = drawerState.templatesCount.toString(),
             isSelected = drawerState.selectedItem == DrawerItem.Templates,
             onClick = { onItemClick(DrawerItem.Templates) }
@@ -184,7 +197,7 @@ fun DrawerContent(
 
         DrawerItem(
             icon = Icons.Outlined.DeleteOutline,
-            label = "Trash",
+            label = stringResource(Res.string.trash),
             badge = drawerState.trashNotesCount.toString(),
             isSelected = drawerState.selectedItem == DrawerItem.Trash,
             onClick = { onItemClick(DrawerItem.Trash) }
@@ -198,7 +211,7 @@ fun DrawerContent(
 
         DrawerItem(
             icon = if (!isFoldersExpended) Icons.AutoMirrored.Outlined.KeyboardArrowRight else Icons.Outlined.KeyboardArrowDown,
-            label = "Folders",
+            label = stringResource(Res.string.folders),
             badge = drawerState.foldersWithNoteCounts.size.toString(),
             isSelected = false,
             onClick = { isFoldersExpended = !isFoldersExpended }
@@ -208,11 +221,14 @@ fun DrawerContent(
             Column {
                 drawerState.foldersWithNoteCounts.forEach { folderWithNoteCount ->
                     key(folderWithNoteCount.folder.id) {
+                        val isSelected = drawerState.selectedItem.id == folderWithNoteCount.folder.id
                         DrawerItem(
-                            icon = Icons.Outlined.Folder,
+                            icon = if (isSelected) Icons.Outlined.FolderOpen else Icons.Outlined.Folder,
+                            iconTint = if (folderWithNoteCount.folder.colorValue == FolderEntity.defaultColorValue) MaterialTheme.colorScheme.primary
+                            else Color(folderWithNoteCount.folder.colorValue),
                             label = folderWithNoteCount.folder.name,
                             badge = folderWithNoteCount.noteCount.toString(),
-                            isSelected = drawerState.selectedItem.id == folderWithNoteCount.folder.id,
+                            isSelected = isSelected,
                             onClick = { onItemClick(DrawerItem.Folder(folderWithNoteCount.folder)) }
                         )
                     }
@@ -226,7 +242,7 @@ fun DrawerContent(
                 .padding(NavigationDrawerItemDefaults.ItemPadding),
             onClick = { navigateToScreen(Screen.Folders) }
         ) {
-            Text(text = "管理文件夹", textAlign = TextAlign.Center)
+            Text(text = stringResource(Res.string.manage_folders), textAlign = TextAlign.Center)
         }
     }
 }

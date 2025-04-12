@@ -23,6 +23,7 @@ import androidx.compose.material.icons.outlined.CreateNewFolder
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DriveFileRenameOutline
 import androidx.compose.material.icons.outlined.FolderDelete
+import androidx.compose.material.icons.outlined.SortByAlpha
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.DropdownMenu
@@ -57,25 +58,27 @@ import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.delete
 import kori.composeapp.generated.resources.deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue
+import kori.composeapp.generated.resources.folders
 import kori.composeapp.generated.resources.modify
 import kori.composeapp.generated.resources.note
 import kori.composeapp.generated.resources.notes
-import kotlinx.datetime.Clock
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import org.yangdai.kori.AppViewModel
 import org.yangdai.kori.data.local.entity.FolderEntity
 import org.yangdai.kori.presentation.component.AdaptiveTopAppBar
 import org.yangdai.kori.presentation.component.NavigateUpButton
+import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.TopBarTitle
+import org.yangdai.kori.presentation.component.dialog.ModifyFolderDialog
 import org.yangdai.kori.presentation.component.dialog.WarningDialog
+import org.yangdai.kori.presentation.viewModel.FoldersViewModel
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalUuidApi::class)
 @Composable
 fun FoldersScreen(
-    viewModel: AppViewModel = koinViewModel<AppViewModel>(),
+    viewModel: FoldersViewModel = koinViewModel<FoldersViewModel>(),
     navigateUp: () -> Unit
 ) {
     val foldersWithNoteCounts by viewModel.foldersWithNoteCounts.collectAsState()
@@ -86,9 +89,16 @@ fun FoldersScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             AdaptiveTopAppBar(
-                title = { TopBarTitle("文件夹") },
+                title = { TopBarTitle(stringResource(Res.string.folders)) },
                 navigationIcon = {
                     NavigateUpButton(onClick = navigateUp)
+                },
+                actions = {
+                    TooltipIconButton(
+                        tipText = "Sort",
+                        icon = Icons.Outlined.SortByAlpha,
+                        onClick = { /* TODO */ },
+                    )
                 },
                 scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.topAppBarColors()
@@ -96,24 +106,10 @@ fun FoldersScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-//                    showAddFolderDialog = true
-                    val id = Uuid.random().toString()
-                    viewModel.createFolder(
-                        FolderEntity(
-                            id = id,
-                            name = "文件夹$id",
-                            colorValue = FolderEntity.defaultColorValue,
-                            createdAt = Clock.System.now().toString(),
-                            isStarred = false
-                        )
-                    )
-                }
-            ) {
+            FloatingActionButton(onClick = { showAddFolderDialog = true }) {
                 Icon(
                     imageVector = Icons.Outlined.CreateNewFolder,
-                    contentDescription = "Add Folder"
+                    contentDescription = null
                 )
             }
         }
@@ -128,25 +124,23 @@ fun FoldersScreen(
                 FolderItem(
                     folder = it.folder,
                     notesCountInFolder = it.noteCount,
-                    onModify = { folderEntity ->
-
+                    onModify = {
+                        viewModel.updateFolder(it)
                     },
                     onDelete = {
-                        viewModel.deleteFolder(it.folder.id)
+                        viewModel.deleteFolder(it.folder)
                     }
                 )
             }
         }
 
         if (showAddFolderDialog) {
-//            ModifyFolderDialog(
-//                folder = FolderEntity(),
-//                onDismissRequest = { showAddFolderDialog = false }
-//            ) {
-//                sharedViewModel.onFolderEvent(
-//                    FolderEvent.AddFolder(it)
-//                )
-//            }
+            ModifyFolderDialog(
+                folder = FolderEntity(Uuid.random().toString()),
+                onDismissRequest = { showAddFolderDialog = false }
+            ) {
+                viewModel.createFolder(it)
+            }
         }
     }
 }
@@ -253,7 +247,7 @@ fun LazyGridItemScope.FolderItem(
             ) {
                 Icon(
                     imageVector = Icons.Default.Folder,
-                    contentDescription = "Folder",
+                    contentDescription = null,
                     tint = folderColor,
                     modifier = Modifier.size(40.dp)
                 )
@@ -320,10 +314,10 @@ fun LazyGridItemScope.FolderItem(
     }
 
     if (showModifyDialog) {
-//        ModifyFolderDialog(
-//            folder = folder,
-//            onDismissRequest = { showModifyDialog = false }) {
-//            onModify(it)
-//        }
+        ModifyFolderDialog(
+            folder = folder,
+            onDismissRequest = { showModifyDialog = false }) {
+            onModify(it)
+        }
     }
 }

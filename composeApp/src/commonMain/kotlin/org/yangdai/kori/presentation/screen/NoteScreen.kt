@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.compose.viewmodel.koinViewModel
-import org.yangdai.kori.AppViewModel
+import org.yangdai.kori.presentation.viewModel.AppViewModel
 import org.yangdai.kori.presentation.component.NavigateUpButton
 
 @OptIn(ExperimentalMaterial3Api::class)

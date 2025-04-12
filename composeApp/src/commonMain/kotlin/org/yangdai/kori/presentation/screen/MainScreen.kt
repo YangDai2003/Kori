@@ -21,7 +21,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
-import org.yangdai.kori.AppViewModel
+import org.yangdai.kori.presentation.viewModel.AppViewModel
 import org.yangdai.kori.presentation.component.main.AdaptiveNavigationScreen
 import org.yangdai.kori.presentation.component.main.DrawerContent
 import org.yangdai.kori.presentation.component.main.DrawerItem
