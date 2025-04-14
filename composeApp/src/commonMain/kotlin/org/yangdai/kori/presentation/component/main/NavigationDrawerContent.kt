@@ -1,11 +1,13 @@
 package org.yangdai.kori.presentation.component.main
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -17,6 +19,7 @@ import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -106,6 +109,57 @@ private fun DrawerItem(
     onClick = onClick
 )
 
+@Composable
+private fun FolderDrawerItem(
+    iconTint: Color = MaterialTheme.colorScheme.onSurface,
+    label: String,
+    badge: String = "",
+    isStarred: Boolean,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) = NavigationDrawerItem(
+    modifier = Modifier
+        .padding(bottom = 4.dp)
+        .padding(NavigationDrawerItemDefaults.ItemPadding)
+        .height(48.dp),
+    icon = {
+        Box(contentAlignment = Alignment.Center) {
+            Icon(
+                modifier = Modifier.padding(horizontal = 4.dp),
+                imageVector = if (isSelected) Icons.Outlined.FolderOpen else Icons.Outlined.Folder,
+                tint = iconTint,
+                contentDescription = null
+            )
+            if (isStarred) {
+                Icon(
+                    modifier = Modifier.size(8.dp),
+                    imageVector = Icons.Outlined.Star,
+                    tint = Color.Yellow,
+                    contentDescription = null
+                )
+            }
+        }
+    },
+    label = {
+        Text(
+            text = label,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    },
+    badge = {
+        Text(
+            text = badge,
+            style = MaterialTheme.typography.labelMedium
+        )
+    },
+    shape = MaterialTheme.shapes.medium,
+    selected = isSelected,
+    onClick = onClick
+)
+
 
 sealed class DrawerItem(val id: String) {
     data object AllNotes : DrawerItem("all_notes")
@@ -152,7 +206,7 @@ sealed class DrawerItem(val id: String) {
 }
 
 @Composable
-fun DrawerContent(
+fun NavigationDrawerContent(
     drawerState: DrawerState,
     navigateToScreen: (Screen) -> Unit,
     onItemClick: (DrawerItem) -> Unit
@@ -221,14 +275,13 @@ fun DrawerContent(
             Column {
                 drawerState.foldersWithNoteCounts.forEach { folderWithNoteCount ->
                     key(folderWithNoteCount.folder.id) {
-                        val isSelected = drawerState.selectedItem.id == folderWithNoteCount.folder.id
-                        DrawerItem(
-                            icon = if (isSelected) Icons.Outlined.FolderOpen else Icons.Outlined.Folder,
+                        FolderDrawerItem(
                             iconTint = if (folderWithNoteCount.folder.colorValue == FolderEntity.defaultColorValue) MaterialTheme.colorScheme.primary
                             else Color(folderWithNoteCount.folder.colorValue),
                             label = folderWithNoteCount.folder.name,
                             badge = folderWithNoteCount.noteCount.toString(),
-                            isSelected = isSelected,
+                            isStarred = folderWithNoteCount.folder.isStarred,
+                            isSelected = drawerState.selectedItem.id == folderWithNoteCount.folder.id,
                             onClick = { onItemClick(DrawerItem.Folder(folderWithNoteCount.folder)) }
                         )
                     }

@@ -117,8 +117,6 @@
     <string name="editing_view">Bearbeitungs-Ansicht</string>
     <string name="reading_view">Lese-Ansicht</string>
     <string name="sponsor">Entwickler sponsern ☕</string>
-    <string name="notes">" Notizen"</string>
-    <string name="note">" Notiz"</string>
     <string name="image">Foto</string>
     <string name="list">Liste</string>
     <string name="find">Finden</string>
@@ -138,7 +136,7 @@
     <string name="time_format">Zeitformat</string>
     <string name="date_in_the_template_file_will_be_replaced_with_this_value">{{date}} in der Vorlagendatei wird durch diesen Wert ersetzt.\n</string>
     <string name="you_can_also_use_date_yyyy_mm_dd_to_override_the_format_once">Sie können auch {{date:YYYY-MM-DD}} verwenden, um das Format einmalig zu überschreiben.\n</string>
-    <string name="for_more_syntax_refer_to">"Weitere Syntax finden Sie unter "</string>
+    <string name="for_more_syntax_refer_to">Weitere Syntax finden Sie unter </string>
     <string name="format_reference">Formatreferenz</string>
     <string name="your_current_syntax_looks_like_this">\nIhre aktuelle Syntax sieht so aus: %1$s</string>
     <string name="time_in_the_template_file_will_be_replaced_with_this_value">{{time}} in der Vorlagendatei wird durch diesen Wert ersetzt.\n</string>
@@ -207,5 +205,18 @@
     <string name="minimize">Minimieren</string>
     <string name="maximize">Maximieren</string>
     <string name="close">Schließen</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="confirm">Bestätigen</string>
     <string name="always_on_top">Immer im Vordergrund</string>
+    <string name="open_navigation_drawer">Navigationsleiste öffnen</string>
+    <string name="sort_name_a">Dateiname (A - Z)</string>
+    <string name="sort_name_d">Dateiname (Z - A)</string>
+    <string name="sort_created_a">Erstellungszeit (alt - neu)</string>
+    <string name="sort_created_d">Erstellungszeit (neu - alt)</string>
+    <string name="sort_modified_a">Bearbeitungszeit (alt - neu)</string>
+    <string name="sort_modified_d">Bearbeitungszeit (neu - alt)</string>
+    <plurals name="note_count">
+        <item quantity="one">%1$d Notiz</item>
+        <item quantity="other">%1$d Notizen</item>
+    </plurals>
 </resources>

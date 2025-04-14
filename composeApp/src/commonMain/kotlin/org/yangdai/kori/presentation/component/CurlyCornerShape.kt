@@ -24,7 +24,7 @@ import kotlin.math.sin
  *                A higher count results in more frequent curls. Defaults to 12.
  */
 class CurlyCornerShape(
-    private val curlAmplitude: Double = 16.0,
+    private val curlAmplitude: Double = 12.0,
     private val curlCount: Int = 12,
 ) : CornerBasedShape(
     topStart = ZeroCornerSize,

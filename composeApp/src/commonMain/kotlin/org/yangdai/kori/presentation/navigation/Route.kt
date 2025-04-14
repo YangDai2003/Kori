@@ -8,7 +8,7 @@ sealed class Screen() {
     data object Main : Screen()
 
     @Serializable
-    data class Note(val id: String? = null) : Screen()
+    data class Note(val id: String = "") : Screen()
 
     @Serializable
     data object File : Screen()

@@ -12,8 +12,8 @@ sealed class Platform {
         override val name: String = "iOS"
     }
 
-    object JVM : Platform() {
-        override val name: String = "Java"
+    object Desktop : Platform() {
+        override val name: String = "Desktop"
     }
 
     object Web : Platform() {

@@ -5,65 +5,70 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.yangdai.kori.data.local.dao.FolderDao
 import org.yangdai.kori.data.local.entity.FolderEntity
 import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.sort.FolderSortType
-import org.yangdai.kori.domain.sort.SortDirection
+import org.yangdai.kori.presentation.util.Constants
 
 class FoldersViewModel(
     private val folderRepository: FolderRepository,
     private val dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
 
-    private val _foldersWithNoteCounts =
-        MutableStateFlow<List<FolderDao.FolderWithNoteCount>>(emptyList())
-    val foldersWithNoteCounts: StateFlow<List<FolderDao.FolderWithNoteCount>> = _foldersWithNoteCounts
-
-    var folderSortType by mutableStateOf(FolderSortType.NAME)
+    var folderSortType by mutableStateOf(FolderSortType.CREATE_TIME_DESC)
         private set
 
-    var folderSortDirection by mutableStateOf(SortDirection.ASC)
-        private set
-
-    init {
-        loadFoldersWithNoteCounts()
-    }
-
-    fun loadFoldersWithNoteCounts() {
-        viewModelScope.launch {
-            folderRepository.getFoldersWithNoteCounts(folderSortType, folderSortDirection)
-                .collect { foldersList ->
-                    _foldersWithNoteCounts.value = foldersList
-                }
-        }
-    }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val foldersMap: StateFlow<Map<Boolean, List<FolderDao.FolderWithNoteCount>>> =
+        dataStoreRepository
+            .intFlow(Constants.Preferences.FOLDER_SORT_TYPE)
+            .flowOn(Dispatchers.IO)
+            .map { FolderSortType.fromValue(it).also { sortType -> folderSortType = sortType } }
+            .distinctUntilChanged()
+            .flatMapLatest { sortType ->
+                folderRepository.getFoldersWithNoteCounts(sortType)
+                    .map { folders -> folders.groupBy { it.folder.isStarred } }
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000L),
+                initialValue = emptyMap()
+            )
 
     fun createFolder(folderEntity: FolderEntity) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             folderRepository.insertFolder(folderEntity)
         }
     }
 
     fun updateFolder(folderEntity: FolderEntity) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             folderRepository.updateFolder(folderEntity)
         }
     }
 
     fun deleteFolder(folderEntity: FolderEntity) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             folderRepository.deleteFolder(folderEntity)
         }
     }
 
-    fun setFolderSorting(sortType: FolderSortType, direction: SortDirection) {
-        folderSortType = sortType
-        folderSortDirection = direction
-        loadFoldersWithNoteCounts() // 更新文件夹及笔记数量
+    fun setFolderSorting(sortType: FolderSortType) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dataStoreRepository.putInt(Constants.Preferences.FOLDER_SORT_TYPE, sortType.value)
+        }
     }
 }

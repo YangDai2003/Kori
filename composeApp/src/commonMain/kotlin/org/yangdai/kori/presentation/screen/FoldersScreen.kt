@@ -1,11 +1,16 @@
 package org.yangdai.kori.presentation.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -16,6 +21,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Folder
@@ -24,6 +30,10 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DriveFileRenameOutline
 import androidx.compose.material.icons.outlined.FolderDelete
 import androidx.compose.material.icons.outlined.SortByAlpha
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.StarOutline
+import androidx.compose.material.icons.outlined.UnfoldLess
+import androidx.compose.material.icons.outlined.UnfoldMore
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.DropdownMenu
@@ -34,13 +44,13 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,26 +61,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.delete
 import kori.composeapp.generated.resources.deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue
 import kori.composeapp.generated.resources.folders
 import kori.composeapp.generated.resources.modify
-import kori.composeapp.generated.resources.note
-import kori.composeapp.generated.resources.notes
+import kori.composeapp.generated.resources.note_count
+import kori.composeapp.generated.resources.sort_by
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import org.yangdai.kori.Platform
 import org.yangdai.kori.data.local.entity.FolderEntity
-import org.yangdai.kori.presentation.component.AdaptiveTopAppBar
-import org.yangdai.kori.presentation.component.NavigateUpButton
+import org.yangdai.kori.presentation.component.LazyGridScrollbar
+import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
+import org.yangdai.kori.presentation.component.PlatformStyleTopAppBar
+import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
 import org.yangdai.kori.presentation.component.TooltipIconButton
-import org.yangdai.kori.presentation.component.TopBarTitle
+import org.yangdai.kori.presentation.component.dialog.FolderSortOptionDialog
 import org.yangdai.kori.presentation.component.dialog.ModifyFolderDialog
 import org.yangdai.kori.presentation.component.dialog.WarningDialog
+import org.yangdai.kori.presentation.util.rememberCurrentPlatform
 import org.yangdai.kori.presentation.viewModel.FoldersViewModel
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -81,23 +98,24 @@ fun FoldersScreen(
     viewModel: FoldersViewModel = koinViewModel<FoldersViewModel>(),
     navigateUp: () -> Unit
 ) {
-    val foldersWithNoteCounts by viewModel.foldersWithNoteCounts.collectAsState()
+    val groupedFolders by viewModel.foldersMap.collectAsStateWithLifecycle()
     var showAddFolderDialog by rememberSaveable { mutableStateOf(false) }
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    var showSortDialog by rememberSaveable { mutableStateOf(false) }
+    val platform = rememberCurrentPlatform()
+    val scrollBehavior = if (platform is Platform.Desktop) TopAppBarDefaults.pinnedScrollBehavior()
+    else TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            AdaptiveTopAppBar(
-                title = { TopBarTitle(stringResource(Res.string.folders)) },
-                navigationIcon = {
-                    NavigateUpButton(onClick = navigateUp)
-                },
+            PlatformStyleTopAppBar(
+                title = { PlatformStyleTopAppBarTitle(stringResource(Res.string.folders)) },
+                navigationIcon = { PlatformStyleTopAppBarNavigationIcon(onClick = navigateUp) },
                 actions = {
                     TooltipIconButton(
-                        tipText = "Sort",
+                        tipText = stringResource(Res.string.sort_by),
                         icon = Icons.Outlined.SortByAlpha,
-                        onClick = { /* TODO */ },
+                        onClick = { showSortDialog = true },
                     )
                 },
                 scrollBehavior = scrollBehavior,
@@ -114,35 +132,121 @@ fun FoldersScreen(
             }
         }
     ) { innerPadding ->
-        LazyVerticalGrid(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            columns = GridCells.Adaptive(360.dp),
-            contentPadding = innerPadding,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(foldersWithNoteCounts, key = { it.folder.id }, contentType = { "FolderItem" }) {
-                FolderItem(
-                    folder = it.folder,
-                    notesCountInFolder = it.noteCount,
-                    onModify = {
-                        viewModel.updateFolder(it)
-                    },
-                    onDelete = {
-                        viewModel.deleteFolder(it.folder)
-                    }
+        val state = rememberLazyGridState()
+        var showStarredItems by rememberSaveable { mutableStateOf(true) }
+        var showUnstarredItems by rememberSaveable { mutableStateOf(true) }
+        val layoutDirection = LocalLayoutDirection.current
+        Box(
+            Modifier
+                .padding(
+                    top = innerPadding.calculateTopPadding(),
+                    start = innerPadding.calculateStartPadding(layoutDirection),
+                    end = innerPadding.calculateEndPadding(layoutDirection)
                 )
+                .fillMaxSize()
+        ) {
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(360.dp),
+                state = state,
+                contentPadding = PaddingValues(
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = innerPadding.calculateBottomPadding()
+                ),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                if (groupedFolders.size == 2)
+                    stickyHeader {
+                        Surface {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
+                                    .clickable { showStarredItems = !showStarredItems },
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Star,
+                                    contentDescription = null,
+                                    tint = Color.Yellow,
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("已星标")
+                                Spacer(modifier = Modifier.weight(1f))
+                                Icon(
+                                    imageVector = if (showStarredItems) Icons.Outlined.UnfoldLess
+                                    else Icons.Outlined.UnfoldMore,
+                                    contentDescription = null
+                                )
+                            }
+                        }
+                    }
+
+                if (showStarredItems)
+                    items(groupedFolders[true] ?: emptyList(), key = { it.folder.id }) {
+                        FolderItem(
+                            folder = it.folder,
+                            notesCountInFolder = it.noteCount,
+                            onModify = { viewModel.updateFolder(it) },
+                            onDelete = { viewModel.deleteFolder(it.folder) }
+                        )
+                    }
+
+                if (groupedFolders.size == 2)
+                    stickyHeader {
+                        Surface {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
+                                    .clickable { showUnstarredItems = !showUnstarredItems },
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Start
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.StarOutline,
+                                    contentDescription = null
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("未星标")
+                                Spacer(modifier = Modifier.weight(1f))
+                                Icon(
+                                    imageVector = if (showUnstarredItems) Icons.Outlined.UnfoldLess
+                                    else Icons.Outlined.UnfoldMore,
+                                    contentDescription = null
+                                )
+                            }
+                        }
+                    }
+
+                if (showUnstarredItems)
+                    items(groupedFolders[false] ?: emptyList(), key = { it.folder.id }) {
+                        FolderItem(
+                            folder = it.folder,
+                            notesCountInFolder = it.noteCount,
+                            onModify = { viewModel.updateFolder(it) },
+                            onDelete = { viewModel.deleteFolder(it.folder) }
+                        )
+                    }
             }
+
+            LazyGridScrollbar(
+                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+                state = state
+            )
         }
 
         if (showAddFolderDialog) {
             ModifyFolderDialog(
                 folder = FolderEntity(Uuid.random().toString()),
                 onDismissRequest = { showAddFolderDialog = false }
-            ) {
-                viewModel.createFolder(it)
-            }
+            ) { viewModel.createFolder(it) }
         }
     }
+
+    if (showSortDialog)
+        FolderSortOptionDialog(
+            initialFolderSortType = viewModel.folderSortType,
+            onDismissRequest = { showSortDialog = false },
+            onSortTypeSelected = { viewModel.setFolderSorting(it) }
+        )
+
 }
 
 @Composable
@@ -262,14 +366,8 @@ fun LazyGridItemScope.FolderItem(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    val text =
-                        "$notesCountInFolder${
-                            if (notesCountInFolder == 1 || notesCountInFolder == 0)
-                                stringResource(Res.string.note)
-                            else stringResource(Res.string.notes)
-                        }"
                     Text(
-                        text = text,
+                        text = pluralStringResource(Res.plurals.note_count, notesCountInFolder, notesCountInFolder),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = Color.Gray
                         )
@@ -316,8 +414,7 @@ fun LazyGridItemScope.FolderItem(
     if (showModifyDialog) {
         ModifyFolderDialog(
             folder = folder,
-            onDismissRequest = { showModifyDialog = false }) {
-            onModify(it)
-        }
+            onDismissRequest = { showModifyDialog = false }
+        ) { onModify(it) }
     }
 }

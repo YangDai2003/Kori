@@ -71,7 +71,7 @@
     <string name="date">日期</string>
     <string name="ascending">升序</string>
     <string name="descending">降序</string>
-    <string name="sort_by">排序</string>
+    <string name="sort_by">排序依据</string>
     <string name="table">表格</string>
     <string name="row">行数</string>
     <string name="column">列数</string>
@@ -117,8 +117,6 @@
     <string name="editing_view">编辑视图</string>
     <string name="reading_view">阅读视图</string>
     <string name="sponsor">赞助，给开发者一点鼓励 ☕</string>
-    <string name="notes">个笔记</string>
-    <string name="note">个笔记</string>
     <string name="image">图片</string>
     <string name="list">列表</string>
     <string name="find">查找</string>
@@ -207,5 +205,18 @@
     <string name="minimize">最小化</string>
     <string name="maximize">最大化</string>
     <string name="close">关闭</string>
+    <string name="cancel">取消</string>
+    <string name="confirm">确定</string>
     <string name="always_on_top">置顶</string>
+    <string name="open_navigation_drawer">打开导航抽屉</string>
+    <string name="sort_name_a">文件名 (A - Z)</string>
+    <string name="sort_name_d">文件名 (Z - A)</string>
+    <string name="sort_created_a">创建时间 (从旧到新)</string>
+    <string name="sort_created_d">创建时间 (从新到旧)</string>
+    <string name="sort_modified_a">修改时间 (从旧到新)</string>
+    <string name="sort_modified_d">修改时间 (从新到旧)</string>
+    <plurals name="note_count">
+        <item quantity="one">%1$d个笔记</item>
+        <item quantity="other">%1$d个笔记</item>
+    </plurals>
 </resources>

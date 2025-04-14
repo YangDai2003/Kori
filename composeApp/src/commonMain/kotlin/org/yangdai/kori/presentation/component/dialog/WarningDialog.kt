@@ -10,6 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import kori.composeapp.generated.resources.Res
+import kori.composeapp.generated.resources.cancel
+import kori.composeapp.generated.resources.confirm
 import kori.composeapp.generated.resources.warning
 import org.jetbrains.compose.resources.stringResource
 
@@ -35,12 +37,12 @@ fun WarningDialog(
                 contentColor = MaterialTheme.colorScheme.onErrorContainer
             )
         ) {
-            Text(text = "OK")
+            Text(text = stringResource(Res.string.confirm))
         }
     },
     dismissButton = {
         TextButton(onClick = onDismissRequest) {
-            Text(text = "Cancel")
+            Text(text = stringResource(Res.string.cancel))
         }
     }
 )

@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,10 +14,14 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Colorize
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -40,6 +45,8 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
+import kori.composeapp.generated.resources.cancel
+import kori.composeapp.generated.resources.confirm
 import kori.composeapp.generated.resources.modify
 import kori.composeapp.generated.resources.name
 import kotlinx.coroutines.launch
@@ -53,9 +60,10 @@ fun ModifyFolderDialog(
     onDismissRequest: () -> Unit,
     onModify: (FolderEntity) -> Unit
 ) {
-
+    var isStarred by remember { mutableStateOf(folder.isStarred) }
     var text by remember { mutableStateOf(folder.name) }
     var color by remember { mutableLongStateOf(folder.colorValue) }
+    var isError by remember { mutableStateOf(false) }
     val custom = !FolderEntity.colors.contains(Color(color))
     val initValue =
         if (folder.colorValue == FolderEntity.defaultColorValue) 0
@@ -72,15 +80,36 @@ fun ModifyFolderDialog(
 
     AlertDialog(
         title = {
-            Text(text = stringResource(Res.string.modify))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = stringResource(Res.string.modify))
+                IconToggleButton(
+                    checked = isStarred,
+                    onCheckedChange = { isStarred = it },
+                    colors = IconButtonDefaults.iconToggleButtonColors()
+                        .copy(checkedContentColor = Color.Yellow)
+                ) {
+                    Icon(
+                        imageVector = if (isStarred) Icons.Outlined.Star else Icons.Outlined.StarOutline,
+                        contentDescription = null
+                    )
+                }
+            }
         },
         text = {
             Column {
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = text,
-                    onValueChange = { text = it },
+                    onValueChange = {
+                        text = it
+                        isError = false // 当用户输入时重置错误状态
+                    },
                     singleLine = true,
+                    isError = isError,
                     placeholder = { Text(text = stringResource(Res.string.name)) },
                 )
                 LazyRow(
@@ -125,6 +154,11 @@ fun ModifyFolderDialog(
                 onClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.Confirm)
 
+                    if (text.isBlank()) {
+                        isError = true
+                        return@Button
+                    }
+
                     color = when (selectedIndex) {
                         0 -> FolderEntity.defaultColorValue
                         FolderEntity.colors.size + 1 -> color
@@ -135,19 +169,20 @@ fun ModifyFolderDialog(
                         FolderEntity(
                             id = folder.id,
                             name = text,
-                            colorValue = color
+                            colorValue = color,
+                            isStarred = isStarred
                         )
                     )
 
                     onDismissRequest()
                 }
             ) {
-                Text("OK")
+                Text(stringResource(Res.string.confirm))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
-                Text(text = "Cancel")
+                Text(stringResource(Res.string.cancel))
             }
         }
     )

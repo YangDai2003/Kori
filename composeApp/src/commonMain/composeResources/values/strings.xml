@@ -37,7 +37,7 @@
     <string name="restore_all">All restore</string>
     <string name="delete_all">All delete</string>
     <string name="move">Move</string>
-    <string name="checked">"Selected: "</string>
+    <string name="checked">Selected: </string>
     <string name="modify">Modify</string>
     <string name="warning">Warning</string>
     <string name="deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue">Deleting a folder will also delete all the notes it contains and they cannot be restored. Do you want to continue?</string>
@@ -119,8 +119,6 @@
     <string name="editing_view">Editing view</string>
     <string name="reading_view">Reading view</string>
     <string name="sponsor">Sponsor developer ☕</string>
-    <string name="notes">" notes"</string>
-    <string name="note">" note"</string>
     <string name="image">Image</string>
     <string name="list">List</string>
     <string name="find">Find</string>
@@ -140,7 +138,7 @@
     <string name="time_format">Time format</string>
     <string name="date_in_the_template_file_will_be_replaced_with_this_value">{{date}} in the template file will be replaced with this value.\n</string>
     <string name="you_can_also_use_date_yyyy_mm_dd_to_override_the_format_once">You can also use {{date:YYYY-MM-DD}} to override the format once.\n</string>
-    <string name="for_more_syntax_refer_to">"For more syntax, refer to "</string>
+    <string name="for_more_syntax_refer_to">For more syntax, refer to </string>
     <string name="format_reference">format reference</string>
     <string name="your_current_syntax_looks_like_this">\nYour current syntax looks like this: %1$s</string>
     <string name="time_in_the_template_file_will_be_replaced_with_this_value">{{time}} in the template file will be replaced with this value.\n</string>
@@ -209,5 +207,18 @@
     <string name="minimize">Minimize</string>
     <string name="maximize">Maximize</string>
     <string name="close">Close</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
     <string name="always_on_top">Always on top</string>
+    <string name="open_navigation_drawer">Open navigation drawer</string>
+    <string name="sort_name_a">File name (A - Z)</string>
+    <string name="sort_name_d">File name (Z - A)</string>
+    <string name="sort_created_a">Created time (old - new)</string>
+    <string name="sort_created_d">Created time (new - old)</string>
+    <string name="sort_modified_a">Modified time (old - new)</string>
+    <string name="sort_modified_d">Modified time (new - old)</string>
+    <plurals name="note_count">
+        <item quantity="one">%1$d note</item>
+        <item quantity="other">%1$d notes</item>
+    </plurals>
 </resources>

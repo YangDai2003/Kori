@@ -8,6 +8,7 @@ import android.view.Menu
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.material3.Surface
 import org.yangdai.kori.presentation.theme.KoriTheme
 
 class MainActivity : ComponentActivity() {
@@ -17,7 +18,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             KoriTheme {
-                App()
+                Surface {
+                    App()
+                }
             }
         }
     }

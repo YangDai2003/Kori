@@ -14,6 +14,8 @@ import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.presentation.viewModel.AppViewModel
 import org.yangdai.kori.presentation.viewModel.FoldersViewModel
+import org.yangdai.kori.presentation.viewModel.NoteViewModel
+import org.yangdai.kori.presentation.viewModel.SettingsViewModel
 
 expect fun databaseModule(): Module
 
@@ -23,6 +25,8 @@ fun appModule() = module {
     single<DataStoreRepository> { DataStoreRepositoryImpl(get()) }
     viewModelOf(::AppViewModel)
     viewModelOf(::FoldersViewModel)
+    viewModelOf(::NoteViewModel)
+    viewModelOf(::SettingsViewModel)
 }
 
 object KoinInitializer {

@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation
+package org.yangdai.kori.presentation.util
 
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable

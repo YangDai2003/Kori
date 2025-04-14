@@ -6,11 +6,9 @@ import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -29,7 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -74,11 +71,7 @@ fun main() {
         ) {
             window.minimumSize = Dimension(300, 300)
             KoriTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize().padding(4.dp),
-                    shape = if (isWindowFloating) RoundedCornerShape(8.dp) else RectangleShape,
-                    shadowElevation = 2.dp
-                ) {
+                Surface {
                     Column {
                         val navController = rememberNavController()
                         val navState = navController.currentBackStackEntryAsState()

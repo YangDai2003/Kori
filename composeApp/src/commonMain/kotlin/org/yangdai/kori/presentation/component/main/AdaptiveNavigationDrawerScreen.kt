@@ -18,19 +18,19 @@ import androidx.compose.material3.PermanentNavigationDrawer
  * @param content The main content.
  */
 @Composable
-fun AdaptiveNavigationScreen(
+fun AdaptiveNavigationDrawerScreen(
     isLargeScreen: Boolean,
     drawerState: DrawerState,
     gesturesEnabled: Boolean,
     drawerContent: @Composable ColumnScope.() -> Unit,
     content: @Composable () -> Unit
 ) = if (isLargeScreen) {
-    PermanentNavigationScreen(
+    PermanentNavigationDrawerScreen(
         drawerContent = drawerContent,
         content = content
     )
 } else {
-    ModalNavigationScreen(
+    ModalNavigationDrawerScreen(
         drawerState = drawerState,
         gesturesEnabled = gesturesEnabled,
         drawerContent = drawerContent,
@@ -39,7 +39,7 @@ fun AdaptiveNavigationScreen(
 }
 
 @Composable
-private fun ModalNavigationScreen(
+private fun ModalNavigationDrawerScreen(
     drawerState: DrawerState,
     gesturesEnabled: Boolean,
     drawerContent: @Composable ColumnScope.() -> Unit,
@@ -56,7 +56,7 @@ private fun ModalNavigationScreen(
 )
 
 @Composable
-private fun PermanentNavigationScreen(
+private fun PermanentNavigationDrawerScreen(
     drawerContent: @Composable ColumnScope.() -> Unit,
     content: @Composable () -> Unit
 ) = PermanentNavigationDrawer(

@@ -6,7 +6,6 @@ import org.yangdai.kori.data.local.dao.FolderDao.FolderWithNoteCount
 import org.yangdai.kori.data.local.entity.FolderEntity
 import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.sort.FolderSortType
-import org.yangdai.kori.domain.sort.SortDirection
 
 class FolderRepositoryImpl(
     private val dao: FolderDao
@@ -31,23 +30,12 @@ class FolderRepositoryImpl(
         dao.deleteFolderById(id)
     }
 
-    override fun getFoldersWithNoteCounts(
-        sortField: FolderSortType,
-        sortDirection: SortDirection
-    ): Flow<List<FolderWithNoteCount>> {
-        return when (sortField) {
-            FolderSortType.NAME -> {
-                when (sortDirection) {
-                    SortDirection.ASC -> dao.getFoldersWithNoteCountsByNameAsc()
-                    SortDirection.DESC -> dao.getFoldersWithNoteCountsByNameDesc()
-                }
-            }
-            FolderSortType.CREATED -> {
-                when (sortDirection) {
-                    SortDirection.ASC -> dao.getFoldersWithNoteCountsByCreatedAsc()
-                    SortDirection.DESC -> dao.getFoldersWithNoteCountsByCreatedDesc()
-                }
-            }
+    override fun getFoldersWithNoteCounts(sortType: FolderSortType): Flow<List<FolderWithNoteCount>> {
+        return when (sortType) {
+            FolderSortType.NAME_ASC -> dao.getFoldersWithNoteCountsByNameAsc()
+            FolderSortType.NAME_DESC -> dao.getFoldersWithNoteCountsByNameDesc()
+            FolderSortType.CREATE_TIME_ASC -> dao.getFoldersWithNoteCountsByCreatedAsc()
+            FolderSortType.CREATE_TIME_DESC -> dao.getFoldersWithNoteCountsByCreatedDesc()
         }
     }
 }
