@@ -32,14 +32,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.all_notes
+import kori.composeapp.generated.resources.content
 import kori.composeapp.generated.resources.delete
 import kori.composeapp.generated.resources.right_panel_open
 import kori.composeapp.generated.resources.title
@@ -171,7 +170,7 @@ fun NoteScreen(
                         .padding(horizontal = 16.dp),
                     state = viewModel.titleState,
                     lineLimits = TextFieldLineLimits.SingleLine,
-                    textStyle = MaterialTheme.typography.headlineLarge.copy(
+                    textStyle = MaterialTheme.typography.headlineMedium.copy(
                         color = MaterialTheme.colorScheme.onSurface
                     ),
                     cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
@@ -188,8 +187,8 @@ fun NoteScreen(
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
                                     text = stringResource(Res.string.title),
-                                    style = MaterialTheme.typography.headlineLarge.copy(
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    style = MaterialTheme.typography.headlineMedium.copy(
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                                     )
                                 )
                             },
@@ -201,20 +200,19 @@ fun NoteScreen(
             }
 
             BasicTextField(
-                modifier = Modifier.fillMaxWidth().weight(1f),
+                modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = 16.dp),
                 state = viewModel.contentState,
-                textStyle = TextStyle(
-                    fontSize = 16.sp,
+                textStyle = MaterialTheme.typography.bodyLarge.copy(
                     color = MaterialTheme.colorScheme.onSurface
                 ),
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                 decorator = { innerTextField ->
                     Box {
                         if (viewModel.contentState.text.isEmpty()) {
                             Text(
-                                text = "开始输入笔记内容...",
-                                style = TextStyle(
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                                    fontSize = 16.sp
+                                text = stringResource(Res.string.content),
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                                 )
                             )
                         }

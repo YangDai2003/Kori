@@ -50,4 +50,5 @@
     <string name="outline">大纲</string>
     <string name="color_picker">颜色选择器</string>
     <string name="name">名称</string>
+    <string name="pin">置顶</string>
 </resources>

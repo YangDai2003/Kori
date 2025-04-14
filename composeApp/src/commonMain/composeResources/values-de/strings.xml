@@ -50,4 +50,5 @@
     <string name="outline">Gliederung</string>
     <string name="color_picker">Farbwähler</string>
     <string name="name">Name</string>
+    <string name="pin">Anheften</string>
 </resources>

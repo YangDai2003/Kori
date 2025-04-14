@@ -44,9 +44,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.all_notes
+import kori.composeapp.generated.resources.checked
 import kori.composeapp.generated.resources.delete
 import kori.composeapp.generated.resources.delete_all
 import kori.composeapp.generated.resources.move
+import kori.composeapp.generated.resources.pin
 import kori.composeapp.generated.resources.pinboard
 import kori.composeapp.generated.resources.restore
 import kori.composeapp.generated.resources.restore_all
@@ -87,7 +89,7 @@ fun MainScreenContent(
                 if (it) {
                     // 多选模式的顶部操作栏
                     TopAppBar(
-                        title = { PlatformStyleTopAppBarTitle("${selectedNotes.size}") },
+                        title = { PlatformStyleTopAppBarTitle("${stringResource(Res.string.checked)}${selectedNotes.size}") },
                         navigationIcon = {
                             IconButton(onClick = { selectedNotes.clear() }) {
                                 Icon(Icons.Default.Close, contentDescription = null)
@@ -96,7 +98,7 @@ fun MainScreenContent(
                         actions = {
                             if (currentDrawerItem !is DrawerItem.Trash && currentDrawerItem !is DrawerItem.Templates) {
                                 TooltipIconButton(
-                                    tipText = "pin",
+                                    tipText = stringResource(Res.string.pin),
                                     icon = painterResource(Res.drawable.pinboard),
                                     onClick = {
                                         selectedNotes.forEach { noteId ->

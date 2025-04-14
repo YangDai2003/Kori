@@ -69,7 +69,7 @@ fun main() {
             transparent = true,
             alwaysOnTop = alwaysOnTop
         ) {
-            window.minimumSize = Dimension(300, 300)
+            window.minimumSize = Dimension(380, 380)
             KoriTheme {
                 Surface {
                     Column {

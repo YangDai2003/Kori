@@ -1,7 +1,6 @@
 package org.yangdai.kori.presentation.component.main
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -71,7 +70,6 @@ data class DrawerState(
 @Composable
 private fun DrawerItem(
     icon: ImageVector,
-    iconTint: Color = MaterialTheme.colorScheme.onSurface,
     label: String,
     badge: String = "",
     isSelected: Boolean,
@@ -81,18 +79,10 @@ private fun DrawerItem(
         .padding(bottom = 4.dp)
         .padding(NavigationDrawerItemDefaults.ItemPadding)
         .height(48.dp),
-    icon = {
-        Icon(
-            modifier = Modifier.padding(horizontal = 4.dp),
-            imageVector = icon,
-            tint = iconTint,
-            contentDescription = null
-        )
-    },
+    icon = { Icon(imageVector = icon, contentDescription = null) },
     label = {
         Text(
             text = label,
-            color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -123,16 +113,17 @@ private fun FolderDrawerItem(
         .padding(NavigationDrawerItemDefaults.ItemPadding)
         .height(48.dp),
     icon = {
-        Box(contentAlignment = Alignment.Center) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
-                modifier = Modifier.padding(horizontal = 4.dp),
                 imageVector = if (isSelected) Icons.Outlined.FolderOpen else Icons.Outlined.Folder,
                 tint = iconTint,
                 contentDescription = null
             )
             if (isStarred) {
                 Icon(
-                    modifier = Modifier.size(8.dp),
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .size(14.dp),
                     imageVector = Icons.Outlined.Star,
                     tint = Color.Yellow,
                     contentDescription = null
@@ -143,7 +134,6 @@ private fun FolderDrawerItem(
     label = {
         Text(
             text = label,
-            color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -214,7 +204,7 @@ fun NavigationDrawerContent(
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
 
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
