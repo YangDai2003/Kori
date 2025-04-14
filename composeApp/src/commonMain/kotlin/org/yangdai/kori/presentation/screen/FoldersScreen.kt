@@ -74,6 +74,8 @@ import kori.composeapp.generated.resources.folders
 import kori.composeapp.generated.resources.modify
 import kori.composeapp.generated.resources.note_count
 import kori.composeapp.generated.resources.sort_by
+import kori.composeapp.generated.resources.starred
+import kori.composeapp.generated.resources.unstarred
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -159,8 +161,7 @@ fun FoldersScreen(
                     stickyHeader {
                         Surface {
                             Row(
-                                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
-                                    .clickable { showStarredItems = !showStarredItems },
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
@@ -169,12 +170,17 @@ fun FoldersScreen(
                                     tint = Color.Yellow,
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("已星标")
+                                Text(stringResource(Res.string.starred))
                                 Spacer(modifier = Modifier.weight(1f))
                                 Icon(
                                     imageVector = if (showStarredItems) Icons.Outlined.UnfoldLess
                                     else Icons.Outlined.UnfoldMore,
-                                    contentDescription = null
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.outline,
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(percent = 50))
+                                        .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                                        .clickable { showStarredItems = !showStarredItems }
                                 )
                             }
                         }
@@ -194,8 +200,7 @@ fun FoldersScreen(
                     stickyHeader {
                         Surface {
                             Row(
-                                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
-                                    .clickable { showUnstarredItems = !showUnstarredItems },
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Start
                             ) {
@@ -204,12 +209,17 @@ fun FoldersScreen(
                                     contentDescription = null
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("未星标")
+                                Text(stringResource(Res.string.unstarred))
                                 Spacer(modifier = Modifier.weight(1f))
                                 Icon(
                                     imageVector = if (showUnstarredItems) Icons.Outlined.UnfoldLess
                                     else Icons.Outlined.UnfoldMore,
-                                    contentDescription = null
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.outline,
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(percent = 50))
+                                        .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                                        .clickable { showUnstarredItems = !showUnstarredItems }
                                 )
                             }
                         }
