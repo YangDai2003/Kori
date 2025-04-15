@@ -33,21 +33,27 @@ class AppViewModel(
 ) : ViewModel() {
 
     private var _currentFolderId by mutableStateOf<String>("")
-    private val _currentFolderNotes = MutableStateFlow<List<NoteEntity>>(emptyList())
-    val currentFolderNotes: StateFlow<List<NoteEntity>> = _currentFolderNotes
+    private val _currentFolderNotesMap =
+        MutableStateFlow<Map<Boolean, List<NoteEntity>>>(emptyMap())
+    val currentFolderNotesMap: StateFlow<Map<Boolean, List<NoteEntity>>> = _currentFolderNotesMap
 
     private val _searchResults = MutableStateFlow<List<NoteEntity>>(emptyList())
     val searchResults: StateFlow<List<NoteEntity>> = _searchResults
 
+    val searchHistorySet: StateFlow<Set<String>> = dataStoreRepository
+        .stringSetFlow(Constants.Preferences.SEARCH_HISTORY)
+        .flowOn(Dispatchers.IO)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptySet())
+
     // 计数
     val activeNotesCount = noteRepository.getActiveNotesCount()
-        .stateIn(viewModelScope, SharingStarted.Companion.Eagerly, 0)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     val trashNotesCount = noteRepository.getTrashNotesCount()
-        .stateIn(viewModelScope, SharingStarted.Companion.Eagerly, 0)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     val templateNotesCount = noteRepository.getTemplatesCount()
-        .stateIn(viewModelScope, SharingStarted.Companion.Eagerly, 0)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     // 排序相关
     var noteSortType by mutableStateOf(NoteSortType.UPDATE_TIME_DESC)
@@ -60,14 +66,17 @@ class AppViewModel(
         .distinctUntilChanged()
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val allNotes: StateFlow<List<NoteEntity>> = _noteSortTypeFlow
+    val allNotesMap: StateFlow<Map<Boolean, List<NoteEntity>>> = _noteSortTypeFlow
         .flatMapLatest { sortType ->
             noteRepository.getAllNotes(sortType)
+                .flowOn(Dispatchers.IO)
+                .map { notes -> notes.groupBy { it.isPinned } }
+                .flowOn(Dispatchers.Default)
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = emptyList()
+            initialValue = emptyMap()
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -112,75 +121,106 @@ class AppViewModel(
 
     fun loadNotesByFolder(folderId: String) {
         _currentFolderId = folderId
-        viewModelScope.launch {
-            noteRepository.getNotesByFolderId(folderId, noteSortType).collect { notes ->
-                _currentFolderNotes.value = notes
-            }
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.getNotesByFolderId(folderId, noteSortType)
+                .flowOn(Dispatchers.IO)
+                .map { notes -> notes.groupBy { it.isPinned } }
+                .flowOn(Dispatchers.Default)
+                .collect { notesMap ->
+                    _currentFolderNotesMap.value = notesMap
+                }
         }
     }
 
     fun searchNotes(keyword: String) {
-        viewModelScope.launch {
+        if (keyword.isBlank()) {
+            _searchResults.value = emptyList()
+            return
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            val currentSet = searchHistorySet.value
+            // 创建一个新集合，首先添加新关键词，然后添加旧的关键词，但总数不超过30
+            val newSet = buildSet<String> {
+                add(keyword)  // 确保新关键词在最前面
+                addAll(currentSet.filter { it != keyword }.take(29))  // 过滤掉相同的关键词，并限制只取29个
+            }
+            dataStoreRepository.putStringSet(Constants.Preferences.SEARCH_HISTORY, newSet)
             noteRepository.searchNotesByKeyword(keyword, noteSortType).collect { notes ->
                 _searchResults.value = notes
             }
         }
     }
 
-    fun deleteNote(noteId: String) {
-        viewModelScope.launch {
-            noteRepository.deleteNoteById(noteId)
+    fun clearSearchHistory() {
+        viewModelScope.launch(Dispatchers.IO) {
+            dataStoreRepository.putStringSet(Constants.Preferences.SEARCH_HISTORY, emptySet())
         }
     }
 
-    fun pinNote(noteId: String) {
-        viewModelScope.launch {
-            val note = noteRepository.getNoteById(noteId)
-            note?.let {
-                val updatedNote = it.copy(isPinned = true)
-                noteRepository.updateNote(updatedNote)
+    fun deleteNotes(noteIds: Set<String>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            noteIds.forEach { noteId ->
+                noteRepository.deleteNoteById(noteId)
             }
         }
     }
 
-    fun moveNoteToFolder(noteId: String, folderId: String?) {
-        viewModelScope.launch {
-            val note = noteRepository.getNoteById(noteId)
-            note?.let {
-                val updatedNote = it.copy(folderId = folderId)
-                noteRepository.updateNote(updatedNote)
+    fun pinNotes(noteIds: Set<String>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            noteIds.forEach { noteId ->
+                val note = noteRepository.getNoteById(noteId)
+                note?.let {
+                    val updatedNote = it.copy(isPinned = true)
+                    noteRepository.updateNote(updatedNote)
+                }
             }
         }
     }
 
-    fun moveNoteToTrash(noteId: String) {
-        viewModelScope.launch {
-            val note = noteRepository.getNoteById(noteId)
-            note?.let {
-                val trashNote = it.copy(isDeleted = true)
-                noteRepository.updateNote(trashNote)
+    fun moveNotesToFolder(noteIds: Set<String>, folderId: String?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            noteIds.forEach { noteId ->
+                val note = noteRepository.getNoteById(noteId)
+                note?.let {
+                    val updatedNote = it.copy(folderId = folderId)
+                    noteRepository.updateNote(updatedNote)
+                }
             }
         }
     }
 
-    fun restoreNoteFromTrash(noteId: String) {
-        viewModelScope.launch {
-            val note = noteRepository.getNoteById(noteId)
-            note?.let {
-                val restoredNote = it.copy(isDeleted = false)
-                noteRepository.updateNote(restoredNote)
+    fun moveNotesToTrash(noteIds: Set<String>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            noteIds.forEach { noteId ->
+                val note = noteRepository.getNoteById(noteId)
+                note?.let {
+                    val trashNote = it.copy(isDeleted = true)
+                    noteRepository.updateNote(trashNote)
+                }
+            }
+        }
+    }
+
+    fun restoreNotesFromTrash(noteIds: Set<String>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            noteIds.forEach { noteId ->
+                val note = noteRepository.getNoteById(noteId)
+                note?.let {
+                    val restoredNote = it.copy(isDeleted = false)
+                    noteRepository.updateNote(restoredNote)
+                }
             }
         }
     }
 
     fun emptyTrash() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             noteRepository.emptyTrash()
         }
     }
 
     fun restoreAllNotesFromTrash() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             noteRepository.restoreAllFromTrash()
         }
     }

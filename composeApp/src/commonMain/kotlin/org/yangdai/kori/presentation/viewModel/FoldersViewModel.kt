@@ -40,7 +40,9 @@ class FoldersViewModel(
             .distinctUntilChanged()
             .flatMapLatest { sortType ->
                 folderRepository.getFoldersWithNoteCounts(sortType)
+                    .flowOn(Dispatchers.IO)
                     .map { folders -> folders.groupBy { it.folder.isStarred } }
+                    .flowOn(Dispatchers.Default)
             }
             .stateIn(
                 scope = viewModelScope,

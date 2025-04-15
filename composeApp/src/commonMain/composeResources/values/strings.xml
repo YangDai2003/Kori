@@ -24,8 +24,10 @@
         <item quantity="one">%1$d note</item>
         <item quantity="other">%1$d notes</item>
     </plurals>
+    <string name="pin">Pin</string>
+    <string name="pinned">Pinned</string>
     <string name="starred">Starred</string>
-    <string name="unstarred">Unstarred</string>
+    <string name="others">Others</string>
     <string name="move">Move</string>
     <string name="all_notes">All notes</string>
     <string name="templates">Templates</string>
@@ -51,5 +53,6 @@
     <string name="outline">Outline</string>
     <string name="color_picker">Color Picker</string>
     <string name="name">Name</string>
-    <string name="pin">Pin</string>
+    <string name="search">Search</string>
+    <string name="search_history">Search history</string>
 </resources>

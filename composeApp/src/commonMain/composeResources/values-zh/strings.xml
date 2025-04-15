@@ -23,8 +23,10 @@
         <item quantity="one">%1$d个笔记</item>
         <item quantity="other">%1$d个笔记</item>
     </plurals>
+    <string name="pin">置顶</string>
+    <string name="pinned">已置顶</string>
     <string name="starred">已星标</string>
-    <string name="unstarred">未星标</string>
+    <string name="others">其它</string>
     <string name="move">移动</string>
     <string name="all_notes">全部笔记</string>
     <string name="templates">模板</string>
@@ -50,5 +52,6 @@
     <string name="outline">大纲</string>
     <string name="color_picker">颜色选择器</string>
     <string name="name">名称</string>
-    <string name="pin">置顶</string>
+    <string name="search">搜索</string>
+    <string name="search_history">搜索历史</string>
 </resources>

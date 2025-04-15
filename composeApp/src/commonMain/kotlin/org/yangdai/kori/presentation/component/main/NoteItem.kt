@@ -6,16 +6,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,9 +38,8 @@ fun LazyGridItemScope.NoteItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .padding(bottom = 8.dp)
             .animateItem(),
-        elevation = CardDefaults.cardElevation(defaultElevation = if (note.isPinned) 4.dp else 2.dp),
         colors = if (isSelected) CardDefaults.outlinedCardColors() else CardDefaults.elevatedCardColors(),
         border = if (isSelected) CardDefaults.outlinedCardBorder() else null
     ) {
@@ -57,43 +52,28 @@ fun LazyGridItemScope.NoteItem(
                 )
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
-                // 顶部行：标题和类型图标
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    // 置顶图标
-                    if (note.isPinned) {
-                        Icon(
-                            imageVector = Icons.Default.PushPin,
-                            contentDescription = "已置顶",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                    }
-
-                    // 标题
+                // 标题
+                if (note.title.isNotBlank()) {
                     Text(
-                        text = if (note.title.isNotBlank()) note.title else "无标题",
+                        text = note.title,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f)
+                        overflow = TextOverflow.Ellipsis
                     )
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
+
                 // 内容预览
-                if (note.content.isNotBlank()) {
+                if (note.content.isNotBlank())
                     Text(
                         text = note.content,
                         style = MaterialTheme.typography.bodyMedium,
-                        maxLines = 3,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(top = 8.dp)
+                        maxLines = 4,
+                        overflow = TextOverflow.Ellipsis
                     )
-                }
+
 
                 // 底部行：笔记类型和更新时间信息
                 Row(

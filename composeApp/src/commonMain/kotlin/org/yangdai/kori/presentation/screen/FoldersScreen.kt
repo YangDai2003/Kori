@@ -1,7 +1,6 @@
 package org.yangdai.kori.presentation.screen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,10 +29,6 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DriveFileRenameOutline
 import androidx.compose.material.icons.outlined.FolderDelete
 import androidx.compose.material.icons.outlined.SortByAlpha
-import androidx.compose.material.icons.outlined.Star
-import androidx.compose.material.icons.outlined.StarOutline
-import androidx.compose.material.icons.outlined.UnfoldLess
-import androidx.compose.material.icons.outlined.UnfoldMore
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.DropdownMenu
@@ -73,17 +68,17 @@ import kori.composeapp.generated.resources.deleting_a_folder_will_also_delete_al
 import kori.composeapp.generated.resources.folders
 import kori.composeapp.generated.resources.modify
 import kori.composeapp.generated.resources.note_count
+import kori.composeapp.generated.resources.others
 import kori.composeapp.generated.resources.sort_by
 import kori.composeapp.generated.resources.starred
-import kori.composeapp.generated.resources.unstarred
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.Platform
 import org.yangdai.kori.data.local.entity.FolderEntity
 import org.yangdai.kori.presentation.component.LazyGridScrollbar
-import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBar
+import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.FolderSortOptionDialog
@@ -135,8 +130,6 @@ fun FoldersScreen(
         }
     ) { innerPadding ->
         val state = rememberLazyGridState()
-        var showStarredItems by rememberSaveable { mutableStateOf(true) }
-        var showUnstarredItems by rememberSaveable { mutableStateOf(true) }
         val layoutDirection = LocalLayoutDirection.current
         Box(
             Modifier
@@ -148,7 +141,7 @@ fun FoldersScreen(
                 .fillMaxSize()
         ) {
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(360.dp),
+                columns = GridCells.Adaptive(380.dp),
                 state = state,
                 contentPadding = PaddingValues(
                     start = 16.dp,
@@ -157,83 +150,47 @@ fun FoldersScreen(
                 ),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                if (groupedFolders.size == 2)
+                if (!groupedFolders[true].isNullOrEmpty())
                     stickyHeader {
                         Surface {
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Star,
-                                    contentDescription = null,
-                                    tint = Color.Yellow,
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(stringResource(Res.string.starred))
-                                Spacer(modifier = Modifier.weight(1f))
-                                Icon(
-                                    imageVector = if (showStarredItems) Icons.Outlined.UnfoldLess
-                                    else Icons.Outlined.UnfoldMore,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.outline,
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(percent = 50))
-                                        .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-                                        .clickable { showStarredItems = !showStarredItems }
-                                )
-                            }
+                            Text(
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                                    .padding(bottom = 8.dp),
+                                text = stringResource(Res.string.starred),
+                                style = MaterialTheme.typography.labelLarge
+                            )
                         }
                     }
 
-                if (showStarredItems)
-                    items(groupedFolders[true] ?: emptyList(), key = { it.folder.id }) {
-                        FolderItem(
-                            folder = it.folder,
-                            notesCountInFolder = it.noteCount,
-                            onModify = { viewModel.updateFolder(it) },
-                            onDelete = { viewModel.deleteFolder(it.folder) }
-                        )
-                    }
+                items(groupedFolders[true] ?: emptyList(), key = { it.folder.id }) {
+                    FolderItem(
+                        folder = it.folder,
+                        notesCountInFolder = it.noteCount,
+                        onModify = { viewModel.updateFolder(it) },
+                        onDelete = { viewModel.deleteFolder(it.folder) }
+                    )
+                }
 
                 if (groupedFolders.size == 2)
                     stickyHeader {
                         Surface {
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Start
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.StarOutline,
-                                    contentDescription = null
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(stringResource(Res.string.unstarred))
-                                Spacer(modifier = Modifier.weight(1f))
-                                Icon(
-                                    imageVector = if (showUnstarredItems) Icons.Outlined.UnfoldLess
-                                    else Icons.Outlined.UnfoldMore,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.outline,
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(percent = 50))
-                                        .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-                                        .clickable { showUnstarredItems = !showUnstarredItems }
-                                )
-                            }
+                            Text(
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                                    .padding(bottom = 8.dp),
+                                text = stringResource(Res.string.others),
+                                style = MaterialTheme.typography.labelLarge
+                            )
                         }
                     }
 
-                if (showUnstarredItems)
-                    items(groupedFolders[false] ?: emptyList(), key = { it.folder.id }) {
-                        FolderItem(
-                            folder = it.folder,
-                            notesCountInFolder = it.noteCount,
-                            onModify = { viewModel.updateFolder(it) },
-                            onDelete = { viewModel.deleteFolder(it.folder) }
-                        )
-                    }
+                items(groupedFolders[false] ?: emptyList(), key = { it.folder.id }) {
+                    FolderItem(
+                        folder = it.folder,
+                        notesCountInFolder = it.noteCount,
+                        onModify = { viewModel.updateFolder(it) },
+                        onDelete = { viewModel.deleteFolder(it.folder) }
+                    )
+                }
             }
 
             LazyGridScrollbar(
@@ -377,7 +334,11 @@ fun LazyGridItemScope.FolderItem(
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        text = pluralStringResource(Res.plurals.note_count, notesCountInFolder, notesCountInFolder),
+                        text = pluralStringResource(
+                            Res.plurals.note_count,
+                            notesCountInFolder,
+                            notesCountInFolder
+                        ),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = Color.Gray
                         )

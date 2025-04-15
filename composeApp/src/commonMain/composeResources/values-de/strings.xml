@@ -23,8 +23,10 @@
         <item quantity="one">%1$d Notiz</item>
         <item quantity="other">%1$d Notizen</item>
     </plurals>
-    <string name="starred">Markiert</string>
-    <string name="unstarred">Nicht markiert</string>
+    <string name="pin">Pin</string>
+    <string name="pinned">Angepinnet</string>
+    <string name="starred">Starred</string>
+    <string name="others">Sonstige</string>
     <string name="move">Verschieben</string>
     <string name="all_notes">Alle Notizen</string>
     <string name="templates">Vorlagen</string>
@@ -50,5 +52,6 @@
     <string name="outline">Gliederung</string>
     <string name="color_picker">Farbwähler</string>
     <string name="name">Name</string>
-    <string name="pin">Anheften</string>
+    <string name="search">Suchen</string>
+    <string name="search_history">Suchverlauf</string>
 </resources>
