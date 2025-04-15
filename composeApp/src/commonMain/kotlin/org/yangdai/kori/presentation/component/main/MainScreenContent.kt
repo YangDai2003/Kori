@@ -7,10 +7,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -108,68 +112,68 @@ fun MainScreenContent(
 
     Scaffold(
         topBar = {
-            if (currentDrawerItem !is DrawerItem.AllNotes)
-                AnimatedContent(targetState = isSelectionMode) {
-                    if (it) {
-                        // 多选模式的顶部操作栏
-                        TopAppBar(
-                            title = { PlatformStyleTopAppBarTitle("${stringResource(Res.string.checked)}${selectedNotes.size}") },
-                            navigationIcon = {
-                                IconButton(onClick = { selectedNotes.clear() }) {
-                                    Icon(Icons.Default.Close, contentDescription = null)
-                                }
-                            },
-                            actions = {
-                                if (currentDrawerItem !is DrawerItem.Trash && currentDrawerItem !is DrawerItem.Templates) {
-                                    TooltipIconButton(
-                                        tipText = stringResource(Res.string.pin),
-                                        icon = painterResource(Res.drawable.pinboard),
-                                        onClick = {
-                                            viewModel.pinNotes(selectedNotes.toSet())
-                                            selectedNotes.clear()
-                                        }
-                                    )
-                                    TooltipIconButton(
-                                        tipText = stringResource(Res.string.move),
-                                        icon = Icons.AutoMirrored.Outlined.DriveFileMove,
-                                        onClick = { showFoldersDialog = true }
-                                    )
-                                }
-
-                                if (currentDrawerItem is DrawerItem.Trash) {
-                                    TooltipIconButton(
-                                        tipText = stringResource(Res.string.restore),
-                                        icon = Icons.Outlined.RestartAlt,
-                                        onClick = {
-                                            viewModel.restoreNotesFromTrash(selectedNotes.toSet())
-                                            selectedNotes.clear()
-                                        }
-                                    )
-                                }
-
+            AnimatedContent(targetState = isSelectionMode) {
+                if (it) {
+                    // 多选模式的顶部操作栏
+                    TopAppBar(
+                        title = { PlatformStyleTopAppBarTitle("${stringResource(Res.string.checked)}${selectedNotes.size}") },
+                        navigationIcon = {
+                            IconButton(onClick = { selectedNotes.clear() }) {
+                                Icon(Icons.Default.Close, contentDescription = null)
+                            }
+                        },
+                        actions = {
+                            if (currentDrawerItem !is DrawerItem.Trash && currentDrawerItem !is DrawerItem.Templates) {
                                 TooltipIconButton(
-                                    tipText = stringResource(Res.string.delete),
-                                    icon = if (currentDrawerItem is DrawerItem.Trash) Icons.Outlined.DeleteForever
-                                    else Icons.Outlined.Delete,
+                                    tipText = stringResource(Res.string.pin),
+                                    icon = painterResource(Res.drawable.pinboard),
                                     onClick = {
-                                        when (currentDrawerItem) {
-                                            DrawerItem.Trash -> {
-                                                // 从回收站永久删除
-                                                viewModel.deleteNotes(selectedNotes.toSet())
-                                            }
+                                        viewModel.pinNotes(selectedNotes.toSet())
+                                        selectedNotes.clear()
+                                    }
+                                )
+                                TooltipIconButton(
+                                    tipText = stringResource(Res.string.move),
+                                    icon = Icons.AutoMirrored.Outlined.DriveFileMove,
+                                    onClick = { showFoldersDialog = true }
+                                )
+                            }
 
-                                            else -> {
-                                                // 移到回收站
-                                                viewModel.moveNotesToTrash(selectedNotes.toSet())
-                                            }
-                                        }
+                            if (currentDrawerItem is DrawerItem.Trash) {
+                                TooltipIconButton(
+                                    tipText = stringResource(Res.string.restore),
+                                    icon = Icons.Outlined.RestartAlt,
+                                    onClick = {
+                                        viewModel.restoreNotesFromTrash(selectedNotes.toSet())
                                         selectedNotes.clear()
                                     }
                                 )
                             }
-                        )
-                    } else {
-                        // 常规模式的顶部应用栏
+
+                            TooltipIconButton(
+                                tipText = stringResource(Res.string.delete),
+                                icon = if (currentDrawerItem is DrawerItem.Trash) Icons.Outlined.DeleteForever
+                                else Icons.Outlined.Delete,
+                                onClick = {
+                                    when (currentDrawerItem) {
+                                        DrawerItem.Trash -> {
+                                            // 从回收站永久删除
+                                            viewModel.deleteNotes(selectedNotes.toSet())
+                                        }
+
+                                        else -> {
+                                            // 移到回收站
+                                            viewModel.moveNotesToTrash(selectedNotes.toSet())
+                                        }
+                                    }
+                                    selectedNotes.clear()
+                                }
+                            )
+                        }
+                    )
+                } else {
+                    // 常规模式的顶部应用栏
+                    if (currentDrawerItem !is DrawerItem.AllNotes)
                         TopAppBar(
                             title = {
                                 when (currentDrawerItem) {
@@ -230,8 +234,8 @@ fun MainScreenContent(
                             },
                             navigationIcon = navigationIcon
                         )
-                    }
                 }
+            }
         },
         floatingActionButton = {
             if (currentDrawerItem !is DrawerItem.Trash && !isSelectionMode)
@@ -275,123 +279,138 @@ fun MainScreenContent(
                         var inputText by remember { mutableStateOf("") }
                         val searchHistorySet by viewModel.searchHistorySet.collectAsStateWithLifecycle()
                         val searchBarShadowElevation by animateDpAsState(if (expanded) 8.dp else 0.dp)
-                        DockedSearchBar(
-                            modifier = Modifier.align(Alignment.TopCenter)
-                                .padding(top = searchBarShadowElevation),
-                            inputField = {
-                                SearchBarDefaults.InputField(
-                                    query = inputText,
-                                    onQueryChange = { inputText = it },
-                                    onSearch = {
-                                        viewModel.searchNotes(inputText)
-                                        expanded = false
-                                    },
-                                    expanded = expanded,
-                                    onExpandedChange = { expanded = it },
-                                    placeholder = { Text(text = stringResource(Res.string.search)) },
-                                    leadingIcon = {
-                                        val isLargeScreen = rememberIsScreenSizeLarge()
-                                        AnimatedContent(isLargeScreen || expanded) { showSearchIcon ->
-                                            if (showSearchIcon)
-                                                IconButton(
-                                                    onClick = {
-                                                        viewModel.searchNotes(inputText)
-                                                        expanded = false
-                                                    }
-                                                ) {
-                                                    Icon(
-                                                        imageVector = Icons.Outlined.Search,
-                                                        contentDescription = null
-                                                    )
-                                                }
-                                            else navigationIcon()
-                                        }
-                                    },
-                                    trailingIcon = {
-                                        AnimatedContent(expanded) { showClearIcon ->
-                                            if (showClearIcon)
-                                                IconButton(
-                                                    onClick = {
-                                                        if (inputText.isNotEmpty())
-                                                            inputText = ""
-                                                        else {
+                        if (!isSelectionMode)
+                            DockedSearchBar(
+                                modifier = Modifier.align(Alignment.TopCenter)
+                                    .statusBarsPadding()
+                                    .padding(top = searchBarShadowElevation),
+                                inputField = {
+                                    SearchBarDefaults.InputField(
+                                        query = inputText,
+                                        onQueryChange = { inputText = it },
+                                        onSearch = {
+                                            viewModel.searchNotes(inputText)
+                                            expanded = false
+                                        },
+                                        expanded = expanded,
+                                        onExpandedChange = { expanded = it },
+                                        placeholder = { Text(text = stringResource(Res.string.search)) },
+                                        leadingIcon = {
+                                            val isLargeScreen = rememberIsScreenSizeLarge()
+                                            AnimatedContent(isLargeScreen || expanded) { showSearchIcon ->
+                                                if (showSearchIcon)
+                                                    IconButton(
+                                                        onClick = {
+                                                            viewModel.searchNotes(inputText)
                                                             expanded = false
-                                                            viewModel.searchNotes("")
                                                         }
+                                                    ) {
+                                                        Icon(
+                                                            imageVector = Icons.Outlined.Search,
+                                                            contentDescription = null
+                                                        )
                                                     }
-                                                ) {
-                                                    Icon(
-                                                        imageVector = Icons.Default.Close,
-                                                        contentDescription = null
+                                                else navigationIcon()
+                                            }
+                                        },
+                                        trailingIcon = {
+                                            AnimatedContent(expanded) { showClearIcon ->
+                                                if (showClearIcon)
+                                                    IconButton(
+                                                        onClick = {
+                                                            if (inputText.isNotEmpty())
+                                                                inputText = ""
+                                                            else {
+                                                                expanded = false
+                                                                viewModel.searchNotes("")
+                                                            }
+                                                        }
+                                                    ) {
+                                                        Icon(
+                                                            imageVector = Icons.Default.Close,
+                                                            contentDescription = null
+                                                        )
+                                                    }
+                                                else
+                                                    TooltipIconButton(
+                                                        tipText = stringResource(Res.string.sort_by),
+                                                        icon = Icons.Outlined.SortByAlpha,
+                                                        onClick = { showSortDialog = true }
                                                     )
-                                                }
-                                            else
-                                                TooltipIconButton(
-                                                    tipText = stringResource(Res.string.sort_by),
-                                                    icon = Icons.Outlined.SortByAlpha,
-                                                    onClick = { showSortDialog = true }
-                                                )
+                                            }
                                         }
-                                    }
-                                )
-                            },
-                            shadowElevation = searchBarShadowElevation,
-                            expanded = expanded,
-                            onExpandedChange = { expanded = it }
-                        ) {
-                            if (searchHistorySet.isEmpty()) return@DockedSearchBar
-                            ListItem(
-                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                                leadingContent = {
-                                    Icon(
-                                        imageVector = Icons.Outlined.History,
-                                        contentDescription = null
                                     )
                                 },
-                                headlineContent = { Text(stringResource(Res.string.search_history)) },
-                                trailingContent = {
-                                    Icon(
-                                        modifier = Modifier.clickable {
-                                            viewModel.clearSearchHistory()
-                                        },
-                                        imageVector = Icons.Outlined.DeleteForever,
-                                        contentDescription = null
-                                    )
-                                }
-                            )
-                            FlowRow(
-                                modifier = Modifier.padding(horizontal = 12.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                maxLines = 3
+                                shadowElevation = searchBarShadowElevation,
+                                expanded = expanded,
+                                onExpandedChange = { expanded = it }
                             ) {
-                                searchHistorySet.reversed().forEach {
-                                    SuggestionChip(
-                                        modifier = Modifier.defaultMinSize(48.dp),
-                                        onClick = { inputText = it },
-                                        label = {
-                                            Text(
-                                                text = it,
-                                                textAlign = TextAlign.Center,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis
-                                            )
-                                        })
+                                if (searchHistorySet.isEmpty()) return@DockedSearchBar
+                                ListItem(
+                                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                    leadingContent = {
+                                        Icon(
+                                            imageVector = Icons.Outlined.History,
+                                            contentDescription = null
+                                        )
+                                    },
+                                    headlineContent = { Text(stringResource(Res.string.search_history)) },
+                                    trailingContent = {
+                                        Icon(
+                                            modifier = Modifier.clickable {
+                                                viewModel.clearSearchHistory()
+                                            },
+                                            imageVector = Icons.Outlined.DeleteForever,
+                                            contentDescription = null
+                                        )
+                                    }
+                                )
+                                FlowRow(
+                                    modifier = Modifier.padding(horizontal = 12.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    maxLines = 3
+                                ) {
+                                    searchHistorySet.reversed().forEach {
+                                        SuggestionChip(
+                                            modifier = Modifier.defaultMinSize(48.dp),
+                                            onClick = { inputText = it },
+                                            label = {
+                                                Text(
+                                                    text = it,
+                                                    textAlign = TextAlign.Center,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
+                                            })
+                                    }
                                 }
                             }
-                        }
 
                         val notesMap by viewModel.allNotesMap.collectAsStateWithLifecycle()
                         val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()
+                        val statusBarPadding =
+                            WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+                        val paddingValue = remember(isSelectionMode) {
+                            if (isSelectionMode) {
+                                PaddingValues(
+                                    start = 16.dp,
+                                    end = 16.dp,
+                                    bottom = innerPadding.calculateBottomPadding()
+                                )
+                            } else {
+                                PaddingValues(
+                                    top = 64.dp + statusBarPadding,
+                                    start = 16.dp,
+                                    end = 16.dp,
+                                    bottom = innerPadding.calculateBottomPadding()
+                                )
+                            }
+                        }
                         AnimatedContent(inputText.isNotBlank() && !expanded) { showSearchRes ->
                             if (showSearchRes)
                                 Page(
                                     notesMap = mapOf(false to searchResults),
-                                    contentPadding = PaddingValues(
-                                        top = 64.dp,
-                                        start = 16.dp,
-                                        end = 16.dp,
-                                        bottom = innerPadding.calculateBottomPadding()
-                                    ),
+                                    contentPadding = paddingValue,
                                     navigateToScreen = navigateToScreen,
                                     selectedNotes = selectedNotes,
                                     isSelectionMode = isSelectionMode
@@ -399,12 +418,7 @@ fun MainScreenContent(
                             else
                                 Page(
                                     notesMap = notesMap,
-                                    contentPadding = PaddingValues(
-                                        top = 64.dp,
-                                        start = 16.dp,
-                                        end = 16.dp,
-                                        bottom = innerPadding.calculateBottomPadding()
-                                    ),
+                                    contentPadding = paddingValue,
                                     navigateToScreen = navigateToScreen,
                                     selectedNotes = selectedNotes,
                                     isSelectionMode = isSelectionMode
