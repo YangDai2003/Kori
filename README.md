@@ -1,6 +1,6 @@
 Kori is an evolution of [Open Note](https://github.com/YangDai2003/OpenNote-Compose), with the goal of bringing a consistent note-taking experience across all platforms.
 
-This is a Compose Multiplatform project targeting Android, iOS, Desktop.
+This is a Compose Multiplatform project targeting Android, iOS, Desktop and Web.
 
 * `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
   It contains several subfolders:
