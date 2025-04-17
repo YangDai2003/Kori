@@ -54,4 +54,5 @@
     <string name="name">名称</string>
     <string name="search">搜索</string>
     <string name="search_history">搜索历史</string>
+    <string name="progress">进度</string>
 </resources>

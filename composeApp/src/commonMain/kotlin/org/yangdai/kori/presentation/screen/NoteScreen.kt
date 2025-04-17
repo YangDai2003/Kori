@@ -226,7 +226,6 @@ fun NoteScreen(
     NoteSideSheet(
         isDrawerOpen = isSideSheetOpen,
         onDismiss = { isSideSheetOpen = false },
-        isLargeScreen = rememberIsScreenSizeLarge(),
         outline = HeaderNode(title = "test", level = 1, range = IntRange(0, 0)),
         onHeaderClick = {},
         navigateTo = {},

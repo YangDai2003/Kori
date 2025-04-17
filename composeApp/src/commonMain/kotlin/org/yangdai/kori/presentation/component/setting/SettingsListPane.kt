@@ -67,7 +67,7 @@ fun SettingsListPane(
             SettingsListSection(
                 {
                     SettingsListItem(
-                        title = "Item 1",
+                        title = "Style",
                         description = "Description for item 1",
                         icon = Icons.Outlined.Edit,
                         onClick = { navigateToDetail(0) }

@@ -76,6 +76,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.navigation.Screen
+import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.math.roundToInt
 
@@ -84,7 +85,6 @@ import kotlin.math.roundToInt
 fun NoteSideSheet(
     isDrawerOpen: Boolean,
     onDismiss: () -> Unit,
-    isLargeScreen: Boolean,
     outline: HeaderNode,
     onHeaderClick: (IntRange) -> Unit,
     navigateTo: (Screen) -> Unit,
@@ -97,14 +97,13 @@ fun NoteSideSheet(
     val density = LocalDensity.current
     val windowInfo = LocalWindowInfo.current
     val size = with(density) { windowInfo.containerSize.toSize().toDpSize() }
+    val isLargeScreen = rememberIsScreenSizeLarge()
 
-    val drawerWidth = remember(size, isLargeScreen) {
-        if (isLargeScreen) size.width / 3 else size.width * 2 / 3
-    }
+    val drawerWidth = if (isLargeScreen) size.width / 3 else size.width * 2 / 3
 
     // Width of the drawer in pixels
-    val drawerWidthPx = remember(density, drawerWidth) { with(density) { drawerWidth.toPx() } }
-    val actionWidthPx = remember(density) { with(density) { 48.dp.toPx() } }
+    val drawerWidthPx = with(density) { drawerWidth.toPx() }
+    val actionWidthPx = with(density) { 48.dp.toPx() }
     val fullOffsetPx = remember(drawerWidthPx, actionWidthPx) { drawerWidthPx + actionWidthPx }
 
     val offsetX = remember { Animatable(fullOffsetPx) }

@@ -33,6 +33,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.Platform
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
 import org.yangdai.kori.presentation.component.setting.detail.AboutPane
+import org.yangdai.kori.presentation.component.setting.detail.StylePane
 import org.yangdai.kori.presentation.util.rememberCurrentPlatform
 import org.yangdai.kori.presentation.viewModel.SettingsViewModel
 
@@ -63,6 +64,10 @@ fun SettingsDetailPane(
     ) {
         when (selectedItem) {
             null -> {}
+            0 -> {
+                topBarTitle = "Style"
+                StylePane(viewModel)
+            }
             3 -> {
                 topBarTitle = stringResource(Res.string.app_info)
                 AboutPane()

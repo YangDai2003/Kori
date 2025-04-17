@@ -4,12 +4,33 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.yangdai.kori.domain.repository.DataStoreRepository
+import org.yangdai.kori.presentation.state.AppColor
+import org.yangdai.kori.presentation.state.AppTheme
+import org.yangdai.kori.presentation.state.StylePaneState
+import org.yangdai.kori.presentation.util.Constants
 
 class SettingsViewModel(
     private val dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
+
+    val stylePaneState = combine(
+        dataStoreRepository.intFlow(Constants.Preferences.APP_THEME),
+        dataStoreRepository.intFlow(Constants.Preferences.APP_COLOR),
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_APP_IN_AMOLED_MODE)
+    ) { theme, color, isAppInAmoledMode ->
+        StylePaneState(
+            theme = AppTheme.fromInt(theme),
+            color = AppColor.fromInt(color),
+            isAppInAmoledMode = isAppInAmoledMode
+        )
+    }.flowOn(Dispatchers.IO)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), StylePaneState())
 
     fun <T> putPreferenceValue(key: String, value: T) {
         viewModelScope.launch(Dispatchers.IO) {

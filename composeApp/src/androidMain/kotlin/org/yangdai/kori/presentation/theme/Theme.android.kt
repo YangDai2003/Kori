@@ -27,7 +27,7 @@ actual fun KoriTheme(
     fontScale: Float,
     content: @Composable (() -> Unit)
 ) {
-    var colorScheme = when (color) {
+    val targetColorScheme = when (color) {
         AppColor.PURPLE -> if (darkMode) DarkPurpleColors else LightPurpleColors
         AppColor.BLUE -> if (darkMode) DarkBlueColors else LightBlueColors
         AppColor.GREEN -> if (darkMode) DarkGreenColors else LightGreenColors
@@ -41,6 +41,9 @@ actual fun KoriTheme(
             if (darkMode) DarkPurpleColors else LightPurpleColors
         }
     }
+    
+    // 使用公共方法创建动画颜色方案
+    var colorScheme = animateColorSchemeAsState(targetColorScheme)
 
     val contentTargetFactor = remember(amoledMode) { if (amoledMode) 0.1f else 0f }
     val contentDimmingFactor by animateFloatAsState(

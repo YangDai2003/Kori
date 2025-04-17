@@ -55,4 +55,5 @@
     <string name="name">Name</string>
     <string name="search">Search</string>
     <string name="search_history">Search history</string>
+    <string name="progress">Progress</string>
 </resources>

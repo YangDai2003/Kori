@@ -5,6 +5,12 @@ data class SettingsState(
     val color: AppColor = AppColor.DYNAMIC,
 )
 
+data class StylePaneState(
+    val theme: AppTheme = AppTheme.SYSTEM,
+    val color: AppColor = AppColor.DYNAMIC,
+    val isAppInAmoledMode: Boolean = false
+)
+
 enum class AppTheme(private val value: Int) {
     SYSTEM(0),
     LIGHT(1),

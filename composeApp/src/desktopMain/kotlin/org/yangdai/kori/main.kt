@@ -3,6 +3,7 @@ package org.yangdai.kori
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,6 +34,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kori.composeapp.generated.resources.Res
@@ -46,9 +48,13 @@ import kori.composeapp.generated.resources.maximize
 import kori.composeapp.generated.resources.minimize
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.data.di.KoinInitializer
 import org.yangdai.kori.presentation.component.TooltipIconButton
+import org.yangdai.kori.presentation.navigation.AppNavHost
+import org.yangdai.kori.presentation.state.AppTheme
 import org.yangdai.kori.presentation.theme.KoriTheme
+import org.yangdai.kori.presentation.viewModel.SettingsViewModel
 import java.awt.Dimension
 
 fun main() {
@@ -70,7 +76,14 @@ fun main() {
             alwaysOnTop = alwaysOnTop
         ) {
             window.minimumSize = Dimension(380, 380)
-            KoriTheme {
+            val settingsViewModel: SettingsViewModel = koinViewModel<SettingsViewModel>()
+            val stylePaneState by settingsViewModel.stylePaneState.collectAsStateWithLifecycle()
+            KoriTheme(
+                darkMode = if (stylePaneState.theme == AppTheme.SYSTEM) isSystemInDarkTheme()
+                else stylePaneState.theme == AppTheme.DARK,
+                color = stylePaneState.color,
+                amoledMode = stylePaneState.isAppInAmoledMode
+            ) {
                 Surface {
                     Column {
                         val navController = rememberNavController()
@@ -158,7 +171,7 @@ fun main() {
                                 }
                             }
                         }
-                        App(navController)
+                        AppNavHost(navHostController = navController)
                     }
                 }
             }
