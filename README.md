@@ -1,4 +1,6 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Desktop.
+Kori is an evolution of Open Note, with the goal of bringing a consistent note-taking experience across all platforms.
+
+This is a Compose Multiplatform project targeting Android, iOS, Desktop.
 
 * `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
   It contains several subfolders:
