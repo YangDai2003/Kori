@@ -60,11 +60,10 @@ fun PlatformStyleTopAppBar(
 @Composable
 fun PlatformStyleTopAppBarNavigationIcon(onClick: () -> Unit) {
     val platform = rememberCurrentPlatform()
-    if (platform is Platform.Desktop) return
     TooltipIconButton(
         tipText = stringResource(Res.string.back),
-        icon = if (platform is Platform.Android) Icons.AutoMirrored.Filled.ArrowBack
-        else Icons.Default.ArrowBackIosNew,
+        icon = if (platform is Platform.IOS) Icons.Default.ArrowBackIosNew
+        else Icons.AutoMirrored.Filled.ArrowBack,
         onClick = onClick
     )
 }
