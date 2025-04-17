@@ -1,4 +1,4 @@
-Kori is an evolution of Open Note, with the goal of bringing a consistent note-taking experience across all platforms.
+Kori is an evolution of [Open Note](https://github.com/YangDai2003/OpenNote-Compose), with the goal of bringing a consistent note-taking experience across all platforms.
 
 This is a Compose Multiplatform project targeting Android, iOS, Desktop.
 
