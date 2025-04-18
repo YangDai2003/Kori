@@ -128,6 +128,11 @@ compose.desktop {
         mainClass = "org.yangdai.kori.MainKt"
 
         nativeDistributions {
+            macOS {
+                jvmArgs(
+                    "-Dapple.awt.application.appearance=system"
+                )
+            }
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "org.yangdai.kori"
             packageVersion = "1.0.0"
