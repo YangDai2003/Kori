@@ -152,12 +152,12 @@ fun ModifyFolderDialog(
             val haptic = LocalHapticFeedback.current
             Button(
                 onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.Confirm)
-
                     if (text.isBlank()) {
                         isError = true
                         return@Button
                     }
+
+                    haptic.performHapticFeedback(HapticFeedbackType.Confirm)
 
                     color = when (selectedIndex) {
                         0 -> FolderEntity.defaultColorValue

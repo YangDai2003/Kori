@@ -62,7 +62,7 @@ fun NoteSortOptionDialog(
                             .selectable(
                                 selected = (sortType == initialNoteSortType),
                                 onClick = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                                    haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
                                     if (sortType != initialNoteSortType) {
                                         onSortTypeSelected(sortType)
                                     }
@@ -125,7 +125,7 @@ fun FolderSortOptionDialog(
                             .selectable(
                                 selected = (sortType == initialFolderSortType),
                                 onClick = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                                    haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
                                     if (sortType != initialFolderSortType) {
                                         onSortTypeSelected(sortType)
                                     }
