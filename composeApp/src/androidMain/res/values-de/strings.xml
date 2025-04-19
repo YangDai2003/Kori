@@ -22,4 +22,5 @@
     <string name="list">Liste</string>
     <string name="find">Finden</string>
     <string name="templates">Vorlagen</string>
+    <string name="unlock_to_use">Freischalten, um Kori zu verwenden</string>
 </resources>

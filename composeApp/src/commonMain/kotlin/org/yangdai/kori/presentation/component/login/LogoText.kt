@@ -12,6 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontSynthesis
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_name
@@ -51,7 +54,7 @@ fun LogoText() {
 fun AnimatedGradientText(
     modifier: Modifier = Modifier,
     text: String,
-    textStyle: TextStyle = MaterialTheme.typography.displayMedium,
+    textStyle: TextStyle = MaterialTheme.typography.displayLarge,
     textAlign: TextAlign = TextAlign.Center,
     offsetX: Float,
     gradientColors: List<Color> = colors,
@@ -74,7 +77,12 @@ fun AnimatedGradientText(
         modifier = modifier,
         text = text,
         textAlign = textAlign,
-        style = textStyle.copy(brush = brush)
+        style = textStyle.copy(
+            brush = brush,
+            fontWeight = FontWeight.SemiBold,
+            fontSynthesis = FontSynthesis.Weight,
+            fontFamily = FontFamily.Serif
+        )
     )
 }
 

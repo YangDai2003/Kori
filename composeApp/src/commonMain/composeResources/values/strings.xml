@@ -56,4 +56,7 @@
     <string name="search">Search</string>
     <string name="search_history">Search history</string>
     <string name="progress">Progress</string>
+
+    <string name="create_password">Create a six-digit passcode</string>
+    <string name="enter_again">Please enter your passcode again</string>
 </resources>

@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -42,7 +41,6 @@ class AppViewModel(
 
     val searchHistorySet: StateFlow<Set<String>> = dataStoreRepository
         .stringSetFlow(Constants.Preferences.SEARCH_HISTORY)
-        .flowOn(Dispatchers.IO)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptySet())
 
     // 计数
@@ -61,7 +59,6 @@ class AppViewModel(
 
     private val _noteSortTypeFlow = dataStoreRepository
         .intFlow(Constants.Preferences.NOTE_SORT_TYPE)
-        .flowOn(Dispatchers.IO)
         .map { NoteSortType.fromValue(it).also { sortType -> noteSortType = sortType } }
         .distinctUntilChanged()
 
@@ -69,7 +66,6 @@ class AppViewModel(
     val allNotesMap: StateFlow<Map<Boolean, List<NoteEntity>>> = _noteSortTypeFlow
         .flatMapLatest { sortType ->
             noteRepository.getAllNotes(sortType)
-                .flowOn(Dispatchers.IO)
                 .map { notes -> notes.groupBy { it.isPinned } }
                 .flowOn(Dispatchers.Default)
         }
@@ -107,7 +103,6 @@ class AppViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val foldersWithNoteCounts: StateFlow<List<FolderDao.FolderWithNoteCount>> = dataStoreRepository
         .intFlow(Constants.Preferences.FOLDER_SORT_TYPE)
-        .flowOn(Dispatchers.IO)
         .map { FolderSortType.fromValue(it).also { sortType -> folderSortType = sortType } }
         .distinctUntilChanged()
         .flatMapLatest { sortType ->
@@ -121,9 +116,9 @@ class AppViewModel(
 
     fun loadNotesByFolder(folderId: String) {
         _currentFolderId = folderId
-        viewModelScope.launch(Dispatchers.IO) {
-            noteRepository.getNotesByFolderId(folderId, noteSortType)
-                .flowOn(Dispatchers.IO)
+        viewModelScope.launch {
+            noteRepository
+                .getNotesByFolderId(folderId, noteSortType)
                 .map { notes -> notes.groupBy { it.isPinned } }
                 .flowOn(Dispatchers.Default)
                 .collect { notesMap ->
@@ -137,7 +132,7 @@ class AppViewModel(
             _searchResults.value = emptyList()
             return
         }
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             val currentSet = searchHistorySet.value
             // 创建一个新集合，首先添加新关键词，然后添加旧的关键词，但总数不超过30
             val newSet = buildSet<String> {
@@ -145,20 +140,21 @@ class AppViewModel(
                 addAll(currentSet.filter { it != keyword }.take(29))  // 过滤掉相同的关键词，并限制只取29个
             }
             dataStoreRepository.putStringSet(Constants.Preferences.SEARCH_HISTORY, newSet)
-            noteRepository.searchNotesByKeyword(keyword, noteSortType).collect { notes ->
-                _searchResults.value = notes
-            }
+            noteRepository.searchNotesByKeyword(keyword, noteSortType)
+                .collect { notes ->
+                    _searchResults.value = notes
+                }
         }
     }
 
     fun clearSearchHistory() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             dataStoreRepository.putStringSet(Constants.Preferences.SEARCH_HISTORY, emptySet())
         }
     }
 
     fun deleteNotes(noteIds: Set<String>) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             noteIds.forEach { noteId ->
                 noteRepository.deleteNoteById(noteId)
             }
@@ -166,7 +162,7 @@ class AppViewModel(
     }
 
     fun pinNotes(noteIds: Set<String>) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             noteIds.forEach { noteId ->
                 val note = noteRepository.getNoteById(noteId)
                 note?.let {
@@ -178,7 +174,7 @@ class AppViewModel(
     }
 
     fun moveNotesToFolder(noteIds: Set<String>, folderId: String?) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             noteIds.forEach { noteId ->
                 val note = noteRepository.getNoteById(noteId)
                 note?.let {
@@ -190,7 +186,7 @@ class AppViewModel(
     }
 
     fun moveNotesToTrash(noteIds: Set<String>) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             noteIds.forEach { noteId ->
                 val note = noteRepository.getNoteById(noteId)
                 note?.let {
@@ -202,7 +198,7 @@ class AppViewModel(
     }
 
     fun restoreNotesFromTrash(noteIds: Set<String>) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             noteIds.forEach { noteId ->
                 val note = noteRepository.getNoteById(noteId)
                 note?.let {
@@ -214,21 +210,22 @@ class AppViewModel(
     }
 
     fun emptyTrash() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             noteRepository.emptyTrash()
         }
     }
 
     fun restoreAllNotesFromTrash() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             noteRepository.restoreAllFromTrash()
         }
     }
 
-    // 排序设置
+    // 笔记排序设置
     fun setNoteSorting(sortType: NoteSortType) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             dataStoreRepository.putInt(Constants.Preferences.NOTE_SORT_TYPE, sortType.value)
+            noteSortType = sortType
             loadNotesByFolder(_currentFolderId)
         }
     }

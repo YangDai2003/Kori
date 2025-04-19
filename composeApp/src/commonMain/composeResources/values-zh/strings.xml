@@ -55,4 +55,7 @@
     <string name="search">搜索</string>
     <string name="search_history">搜索历史</string>
     <string name="progress">进度</string>
+
+    <string name="create_password">创建六位数密码</string>
+    <string name="enter_again">请再次输入密码</string>
 </resources>

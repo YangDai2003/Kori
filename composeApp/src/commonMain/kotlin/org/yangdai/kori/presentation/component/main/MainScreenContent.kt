@@ -283,7 +283,7 @@ fun MainScreenContent(
                             DockedSearchBar(
                                 modifier = Modifier.align(Alignment.TopCenter)
                                     .statusBarsPadding()
-                                    .padding(top = 8.dp),
+                                    .padding(8.dp),
                                 inputField = {
                                     SearchBarDefaults.InputField(
                                         query = inputText,

@@ -2,11 +2,8 @@ package org.yangdai.kori.presentation.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.yangdai.kori.domain.repository.DataStoreRepository
@@ -29,11 +26,10 @@ class SettingsViewModel(
             color = AppColor.fromInt(color),
             isAppInAmoledMode = isAppInAmoledMode
         )
-    }.flowOn(Dispatchers.IO)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), StylePaneState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), StylePaneState())
 
     fun <T> putPreferenceValue(key: String, value: T) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             when (value) {
                 is Int -> dataStoreRepository.putInt(key, value)
                 is Float -> dataStoreRepository.putFloat(key, value)

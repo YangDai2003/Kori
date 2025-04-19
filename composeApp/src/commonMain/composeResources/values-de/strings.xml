@@ -55,4 +55,7 @@
     <string name="search">Suchen</string>
     <string name="search_history">Suchverlauf</string>
     <string name="progress">Fortschritt</string>
+
+    <string name="create_password">Erstellen Sie einen sechsstelligen Passcode</string>
+    <string name="enter_again">Bitte geben Sie den Passcode noch einmal ein</string>
 </resources>

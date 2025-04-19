@@ -1,13 +1,14 @@
 package org.yangdai.kori.domain.repository
 
+import androidx.datastore.preferences.core.Preferences
 import kotlinx.coroutines.flow.Flow
 
 interface DataStoreRepository {
-    suspend fun putString(key: String, value: String)
-    suspend fun putInt(key: String, value: Int)
-    suspend fun putFloat(key: String, value: Float)
-    suspend fun putBoolean(key: String, value: Boolean)
-    suspend fun putStringSet(key: String, value: Set<String>)
+    suspend fun putString(key: String, value: String): Preferences
+    suspend fun putInt(key: String, value: Int): Preferences
+    suspend fun putFloat(key: String, value: Float): Preferences
+    suspend fun putBoolean(key: String, value: Boolean): Preferences
+    suspend fun putStringSet(key: String, value: Set<String>): Preferences
 
     fun intFlow(key: String): Flow<Int>
     fun stringFlow(key: String): Flow<String>

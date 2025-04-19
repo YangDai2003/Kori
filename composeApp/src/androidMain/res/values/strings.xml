@@ -22,4 +22,6 @@
     <string name="image">Image</string>
     <string name="list">List</string>
     <string name="templates">Templates</string>
+
+    <string name="unlock_to_use">Unlock to use Kori</string>
 </resources>

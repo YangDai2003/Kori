@@ -22,4 +22,5 @@
     <string name="list">列表</string>
     <string name="find">查找</string>
     <string name="templates">模板</string>
+    <string name="unlock_to_use">解锁以使用 Kori</string>
 </resources>

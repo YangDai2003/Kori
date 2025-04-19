@@ -5,20 +5,31 @@ import android.view.KeyEvent
 import android.view.KeyboardShortcutGroup
 import android.view.KeyboardShortcutInfo
 import android.view.Menu
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.presentation.navigation.AppNavHost
+import org.yangdai.kori.presentation.screen.LoginOverlayScreen
 import org.yangdai.kori.presentation.state.AppTheme
 import org.yangdai.kori.presentation.theme.KoriTheme
 import org.yangdai.kori.presentation.viewModel.SettingsViewModel
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         window.isNavigationBarContrastEnforced = false
@@ -33,7 +44,32 @@ class MainActivity : ComponentActivity() {
                 amoledMode = stylePaneState.isAppInAmoledMode
             ) {
                 Surface {
-                    AppNavHost()
+                    var isLocked by rememberSaveable { mutableStateOf(true) }
+                    var biometricAuthEnabled by rememberSaveable { mutableStateOf(true) }
+                    val blur by animateDpAsState(
+                        targetValue = if (isLocked) 16.dp else 0.dp,
+                        label = "Blur"
+                    )
+                    AppNavHost(modifier = Modifier.blur(blur))
+                    AnimatedVisibility(visible = isLocked, enter = fadeIn(), exit = fadeOut()) {
+                        LoginOverlayScreen(
+                            storedPassword = "123456",
+                            biometricAuthEnabled = biometricAuthEnabled,
+                            isCreatingPassword = false,
+                            onCreatingCanceled = {
+
+                            },
+                            onPassCreated = {
+
+                            },
+                            onAuthenticated = {
+                                isLocked = false
+                            },
+                            onAuthenticationNotEnrolled = {
+                                biometricAuthEnabled = false
+                            }
+                        )
+                    }
                 }
             }
         }

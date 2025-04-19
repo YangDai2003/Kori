@@ -7,14 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.yangdai.kori.data.local.dao.FolderDao
 import org.yangdai.kori.data.local.entity.FolderEntity
@@ -35,12 +34,10 @@ class FoldersViewModel(
     val foldersMap: StateFlow<Map<Boolean, List<FolderDao.FolderWithNoteCount>>> =
         dataStoreRepository
             .intFlow(Constants.Preferences.FOLDER_SORT_TYPE)
-            .flowOn(Dispatchers.IO)
             .map { FolderSortType.fromValue(it).also { sortType -> folderSortType = sortType } }
             .distinctUntilChanged()
             .flatMapLatest { sortType ->
                 folderRepository.getFoldersWithNoteCounts(sortType)
-                    .flowOn(Dispatchers.IO)
                     .map { folders -> folders.groupBy { it.folder.isStarred } }
                     .flowOn(Dispatchers.Default)
             }
@@ -51,25 +48,25 @@ class FoldersViewModel(
             )
 
     fun createFolder(folderEntity: FolderEntity) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             folderRepository.insertFolder(folderEntity)
         }
     }
 
     fun updateFolder(folderEntity: FolderEntity) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             folderRepository.updateFolder(folderEntity)
         }
     }
 
     fun deleteFolder(folderEntity: FolderEntity) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             folderRepository.deleteFolder(folderEntity)
         }
     }
 
     fun setFolderSorting(sortType: FolderSortType) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             dataStoreRepository.putInt(Constants.Preferences.FOLDER_SORT_TYPE, sortType.value)
         }
     }
