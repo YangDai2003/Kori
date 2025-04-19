@@ -28,7 +28,7 @@ import org.yangdai.kori.presentation.viewModel.AppViewModel
 
 @Composable
 fun MainScreen(
-    viewModel: AppViewModel = koinViewModel<AppViewModel>(),
+    viewModel: AppViewModel = koinViewModel(),
     navigateToScreen: (Screen) -> Unit
 ) {
     val scope = rememberCoroutineScope()

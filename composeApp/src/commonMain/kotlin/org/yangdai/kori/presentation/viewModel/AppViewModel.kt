@@ -10,6 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
@@ -32,12 +33,11 @@ class AppViewModel(
 ) : ViewModel() {
 
     private var _currentFolderId by mutableStateOf<String>("")
-    private val _currentFolderNotesMap =
-        MutableStateFlow<Map<Boolean, List<NoteEntity>>>(emptyMap())
-    val currentFolderNotesMap: StateFlow<Map<Boolean, List<NoteEntity>>> = _currentFolderNotesMap
+    private val _currentFolderNotesMap = MutableStateFlow<Map<Boolean, List<NoteEntity>>>(emptyMap())
+    val currentFolderNotesMap: StateFlow<Map<Boolean, List<NoteEntity>>> = _currentFolderNotesMap.asStateFlow()
 
     private val _searchResults = MutableStateFlow<List<NoteEntity>>(emptyList())
-    val searchResults: StateFlow<List<NoteEntity>> = _searchResults
+    val searchResults: StateFlow<List<NoteEntity>> = _searchResults.asStateFlow()
 
     val searchHistorySet: StateFlow<Set<String>> = dataStoreRepository
         .stringSetFlow(Constants.Preferences.SEARCH_HISTORY)

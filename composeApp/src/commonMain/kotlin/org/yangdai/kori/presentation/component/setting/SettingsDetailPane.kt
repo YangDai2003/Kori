@@ -39,7 +39,7 @@ import org.yangdai.kori.presentation.viewModel.SettingsViewModel
 
 @Composable
 fun SettingsDetailPane(
-    viewModel: SettingsViewModel = koinViewModel<SettingsViewModel>(),
+    viewModel: SettingsViewModel = koinViewModel(),
     selectedItem: Int?,
     isExpanded: Boolean,
     navigateBackToList: () -> Unit

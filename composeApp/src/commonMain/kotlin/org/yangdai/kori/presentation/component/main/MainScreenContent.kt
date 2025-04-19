@@ -58,7 +58,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -93,7 +95,7 @@ import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
 import org.yangdai.kori.presentation.viewModel.AppViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun MainScreenContent(
     viewModel: AppViewModel,
@@ -108,6 +110,10 @@ fun MainScreenContent(
         derivedStateOf {
             selectedNotes.isNotEmpty()
         }
+    }
+
+    BackHandler(enabled = isSelectionMode) {
+        selectedNotes.clear()
     }
 
     Scaffold(
@@ -399,7 +405,7 @@ fun MainScreenContent(
                                 )
                             } else {
                                 PaddingValues(
-                                    top = 68.dp + statusBarPadding,
+                                    top = 72.dp + statusBarPadding,
                                     start = 16.dp,
                                     end = 16.dp,
                                     bottom = innerPadding.calculateBottomPadding()
@@ -515,9 +521,9 @@ fun Page(
                 stickyHeader {
                     Surface {
                         Text(
-                            modifier = Modifier.padding(horizontal = 8.dp).padding(bottom = 8.dp),
+                            modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
                             text = stringResource(Res.string.pinned),
-                            style = MaterialTheme.typography.labelLarge
+                            style = MaterialTheme.typography.labelMedium
                         )
                     }
                 }
@@ -553,9 +559,9 @@ fun Page(
                 stickyHeader {
                     Surface {
                         Text(
-                            modifier = Modifier.padding(horizontal = 8.dp).padding(bottom = 8.dp),
+                            modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
                             text = stringResource(Res.string.others),
-                            style = MaterialTheme.typography.labelLarge
+                            style = MaterialTheme.typography.labelMedium
                         )
                     }
                 }

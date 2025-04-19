@@ -55,15 +55,15 @@ import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.FindAndReplaceState
 import org.yangdai.kori.presentation.component.note.HeaderNode
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
+import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.event.UiEvent
-import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
 import org.yangdai.kori.presentation.viewModel.NoteViewModel
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalUuidApi::class)
 @Composable
 fun NoteScreen(
-    viewModel: NoteViewModel = koinViewModel<NoteViewModel>(),
+    viewModel: NoteViewModel = koinViewModel(),
     noteId: String,
     navigateUp: () -> Unit
 ) {
@@ -72,7 +72,7 @@ fun NoteScreen(
     val noteEditingState by viewModel.noteEditingState.collectAsStateWithLifecycle()
 
     // 确保屏幕旋转等配置变更时，不会重复加载笔记
-    var lastLoadedNoteId by rememberSaveable { mutableStateOf<String>("") }
+    var lastLoadedNoteId by rememberSaveable { mutableStateOf<String?>(null) }
 
     DisposableEffect(Unit) {
         if (noteId != lastLoadedNoteId) {
@@ -91,7 +91,7 @@ fun NoteScreen(
 
     var showFolderDialog by rememberSaveable { mutableStateOf(false) }
     var folderName by rememberSaveable { mutableStateOf("") }
-    LaunchedEffect(noteEditingState.folderId) {
+    LaunchedEffect(noteEditingState.folderId, foldersWithNoteCounts) {
         withContext(Dispatchers.Default) {
             folderName = if (noteEditingState.folderId == null) {
                 getString(Res.string.all_notes)
@@ -230,7 +230,20 @@ fun NoteScreen(
         onHeaderClick = {},
         navigateTo = {},
         actionContent = {},
-        drawerContent = {}
+        drawerContent = {
+            NoteSideSheetItem(
+                key = "UUID",
+                value = noteEditingState.id
+            )
+            NoteSideSheetItem(
+                key = "Created At",
+                value = noteEditingState.createdAt
+            )
+            NoteSideSheetItem(
+                key = "Updated At",
+                value = noteEditingState.updatedAt
+            )
+        }
     )
 
     if (showFolderDialog) {

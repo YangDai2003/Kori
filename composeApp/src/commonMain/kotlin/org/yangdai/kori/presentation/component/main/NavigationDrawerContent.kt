@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.HorizontalDivider
@@ -38,6 +39,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontSynthesis
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -46,15 +49,18 @@ import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.all_notes
 import kori.composeapp.generated.resources.app_name
 import kori.composeapp.generated.resources.folders
+import kori.composeapp.generated.resources.lock
 import kori.composeapp.generated.resources.manage_folders
 import kori.composeapp.generated.resources.settings
 import kori.composeapp.generated.resources.templates
 import kori.composeapp.generated.resources.trash
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.yangdai.kori.data.local.dao.FolderDao.FolderWithNoteCount
 import org.yangdai.kori.data.local.entity.FolderEntity
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.navigation.Screen
+import org.yangdai.kori.presentation.util.AppLockManager
 
 /**
  * 抽屉状态数据类，用于统一管理抽屉中需要显示的所有数据
@@ -197,6 +203,7 @@ sealed class DrawerItem(val id: String) {
 
 @Composable
 fun NavigationDrawerContent(
+    appLockManager: AppLockManager = koinInject(),
     drawerState: DrawerState,
     navigateToScreen: (Screen) -> Unit,
     onItemClick: (DrawerItem) -> Unit
@@ -209,13 +216,20 @@ fun NavigationDrawerContent(
         ) {
             Text(
                 text = stringResource(Res.string.app_name),
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    fontSynthesis = FontSynthesis.Weight,
+                    fontFamily = FontFamily.Serif
+                ),
                 color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f).padding(start = 12.dp)
             )
-
+            TooltipIconButton(
+                tipText = stringResource(Res.string.lock),
+                icon = Icons.Outlined.Lock,
+                onClick = { appLockManager.lock() }
+            )
             TooltipIconButton(
                 tipText = stringResource(Res.string.settings),
                 icon = Icons.Outlined.Settings,

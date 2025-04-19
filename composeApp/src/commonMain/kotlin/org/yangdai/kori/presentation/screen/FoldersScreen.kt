@@ -92,7 +92,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalUuidApi::class)
 @Composable
 fun FoldersScreen(
-    viewModel: FoldersViewModel = koinViewModel<FoldersViewModel>(),
+    viewModel: FoldersViewModel = koinViewModel(),
     navigateUp: () -> Unit
 ) {
     val groupedFolders by viewModel.foldersMap.collectAsStateWithLifecycle()
@@ -154,10 +154,9 @@ fun FoldersScreen(
                     stickyHeader {
                         Surface {
                             Text(
-                                modifier = Modifier.padding(horizontal = 8.dp)
-                                    .padding(bottom = 8.dp),
+                                modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
                                 text = stringResource(Res.string.starred),
-                                style = MaterialTheme.typography.labelLarge
+                                style = MaterialTheme.typography.labelMedium
                             )
                         }
                     }
@@ -175,10 +174,9 @@ fun FoldersScreen(
                     stickyHeader {
                         Surface {
                             Text(
-                                modifier = Modifier.padding(horizontal = 8.dp)
-                                    .padding(bottom = 8.dp),
+                                modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
                                 text = stringResource(Res.string.others),
-                                style = MaterialTheme.typography.labelLarge
+                                style = MaterialTheme.typography.labelMedium
                             )
                         }
                     }
@@ -234,13 +232,11 @@ fun LazyGridItemScope.FolderItem(
         confirmValueChange = { value ->
             when (value) {
                 SwipeToDismissBoxValue.StartToEnd -> {
-                    // Edit action (right swipe)
                     showModifyDialog = true
                     false
                 }
 
                 SwipeToDismissBoxValue.EndToStart -> {
-                    // Delete action (left swipe)
                     showWarningDialog = true
                     false
                 }

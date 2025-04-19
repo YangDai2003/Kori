@@ -9,9 +9,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.unit.dp
@@ -24,12 +21,14 @@ import kori.composeapp.generated.resources.app_name
 import kori.composeapp.generated.resources.compose_multiplatform
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.data.di.KoinInitializer
 import org.yangdai.kori.presentation.component.login.NumberLockScreen
 import org.yangdai.kori.presentation.navigation.AppNavHost
 import org.yangdai.kori.presentation.state.AppTheme
 import org.yangdai.kori.presentation.theme.KoriTheme
+import org.yangdai.kori.presentation.util.AppLockManager
 import org.yangdai.kori.presentation.viewModel.SettingsViewModel
 import java.awt.Dimension
 
@@ -57,20 +56,21 @@ fun main() {
                 amoledMode = stylePaneState.isAppInAmoledMode,
             ) {
                 Surface {
-                    var isLocked by rememberSaveable { mutableStateOf(true) }
+                    val appLockManager = koinInject<AppLockManager>()
+                    val isUnlocked by appLockManager.isUnlocked.collectAsStateWithLifecycle()
                     val blur by animateDpAsState(
-                        targetValue = if (isLocked) 16.dp else 0.dp,
+                        targetValue = if (isUnlocked) 0.dp else 16.dp,
                         label = "Blur"
                     )
                     AppNavHost(modifier = Modifier.blur(blur))
                     AnimatedVisibility(
-                        visible = isLocked,
+                        visible = !isUnlocked,
                         enter = fadeIn(),
                         exit = fadeOut()
                     ) {
                         NumberLockScreen(
                             modifier =  Modifier.background(MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.25f)),
-                            onAuthenticated = { isLocked = false }
+                            onAuthenticated = { appLockManager.unlock() }
                         )
                     }
                 }

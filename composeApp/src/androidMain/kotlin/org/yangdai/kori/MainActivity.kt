@@ -22,11 +22,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.presentation.navigation.AppNavHost
 import org.yangdai.kori.presentation.screen.LoginOverlayScreen
 import org.yangdai.kori.presentation.state.AppTheme
 import org.yangdai.kori.presentation.theme.KoriTheme
+import org.yangdai.kori.presentation.util.AppLockManager
 import org.yangdai.kori.presentation.viewModel.SettingsViewModel
 
 class MainActivity : AppCompatActivity() {
@@ -44,26 +46,20 @@ class MainActivity : AppCompatActivity() {
                 amoledMode = stylePaneState.isAppInAmoledMode
             ) {
                 Surface {
-                    var isLocked by rememberSaveable { mutableStateOf(true) }
+                    val appLockManager = koinInject<AppLockManager>()
+                    val isUnlocked by appLockManager.isUnlocked.collectAsStateWithLifecycle()
                     var biometricAuthEnabled by rememberSaveable { mutableStateOf(true) }
                     val blur by animateDpAsState(
-                        targetValue = if (isLocked) 16.dp else 0.dp,
+                        targetValue = if (isUnlocked) 0.dp else 16.dp,
                         label = "Blur"
                     )
                     AppNavHost(modifier = Modifier.blur(blur))
-                    AnimatedVisibility(visible = isLocked, enter = fadeIn(), exit = fadeOut()) {
+                    AnimatedVisibility(visible = !isUnlocked, enter = fadeIn(), exit = fadeOut()) {
                         LoginOverlayScreen(
                             storedPassword = "123456",
                             biometricAuthEnabled = biometricAuthEnabled,
-                            isCreatingPassword = false,
-                            onCreatingCanceled = {
-
-                            },
-                            onPassCreated = {
-
-                            },
                             onAuthenticated = {
-                                isLocked = false
+                                appLockManager.unlock()
                             },
                             onAuthenticationNotEnrolled = {
                                 biometricAuthEnabled = false

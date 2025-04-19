@@ -59,4 +59,5 @@
 
     <string name="create_password">Create a six-digit passcode</string>
     <string name="enter_again">Please enter your passcode again</string>
+    <string name="lock">Lock</string>
 </resources>

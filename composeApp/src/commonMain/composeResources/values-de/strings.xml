@@ -58,4 +58,5 @@
 
     <string name="create_password">Erstellen Sie einen sechsstelligen Passcode</string>
     <string name="enter_again">Bitte geben Sie den Passcode noch einmal ein</string>
+    <string name="lock">Sperren</string>
 </resources>

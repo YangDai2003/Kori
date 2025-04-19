@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -38,8 +40,8 @@ class NoteViewModel(
     val titleState = TextFieldState()
     val contentState = TextFieldState()
 
-    private val _noteEditingState = MutableStateFlow(NoteEditingState())
-    val noteEditingState: StateFlow<NoteEditingState> = _noteEditingState
+    private val _noteEditingState = MutableStateFlow<NoteEditingState>(NoteEditingState())
+    val noteEditingState: StateFlow<NoteEditingState> = _noteEditingState.asStateFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val foldersWithNoteCounts: StateFlow<List<FolderDao.FolderWithNoteCount>> = dataStoreRepository
@@ -56,38 +58,40 @@ class NoteViewModel(
         )
 
     private val _uiEventFlow = MutableSharedFlow<UiEvent>()
-    val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow
+    val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
 
     var oNote = NoteEntity()
 
     fun loadNoteById(id: String) {
         viewModelScope.launch {
             if (id.isEmpty()) {
-                titleState.setTextAndPlaceCursorAtEnd("")
-                contentState.setTextAndPlaceCursorAtEnd("")
-                _noteEditingState.value = NoteEditingState(
-                    id = id,
-                    createdAt = Clock.System.now().toString(),
-                    updatedAt = Clock.System.now().toString()
-                )
+                val currentTime = Clock.System.now().toString()
+                _noteEditingState.update {
+                    it.copy(
+                        id = id,
+                        createdAt = currentTime,
+                        updatedAt = currentTime,
+                    )
+                }
                 oNote = NoteEntity()
-                return@launch
-            }
-            noteRepository.getNoteById(id)?.let { note ->
-                titleState.setTextAndPlaceCursorAtEnd(note.title)
-                contentState.setTextAndPlaceCursorAtEnd(note.content)
-                _noteEditingState.value = NoteEditingState(
-                    id = note.id,
-                    folderId = note.folderId,
-                    createdAt = note.createdAt,
-                    updatedAt = note.updatedAt,
-                    isDeleted = note.isDeleted,
-                    isTemplate = note.isTemplate,
-                    isPinned = note.isPinned,
-                    noteType = note.noteType
-                )
-                oNote = note
-            }
+            } else
+                noteRepository.getNoteById(id)?.let { note ->
+                    titleState.setTextAndPlaceCursorAtEnd(note.title)
+                    contentState.setTextAndPlaceCursorAtEnd(note.content)
+                    _noteEditingState.update {
+                        it.copy(
+                            id = note.id,
+                            createdAt = note.createdAt,
+                            updatedAt = note.updatedAt,
+                            isPinned = note.isPinned,
+                            isDeleted = note.isDeleted,
+                            folderId = note.folderId,
+                            noteType = note.noteType,
+                            isTemplate = note.isTemplate
+                        )
+                    }
+                    oNote = note
+                }
         }
     }
 

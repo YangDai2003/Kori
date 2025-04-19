@@ -25,11 +25,11 @@ import kotlin.let
 
 @Composable
 fun LoginOverlayScreen(
-    storedPassword: String,
-    biometricAuthEnabled: Boolean,
-    isCreatingPassword: Boolean,
-    onCreatingCanceled: () -> Unit,
-    onPassCreated: (String) -> Unit,
+    storedPassword: String = "123456",
+    isCreatingPassword: Boolean = false,
+    biometricAuthEnabled: Boolean = false,
+    onCreatingCanceled: () -> Unit = {},
+    onPassCreated: (String) -> Unit = {},
     onAuthenticated: () -> Unit,
     onAuthenticationNotEnrolled: () -> Unit
 ) {

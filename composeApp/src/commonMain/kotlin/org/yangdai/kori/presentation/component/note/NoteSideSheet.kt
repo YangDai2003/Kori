@@ -309,8 +309,7 @@ fun NoteSideSheet(
 @Composable
 fun NoteSideSheetItem(
     key: String,
-    value: String,
-    shouldFormat: Boolean = true
+    value: String
 ) = Row(
     modifier = Modifier.fillMaxWidth(),
     verticalAlignment = Alignment.CenterVertically,
