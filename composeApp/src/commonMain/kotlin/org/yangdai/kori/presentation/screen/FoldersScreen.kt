@@ -46,6 +46,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -101,6 +102,10 @@ fun FoldersScreen(
     val platform = rememberCurrentPlatform()
     val scrollBehavior = if (platform is Platform.Desktop) TopAppBarDefaults.pinnedScrollBehavior()
     else TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
+    var selectedFolder by remember { mutableStateOf<FolderEntity?>(null) }
+    var showModifyDialog by remember { mutableStateOf(false) }
+    var showWarningDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -165,8 +170,14 @@ fun FoldersScreen(
                     FolderItem(
                         folder = it.folder,
                         notesCountInFolder = it.noteCount,
-                        onModify = { viewModel.updateFolder(it) },
-                        onDelete = { viewModel.deleteFolder(it.folder) }
+                        onModifyRequest = { folder ->
+                            selectedFolder = folder
+                            showModifyDialog = true
+                        },
+                        onDeleteRequest = { folder ->
+                            selectedFolder = folder
+                            showWarningDialog = true
+                        }
                     )
                 }
 
@@ -185,8 +196,14 @@ fun FoldersScreen(
                     FolderItem(
                         folder = it.folder,
                         notesCountInFolder = it.noteCount,
-                        onModify = { viewModel.updateFolder(it) },
-                        onDelete = { viewModel.deleteFolder(it.folder) }
+                        onModifyRequest = { folder ->
+                            selectedFolder = folder
+                            showModifyDialog = true
+                        },
+                        onDeleteRequest = { folder ->
+                            selectedFolder = folder
+                            showWarningDialog = true
+                        }
                     )
                 }
             }
@@ -205,45 +222,72 @@ fun FoldersScreen(
         }
     }
 
+    if (showWarningDialog && selectedFolder != null) {
+        WarningDialog(
+            message = stringResource(Res.string.deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue),
+            onDismissRequest = { showWarningDialog = false },
+            onConfirm = {
+                viewModel.deleteFolder(selectedFolder!!)
+                showWarningDialog = false
+            }
+        )
+    }
+
+    if (showModifyDialog && selectedFolder != null) {
+        ModifyFolderDialog(
+            folder = selectedFolder!!,
+            onDismissRequest = { showModifyDialog = false }
+        ) {
+            viewModel.updateFolder(it)
+            showModifyDialog = false
+        }
+    }
+
     if (showSortDialog)
         FolderSortOptionDialog(
             initialFolderSortType = viewModel.folderSortType,
             onDismissRequest = { showSortDialog = false },
             onSortTypeSelected = { viewModel.setFolderSorting(it) }
         )
-
 }
 
 @Composable
 fun LazyGridItemScope.FolderItem(
     folder: FolderEntity,
     notesCountInFolder: Int,
-    onModify: (FolderEntity) -> Unit,
-    onDelete: () -> Unit,
+    onModifyRequest: (FolderEntity) -> Unit,
+    onDeleteRequest: (FolderEntity) -> Unit,
     colorScheme: ColorScheme = MaterialTheme.colorScheme
 ) {
-    var showModifyDialog by remember { mutableStateOf(false) }
-    var showWarningDialog by remember { mutableStateOf(false) }
-    val folderColor by remember(folder, colorScheme) {
-        mutableStateOf(if (folder.colorValue != FolderEntity.defaultColorValue) Color(folder.colorValue) else colorScheme.primary)
+    val folderColor by remember(folder.colorValue, colorScheme) {
+        derivedStateOf {
+            if (folder.colorValue != FolderEntity.defaultColorValue)
+                Color(folder.colorValue)
+            else
+                colorScheme.primary
+        }
     }
 
-    val dismissState = rememberSwipeToDismissBoxState(
-        confirmValueChange = { value ->
+    val onConfirmValueChange = remember(folder) {
+        { value: SwipeToDismissBoxValue ->
             when (value) {
                 SwipeToDismissBoxValue.StartToEnd -> {
-                    showModifyDialog = true
+                    onModifyRequest(folder)
                     false
                 }
 
                 SwipeToDismissBoxValue.EndToStart -> {
-                    showWarningDialog = true
+                    onDeleteRequest(folder)
                     false
                 }
 
                 SwipeToDismissBoxValue.Settled -> true
             }
         }
+    }
+
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = onConfirmValueChange
     )
     var showContextMenu by remember { mutableStateOf(false) }
 
@@ -353,7 +397,7 @@ fun LazyGridItemScope.FolderItem(
                     Icon(Icons.Outlined.DriveFileRenameOutline, contentDescription = null)
                 },
                 onClick = {
-                    showModifyDialog = true
+                    onModifyRequest(folder)
                     showContextMenu = false
                 }
             )
@@ -363,25 +407,10 @@ fun LazyGridItemScope.FolderItem(
                     Icon(Icons.Outlined.Delete, contentDescription = null)
                 },
                 onClick = {
-                    showWarningDialog = true
+                    onDeleteRequest(folder)
                     showContextMenu = false
                 }
             )
         }
-    }
-
-    if (showWarningDialog) {
-        WarningDialog(
-            message = stringResource(Res.string.deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue),
-            onDismissRequest = { showWarningDialog = false },
-            onConfirm = onDelete
-        )
-    }
-
-    if (showModifyDialog) {
-        ModifyFolderDialog(
-            folder = folder,
-            onDismissRequest = { showModifyDialog = false }
-        ) { onModify(it) }
     }
 }
