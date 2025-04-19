@@ -1,13 +1,16 @@
 package org.yangdai.kori.presentation.component.note
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -16,11 +19,11 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -32,8 +35,6 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.UnfoldLess
 import androidx.compose.material.icons.outlined.UnfoldMore
-import androidx.compose.material.icons.outlined.Visibility
-import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -41,7 +42,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -56,31 +56,34 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.PredictiveBackHandler
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.toSize
+import androidx.compose.ui.unit.min
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.outline
 import kori.composeapp.generated.resources.overview
 import kori.composeapp.generated.resources.right_panel_close
+import kori.composeapp.generated.resources.settings
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.navigation.Screen
-import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
-import kotlin.coroutines.cancellation.CancellationException
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalComposeUiApi::class)
+private val SheetWidth = 360.dp
+private val ActionWidth = 48.dp
+
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun NoteSideSheet(
     isDrawerOpen: Boolean,
@@ -89,209 +92,217 @@ fun NoteSideSheet(
     onHeaderClick: (IntRange) -> Unit,
     navigateTo: (Screen) -> Unit,
     actionContent: @Composable ColumnScope.() -> Unit,
-    drawerContent: @Composable ColumnScope.() -> Unit,
-    animationDuration: Int = 300,
-    maskColor: Color = Color.Black
+    drawerContent: @Composable ColumnScope.() -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val density = LocalDensity.current
-    val windowInfo = LocalWindowInfo.current
-    val size = with(density) { windowInfo.containerSize.toSize().toDpSize() }
-    val isLargeScreen = rememberIsScreenSizeLarge()
 
-    val drawerWidth = if (isLargeScreen) size.width / 3 else size.width * 2 / 3
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val contentWidth = maxWidth
 
-    // Width of the drawer in pixels
-    val drawerWidthPx = with(density) { drawerWidth.toPx() }
-    val actionWidthPx = with(density) { 48.dp.toPx() }
-    val fullOffsetPx = remember(drawerWidthPx, actionWidthPx) { drawerWidthPx + actionWidthPx }
-
-    val offsetX = remember { Animatable(fullOffsetPx) }
-    val maskAlpha = remember { Animatable(0f) }
-
-    // Launch animations when the drawer state changes
-    LaunchedEffect(isDrawerOpen) {
-        val targetMaskAlpha = if (isDrawerOpen) 0.6f else 0f
-        val targetOffsetX = if (isDrawerOpen) 0f else fullOffsetPx
-
-        // Launch animations in parallel
-        launch {
-            maskAlpha.animateTo(
-                targetValue = targetMaskAlpha,
-                animationSpec = tween(durationMillis = animationDuration)
-            )
+        val drawerWidth = remember(contentWidth) {
+            // 计算合适的抽屉宽度：
+            // 1. 尽可能接近360dp
+            // 2. 确保与屏幕宽度至少相差80dp
+            val maxAllowedWidth = contentWidth - 80.dp
+            min(SheetWidth, maxAllowedWidth)
         }
 
-        launch {
-            offsetX.animateTo(
-                targetValue = targetOffsetX,
-                animationSpec = tween(durationMillis = animationDuration)
-            )
-        }
-    }
+        val drawerWidthPx = with(density) { drawerWidth.toPx() }
+        val actionWidthPx = with(density) { ActionWidth.toPx() }
+        val fullOffsetPx = drawerWidthPx + actionWidthPx
 
-    PredictiveBackHandler(enabled = isDrawerOpen) { progress ->
-        try {
-            progress.collect { event ->
+        val offsetX = remember { Animatable(fullOffsetPx) }
+        val maskAlpha = remember { Animatable(0f) }
+
+        LaunchedEffect(isDrawerOpen) {
+            val targetMaskAlpha = if (isDrawerOpen) 0.6f else 0f
+            val targetOffsetX = if (isDrawerOpen) 0f else fullOffsetPx
+
+            launch { maskAlpha.animateTo(targetValue = targetMaskAlpha) }
+            launch { offsetX.animateTo(targetValue = targetOffsetX) }
+        }
+
+        PredictiveBackHandler(enabled = isDrawerOpen) { progress ->
+            try {
+                progress.collect { event ->
+                    scope.launch {
+                        val newOffset = drawerWidthPx * event.progress
+                        offsetX.snapTo(newOffset)
+                        val newAlpha = 0.6f * (1f - event.progress)
+                        maskAlpha.snapTo(newAlpha)
+                    }
+                }
+                onDismiss()
+            } catch (_: CancellationException) {
                 scope.launch {
-                    val newOffset = drawerWidthPx + drawerWidthPx * (event.progress - 1f)
-                    offsetX.snapTo(newOffset)
-                    val newAlpha = 0.6f * (1f - event.progress)
-                    maskAlpha.snapTo(newAlpha)
+                    offsetX.animateTo(0f)
+                    maskAlpha.animateTo(0.6f)
                 }
             }
-            onDismiss()
-        } catch (_: CancellationException) {
-            offsetX.animateTo(0f)
-            maskAlpha.animateTo(0f)
-        }
-    }
-
-    Box(Modifier.fillMaxSize()) {
-
-        val showMask by remember { derivedStateOf { maskAlpha.value > 0f } }
-        if (showMask) {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .drawBehind {
-                        drawRect(maskColor.copy(alpha = maskAlpha.value))
-                    }
-                    .pointerInput(Unit) {
-                        detectTapGestures(onTap = { onDismiss() })
-                    }
-            )
         }
 
-        Column(
-            modifier = Modifier
-                .statusBarsPadding()
-                .padding(top = 12.dp)
-                .offset { IntOffset(x = (offsetX.value - drawerWidthPx).roundToInt(), y = 0) }
-                .align(Alignment.TopEnd)
-                .background(
-                    color = DrawerDefaults.modalContainerColor.copy(alpha = 0.9f),
-                    shape = MaterialTheme.shapes.large.copy(
-                        topEnd = CornerSize(0),
-                        bottomEnd = CornerSize(0)
-                    )
-                )
-                .pointerInput(Unit) {},
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top,
-            content = actionContent
-        )
+        Box(Modifier.fillMaxSize()) {
+            val showMask by remember { derivedStateOf { maskAlpha.value > 0f } }
+            val scrimModifier = if (showMask) Modifier.pointerInput(Unit) {
+                detectTapGestures(onTap = { onDismiss() })
+            } else Modifier
 
-        Surface(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(drawerWidth)
-                .offset { IntOffset(x = offsetX.value.roundToInt(), y = 0) }
-                .align(Alignment.CenterEnd)
-                .pointerInput(Unit) {},
-            color = DrawerDefaults.modalContainerColor.copy(alpha = 0.95f),
-            shape = MaterialTheme.shapes.extraLarge.copy(
-                topEnd = CornerSize(0),
-                bottomEnd = CornerSize(0)
-            ),
-            shadowElevation = 2.dp,
-            tonalElevation = DrawerDefaults.ModalDrawerElevation
-        ) {
+            Canvas(modifier = Modifier.fillMaxSize().then(scrimModifier)) {
+                drawRect(Color.Black, alpha = maskAlpha.value)
+            }
+
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
                     .statusBarsPadding()
-                    .navigationBarsPadding()
-                    .padding(end = 8.dp)
-            ) {
-                var showDetail by rememberSaveable { mutableStateOf(true) }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    IconButton(onClick = { navigateTo(Screen.Settings) }) {
-                        Icon(
-                            imageVector = Icons.Outlined.Settings,
-                            contentDescription = "Open Settings",
-                            tint = MaterialTheme.colorScheme.onSurface
+                    .padding(top = 12.dp)
+                    .offset { IntOffset(x = (offsetX.value - drawerWidthPx).roundToInt(), y = 0) }
+                    .align(Alignment.TopEnd)
+                    .background(
+                        color = DrawerDefaults.modalContainerColor.copy(alpha = 0.9f),
+                        shape = MaterialTheme.shapes.large.copy(
+                            topEnd = CornerSize(0),
+                            bottomEnd = CornerSize(0)
                         )
-                    }
-                    IconButton(onClick = onDismiss) {
-                        Icon(
-                            painter = painterResource(Res.drawable.right_panel_close),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                            contentDescription = "Close"
-                        )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = stringResource(Res.string.overview),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold
                     )
+                    .pointerInput(Unit) {},
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top,
+                content = actionContent
+            )
 
-                    IconButton(onClick = { showDetail = !showDetail }) {
-                        Icon(
-                            imageVector = if (showDetail) Icons.Outlined.VisibilityOff
-                            else Icons.Outlined.Visibility,
-                            tint = MaterialTheme.colorScheme.onSurface,
-                            contentDescription = "Visibility"
-                        )
-                    }
+            val dragState = rememberDraggableState { delta ->
+                scope.launch {
+                    val newValue =
+                        (offsetX.value + delta).coerceIn(0f, fullOffsetPx)
+                    offsetX.snapTo(newValue)
+                    val progress = 1f - (newValue / drawerWidthPx).coerceIn(0f, 1f)
+                    maskAlpha.snapTo(0.6f * progress)
                 }
+            }
 
-                AnimatedVisibility(visible = showDetail) {
-                    SelectionContainer {
-                        Column(Modifier.padding(start = 16.dp, end = 12.dp)) {
-                            drawerContent()
+            Surface(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(drawerWidth)
+                    .offset { IntOffset(x = offsetX.value.roundToInt(), y = 0) }
+                    .align(Alignment.CenterEnd)
+                    .draggable(
+                        orientation = Orientation.Horizontal,
+                        state = dragState,
+                        onDragStopped = { velocity ->
+                            val targetValue = if (abs(velocity) < 100) {
+                                if (offsetX.value > drawerWidthPx / 2) fullOffsetPx else 0f
+                            } else {
+                                if (velocity > 0) fullOffsetPx else 0f
+                            }
+
+                            val targetAlpha = if (targetValue == 0f) 0.6f else 0f
+
+                            scope.launch {
+                                if (targetValue == fullOffsetPx && offsetX.value < drawerWidthPx) {
+                                    onDismiss()
+                                }
+
+                                launch { offsetX.animateTo(targetValue) }
+                                launch { maskAlpha.animateTo(targetAlpha) }
+                            }
                         }
-                    }
-                }
-
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-
-                // 添加一个状态来跟踪是否全部展开
+                    ),
+                color = DrawerDefaults.modalContainerColor.copy(alpha = 0.95f),
+                shape = MaterialTheme.shapes.extraLarge.copy(
+                    topEnd = CornerSize(0),
+                    bottomEnd = CornerSize(0)
+                ),
+                shadowElevation = 2.dp,
+                tonalElevation = DrawerDefaults.ModalDrawerElevation
+            ) {
                 var isAllExpanded by rememberSaveable { mutableStateOf(true) }
 
-                if (outline.children.isNotEmpty()) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .systemBarsPadding()
+                        .padding(end = 8.dp)
+                ) {
+                    // 顶部操作按钮
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            TooltipIconButton(
+                                tipText = stringResource(Res.string.settings),
+                                icon = Icons.Outlined.Settings,
+                                onClick = { navigateTo(Screen.Settings) }
+                            )
+                            IconButton(onClick = onDismiss) {
+                                Icon(
+                                    painter = painterResource(Res.drawable.right_panel_close),
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                    contentDescription = null
+                                )
+                            }
+                        }
+                    }
+
+                    // 概览标题
+                    item {
                         Text(
-                            text = stringResource(Res.string.outline),
+                            modifier = Modifier.fillMaxWidth().padding(start = 12.dp),
+                            text = stringResource(Res.string.overview),
                             style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.Bold
                         )
+                    }
 
-                        IconButton(
-                            onClick = { isAllExpanded = !isAllExpanded }
-                        ) {
-                            Icon(
-                                imageVector = if (isAllExpanded) Icons.Outlined.UnfoldLess
-                                else Icons.Outlined.UnfoldMore,
-                                contentDescription = "fold",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                    // 详细内容
+                    item {
+                        SelectionContainer {
+                            Column(Modifier.padding(start = 16.dp, end = 12.dp)) {
+                                drawerContent()
+                            }
                         }
                     }
-                }
 
-                LazyColumn {
+                    // 分隔线
+                    item {
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                    }
+
+                    // 大纲标题
+                    item {
+//                        if (outline.children.isNotEmpty())
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 12.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = stringResource(Res.string.outline),
+                                    style = MaterialTheme.typography.titleLarge,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontWeight = FontWeight.Bold
+                                )
+
+                                IconButton(
+                                    onClick = { isAllExpanded = !isAllExpanded }
+                                ) {
+                                    Icon(
+                                        imageVector = if (isAllExpanded) Icons.Outlined.UnfoldLess
+                                        else Icons.Outlined.UnfoldMore,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                    }
+
+                    // 大纲内容
                     items(outline.children) { header ->
                         HeaderItem(
                             header = header,
@@ -323,7 +334,7 @@ fun NoteSideSheetItem(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         ) {
-            append("$key: ")
+            append("$key：")
         }
         withStyle(
             SpanStyle(
@@ -357,7 +368,6 @@ private fun HeaderItem(
     onHeaderClick: (IntRange) -> Unit
 ) {
     var expanded by rememberSaveable { mutableStateOf(true) }
-    // 当父级展开状态改变时，同步更新当前节点的展开状态
     LaunchedEffect(parentExpanded) {
         expanded = parentExpanded
     }
@@ -409,3 +419,4 @@ private fun HeaderItem(
         }
     }
 }
+
