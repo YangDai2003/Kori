@@ -156,12 +156,12 @@ fun NoteSideSheet(
             Column(
                 modifier = Modifier
                     .statusBarsPadding()
-                    .padding(top = 12.dp)
+                    .padding(top = 16.dp)
                     .offset { IntOffset(x = (offsetX.value - drawerWidthPx).roundToInt(), y = 0) }
                     .align(Alignment.TopEnd)
                     .background(
                         color = DrawerDefaults.modalContainerColor.copy(alpha = 0.9f),
-                        shape = MaterialTheme.shapes.large.copy(
+                        shape = MaterialTheme.shapes.extraLarge.copy(
                             topEnd = CornerSize(0),
                             bottomEnd = CornerSize(0)
                         )
@@ -211,7 +211,7 @@ fun NoteSideSheet(
                         }
                     ),
                 color = DrawerDefaults.modalContainerColor.copy(alpha = 0.95f),
-                shape = MaterialTheme.shapes.extraLarge.copy(
+                shape = MaterialTheme.shapes.large.copy(
                     topEnd = CornerSize(0),
                     bottomEnd = CornerSize(0)
                 ),

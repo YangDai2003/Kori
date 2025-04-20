@@ -12,11 +12,18 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.material.IconButton
+import androidx.compose.material.IconToggleButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -122,37 +129,20 @@ fun NoteScreen(
                     PlatformStyleTopAppBarNavigationIcon(onClick = navigateUp)
                 },
                 actions = {
-                    // 置顶按钮
-//                    TooltipIconButton(
-//                        tipText = if (noteEditingState.isPinned) stringResource(Res.string.unpin) else stringResource(Res.string.pin),
-//                        icon = if (noteEditingState.isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
-//                        onClick = { viewModel.togglePinStatus() }
-//                    )
 
-                    TooltipIconButton(
-                        tipText = "Find and Replace",
-                        icon = Icons.Outlined.Search,
-                        onClick = {
-                            isSearching = !isSearching
-                        }
-                    )
+                    IconButton(onClick = { isSearching = !isSearching }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Search,
+                            contentDescription = null
+                        )
+                    }
 
-                    // 删除按钮
-                    TooltipIconButton(
-                        tipText = stringResource(Res.string.delete),
-                        icon = Icons.Outlined.Delete,
-                        onClick = {
-                            viewModel.moveNoteToTrash()
-                        }
-                    )
-
-                    TooltipIconButton(
-                        tipText = "Open drawer",
-                        icon = painterResource(Res.drawable.right_panel_open),
-                        onClick = {
-                            isSideSheetOpen = true
-                        }
-                    )
+                    IconButton(onClick = { isSideSheetOpen = true }) {
+                        Icon(
+                            painter = painterResource(Res.drawable.right_panel_open),
+                            contentDescription = null
+                        )
+                    }
                 }
             )
         }
@@ -188,7 +178,9 @@ fun NoteScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     text = stringResource(Res.string.title),
                                     style = MaterialTheme.typography.headlineMedium.copy(
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                            alpha = 0.6f
+                                        )
                                     )
                                 )
                             },
@@ -229,7 +221,29 @@ fun NoteScreen(
         outline = HeaderNode(title = "test", level = 1, range = IntRange(0, 0)),
         onHeaderClick = {},
         navigateTo = {},
-        actionContent = {},
+        actionContent = {
+            IconToggleButton(
+                checked = noteEditingState.isPinned,
+                onCheckedChange = { viewModel.toggleNotePin() }
+            ) {
+                Icon(
+                    imageVector = if (noteEditingState.isPinned) Icons.Default.PushPin else Icons.Outlined.PushPin,
+                    contentDescription = null,
+                    tint = if (noteEditingState.isPinned) MaterialTheme.colorScheme.primary
+                    else LocalContentColor.current
+                )
+            }
+
+            TooltipIconButton(
+                tipText = stringResource(Res.string.delete),
+                icon = Icons.Outlined.Delete,
+                colors = IconButtonDefaults.iconButtonColors()
+                    .copy(contentColor = MaterialTheme.colorScheme.error),
+                onClick = {
+                    viewModel.moveNoteToTrash()
+                }
+            )
+        },
         drawerContent = {
             NoteSideSheetItem(
                 key = "UUID",

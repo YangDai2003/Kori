@@ -155,4 +155,12 @@ class NoteViewModel(
             it.copy(folderId = folderId)
         }
     }
+
+    fun toggleNotePin() {
+        viewModelScope.launch {
+            _noteEditingState.update {
+                it.copy(isPinned = !it.isPinned)
+            }
+        }
+    }
 }

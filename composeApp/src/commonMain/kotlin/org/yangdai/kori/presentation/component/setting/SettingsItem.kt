@@ -1,17 +1,26 @@
 package org.yangdai.kori.presentation.component.setting
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun ListPaneItem(
@@ -20,10 +29,7 @@ fun ListPaneItem(
     title: String,
     description: String,
     icon: ImageVector,
-    colors: ListItemColors = ListItemDefaults.colors(
-        containerColor = if (isSelected) Color.Gray.copy(alpha = 0.1f)
-        else Color.Transparent
-    ),
+    colors: ListItemColors = ListItemDefaults.colors(containerColor = Color.Transparent),
     onClick: () -> Unit
 ) = ListItem(
     modifier = modifier.clickable { onClick() },
@@ -41,10 +47,25 @@ fun ListPaneItem(
         )
     },
     leadingContent = {
-        Icon(
-            imageVector = icon,
-            contentDescription = null
-        )
+        Box(contentAlignment = Alignment.Center) {
+            val circleSize by animateDpAsState(
+                targetValue = if (isSelected) 40.dp else 0.dp,
+            )
+            Box(
+                modifier = Modifier
+                    .size(circleSize)
+                    .background(
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = CircleShape
+                    )
+            )
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer
+                else LocalContentColor.current
+            )
+        }
     },
     colors = colors
 )

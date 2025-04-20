@@ -45,6 +45,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -175,6 +176,8 @@ fun MainScreenContent(
                                 tipText = stringResource(Res.string.delete),
                                 icon = if (currentDrawerItem is DrawerItem.Trash) Icons.Outlined.DeleteForever
                                 else Icons.Outlined.Delete,
+                                colors = IconButtonDefaults.iconButtonColors()
+                                    .copy(contentColor = MaterialTheme.colorScheme.error),
                                 onClick = {
                                     when (currentDrawerItem) {
                                         DrawerItem.Trash -> {
@@ -251,10 +254,16 @@ fun MainScreenContent(
                                             leadingIcon = {
                                                 Icon(
                                                     imageVector = Icons.Outlined.Delete,
+                                                    tint = MaterialTheme.colorScheme.error,
                                                     contentDescription = null
                                                 )
                                             },
-                                            text = { Text(text = stringResource(Res.string.delete_all)) },
+                                            text = {
+                                                Text(
+                                                    text = stringResource(Res.string.delete_all),
+                                                    color = MaterialTheme.colorScheme.onErrorContainer
+                                                )
+                                            },
                                             onClick = { viewModel.emptyTrash() })
                                     }
                                 }
