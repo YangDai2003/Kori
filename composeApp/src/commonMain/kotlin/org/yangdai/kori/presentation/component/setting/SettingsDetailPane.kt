@@ -28,11 +28,14 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_info
+import kori.composeapp.generated.resources.security
+import kori.composeapp.generated.resources.style
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.Platform
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
 import org.yangdai.kori.presentation.component.setting.detail.AboutPane
+import org.yangdai.kori.presentation.component.setting.detail.SecurityPane
 import org.yangdai.kori.presentation.component.setting.detail.StylePane
 import org.yangdai.kori.presentation.util.rememberCurrentPlatform
 import org.yangdai.kori.presentation.viewModel.SettingsViewModel
@@ -65,16 +68,21 @@ fun SettingsDetailPane(
         when (selectedItem) {
             null -> {}
             0 -> {
-                topBarTitle = "Style"
+                topBarTitle = stringResource(Res.string.style)
                 StylePane(viewModel)
             }
+
             3 -> {
                 topBarTitle = stringResource(Res.string.app_info)
                 AboutPane()
             }
 
-            else -> {
+            4 -> {
+                topBarTitle = stringResource(Res.string.security)
+                SecurityPane(viewModel)
+            }
 
+            else -> {
             }
         }
     }

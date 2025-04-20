@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.presentation.state.AppColor
 import org.yangdai.kori.presentation.state.AppTheme
+import org.yangdai.kori.presentation.state.SecurityPaneState
 import org.yangdai.kori.presentation.state.StylePaneState
 import org.yangdai.kori.presentation.util.Constants
 
@@ -27,6 +28,20 @@ class SettingsViewModel(
             isAppInAmoledMode = isAppInAmoledMode
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), StylePaneState())
+
+    val securityPaneState = combine(
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_SCREEN_PROTECTED),
+        dataStoreRepository.stringFlow(Constants.Preferences.PASSWORD),
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_CREATING_PASSWORD),
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_BIOMETRIC_ENABLED)
+    ) { isScreenProtected, password, isCreatingPass, isBiometricEnabled ->
+        SecurityPaneState(
+            isScreenProtected = isScreenProtected,
+            password = password,
+            isCreatingPass = isCreatingPass,
+            isBiometricEnabled = isBiometricEnabled
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), SecurityPaneState())
 
     fun <T> putPreferenceValue(key: String, value: T) {
         viewModelScope.launch {

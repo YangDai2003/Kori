@@ -1,14 +1,16 @@
 package org.yangdai.kori.presentation.state
 
-data class SettingsState(
-    val theme: AppTheme = AppTheme.SYSTEM,
-    val color: AppColor = AppColor.DYNAMIC,
-)
-
 data class StylePaneState(
     val theme: AppTheme = AppTheme.SYSTEM,
     val color: AppColor = AppColor.DYNAMIC,
     val isAppInAmoledMode: Boolean = false
+)
+
+data class SecurityPaneState(
+    val isScreenProtected: Boolean = false,
+    val password: String = "",
+    val isCreatingPass: Boolean = false,
+    val isBiometricEnabled: Boolean = false
 )
 
 enum class AppTheme(private val value: Int) {

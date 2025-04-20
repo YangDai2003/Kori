@@ -1,6 +1,8 @@
 package org.yangdai.kori.presentation.component.setting.detail
 
+import android.os.Build
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +21,7 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrightnessAuto
+import androidx.compose.material.icons.filled.Colorize
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.Checkbox
@@ -31,10 +34,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kori.composeapp.generated.resources.Res
+import kori.composeapp.generated.resources.color_platte
+import kori.composeapp.generated.resources.dark_mode
+import org.yangdai.kori.R
 import org.yangdai.kori.presentation.component.setting.SettingsHeader
 import org.yangdai.kori.presentation.state.AppColor
 import org.yangdai.kori.presentation.state.AppColor.Companion.toInt
@@ -85,7 +92,40 @@ actual fun StylePane(settingsViewModel: SettingsViewModel) {
             Pair(AppColor.RED, DarkRedColors)
         )
 
-        SettingsHeader(text = "Color Scheme")
+        SettingsHeader(org.jetbrains.compose.resources.stringResource(Res.string.color_platte))
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .clickable {
+                        settingsViewModel.putPreferenceValue(
+                            Constants.Preferences.APP_COLOR,
+                            AppColor.DYNAMIC.toInt()
+                        )
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(
+                    modifier = Modifier.padding(start = 32.dp),
+                    selected = stylePaneState.color == AppColor.DYNAMIC,
+                    onClick = null
+                )
+                Icon(
+                    modifier = Modifier
+                        .padding(start = 16.dp),
+                    imageVector = Icons.Default.Colorize,
+                    tint = MaterialTheme.colorScheme.secondary,
+                    contentDescription = ""
+                )
+                Text(
+                    text = stringResource(R.string.dynamic_only_android_12),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+            }
+        }
 
         Row(
             modifier = Modifier
@@ -134,7 +174,7 @@ actual fun StylePane(settingsViewModel: SettingsViewModel) {
             )
         }
 
-        SettingsHeader(text = "Dark mode")
+        SettingsHeader(org.jetbrains.compose.resources.stringResource(Res.string.dark_mode))
 
         Column(Modifier.selectableGroup()) {
             modeOptions.forEachIndexed { index, text ->

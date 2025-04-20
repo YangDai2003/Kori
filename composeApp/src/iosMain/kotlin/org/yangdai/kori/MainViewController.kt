@@ -9,7 +9,9 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.ExperimentalComposeApi
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -24,6 +26,7 @@ import org.yangdai.kori.presentation.navigation.AppNavHost
 import org.yangdai.kori.presentation.state.AppTheme
 import org.yangdai.kori.presentation.theme.KoriTheme
 import org.yangdai.kori.presentation.util.AppLockManager
+import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.viewModel.SettingsViewModel
 
 @OptIn(ExperimentalComposeApi::class, ExperimentalComposeUiApi::class)
@@ -36,6 +39,10 @@ fun MainViewController() = ComposeUIViewController(
 ) {
     val settingsViewModel: SettingsViewModel = koinViewModel<SettingsViewModel>()
     val stylePaneState by settingsViewModel.stylePaneState.collectAsStateWithLifecycle()
+    val securityPaneState by settingsViewModel.securityPaneState.collectAsStateWithLifecycle()
+    val appLockManager = koinInject<AppLockManager>()
+    val isUnlocked by appLockManager.isUnlocked.collectAsStateWithLifecycle()
+
     KoriTheme(
         darkMode = if (stylePaneState.theme == AppTheme.SYSTEM) isSystemInDarkTheme()
         else stylePaneState.theme == AppTheme.DARK,
@@ -43,20 +50,41 @@ fun MainViewController() = ComposeUIViewController(
         amoledMode = stylePaneState.isAppInAmoledMode
     ) {
         Surface {
-            val appLockManager = koinInject<AppLockManager>()
-            val isUnlocked by appLockManager.isUnlocked.collectAsStateWithLifecycle()
-            val blur by animateDpAsState(
-                targetValue = if (isUnlocked) 0.dp else 16.dp,
-                label = "Blur"
-            )
+            val showPassScreen by remember {
+                derivedStateOf {
+                    (securityPaneState.password.isNotEmpty() && !isUnlocked) ||
+                            (securityPaneState.isCreatingPass && !isUnlocked)
+                }
+            }
+            val blur by animateDpAsState(targetValue = if (showPassScreen) 16.dp else 0.dp)
+
             AppNavHost(modifier = Modifier.blur(blur))
             AnimatedVisibility(
-                visible = !isUnlocked,
+                visible = showPassScreen,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
                 NumberLockScreen(
                     modifier =  Modifier.background(MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.25f)),
+                    storedPassword = securityPaneState.password,
+                    isCreatingPassword = securityPaneState.isCreatingPass,
+                    onCreatingCanceled = {
+                        settingsViewModel.putPreferenceValue(
+                            Constants.Preferences.IS_CREATING_PASSWORD,
+                            false
+                        )
+                    },
+                    onPassCreated = {
+                        settingsViewModel.putPreferenceValue(
+                            Constants.Preferences.PASSWORD,
+                            it
+                        )
+                        settingsViewModel.putPreferenceValue(
+                            Constants.Preferences.IS_CREATING_PASSWORD,
+                            false
+                        )
+                        appLockManager.unlock()
+                    },
                     onAuthenticated = { appLockManager.unlock() }
                 )
             }

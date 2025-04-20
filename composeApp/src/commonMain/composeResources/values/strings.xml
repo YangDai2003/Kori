@@ -57,7 +57,13 @@
     <string name="search_history">Search history</string>
     <string name="progress">Progress</string>
 
+    <string name="style">Style</string>
+    <string name="dark_mode">Dark mode</string>
+    <string name="color_platte">Color palette</string>
     <string name="create_password">Create a six-digit passcode</string>
     <string name="enter_again">Please enter your passcode again</string>
     <string name="lock">Lock</string>
+    <string name="password">Password</string>
+    <string name="password_description">When the app is cold started, the user needs to enter a six-digit password to unlock it.</string>
+    <string name="security">Security</string>
 </resources>

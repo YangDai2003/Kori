@@ -45,6 +45,7 @@ fun MainScreen(
     val allNotesCount by viewModel.activeNotesCount.collectAsStateWithLifecycle()
     val templatesCount by viewModel.templateNotesCount.collectAsStateWithLifecycle()
     val trashNotesCount by viewModel.trashNotesCount.collectAsStateWithLifecycle()
+    val isAppProtected by viewModel.isAppProtected.collectAsStateWithLifecycle()
 
     AdaptiveNavigationDrawerScreen(
         isLargeScreen = isLargeScreen,
@@ -59,6 +60,7 @@ fun MainScreen(
                     foldersWithNoteCounts = foldersWithNoteCounts,
                     selectedItem = currentDrawerItem
                 ),
+                showLockIconButton = isAppProtected,
                 navigateToScreen = navigateToScreen,
                 onItemClick = { item ->
                     currentDrawerItem = item

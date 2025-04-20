@@ -56,7 +56,13 @@
     <string name="search_history">Suchverlauf</string>
     <string name="progress">Fortschritt</string>
 
+    <string name="style">Stil</string>
+    <string name="dark_mode">Dunkelmodus</string>
+    <string name="color_platte">Farbpalette</string>
     <string name="create_password">Erstellen Sie einen sechsstelligen Passcode</string>
     <string name="enter_again">Bitte geben Sie den Passcode noch einmal ein</string>
     <string name="lock">Sperren</string>
+    <string name="password">Passwort</string>
+    <string name="password_description">Beim Kaltstart der App muss der Nutzer zum Entsperren ein sechstelliges Passwort eingeben.</string>
+    <string name="security">Datensicherheit</string>
 </resources>

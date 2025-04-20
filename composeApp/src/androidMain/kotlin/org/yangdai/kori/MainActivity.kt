@@ -14,10 +14,10 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.unit.dp
@@ -29,6 +29,7 @@ import org.yangdai.kori.presentation.screen.LoginOverlayScreen
 import org.yangdai.kori.presentation.state.AppTheme
 import org.yangdai.kori.presentation.theme.KoriTheme
 import org.yangdai.kori.presentation.util.AppLockManager
+import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.viewModel.SettingsViewModel
 
 class MainActivity : AppCompatActivity() {
@@ -39,6 +40,20 @@ class MainActivity : AppCompatActivity() {
         setContent {
             val settingsViewModel: SettingsViewModel = koinViewModel<SettingsViewModel>()
             val stylePaneState by settingsViewModel.stylePaneState.collectAsStateWithLifecycle()
+            val securityPaneState by settingsViewModel.securityPaneState.collectAsStateWithLifecycle()
+            val appLockManager = koinInject<AppLockManager>()
+            val isUnlocked by appLockManager.isUnlocked.collectAsStateWithLifecycle()
+
+            LaunchedEffect(securityPaneState.isScreenProtected) {
+                window.let { window ->
+                    if (securityPaneState.isScreenProtected) {
+                        window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
+                    } else {
+                        window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
+                    }
+                }
+            }
+
             KoriTheme(
                 darkMode = if (stylePaneState.theme == AppTheme.SYSTEM) isSystemInDarkTheme()
                 else stylePaneState.theme == AppTheme.DARK,
@@ -46,23 +61,48 @@ class MainActivity : AppCompatActivity() {
                 amoledMode = stylePaneState.isAppInAmoledMode
             ) {
                 Surface {
-                    val appLockManager = koinInject<AppLockManager>()
-                    val isUnlocked by appLockManager.isUnlocked.collectAsStateWithLifecycle()
-                    var biometricAuthEnabled by rememberSaveable { mutableStateOf(true) }
-                    val blur by animateDpAsState(
-                        targetValue = if (isUnlocked) 0.dp else 16.dp,
-                        label = "Blur"
-                    )
+                    val showPassScreen by remember {
+                        derivedStateOf {
+                            (securityPaneState.password.isNotEmpty() && !isUnlocked) ||
+                                    (securityPaneState.isCreatingPass && !isUnlocked)
+                        }
+                    }
+                    val blur by animateDpAsState(targetValue = if (showPassScreen) 16.dp else 0.dp)
                     AppNavHost(modifier = Modifier.blur(blur))
-                    AnimatedVisibility(visible = !isUnlocked, enter = fadeIn(), exit = fadeOut()) {
+                    AnimatedVisibility(
+                        visible = showPassScreen,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
                         LoginOverlayScreen(
-                            storedPassword = "123456",
-                            biometricAuthEnabled = biometricAuthEnabled,
+                            storedPassword = securityPaneState.password,
+                            biometricAuthEnabled = securityPaneState.isBiometricEnabled,
+                            isCreatingPassword = securityPaneState.isCreatingPass,
+                            onCreatingCanceled = {
+                                settingsViewModel.putPreferenceValue(
+                                    Constants.Preferences.IS_CREATING_PASSWORD,
+                                    false
+                                )
+                            },
+                            onPassCreated = {
+                                settingsViewModel.putPreferenceValue(
+                                    Constants.Preferences.PASSWORD,
+                                    it
+                                )
+                                settingsViewModel.putPreferenceValue(
+                                    Constants.Preferences.IS_CREATING_PASSWORD,
+                                    false
+                                )
+                                appLockManager.unlock()
+                            },
                             onAuthenticated = {
                                 appLockManager.unlock()
                             },
                             onAuthenticationNotEnrolled = {
-                                biometricAuthEnabled = false
+                                settingsViewModel.putPreferenceValue(
+                                    Constants.Preferences.IS_BIOMETRIC_ENABLED,
+                                    false
+                                )
                             }
                         )
                     }

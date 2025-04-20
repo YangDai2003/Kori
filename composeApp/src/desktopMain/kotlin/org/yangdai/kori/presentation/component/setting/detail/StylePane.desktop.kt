@@ -34,6 +34,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kori.composeapp.generated.resources.Res
+import kori.composeapp.generated.resources.color_platte
+import kori.composeapp.generated.resources.dark_mode
+import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.setting.SettingsHeader
 import org.yangdai.kori.presentation.state.AppColor
 import org.yangdai.kori.presentation.state.AppColor.Companion.toInt
@@ -84,7 +88,7 @@ actual fun StylePane(settingsViewModel: SettingsViewModel) {
             Pair(AppColor.RED, DarkRedColors)
         )
 
-        SettingsHeader(text = "Color Scheme")
+        SettingsHeader(stringResource(Res.string.color_platte))
 
         Row(
             modifier = Modifier
@@ -133,7 +137,7 @@ actual fun StylePane(settingsViewModel: SettingsViewModel) {
             )
         }
 
-        SettingsHeader(text = "Dark mode")
+        SettingsHeader(stringResource(Res.string.dark_mode))
 
         Column(Modifier.selectableGroup()) {
             modeOptions.forEachIndexed { index, text ->

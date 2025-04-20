@@ -56,7 +56,13 @@
     <string name="search_history">搜索历史</string>
     <string name="progress">进度</string>
 
+    <string name="style">样式</string>
+    <string name="dark_mode">深色模式</string>
+    <string name="color_platte">调色盘</string>
     <string name="create_password">创建六位数密码</string>
     <string name="enter_again">请再次输入密码</string>
     <string name="lock">锁定</string>
+    <string name="password">密码锁</string>
+    <string name="password_description">应用冷启动时，用户需要输入六位数字密码来解锁。</string>
+    <string name="security">安全</string>
 </resources>

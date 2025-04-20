@@ -32,6 +32,11 @@ class AppViewModel(
     private val dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
 
+    val isAppProtected: StateFlow<Boolean> = dataStoreRepository
+        .stringFlow(Constants.Preferences.PASSWORD)
+        .map { password -> password.isNotEmpty() }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     private var _currentFolderId by mutableStateOf<String>("")
     private val _currentFolderNotesMap = MutableStateFlow<Map<Boolean, List<NoteEntity>>>(emptyMap())
     val currentFolderNotesMap: StateFlow<Map<Boolean, List<NoteEntity>>> = _currentFolderNotesMap.asStateFlow()

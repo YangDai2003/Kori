@@ -204,6 +204,7 @@ sealed class DrawerItem(val id: String) {
 @Composable
 fun NavigationDrawerContent(
     appLockManager: AppLockManager = koinInject(),
+    showLockIconButton: Boolean,
     drawerState: DrawerState,
     navigateToScreen: (Screen) -> Unit,
     onItemClick: (DrawerItem) -> Unit
@@ -225,11 +226,12 @@ fun NavigationDrawerContent(
                 maxLines = 1,
                 modifier = Modifier.weight(1f).padding(start = 12.dp)
             )
-            TooltipIconButton(
-                tipText = stringResource(Res.string.lock),
-                icon = Icons.Outlined.Lock,
-                onClick = { appLockManager.lock() }
-            )
+            if (showLockIconButton)
+                TooltipIconButton(
+                    tipText = stringResource(Res.string.lock),
+                    icon = Icons.Outlined.Lock,
+                    onClick = { appLockManager.lock() }
+                )
             TooltipIconButton(
                 tipText = stringResource(Res.string.settings),
                 icon = Icons.Outlined.Settings,
