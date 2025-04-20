@@ -9,6 +9,6 @@ data class NoteEditingState(
     val isPinned: Boolean = false,
     val isDeleted: Boolean = false,
     val folderId: String? = null,
-    val noteType: NoteType = NoteType.UNSPECIFIED,
+    val noteType: NoteType = NoteType.PLAIN_TEXT,
     val isTemplate: Boolean = false
 )

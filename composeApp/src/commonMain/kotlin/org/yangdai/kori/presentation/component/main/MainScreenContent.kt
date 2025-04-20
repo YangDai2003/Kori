@@ -69,9 +69,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
@@ -126,14 +126,10 @@ fun MainScreenContent(
     var showFoldersDialog by rememberSaveable { mutableStateOf(false) }
     val selectedNotes = remember { mutableStateSetOf<String>() }
     val isSelectionMode by remember(selectedNotes) {
-        derivedStateOf {
-            selectedNotes.isNotEmpty()
-        }
+        derivedStateOf { selectedNotes.isNotEmpty() }
     }
     val isLargeScreen = rememberIsScreenSizeLarge()
-    BackHandler(enabled = isSelectionMode) {
-        selectedNotes.clear()
-    }
+    BackHandler(enabled = isSelectionMode) { selectedNotes.clear() }
 
     Scaffold(
         topBar = {
@@ -310,7 +306,7 @@ fun MainScreenContent(
         }
         var size by remember { mutableStateOf(IntSize.Zero) }
         val density = LocalDensity.current
-        val columns by remember(size, density) {
+        val columns by remember(size) {
             derivedStateOf {
                 val windowSizeClass: WindowSizeClass =
                     WindowSizeClass.compute(size.width, size.height, density.density)
@@ -325,9 +321,15 @@ fun MainScreenContent(
 
         VerticalPager(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(top = innerPadding.calculateTopPadding())
-                .clip(if (isLargeScreen) RoundedCornerShape(topStart = 8.dp) else RectangleShape)
+                .fillMaxSize()
+                .graphicsLayer {
+                    shape =
+                        if (isLargeScreen && currentDrawerItem !is DrawerItem.AllNotes)
+                            RoundedCornerShape(topStart = 8.dp)
+                        else RectangleShape
+                    clip = true
+                }
                 .background(MaterialTheme.colorScheme.surfaceColorAtElevation(0.2.dp))
                 .onSizeChanged { size = it },
             state = pagerState,
@@ -490,9 +492,9 @@ fun MainScreenContent(
                 }
 
                 1 -> {
-                    val notes by viewModel.templateNotes.collectAsStateWithLifecycle()
+                    val templateNotes by viewModel.templateNotes.collectAsStateWithLifecycle()
                     Page(
-                        notes = notes,
+                        notes = templateNotes,
                         contentPadding = contentPadding,
                         navigateToScreen = navigateToScreen,
                         selectedNotes = selectedNotes,
@@ -502,9 +504,9 @@ fun MainScreenContent(
                 }
 
                 2 -> {
-                    val notes by viewModel.trashNotes.collectAsStateWithLifecycle()
+                    val trashNotes by viewModel.trashNotes.collectAsStateWithLifecycle()
                     Page(
-                        notes = notes,
+                        notes = trashNotes,
                         contentPadding = contentPadding,
                         navigateToScreen = { },
                         selectedNotes = selectedNotes,
@@ -514,14 +516,14 @@ fun MainScreenContent(
                 }
 
                 3 -> {
-                    val notesMap by viewModel.currentFolderNotesMap.collectAsStateWithLifecycle()
+                    val folderNotesMap by viewModel.currentFolderNotesMap.collectAsStateWithLifecycle()
                     if (currentDrawerItem is DrawerItem.Folder) {
                         val folderId = currentDrawerItem.folder.id
                         LaunchedEffect(folderId) {
                             viewModel.loadNotesByFolder(folderId)
                         }
                         GroupedPage(
-                            notesMap = notesMap,
+                            notesMap = folderNotesMap,
                             contentPadding = contentPadding,
                             navigateToScreen = navigateToScreen,
                             selectedNotes = selectedNotes,

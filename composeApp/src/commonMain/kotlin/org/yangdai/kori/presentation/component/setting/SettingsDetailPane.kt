@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBackIosNew
@@ -24,9 +26,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_info
 import kori.composeapp.generated.resources.security
@@ -140,11 +144,17 @@ fun SettingsDetailPaneContent(
     ) { innerPadding ->
         val layoutDirection = LocalLayoutDirection.current
         Box(
-            Modifier.padding(
-                top = innerPadding.calculateTopPadding(),
-                end = innerPadding.calculateEndPadding(layoutDirection)
-            ),
-            content = content
-        )
+            Modifier
+                .padding(
+                    top = innerPadding.calculateTopPadding(),
+                    end = innerPadding.calculateEndPadding(layoutDirection)
+                )
+                .fillMaxSize(),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            Box(Modifier.widthIn(max = 840.dp).fillMaxSize()) {
+                content()
+            }
+        }
     }
 }

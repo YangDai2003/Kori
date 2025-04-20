@@ -51,7 +51,7 @@ data class NoteEntity(
     @ColumnInfo(name = "folder_id")
     val folderId: String? = null, // 可空类型，允许笔记不属于文件夹
     @ColumnInfo(name = "note_type")
-    val noteType: NoteType = NoteType.UNSPECIFIED, // 类型有纯文本、Lite Markdown、Standard Markdown等, 默认是未指定
+    val noteType: NoteType = NoteType.PLAIN_TEXT, // 类型有纯文本、Lite Markdown、Standard Markdown等, 默认是未指定
     @ColumnInfo(name = "is_template")
     val isTemplate: Boolean = false, // 判断笔记是否是模板笔记
 )

@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -36,7 +37,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.color_platte
+import kori.composeapp.generated.resources.dark
 import kori.composeapp.generated.resources.dark_mode
+import kori.composeapp.generated.resources.light
+import kori.composeapp.generated.resources.system_default
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.setting.SettingsHeader
 import org.yangdai.kori.presentation.state.AppColor
@@ -63,7 +67,7 @@ actual fun StylePane(settingsViewModel: SettingsViewModel) {
         ) {
             Box(
                 modifier = Modifier
-                    .sizeIn(maxWidth = 380.dp)
+                    .sizeIn(maxWidth = 480.dp)
                     .padding(16.dp)
                     .clip(MaterialTheme.shapes.large)
                     .background(MaterialTheme.colorScheme.surfaceContainerHigh)
@@ -75,9 +79,9 @@ actual fun StylePane(settingsViewModel: SettingsViewModel) {
         }
 
         val modeOptions = listOf(
-            "stringResource(R.string.system_default)",
-            "stringResource(R.string.light)",
-            "stringResource(R.string.dark)"
+            stringResource(Res.string.system_default),
+            stringResource(Res.string.light),
+            stringResource(Res.string.dark)
         )
 
         val colorSchemes = listOf(
@@ -133,13 +137,22 @@ actual fun StylePane(settingsViewModel: SettingsViewModel) {
             Text(
                 text = "AMOLED",
                 style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(start = 16.dp)
+                modifier = Modifier.padding(start = 8.dp)
             )
         }
 
         SettingsHeader(stringResource(Res.string.dark_mode))
 
-        Column(Modifier.selectableGroup()) {
+        Column(
+            Modifier
+                .padding(horizontal = 16.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    shape = MaterialTheme.shapes.large
+                )
+                .clip(MaterialTheme.shapes.large)
+                .selectableGroup()
+        ) {
             modeOptions.forEachIndexed { index, text ->
                 Row(
                     Modifier
@@ -175,7 +188,7 @@ actual fun StylePane(settingsViewModel: SettingsViewModel) {
                             },
                             role = Role.RadioButton
                         )
-                        .padding(start = 32.dp, end = 16.dp),
+                        .padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     RadioButton(
@@ -184,8 +197,7 @@ actual fun StylePane(settingsViewModel: SettingsViewModel) {
                     )
 
                     Icon(
-                        modifier = Modifier
-                            .padding(start = 16.dp),
+                        modifier = Modifier.padding(start = 16.dp),
                         imageVector = when (index) {
                             AppTheme.LIGHT.toInt() -> Icons.Default.LightMode
                             AppTheme.DARK.toInt() -> Icons.Default.DarkMode
@@ -198,9 +210,14 @@ actual fun StylePane(settingsViewModel: SettingsViewModel) {
                     Text(
                         text = text,
                         style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier
-                            .padding(start = 16.dp)
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                }
 
+                if (index < modeOptions.size - 1) {
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.surfaceContainer,
+                        thickness = 4.dp
                     )
                 }
             }

@@ -14,7 +14,7 @@ class DatabaseConverters {
         return try {
             NoteType.valueOf(value)
         } catch (_: Exception) {
-            NoteType.UNSPECIFIED
+            NoteType.PLAIN_TEXT
         }
     }
 }

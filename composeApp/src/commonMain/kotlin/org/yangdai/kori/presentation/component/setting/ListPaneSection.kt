@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SettingsListSection(
+fun ListPaneSection(
     vararg content: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -26,7 +26,7 @@ fun SettingsListSection(
             content.forEachIndexed { index, item ->
                 item()
                 if (index < content.size - 1) {
-                    SettingsListSectionDivider()
+                    ListPaneSectionDivider()
                 }
             }
         }
@@ -34,7 +34,7 @@ fun SettingsListSection(
 }
 
 @Composable
-fun SettingsListSectionDivider() = HorizontalDivider(
+fun ListPaneSectionDivider() = HorizontalDivider(
     thickness = 4.dp,
     color = MaterialTheme.colorScheme.surfaceContainer
 )

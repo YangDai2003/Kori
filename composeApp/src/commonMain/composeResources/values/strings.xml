@@ -58,7 +58,7 @@
     <string name="progress">Progress</string>
 
     <string name="style">Style</string>
-    <string name="dark_mode">Dark mode</string>
+    <string name="dark_mode">Theme mode</string>
     <string name="color_platte">Color palette</string>
     <string name="create_password">Create a six-digit passcode</string>
     <string name="enter_again">Please enter your passcode again</string>
@@ -67,4 +67,7 @@
     <string name="password_description">When the app is cold started, the user needs to enter a six-digit password to unlock it.</string>
     <string name="security">Security</string>
     <string name="report_a_bug_or_request_a_feature">Report a bug or request a feature</string>
+    <string name="system_default">System default</string>
+    <string name="light">Light mode</string>
+    <string name="dark">Dark mode</string>
 </resources>

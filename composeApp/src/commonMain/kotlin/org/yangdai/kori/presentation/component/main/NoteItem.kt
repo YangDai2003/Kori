@@ -93,7 +93,6 @@ fun LazyGridItemScope.NoteItem(
                             NoteType.PLAIN_TEXT -> "纯文本"
                             NoteType.LITE_MARKDOWN -> "Lite Markdown"
                             NoteType.STANDARD_MARKDOWN -> "Standard Markdown"
-                            else -> "未指定"
                         },
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -202,7 +201,6 @@ fun LazyStaggeredGridItemScope.NoteItem(
                             NoteType.PLAIN_TEXT -> "纯文本"
                             NoteType.LITE_MARKDOWN -> "Lite Markdown"
                             NoteType.STANDARD_MARKDOWN -> "Standard Markdown"
-                            else -> "未指定"
                         },
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)

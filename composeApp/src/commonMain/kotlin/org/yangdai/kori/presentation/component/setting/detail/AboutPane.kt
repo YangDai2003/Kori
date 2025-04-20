@@ -58,8 +58,8 @@ fun AboutPane() {
 
     Column(
         Modifier
-            .fillMaxSize()
             .padding(horizontal = 16.dp)
+            .fillMaxSize()
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -136,7 +136,7 @@ fun AboutPane() {
                 .clickable {
                     uriHandler.openUri("https://github.com/YangDai2003/Kori")
                 },
-            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
+            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             leadingContent = {
                 Icon(imageVector = Icons.Outlined.BugReport, contentDescription = null)
             },

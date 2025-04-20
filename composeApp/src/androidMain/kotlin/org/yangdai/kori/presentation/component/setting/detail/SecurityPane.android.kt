@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -16,22 +17,23 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.LockOpen
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.password
 import kori.composeapp.generated.resources.password_description
 import org.yangdai.kori.R
+import org.yangdai.kori.presentation.component.setting.DetailPaneItem
 import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.viewModel.SettingsViewModel
 
@@ -44,19 +46,19 @@ actual fun SecurityPane(settingsViewModel: SettingsViewModel) {
 
     Column(
         Modifier
+            .padding(horizontal = 16.dp)
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
 
-        ListItem(
-            leadingContent = {
-                Icon(
-                    imageVector = if (securityPaneState.isScreenProtected) Icons.Outlined.VisibilityOff
-                    else Icons.Outlined.Visibility,
-                    contentDescription = null
-                )
-            },
-            headlineContent = { Text(text = stringResource(R.string.screen_protection)) },
+        DetailPaneItem(
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .clip(MaterialTheme.shapes.large),
+            title = stringResource(R.string.screen_protection),
+            description = stringResource(R.string.screen_protection_detail),
+            icon = if (securityPaneState.isScreenProtected) Icons.Outlined.VisibilityOff
+            else Icons.Outlined.Visibility,
             trailingContent = {
                 Switch(
                     checked = securityPaneState.isScreenProtected,
@@ -71,23 +73,17 @@ actual fun SecurityPane(settingsViewModel: SettingsViewModel) {
                         )
                     }
                 )
-            },
-            supportingContent = {
-                Text(
-                    text = stringResource(R.string.screen_protection_detail)
-                )
             }
         )
 
-        ListItem(
-            leadingContent = {
-                Icon(
-                    imageVector = if (securityPaneState.password.isEmpty()) Icons.Outlined.LockOpen
-                    else Icons.Outlined.Lock,
-                    contentDescription = null
-                )
-            },
-            headlineContent = { Text(text = org.jetbrains.compose.resources.stringResource(Res.string.password)) },
+        DetailPaneItem(
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .clip(MaterialTheme.shapes.large),
+            title = org.jetbrains.compose.resources.stringResource(Res.string.password),
+            description = org.jetbrains.compose.resources.stringResource(Res.string.password_description),
+            icon = if (securityPaneState.password.isEmpty()) Icons.Outlined.LockOpen
+            else Icons.Outlined.Lock,
             trailingContent = {
                 Switch(
                     checked = securityPaneState.password.isNotEmpty() || securityPaneState.isCreatingPass,
@@ -117,23 +113,15 @@ actual fun SecurityPane(settingsViewModel: SettingsViewModel) {
                         }
                     }
                 )
-            },
-            supportingContent = {
-                Text(
-                    text = org.jetbrains.compose.resources.stringResource(Res.string.password_description)
-                )
             }
         )
 
         AnimatedVisibility(securityPaneState.password.isNotEmpty()) {
-            ListItem(
-                leadingContent = {
-                    Icon(
-                        imageVector = Icons.Outlined.Fingerprint,
-                        contentDescription = null
-                    )
-                },
-                headlineContent = { Text(text = stringResource(R.string.biometric)) },
+            DetailPaneItem(
+                modifier = Modifier.clip(MaterialTheme.shapes.large),
+                title = stringResource(R.string.biometric),
+                description = "",
+                icon = Icons.Outlined.Fingerprint,
                 trailingContent = {
                     Switch(
                         checked = securityPaneState.isBiometricEnabled,

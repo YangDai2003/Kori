@@ -39,6 +39,7 @@ import org.yangdai.kori.presentation.util.rememberCurrentPlatform
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsListPane(
+    selectedItem: Int? = null,
     navigateUp: () -> Unit,
     navigateToDetail: (Int) -> Unit
 ) {
@@ -71,51 +72,56 @@ fun SettingsListPane(
                 )
                 .verticalScroll(rememberScrollState())
         ) {
-            SettingsListSection(
+            ListPaneSection(
                 {
-                    SettingsListItem(
+                    ListPaneItem(
                         title = stringResource(Res.string.style),
                         description = stringResource(Res.string.dark_mode)
                                 + "  •  " + stringResource(Res.string.color_platte),
                         icon = Icons.Outlined.Palette,
+                        isSelected = selectedItem == 0,
                         onClick = { navigateToDetail(0) }
                     )
                 },
                 {
-                    SettingsListItem(
+                    ListPaneItem(
                         title = "Item 2",
                         description = "Description for item 2",
                         icon = Icons.Outlined.Edit,
+                        isSelected = selectedItem == 1,
                         onClick = { navigateToDetail(1) }
                     )
                 },
                 {
-                    SettingsListItem(
+                    ListPaneItem(
                         title = "Item 3",
                         description = "Description for item 3",
                         icon = Icons.Outlined.Edit,
+                        isSelected = selectedItem == 2,
                         onClick = { navigateToDetail(2) }
                     )
                 }
             )
-            SettingsListSection(
+            ListPaneSection(
                 {
-                    SettingsListItem(
+                    ListPaneItem(
                         title = stringResource(Res.string.security),
                         description = stringResource(Res.string.password),
                         icon = Icons.Outlined.Security,
+                        isSelected = selectedItem == 4,
                         onClick = { navigateToDetail(4) }
                     )
                 }
             )
-            SettingsListSection(
+            ListPaneSection(
                 {
-                    SettingsListItem(
+                    ListPaneItem(
                         title = stringResource(Res.string.app_info),
                         description = stringResource(Res.string.version)
                                 + " • " + stringResource(Res.string.guide)
                                 + " • " + stringResource(Res.string.privacy_policy),
                         icon = Icons.Outlined.PermDeviceInformation,
+                        isSelected = selectedItem == 3,
                         onClick = { navigateToDetail(3) }
                     )
                 }

@@ -37,8 +37,6 @@ fun MainScreen(
     val scope = rememberCoroutineScope()
     val isLargeScreen = rememberIsScreenSizeLarge()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-
-    // 使用自定义的 Saver
     var currentDrawerItem by rememberSaveable(stateSaver = DrawerItem.Saver) {
         mutableStateOf<DrawerItem>(DrawerItem.AllNotes)
     }
