@@ -65,4 +65,5 @@
     <string name="password">Passwort</string>
     <string name="password_description">Beim Kaltstart der App muss der Nutzer zum Entsperren ein sechstelliges Passwort eingeben.</string>
     <string name="security">Datensicherheit</string>
+    <string name="report_a_bug_or_request_a_feature">Einen Fehler melden oder eine Funktion anfordern</string>
 </resources>

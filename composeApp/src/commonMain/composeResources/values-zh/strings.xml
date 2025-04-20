@@ -65,4 +65,5 @@
     <string name="password">密码锁</string>
     <string name="password_description">应用冷启动时，用户需要输入六位数字密码来解锁。</string>
     <string name="security">安全</string>
+    <string name="report_a_bug_or_request_a_feature">报告错误或功能建议</string>
 </resources>

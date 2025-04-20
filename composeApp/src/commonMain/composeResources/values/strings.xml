@@ -66,4 +66,5 @@
     <string name="password">Password</string>
     <string name="password_description">When the app is cold started, the user needs to enter a six-digit password to unlock it.</string>
     <string name="security">Security</string>
+    <string name="report_a_bug_or_request_a_feature">Report a bug or request a feature</string>
 </resources>
