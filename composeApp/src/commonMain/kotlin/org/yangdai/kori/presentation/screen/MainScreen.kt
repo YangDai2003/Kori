@@ -15,6 +15,7 @@ import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.open_navigation_drawer
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.main.AdaptiveNavigationDrawerScreen
@@ -23,12 +24,14 @@ import org.yangdai.kori.presentation.component.main.DrawerState
 import org.yangdai.kori.presentation.component.main.MainScreenContent
 import org.yangdai.kori.presentation.component.main.NavigationDrawerContent
 import org.yangdai.kori.presentation.navigation.Screen
+import org.yangdai.kori.presentation.util.AppLockManager
 import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
 import org.yangdai.kori.presentation.viewModel.AppViewModel
 
 @Composable
 fun MainScreen(
     viewModel: AppViewModel = koinViewModel(),
+    appLockManager: AppLockManager = koinInject(),
     navigateToScreen: (Screen) -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -58,17 +61,20 @@ fun MainScreen(
                     templatesCount = templatesCount,
                     trashNotesCount = trashNotesCount,
                     foldersWithNoteCounts = foldersWithNoteCounts,
-                    selectedItem = currentDrawerItem
+                    selectedItem = currentDrawerItem,
+                    isAppProtected = isAppProtected
                 ),
-                showLockIconButton = isAppProtected,
                 navigateToScreen = navigateToScreen,
+                onLockClick = {
+                    appLockManager.lock()
+                    if (!isLargeScreen) {
+                        scope.launch { drawerState.close() }
+                    }
+                },
                 onItemClick = { item ->
                     currentDrawerItem = item
                     if (!isLargeScreen) {
-                        // 如果不是大屏幕，点击后关闭抽屉
-                        scope.launch {
-                            drawerState.close()
-                        }
+                        scope.launch { drawerState.close() }
                     }
                 }
             )

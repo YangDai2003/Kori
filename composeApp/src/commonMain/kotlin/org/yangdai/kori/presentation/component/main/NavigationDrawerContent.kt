@@ -55,12 +55,10 @@ import kori.composeapp.generated.resources.settings
 import kori.composeapp.generated.resources.templates
 import kori.composeapp.generated.resources.trash
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 import org.yangdai.kori.data.local.dao.FolderDao.FolderWithNoteCount
 import org.yangdai.kori.data.local.entity.FolderEntity
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.navigation.Screen
-import org.yangdai.kori.presentation.util.AppLockManager
 
 /**
  * 抽屉状态数据类，用于统一管理抽屉中需要显示的所有数据
@@ -70,7 +68,8 @@ data class DrawerState(
     val templatesCount: Int = 0,
     val trashNotesCount: Int = 0,
     val foldersWithNoteCounts: List<FolderWithNoteCount> = emptyList(),
-    val selectedItem: DrawerItem = DrawerItem.AllNotes
+    val selectedItem: DrawerItem = DrawerItem.AllNotes,
+    val isAppProtected: Boolean = false
 )
 
 @Composable
@@ -203,9 +202,8 @@ sealed class DrawerItem(val id: String) {
 
 @Composable
 fun NavigationDrawerContent(
-    appLockManager: AppLockManager = koinInject(),
-    showLockIconButton: Boolean,
     drawerState: DrawerState,
+    onLockClick: () -> Unit,
     navigateToScreen: (Screen) -> Unit,
     onItemClick: (DrawerItem) -> Unit
 ) {
@@ -226,11 +224,11 @@ fun NavigationDrawerContent(
                 maxLines = 1,
                 modifier = Modifier.weight(1f).padding(start = 12.dp)
             )
-            if (showLockIconButton)
+            if (drawerState.isAppProtected)
                 TooltipIconButton(
                     tipText = stringResource(Res.string.lock),
                     icon = Icons.Outlined.Lock,
-                    onClick = { appLockManager.lock() }
+                    onClick = onLockClick
                 )
             TooltipIconButton(
                 tipText = stringResource(Res.string.settings),
