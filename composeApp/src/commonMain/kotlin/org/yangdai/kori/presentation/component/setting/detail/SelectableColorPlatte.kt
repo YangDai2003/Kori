@@ -33,7 +33,7 @@ fun SelectableColorPlatte(
 ) = Surface(
     modifier = modifier,
     shape = MaterialTheme.shapes.large,
-    color = MaterialTheme.colorScheme.surfaceContainer
+    color = MaterialTheme.colorScheme.surfaceContainerHigh
 ) {
     Surface(
         modifier = Modifier

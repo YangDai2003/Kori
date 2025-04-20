@@ -48,15 +48,15 @@ fun SettingsListPane(
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
         topBar = {
             PlatformStyleTopAppBar(
                 title = { PlatformStyleTopAppBarTitle(stringResource(Res.string.settings)) },
                 navigationIcon = { PlatformStyleTopAppBarNavigationIcon(onClick = navigateUp) },
                 colors = TopAppBarDefaults.topAppBarColors()
                     .copy(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                        scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                        scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
                     ),
                 scrollBehavior = scrollBehavior
             )

@@ -2,6 +2,9 @@ package org.yangdai.kori.presentation.screen
 
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
@@ -15,6 +18,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import kotlinx.coroutines.launch
 import org.yangdai.kori.presentation.component.setting.SettingsDetailPane
@@ -42,6 +46,7 @@ fun SettingsScreen(navigateUp: () -> Unit) {
     }
 
     ListDetailPaneScaffold(
+        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceContainer),
         directive = navigator.scaffoldDirective,
         value = navigator.scaffoldValue,
         listPane = {
@@ -59,6 +64,7 @@ fun SettingsScreen(navigateUp: () -> Unit) {
                 }
             }
         },
+        paneExpansionDragHandle = {},
         detailPane = {
             AnimatedPane(
                 enterTransition = slideInHorizontally { it },

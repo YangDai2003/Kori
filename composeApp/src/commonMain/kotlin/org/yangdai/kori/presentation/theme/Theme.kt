@@ -147,18 +147,10 @@ fun processAmoledMode(
             surface = darkenColor(colorScheme.surface, backgroundDimmingFactor),
             surfaceContainer = darkenColor(colorScheme.surfaceContainer, backgroundDimmingFactor),
             surfaceVariant = darkenColor(colorScheme.surfaceVariant, contentDimmingFactor),
-            surfaceContainerLowest = darkenColor(
-                colorScheme.surfaceContainerLowest, contentDimmingFactor
-            ),
-            surfaceContainerLow = darkenColor(
-                colorScheme.surfaceContainerLow, contentDimmingFactor
-            ),
-            surfaceContainerHigh = darkenColor(
-                colorScheme.surfaceContainerHigh, contentDimmingFactor
-            ),
-            surfaceContainerHighest = darkenColor(
-                colorScheme.surfaceContainerHighest, contentDimmingFactor
-            ),
+            surfaceContainerLowest = darkenColor(colorScheme.surfaceContainerLowest, contentDimmingFactor),
+            surfaceContainerLow = darkenColor(colorScheme.surfaceContainerLow, backgroundDimmingFactor),
+            surfaceContainerHigh = darkenColor(colorScheme.surfaceContainerHigh, contentDimmingFactor),
+            surfaceContainerHighest = darkenColor(colorScheme.surfaceContainerHighest, contentDimmingFactor),
             surfaceDim = darkenColor(colorScheme.surfaceDim, contentDimmingFactor),
             surfaceBright = darkenColor(colorScheme.surfaceBright, contentDimmingFactor),
             scrim = darkenColor(colorScheme.scrim, contentDimmingFactor),

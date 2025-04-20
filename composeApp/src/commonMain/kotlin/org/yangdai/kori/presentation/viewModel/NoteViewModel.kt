@@ -129,7 +129,7 @@ class NoteViewModel(
         viewModelScope.launch {
             if (_noteEditingState.value.id.isNotEmpty()) {
                 _noteEditingState.update {
-                    it.copy(isDeleted = true)
+                    it.copy(isDeleted = true, isPinned = false)
                 }
                 noteRepository.updateNote(
                     NoteEntity(
@@ -141,7 +141,7 @@ class NoteViewModel(
                         updatedAt = Clock.System.now().toString(),
                         isDeleted = true,
                         isTemplate = _noteEditingState.value.isTemplate,
-                        isPinned = _noteEditingState.value.isPinned,
+                        isPinned = false,
                         noteType = _noteEditingState.value.noteType
                     )
                 )

@@ -38,8 +38,10 @@ class AppViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     private var _currentFolderId by mutableStateOf<String>("")
-    private val _currentFolderNotesMap = MutableStateFlow<Map<Boolean, List<NoteEntity>>>(emptyMap())
-    val currentFolderNotesMap: StateFlow<Map<Boolean, List<NoteEntity>>> = _currentFolderNotesMap.asStateFlow()
+    private val _currentFolderNotesMap =
+        MutableStateFlow<Map<Boolean, List<NoteEntity>>>(emptyMap())
+    val currentFolderNotesMap: StateFlow<Map<Boolean, List<NoteEntity>>> =
+        _currentFolderNotesMap.asStateFlow()
 
     private val _searchResults = MutableStateFlow<List<NoteEntity>>(emptyList())
     val searchResults: StateFlow<List<NoteEntity>> = _searchResults.asStateFlow()
@@ -68,16 +70,14 @@ class AppViewModel(
         .distinctUntilChanged()
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val allNotesMap: StateFlow<Map<Boolean, List<NoteEntity>>> = _noteSortTypeFlow
+    val allNotes: StateFlow<List<NoteEntity>> = _noteSortTypeFlow
         .flatMapLatest { sortType ->
             noteRepository.getAllNotes(sortType)
-                .map { notes -> notes.groupBy { it.isPinned } }
-                .flowOn(Dispatchers.Default)
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = emptyMap()
+            initialValue = emptyList()
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -195,7 +195,7 @@ class AppViewModel(
             noteIds.forEach { noteId ->
                 val note = noteRepository.getNoteById(noteId)
                 note?.let {
-                    val trashNote = it.copy(isDeleted = true)
+                    val trashNote = it.copy(isDeleted = true, isPinned = false)
                     noteRepository.updateNote(trashNote)
                 }
             }

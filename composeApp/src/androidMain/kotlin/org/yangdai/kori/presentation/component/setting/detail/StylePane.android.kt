@@ -70,7 +70,7 @@ actual fun StylePane(settingsViewModel: SettingsViewModel) {
                     .sizeIn(maxWidth = 380.dp)
                     .padding(16.dp)
                     .clip(MaterialTheme.shapes.large)
-                    .background(MaterialTheme.colorScheme.surfaceContainer)
+                    .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                     .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {

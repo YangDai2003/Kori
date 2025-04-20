@@ -13,7 +13,7 @@ import org.yangdai.kori.currentPlatform
 @Composable
 fun rememberIsScreenSizeLarge(): Boolean {
     val windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    val isLargeScreen by remember(windowSizeClass) {
+    val isLargeScreen by remember(windowSizeClass.windowWidthSizeClass) {
         derivedStateOf {
             windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED
         }

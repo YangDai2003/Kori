@@ -69,7 +69,8 @@ private fun PermanentNavigationDrawerScreen(
 ) = PermanentNavigationDrawer(
     drawerContent = {
         PermanentDrawerSheet(
-            drawerContainerColor = MaterialTheme.colorScheme.surfaceContainerLow
+            modifier = Modifier.width(320.dp),
+            drawerContainerColor = MaterialTheme.colorScheme.surfaceContainer
         ) {
             drawerContent()
         }

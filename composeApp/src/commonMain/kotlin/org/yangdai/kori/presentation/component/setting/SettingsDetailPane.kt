@@ -14,6 +14,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -121,7 +122,7 @@ fun SettingsDetailPaneContent(
                         WindowInsetsSides.Top + WindowInsetsSides.End
                     ),
                     colors = TopAppBarDefaults.topAppBarColors()
-                        .copy(scrolledContainerColor = TopAppBarDefaults.topAppBarColors().containerColor),
+                        .copy(containerColor = MaterialTheme.colorScheme.surfaceContainer),
                     scrollBehavior = scrollBehavior
                 )
             } else {
@@ -130,11 +131,12 @@ fun SettingsDetailPaneContent(
                     navigationIcon = navigationIcon,
                     actions = actions,
                     colors = TopAppBarDefaults.topAppBarColors()
-                        .copy(scrolledContainerColor = TopAppBarDefaults.topAppBarColors().containerColor),
+                        .copy(containerColor = MaterialTheme.colorScheme.surfaceContainer),
                     scrollBehavior = scrollBehavior
                 )
             }
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) { innerPadding ->
         val layoutDirection = LocalLayoutDirection.current
         Box(

@@ -20,7 +20,7 @@ fun SettingsListSection(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceBright.copy(alpha = 0.6f)
+        color = MaterialTheme.colorScheme.surfaceBright.copy(alpha = 0.7f)
     ) {
         Column {
             content.forEachIndexed { index, item ->

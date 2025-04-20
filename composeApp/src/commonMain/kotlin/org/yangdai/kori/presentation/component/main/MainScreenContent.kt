@@ -2,6 +2,7 @@ package org.yangdai.kori.presentation.component.main
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,8 +20,13 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.DriveFileMove
 import androidx.compose.material.icons.filled.Close
@@ -48,6 +54,8 @@ import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -61,11 +69,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.ExperimentalWindowCoreApi
+import androidx.window.core.layout.WindowSizeClass
+import androidx.window.core.layout.WindowWidthSizeClass
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.all_notes
 import kori.composeapp.generated.resources.checked
@@ -95,7 +111,10 @@ import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
 import org.yangdai.kori.presentation.viewModel.AppViewModel
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class,
+    ExperimentalWindowCoreApi::class
+)
 @Composable
 fun MainScreenContent(
     viewModel: AppViewModel,
@@ -111,7 +130,7 @@ fun MainScreenContent(
             selectedNotes.isNotEmpty()
         }
     }
-
+    val isLargeScreen = rememberIsScreenSizeLarge()
     BackHandler(enabled = isSelectionMode) {
         selectedNotes.clear()
     }
@@ -175,7 +194,13 @@ fun MainScreenContent(
                                     selectedNotes.clear()
                                 }
                             )
-                        }
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors()
+                            .copy(
+                                containerColor =
+                                    if (isLargeScreen) MaterialTheme.colorScheme.surfaceContainer
+                                    else MaterialTheme.colorScheme.surfaceColorAtElevation(0.1.dp)
+                            )
                     )
                 } else {
                     // 常规模式的顶部应用栏
@@ -238,7 +263,13 @@ fun MainScreenContent(
                                     }
                                 }
                             },
-                            navigationIcon = navigationIcon
+                            navigationIcon = navigationIcon,
+                            colors = TopAppBarDefaults.topAppBarColors()
+                                .copy(
+                                    containerColor =
+                                        if (isLargeScreen) MaterialTheme.colorScheme.surfaceContainer
+                                        else MaterialTheme.colorScheme.surfaceColorAtElevation(0.1.dp)
+                                )
                         )
                 }
             }
@@ -253,7 +284,8 @@ fun MainScreenContent(
                 ) {
                     Icon(Icons.Default.Edit, contentDescription = "创建笔记")
                 }
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) { innerPadding ->
         val page = when (currentDrawerItem) {
             DrawerItem.AllNotes -> 0
@@ -266,15 +298,38 @@ fun MainScreenContent(
             selectedNotes.clear()
             pagerState.scrollToPage(page)
         }
-        val contentPadding = remember(innerPadding) {
-            PaddingValues(
-                start = 16.dp,
-                end = 16.dp,
-                bottom = innerPadding.calculateBottomPadding()
-            )
+        val contentPadding by remember(innerPadding, isLargeScreen) {
+            derivedStateOf {
+                PaddingValues(
+                    top = if (isLargeScreen) 16.dp else 0.dp,
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = innerPadding.calculateBottomPadding()
+                )
+            }
         }
+        var size by remember { mutableStateOf(IntSize.Zero) }
+        val density = LocalDensity.current
+        val columns by remember(size, density) {
+            derivedStateOf {
+                val windowSizeClass: WindowSizeClass =
+                    WindowSizeClass.compute(size.width, size.height, density.density)
+                when (windowSizeClass.windowWidthSizeClass) {
+                    WindowWidthSizeClass.COMPACT -> 1
+                    WindowWidthSizeClass.MEDIUM -> 2
+                    WindowWidthSizeClass.EXPANDED -> 3
+                    else -> 1
+                }
+            }
+        }
+
         VerticalPager(
-            modifier = Modifier.fillMaxSize().padding(top = innerPadding.calculateTopPadding()),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = innerPadding.calculateTopPadding())
+                .clip(if (isLargeScreen) RoundedCornerShape(topStart = 8.dp) else RectangleShape)
+                .background(MaterialTheme.colorScheme.surfaceColorAtElevation(0.1.dp))
+                .onSizeChanged { size = it },
             state = pagerState,
             userScrollEnabled = false
         ) { pager ->
@@ -302,7 +357,6 @@ fun MainScreenContent(
                                         onExpandedChange = { expanded = it },
                                         placeholder = { Text(text = stringResource(Res.string.search)) },
                                         leadingIcon = {
-                                            val isLargeScreen = rememberIsScreenSizeLarge()
                                             AnimatedContent(isLargeScreen || expanded) { showSearchIcon ->
                                                 if (showSearchIcon)
                                                     IconButton(
@@ -392,41 +446,43 @@ fun MainScreenContent(
                                 }
                             }
 
-                        val notesMap by viewModel.allNotesMap.collectAsStateWithLifecycle()
+                        val allNotes by viewModel.allNotes.collectAsStateWithLifecycle()
                         val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()
                         val statusBarPadding =
                             WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-                        val paddingValue = remember(isSelectionMode) {
-                            if (isSelectionMode) {
-                                PaddingValues(
-                                    start = 16.dp,
-                                    end = 16.dp,
-                                    bottom = innerPadding.calculateBottomPadding()
-                                )
-                            } else {
-                                PaddingValues(
-                                    top = 72.dp + statusBarPadding,
-                                    start = 16.dp,
-                                    end = 16.dp,
-                                    bottom = innerPadding.calculateBottomPadding()
-                                )
-                            }
+                        val paddingValue = if (isSelectionMode) {
+                            PaddingValues(
+                                top = 16.dp,
+                                start = 16.dp,
+                                end = 16.dp,
+                                bottom = innerPadding.calculateBottomPadding()
+                            )
+                        } else {
+                            PaddingValues(
+                                top = 74.dp + statusBarPadding,
+                                start = 16.dp,
+                                end = 16.dp,
+                                bottom = innerPadding.calculateBottomPadding()
+                            )
                         }
+
                         AnimatedContent(inputText.isNotBlank() && !expanded) { showSearchRes ->
                             if (showSearchRes)
                                 Page(
-                                    notesMap = mapOf(false to searchResults),
+                                    notes = searchResults,
                                     contentPadding = paddingValue,
                                     navigateToScreen = navigateToScreen,
                                     selectedNotes = selectedNotes,
+                                    columns = columns,
                                     isSelectionMode = isSelectionMode
                                 )
                             else
                                 Page(
-                                    notesMap = notesMap,
+                                    notes = allNotes,
                                     contentPadding = paddingValue,
                                     navigateToScreen = navigateToScreen,
                                     selectedNotes = selectedNotes,
+                                    columns = columns,
                                     isSelectionMode = isSelectionMode
                                 )
                         }
@@ -436,10 +492,11 @@ fun MainScreenContent(
                 1 -> {
                     val notes by viewModel.templateNotes.collectAsStateWithLifecycle()
                     Page(
-                        notesMap = mapOf(false to notes),
+                        notes = notes,
                         contentPadding = contentPadding,
                         navigateToScreen = navigateToScreen,
                         selectedNotes = selectedNotes,
+                        columns = columns,
                         isSelectionMode = isSelectionMode
                     )
                 }
@@ -447,10 +504,11 @@ fun MainScreenContent(
                 2 -> {
                     val notes by viewModel.trashNotes.collectAsStateWithLifecycle()
                     Page(
-                        notesMap = mapOf(false to notes),
+                        notes = notes,
                         contentPadding = contentPadding,
                         navigateToScreen = { },
                         selectedNotes = selectedNotes,
+                        columns = columns,
                         isSelectionMode = isSelectionMode
                     )
                 }
@@ -462,11 +520,12 @@ fun MainScreenContent(
                         LaunchedEffect(folderId) {
                             viewModel.loadNotesByFolder(folderId)
                         }
-                        Page(
+                        GroupedPage(
                             notesMap = notesMap,
                             contentPadding = contentPadding,
                             navigateToScreen = navigateToScreen,
                             selectedNotes = selectedNotes,
+                            columns = columns,
                             isSelectionMode = isSelectionMode
                         )
                     }
@@ -500,9 +559,10 @@ fun MainScreenContent(
 }
 
 @Composable
-fun Page(
+fun GroupedPage(
     notesMap: Map<Boolean, List<NoteEntity>>,
     contentPadding: PaddingValues,
+    columns: Int,
     navigateToScreen: (Screen) -> Unit,
     selectedNotes: MutableSet<String>,
     isSelectionMode: Boolean
@@ -513,13 +573,13 @@ fun Page(
         LazyVerticalGrid(
             modifier = Modifier.fillMaxSize(),
             contentPadding = contentPadding,
-            columns = GridCells.Adaptive(380.dp),
+            columns = GridCells.Fixed(columns),
             state = state,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             if (!notesMap[true].isNullOrEmpty())
-                stickyHeader {
-                    Surface {
+                stickyHeader(key = "pinned") {
+                    Surface(color = MaterialTheme.colorScheme.surfaceColorAtElevation(0.1.dp)) {
                         Text(
                             modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
                             text = stringResource(Res.string.pinned),
@@ -556,8 +616,8 @@ fun Page(
             }
 
             if (notesMap.size == 2)
-                stickyHeader {
-                    Surface {
+                stickyHeader(key = "others") {
+                    Surface(color = MaterialTheme.colorScheme.surfaceColorAtElevation(0.1.dp)) {
                         Text(
                             modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
                             text = stringResource(Res.string.others),
@@ -573,19 +633,16 @@ fun Page(
                     isSelectionMode = isSelectionMode,
                     onClick = {
                         if (isSelectionMode) {
-                            // 在多选模式下，点击切换选中状态
                             if (selectedNotes.contains(note.id)) {
                                 selectedNotes.remove(note.id)
                             } else {
                                 selectedNotes.add(note.id)
                             }
                         } else {
-                            // 正常导航到笔记详情
                             navigateToScreen(Screen.Note(note.id))
                         }
                     },
                     onLongClick = {
-                        // 长按进��多选模式
                         if (!isSelectionMode) {
                             selectedNotes.add(note.id)
                         }
@@ -597,5 +654,52 @@ fun Page(
             modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
             state = state
         )
+    }
+}
+
+@Composable
+fun Page(
+    notes: List<NoteEntity>,
+    contentPadding: PaddingValues,
+    columns: Int,
+    navigateToScreen: (Screen) -> Unit,
+    selectedNotes: MutableSet<String>,
+    isSelectionMode: Boolean
+) {
+    val state = rememberLazyStaggeredGridState()
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Fixed(columns),
+        modifier = Modifier.fillMaxSize(),
+        state = state,
+        contentPadding = contentPadding,
+        verticalItemSpacing = 8.dp,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(notes, key = { it.id }) { note ->
+            NoteItem(
+                note = note,
+                isSelected = selectedNotes.contains(note.id),
+                isSelectionMode = isSelectionMode,
+                onClick = {
+                    if (isSelectionMode) {
+                        // 在多选模式下，点击切换选中状态
+                        if (selectedNotes.contains(note.id)) {
+                            selectedNotes.remove(note.id)
+                        } else {
+                            selectedNotes.add(note.id)
+                        }
+                    } else {
+                        // 正常导航到笔记详情
+                        navigateToScreen(Screen.Note(note.id))
+                    }
+                },
+                onLongClick = {
+                    // 长按进入多选模式
+                    if (!isSelectionMode) {
+                        selectedNotes.add(note.id)
+                    }
+                }
+            )
+        }
     }
 }
