@@ -174,7 +174,8 @@ fun ModifyFolderDialog(
                             id = folder.id,
                             name = text,
                             colorValue = color,
-                            isStarred = isStarred
+                            isStarred = isStarred,
+                            createdAt = folder.createdAt
                         )
                     )
 
