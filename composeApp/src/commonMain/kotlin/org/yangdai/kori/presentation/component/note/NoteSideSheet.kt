@@ -91,6 +91,7 @@ fun NoteSideSheet(
     outline: HeaderNode,
     onHeaderClick: (IntRange) -> Unit,
     navigateTo: (Screen) -> Unit,
+    scrimColor: Color = MaterialTheme.colorScheme.scrim,
     actionContent: @Composable ColumnScope.() -> Unit,
     drawerContent: @Composable ColumnScope.() -> Unit
 ) {
@@ -149,7 +150,7 @@ fun NoteSideSheet(
             } else Modifier
 
             Canvas(modifier = Modifier.fillMaxSize().then(scrimModifier)) {
-                drawRect(Color.Black, alpha = maskAlpha.value)
+                drawRect(scrimColor, alpha = maskAlpha.value)
             }
 
             Column(

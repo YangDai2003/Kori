@@ -9,11 +9,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridItemScope
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -182,10 +186,16 @@ fun LazyStaggeredGridItemScope.NoteItem(
                 // 底部行：笔记类型和更新时间信息
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(top = 12.dp)
-                        .alpha(0.7f)
+                    modifier = Modifier.padding(top = 12.dp)
                 ) {
+
+                    if (note.isPinned)
+                        Icon(
+                            modifier = Modifier.padding(end = 8.dp).size(16.dp),
+                            imageVector = Icons.Default.PushPin,
+                            tint = MaterialTheme.colorScheme.primary,
+                            contentDescription = null,
+                        )
 
                     Text(
                         text = when (note.noteType) {
@@ -195,7 +205,7 @@ fun LazyStaggeredGridItemScope.NoteItem(
                             else -> "未指定"
                         },
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -216,7 +226,7 @@ fun LazyStaggeredGridItemScope.NoteItem(
                     Text(
                         text = updatedAtFormatted,
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                     )
                 }
             }

@@ -199,7 +199,7 @@ fun MainScreenContent(
                             .copy(
                                 containerColor =
                                     if (isLargeScreen) MaterialTheme.colorScheme.surfaceContainer
-                                    else MaterialTheme.colorScheme.surfaceColorAtElevation(0.1.dp)
+                                    else MaterialTheme.colorScheme.surfaceColorAtElevation(0.2.dp)
                             )
                     )
                 } else {
@@ -268,7 +268,7 @@ fun MainScreenContent(
                                 .copy(
                                     containerColor =
                                         if (isLargeScreen) MaterialTheme.colorScheme.surfaceContainer
-                                        else MaterialTheme.colorScheme.surfaceColorAtElevation(0.1.dp)
+                                        else MaterialTheme.colorScheme.surfaceColorAtElevation(0.2.dp)
                                 )
                         )
                 }
@@ -328,7 +328,7 @@ fun MainScreenContent(
                 .fillMaxSize()
                 .padding(top = innerPadding.calculateTopPadding())
                 .clip(if (isLargeScreen) RoundedCornerShape(topStart = 8.dp) else RectangleShape)
-                .background(MaterialTheme.colorScheme.surfaceColorAtElevation(0.1.dp))
+                .background(MaterialTheme.colorScheme.surfaceColorAtElevation(0.2.dp))
                 .onSizeChanged { size = it },
             state = pagerState,
             userScrollEnabled = false
@@ -579,7 +579,7 @@ fun GroupedPage(
         ) {
             if (!notesMap[true].isNullOrEmpty())
                 stickyHeader(key = "pinned") {
-                    Surface(color = MaterialTheme.colorScheme.surfaceColorAtElevation(0.1.dp)) {
+                    Surface(color = MaterialTheme.colorScheme.surfaceColorAtElevation(0.2.dp)) {
                         Text(
                             modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
                             text = stringResource(Res.string.pinned),
@@ -617,7 +617,7 @@ fun GroupedPage(
 
             if (notesMap.size == 2)
                 stickyHeader(key = "others") {
-                    Surface(color = MaterialTheme.colorScheme.surfaceColorAtElevation(0.1.dp)) {
+                    Surface(color = MaterialTheme.colorScheme.surfaceColorAtElevation(0.2.dp)) {
                         Text(
                             modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
                             text = stringResource(Res.string.others),
