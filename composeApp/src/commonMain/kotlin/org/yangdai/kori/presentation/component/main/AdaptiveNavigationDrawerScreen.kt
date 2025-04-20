@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DrawerState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.PermanentDrawerSheet
@@ -67,7 +68,9 @@ private fun PermanentNavigationDrawerScreen(
     content: @Composable () -> Unit
 ) = PermanentNavigationDrawer(
     drawerContent = {
-        PermanentDrawerSheet {
+        PermanentDrawerSheet(
+            drawerContainerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        ) {
             drawerContent()
         }
     },

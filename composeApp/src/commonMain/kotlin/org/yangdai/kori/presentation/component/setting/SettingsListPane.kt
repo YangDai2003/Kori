@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.PermDeviceInformation
 import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,15 +48,15 @@ fun SettingsListPane(
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
         topBar = {
             PlatformStyleTopAppBar(
                 title = { PlatformStyleTopAppBarTitle(stringResource(Res.string.settings)) },
                 navigationIcon = { PlatformStyleTopAppBarNavigationIcon(onClick = navigateUp) },
                 colors = TopAppBarDefaults.topAppBarColors()
                     .copy(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                        scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                        scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainerLow
                     ),
                 scrollBehavior = scrollBehavior
             )
@@ -76,7 +77,7 @@ fun SettingsListPane(
                         title = stringResource(Res.string.style),
                         description = stringResource(Res.string.dark_mode)
                                 + "  •  " + stringResource(Res.string.color_platte),
-                        icon = Icons.Outlined.Edit,
+                        icon = Icons.Outlined.Palette,
                         onClick = { navigateToDetail(0) }
                     )
                 },
