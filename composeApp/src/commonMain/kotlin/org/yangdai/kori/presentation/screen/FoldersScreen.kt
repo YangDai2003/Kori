@@ -153,7 +153,7 @@ fun FoldersScreen(
                     end = 16.dp,
                     bottom = innerPadding.calculateBottomPadding()
                 ),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (!groupedFolders[true].isNullOrEmpty())
                     stickyHeader {
@@ -344,7 +344,7 @@ fun LazyGridItemScope.FolderItem(
             }
         },
         modifier = Modifier
-            .padding(bottom = 16.dp)
+            .padding(bottom = 8.dp)
             .clip(CardDefaults.elevatedShape)
             .animateItem()
     ) {
