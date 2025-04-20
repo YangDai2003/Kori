@@ -36,6 +36,7 @@ import org.yangdai.kori.data.local.entity.NoteType
 @Composable
 fun LazyGridItemScope.NoteItem(
     note: NoteEntity,
+    showCreatedTime: Boolean,
     isSelected: Boolean = false,
     isSelectionMode: Boolean = false,
     onClick: () -> Unit,
@@ -102,7 +103,8 @@ fun LazyGridItemScope.NoteItem(
 
                     // 格式化更新时间
                     val updatedAtFormatted = try {
-                        val instant = Instant.parse(note.updatedAt)
+                        val instant = if (showCreatedTime) Instant.parse(note.createdAt)
+                        else Instant.parse(note.updatedAt)
                         val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
                         val month = localDateTime.monthNumber.toString().padStart(2, '0')
                         val day = localDateTime.dayOfMonth.toString().padStart(2, '0')
@@ -110,7 +112,7 @@ fun LazyGridItemScope.NoteItem(
                         val minute = localDateTime.minute.toString().padStart(2, '0')
                         "${localDateTime.year}-$month-$day $hour:$minute"
                     } catch (_: Exception) {
-                        note.updatedAt
+                        if (showCreatedTime) note.createdAt else note.updatedAt
                     }
 
                     Text(
@@ -138,6 +140,7 @@ fun LazyGridItemScope.NoteItem(
 @Composable
 fun LazyStaggeredGridItemScope.NoteItem(
     note: NoteEntity,
+    showCreatedTime: Boolean,
     isSelected: Boolean = false,
     isSelectionMode: Boolean = false,
     onClick: () -> Unit,
@@ -210,7 +213,8 @@ fun LazyStaggeredGridItemScope.NoteItem(
 
                     // 格式化更新时间
                     val updatedAtFormatted = try {
-                        val instant = Instant.parse(note.updatedAt)
+                        val instant = if (showCreatedTime) Instant.parse(note.createdAt)
+                        else Instant.parse(note.updatedAt)
                         val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
                         val month = localDateTime.monthNumber.toString().padStart(2, '0')
                         val day = localDateTime.dayOfMonth.toString().padStart(2, '0')
@@ -218,7 +222,7 @@ fun LazyStaggeredGridItemScope.NoteItem(
                         val minute = localDateTime.minute.toString().padStart(2, '0')
                         "${localDateTime.year}-$month-$day $hour:$minute"
                     } catch (_: Exception) {
-                        note.updatedAt
+                        if (showCreatedTime) note.createdAt else note.updatedAt
                     }
 
                     Text(

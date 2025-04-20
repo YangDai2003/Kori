@@ -103,6 +103,7 @@ import kori.composeapp.generated.resources.trash
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.NoteEntity
+import org.yangdai.kori.domain.sort.NoteSortType
 import org.yangdai.kori.presentation.component.LazyGridScrollbar
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
 import org.yangdai.kori.presentation.component.TooltipIconButton
@@ -327,7 +328,14 @@ fun MainScreenContent(
                 }
             }
         }
-
+        val showCreatedTime by remember(viewModel.noteSortType) {
+            derivedStateOf {
+                when (viewModel.noteSortType) {
+                    NoteSortType.CREATE_TIME_DESC, NoteSortType.CREATE_TIME_ASC -> true
+                    else -> false
+                }
+            }
+        }
         VerticalPager(
             modifier = Modifier
                 .padding(top = innerPadding.calculateTopPadding())
@@ -485,6 +493,7 @@ fun MainScreenContent(
                                     navigateToScreen = navigateToScreen,
                                     selectedNotes = selectedNotes,
                                     columns = columns,
+                                    showCreatedTime = showCreatedTime,
                                     isSelectionMode = isSelectionMode
                                 )
                             else
@@ -494,6 +503,7 @@ fun MainScreenContent(
                                     navigateToScreen = navigateToScreen,
                                     selectedNotes = selectedNotes,
                                     columns = columns,
+                                    showCreatedTime = showCreatedTime,
                                     isSelectionMode = isSelectionMode
                                 )
                         }
@@ -508,6 +518,7 @@ fun MainScreenContent(
                         navigateToScreen = navigateToScreen,
                         selectedNotes = selectedNotes,
                         columns = columns,
+                        showCreatedTime = showCreatedTime,
                         isSelectionMode = isSelectionMode
                     )
                 }
@@ -520,6 +531,7 @@ fun MainScreenContent(
                         navigateToScreen = { },
                         selectedNotes = selectedNotes,
                         columns = columns,
+                        showCreatedTime = showCreatedTime,
                         isSelectionMode = isSelectionMode
                     )
                 }
@@ -537,6 +549,7 @@ fun MainScreenContent(
                             navigateToScreen = navigateToScreen,
                             selectedNotes = selectedNotes,
                             columns = columns,
+                            showCreatedTime = showCreatedTime,
                             isSelectionMode = isSelectionMode
                         )
                     }
@@ -574,6 +587,7 @@ fun GroupedPage(
     notesMap: Map<Boolean, List<NoteEntity>>,
     contentPadding: PaddingValues,
     columns: Int,
+    showCreatedTime: Boolean,
     navigateToScreen: (Screen) -> Unit,
     selectedNotes: MutableSet<String>,
     isSelectionMode: Boolean
@@ -602,6 +616,7 @@ fun GroupedPage(
             items(notesMap[true] ?: emptyList(), key = { it.id }) { note ->
                 NoteItem(
                     note = note,
+                    showCreatedTime = showCreatedTime,
                     isSelected = selectedNotes.contains(note.id),
                     isSelectionMode = isSelectionMode,
                     onClick = {
@@ -640,6 +655,7 @@ fun GroupedPage(
             items(notesMap[false] ?: emptyList(), key = { it.id }) { note ->
                 NoteItem(
                     note = note,
+                    showCreatedTime = showCreatedTime,
                     isSelected = selectedNotes.contains(note.id),
                     isSelectionMode = isSelectionMode,
                     onClick = {
@@ -673,6 +689,7 @@ fun Page(
     notes: List<NoteEntity>,
     contentPadding: PaddingValues,
     columns: Int,
+    showCreatedTime: Boolean,
     navigateToScreen: (Screen) -> Unit,
     selectedNotes: MutableSet<String>,
     isSelectionMode: Boolean
@@ -689,6 +706,7 @@ fun Page(
         items(notes, key = { it.id }) { note ->
             NoteItem(
                 note = note,
+                showCreatedTime = showCreatedTime,
                 isSelected = selectedNotes.contains(note.id),
                 isSelectionMode = isSelectionMode,
                 onClick = {
