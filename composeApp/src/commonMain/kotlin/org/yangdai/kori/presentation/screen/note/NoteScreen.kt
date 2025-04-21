@@ -44,10 +44,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.all_notes
+import kori.composeapp.generated.resources.char_count
 import kori.composeapp.generated.resources.content
+import kori.composeapp.generated.resources.created
 import kori.composeapp.generated.resources.delete
+import kori.composeapp.generated.resources.line_count
+import kori.composeapp.generated.resources.paragraph_count
 import kori.composeapp.generated.resources.right_panel_open
 import kori.composeapp.generated.resources.title
+import kori.composeapp.generated.resources.updated
+import kori.composeapp.generated.resources.word_count
+import kori.composeapp.generated.resources.word_count_without_punctuation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
@@ -64,7 +71,6 @@ import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.event.UiEvent
 import org.yangdai.kori.presentation.navigation.Screen
-import org.yangdai.kori.presentation.screen.note.NoteViewModel
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalUuidApi::class)
@@ -78,6 +84,7 @@ fun NoteScreen(
 
     val foldersWithNoteCounts by viewModel.foldersWithNoteCounts.collectAsStateWithLifecycle()
     val noteEditingState by viewModel.noteEditingState.collectAsStateWithLifecycle()
+    val textState by viewModel.textState.collectAsStateWithLifecycle()
 
     // 确保屏幕旋转等配置变更时，不会重复加载笔记
     var lastLoadedNoteId by rememberSaveable { mutableStateOf<String?>(null) }
@@ -244,16 +251,32 @@ fun NoteScreen(
         },
         drawerContent = {
             NoteSideSheetItem(
-                key = "UUID",
-                value = noteEditingState.id
-            )
-            NoteSideSheetItem(
-                key = "Created At",
+                key = stringResource(Res.string.created),
                 value = noteEditingState.createdAt
             )
             NoteSideSheetItem(
-                key = "Updated At",
+                key = stringResource(Res.string.updated),
                 value = noteEditingState.updatedAt
+            )
+            NoteSideSheetItem(
+                key = stringResource(Res.string.char_count),
+                value = textState.charCount.toString()
+            )
+            NoteSideSheetItem(
+                key = stringResource(Res.string.word_count),
+                value = textState.wordCountWithPunctuation.toString()
+            )
+            NoteSideSheetItem(
+                key = stringResource(Res.string.word_count_without_punctuation),
+                value = textState.wordCountWithoutPunctuation.toString()
+            )
+            NoteSideSheetItem(
+                key = stringResource(Res.string.line_count),
+                value = textState.lineCount.toString()
+            )
+            NoteSideSheetItem(
+                key = stringResource(Res.string.paragraph_count),
+                value = textState.paragraphCount.toString()
             )
         }
     )

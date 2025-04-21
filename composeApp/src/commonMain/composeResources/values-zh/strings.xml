@@ -69,4 +69,12 @@
     <string name="system_default">系统默认</string>
     <string name="light">浅色模式</string>
     <string name="dark">深色模式</string>
+
+    <string name="created">创建于</string>
+    <string name="updated">更新于</string>
+    <string name="char_count">字符数</string>
+    <string name="word_count">词数</string>
+    <string name="word_count_without_punctuation">词数(不含标点符号)</string>
+    <string name="line_count">行数</string>
+    <string name="paragraph_count">段落数</string>
 </resources>

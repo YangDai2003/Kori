@@ -69,4 +69,12 @@
     <string name="system_default">Systemvorgabe</string>
     <string name="light">Lichtmodus</string>
     <string name="dark">Dunkelmodus</string>
+
+    <string name="created">Erstellt</string>
+    <string name="updated">Aktualisiert</string>
+    <string name="char_count">Zeichen</string>
+    <string name="word_count">Wörter</string>
+    <string name="word_count_without_punctuation">Wörter (ohne Satzzeichen)</string>
+    <string name="line_count">Zeilen</string>
+    <string name="paragraph_count">Absätze</string>
 </resources>

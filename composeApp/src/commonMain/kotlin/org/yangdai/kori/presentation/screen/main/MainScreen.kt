@@ -26,7 +26,6 @@ import org.yangdai.kori.presentation.component.main.NavigationDrawerContent
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.util.AppLockManager
 import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
-import org.yangdai.kori.presentation.screen.main.AppViewModel
 
 @Composable
 fun MainScreen(

@@ -2,9 +2,12 @@ package org.yangdai.kori.presentation.screen.note
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -12,9 +15,12 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -26,7 +32,6 @@ import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.domain.sort.FolderSortType
 import org.yangdai.kori.presentation.event.UiEvent
-import org.yangdai.kori.presentation.screen.note.NoteEditingState
 import org.yangdai.kori.presentation.util.Constants
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -39,6 +44,17 @@ class NoteViewModel(
     // 笔记状态
     val titleState = TextFieldState()
     val contentState = TextFieldState()
+    val contentSnapshotFlow = snapshotFlow { contentState.text }
+
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    val textState = contentSnapshotFlow.debounce(100).distinctUntilChanged()
+        .mapLatest { TextState.fromText(it) }
+        .flowOn(Dispatchers.Default)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Companion.WhileSubscribed(5_000L),
+            initialValue = TextState()
+        )
 
     private val _noteEditingState = MutableStateFlow<NoteEditingState>(NoteEditingState())
     val noteEditingState: StateFlow<NoteEditingState> = _noteEditingState.asStateFlow()

@@ -70,4 +70,12 @@
     <string name="system_default">System default</string>
     <string name="light">Light mode</string>
     <string name="dark">Dark mode</string>
+
+    <string name="created">Created</string>
+    <string name="updated">Updated</string>
+    <string name="char_count">Characters</string>
+    <string name="word_count">Words</string>
+    <string name="word_count_without_punctuation">Words (excluding punctuation)</string>
+    <string name="line_count">Lines</string>
+    <string name="paragraph_count">Paragraphs</string>
 </resources>
