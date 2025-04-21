@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.screen
+package org.yangdai.kori.presentation.screen.note
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.basicMarquee
@@ -63,7 +63,8 @@ import org.yangdai.kori.presentation.component.note.HeaderNode
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.event.UiEvent
-import org.yangdai.kori.presentation.viewModel.NoteViewModel
+import org.yangdai.kori.presentation.navigation.Screen
+import org.yangdai.kori.presentation.screen.note.NoteViewModel
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalUuidApi::class)
@@ -71,6 +72,7 @@ import kotlin.uuid.ExperimentalUuidApi
 fun NoteScreen(
     viewModel: NoteViewModel = koinViewModel(),
     noteId: String,
+    navigateToScreen: (Screen) -> Unit,
     navigateUp: () -> Unit
 ) {
 
@@ -111,6 +113,7 @@ fun NoteScreen(
     var isSearching by remember { mutableStateOf(false) }
     var findAndReplaceState by remember { mutableStateOf(FindAndReplaceState()) }
     var isSideSheetOpen by rememberSaveable { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -219,7 +222,7 @@ fun NoteScreen(
         onDismiss = { isSideSheetOpen = false },
         outline = HeaderNode(title = "test", level = 1, range = IntRange(0, 0)),
         onHeaderClick = {},
-        navigateTo = {},
+        navigateTo = { navigateToScreen(it) },
         actionContent = {
             IconToggleButton(
                 checked = noteEditingState.isPinned,

@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.screen
+package org.yangdai.kori.presentation.screen.main
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -26,7 +26,7 @@ import org.yangdai.kori.presentation.component.main.NavigationDrawerContent
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.util.AppLockManager
 import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
-import org.yangdai.kori.presentation.viewModel.AppViewModel
+import org.yangdai.kori.presentation.screen.main.AppViewModel
 
 @Composable
 fun MainScreen(

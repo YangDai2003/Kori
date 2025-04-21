@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.screen
+package org.yangdai.kori.presentation.screen.settings
 
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally

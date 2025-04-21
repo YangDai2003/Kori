@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.state
+package org.yangdai.kori.presentation.screen.settings
 
 data class StylePaneState(
     val theme: AppTheme = AppTheme.SYSTEM,

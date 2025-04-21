@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.viewModel
+package org.yangdai.kori.presentation.screen.folders
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,7 +34,7 @@ class FoldersViewModel(
     val foldersMap: StateFlow<Map<Boolean, List<FolderDao.FolderWithNoteCount>>> =
         dataStoreRepository
             .intFlow(Constants.Preferences.FOLDER_SORT_TYPE)
-            .map { FolderSortType.fromValue(it).also { sortType -> folderSortType = sortType } }
+            .map { FolderSortType.Companion.fromValue(it).also { sortType -> folderSortType = sortType } }
             .distinctUntilChanged()
             .flatMapLatest { sortType ->
                 folderRepository.getFoldersWithNoteCounts(sortType)
@@ -43,7 +43,7 @@ class FoldersViewModel(
             }
             .stateIn(
                 scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000L),
+                started = SharingStarted.Companion.WhileSubscribed(5_000L),
                 initialValue = emptyMap()
             )
 

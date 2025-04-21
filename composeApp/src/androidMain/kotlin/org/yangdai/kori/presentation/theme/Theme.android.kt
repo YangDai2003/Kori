@@ -10,7 +10,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import org.yangdai.kori.presentation.state.AppColor
+import org.yangdai.kori.presentation.screen.settings.AppColor
 
 @Composable
 actual fun KoriTheme(

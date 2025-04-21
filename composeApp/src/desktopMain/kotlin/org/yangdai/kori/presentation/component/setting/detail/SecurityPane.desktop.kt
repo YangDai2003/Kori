@@ -26,7 +26,7 @@ import kori.composeapp.generated.resources.password_description
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.setting.DetailPaneItem
 import org.yangdai.kori.presentation.util.Constants
-import org.yangdai.kori.presentation.viewModel.SettingsViewModel
+import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 
 @Composable
 actual fun SecurityPane(settingsViewModel: SettingsViewModel) {

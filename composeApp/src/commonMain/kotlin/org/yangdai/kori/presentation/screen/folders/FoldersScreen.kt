@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.screen
+package org.yangdai.kori.presentation.screen.folders
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -86,7 +86,7 @@ import org.yangdai.kori.presentation.component.dialog.FolderSortOptionDialog
 import org.yangdai.kori.presentation.component.dialog.ModifyFolderDialog
 import org.yangdai.kori.presentation.component.dialog.WarningDialog
 import org.yangdai.kori.presentation.util.rememberCurrentPlatform
-import org.yangdai.kori.presentation.viewModel.FoldersViewModel
+import org.yangdai.kori.presentation.screen.folders.FoldersViewModel
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 

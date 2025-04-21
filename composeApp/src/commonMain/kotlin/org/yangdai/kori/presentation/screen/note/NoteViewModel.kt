@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.viewModel
+package org.yangdai.kori.presentation.screen.note
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -26,7 +26,7 @@ import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.domain.sort.FolderSortType
 import org.yangdai.kori.presentation.event.UiEvent
-import org.yangdai.kori.presentation.state.NoteEditingState
+import org.yangdai.kori.presentation.screen.note.NoteEditingState
 import org.yangdai.kori.presentation.util.Constants
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -46,14 +46,14 @@ class NoteViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val foldersWithNoteCounts: StateFlow<List<FolderDao.FolderWithNoteCount>> = dataStoreRepository
         .intFlow(Constants.Preferences.FOLDER_SORT_TYPE)
-        .map { FolderSortType.fromValue(it) }
+        .map { FolderSortType.Companion.fromValue(it) }
         .distinctUntilChanged()
         .flatMapLatest { sortType ->
             folderRepository.getFoldersWithNoteCounts(sortType)
         }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
+            started = SharingStarted.Companion.WhileSubscribed(5_000L),
             initialValue = emptyList()
         )
 
@@ -114,7 +114,7 @@ class NoteViewModel(
                 noteType = _noteEditingState.value.noteType
             )
             if (noteEntity.id.isEmpty() && (noteEntity.title.isNotBlank() || noteEntity.content.isNotBlank())) {
-                noteRepository.insertNote(noteEntity.copy(id = Uuid.random().toString()))
+                noteRepository.insertNote(noteEntity.copy(id = Uuid.Companion.random().toString()))
             } else {
                 if (oNote.title != noteEntity.title || oNote.content != noteEntity.content ||
                     oNote.folderId != noteEntity.folderId || oNote.isTemplate != noteEntity.isTemplate ||

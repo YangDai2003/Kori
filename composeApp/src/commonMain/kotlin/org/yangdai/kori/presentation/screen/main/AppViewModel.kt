@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.viewModel
+package org.yangdai.kori.presentation.screen.main
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,7 +35,7 @@ class AppViewModel(
     val isAppProtected: StateFlow<Boolean> = dataStoreRepository
         .stringFlow(Constants.Preferences.PASSWORD)
         .map { password -> password.isNotEmpty() }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+        .stateIn(viewModelScope, SharingStarted.Companion.Eagerly, false)
 
     private var _currentFolderId by mutableStateOf<String>("")
     private val _currentFolderNotesMap =
@@ -48,17 +48,17 @@ class AppViewModel(
 
     val searchHistorySet: StateFlow<Set<String>> = dataStoreRepository
         .stringSetFlow(Constants.Preferences.SEARCH_HISTORY)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptySet())
+        .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), emptySet())
 
     // 计数
     val activeNotesCount = noteRepository.getActiveNotesCount()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
+        .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), 0)
 
     val trashNotesCount = noteRepository.getTrashNotesCount()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
+        .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), 0)
 
     val templateNotesCount = noteRepository.getTemplatesCount()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
+        .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), 0)
 
     // 排序相关
     var noteSortType by mutableStateOf(NoteSortType.UPDATE_TIME_DESC)
@@ -66,7 +66,7 @@ class AppViewModel(
 
     private val _noteSortTypeFlow = dataStoreRepository
         .intFlow(Constants.Preferences.NOTE_SORT_TYPE)
-        .map { NoteSortType.fromValue(it).also { sortType -> noteSortType = sortType } }
+        .map { NoteSortType.Companion.fromValue(it).also { sortType -> noteSortType = sortType } }
         .distinctUntilChanged()
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -76,7 +76,7 @@ class AppViewModel(
         }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
+            started = SharingStarted.Companion.WhileSubscribed(5_000L),
             initialValue = emptyList()
         )
 
@@ -87,7 +87,7 @@ class AppViewModel(
         }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
+            started = SharingStarted.Companion.WhileSubscribed(5_000L),
             initialValue = emptyList()
         )
 
@@ -98,7 +98,7 @@ class AppViewModel(
         }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
+            started = SharingStarted.Companion.WhileSubscribed(5_000L),
             initialValue = emptyList()
         )
 
@@ -108,14 +108,14 @@ class AppViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val foldersWithNoteCounts: StateFlow<List<FolderDao.FolderWithNoteCount>> = dataStoreRepository
         .intFlow(Constants.Preferences.FOLDER_SORT_TYPE)
-        .map { FolderSortType.fromValue(it).also { sortType -> folderSortType = sortType } }
+        .map { FolderSortType.Companion.fromValue(it).also { sortType -> folderSortType = sortType } }
         .distinctUntilChanged()
         .flatMapLatest { sortType ->
             folderRepository.getFoldersWithNoteCounts(sortType)
         }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
+            started = SharingStarted.Companion.WhileSubscribed(5_000L),
             initialValue = emptyList()
         )
 

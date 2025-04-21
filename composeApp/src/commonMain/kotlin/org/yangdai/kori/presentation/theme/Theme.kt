@@ -14,7 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
-import org.yangdai.kori.presentation.state.AppColor
+import org.yangdai.kori.presentation.screen.settings.AppColor
 
 // 色彩过渡动画时长常量（毫秒）
 private const val COLOR_ANIMATION_DURATION = 700

@@ -2,7 +2,7 @@ package org.yangdai.kori.presentation.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import org.yangdai.kori.presentation.state.AppColor
+import org.yangdai.kori.presentation.screen.settings.AppColor
 
 @Composable
 actual fun KoriTheme(

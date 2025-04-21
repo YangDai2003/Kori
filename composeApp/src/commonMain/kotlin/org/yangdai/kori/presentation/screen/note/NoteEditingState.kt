@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.state
+package org.yangdai.kori.presentation.screen.note
 
 import org.yangdai.kori.data.local.entity.NoteType
 

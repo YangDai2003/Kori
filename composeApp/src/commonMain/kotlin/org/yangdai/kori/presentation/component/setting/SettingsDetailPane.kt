@@ -43,7 +43,7 @@ import org.yangdai.kori.presentation.component.setting.detail.AboutPane
 import org.yangdai.kori.presentation.component.setting.detail.SecurityPane
 import org.yangdai.kori.presentation.component.setting.detail.StylePane
 import org.yangdai.kori.presentation.util.rememberCurrentPlatform
-import org.yangdai.kori.presentation.viewModel.SettingsViewModel
+import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 
 @Composable
 fun SettingsDetailPane(

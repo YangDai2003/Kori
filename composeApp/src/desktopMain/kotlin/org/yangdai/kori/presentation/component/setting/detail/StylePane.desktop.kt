@@ -43,17 +43,17 @@ import kori.composeapp.generated.resources.light
 import kori.composeapp.generated.resources.system_default
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.setting.SettingsHeader
-import org.yangdai.kori.presentation.state.AppColor
-import org.yangdai.kori.presentation.state.AppColor.Companion.toInt
-import org.yangdai.kori.presentation.state.AppTheme
-import org.yangdai.kori.presentation.state.AppTheme.Companion.toInt
+import org.yangdai.kori.presentation.screen.settings.AppColor
+import org.yangdai.kori.presentation.screen.settings.AppColor.Companion.toInt
+import org.yangdai.kori.presentation.screen.settings.AppTheme
+import org.yangdai.kori.presentation.screen.settings.AppTheme.Companion.toInt
 import org.yangdai.kori.presentation.theme.DarkBlueColors
 import org.yangdai.kori.presentation.theme.DarkGreenColors
 import org.yangdai.kori.presentation.theme.DarkOrangeColors
 import org.yangdai.kori.presentation.theme.DarkPurpleColors
 import org.yangdai.kori.presentation.theme.DarkRedColors
 import org.yangdai.kori.presentation.util.Constants
-import org.yangdai.kori.presentation.viewModel.SettingsViewModel
+import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 
 @Composable
 actual fun StylePane(settingsViewModel: SettingsViewModel) {

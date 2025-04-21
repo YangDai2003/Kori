@@ -6,10 +6,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import org.yangdai.kori.presentation.screen.FoldersScreen
-import org.yangdai.kori.presentation.screen.MainScreen
-import org.yangdai.kori.presentation.screen.NoteScreen
-import org.yangdai.kori.presentation.screen.SettingsScreen
+import org.yangdai.kori.presentation.screen.folders.FoldersScreen
+import org.yangdai.kori.presentation.screen.main.MainScreen
+import org.yangdai.kori.presentation.screen.note.NoteScreen
+import org.yangdai.kori.presentation.screen.settings.SettingsScreen
 
 @Composable
 actual fun AppNavHost(
@@ -40,7 +40,7 @@ actual fun AppNavHost(
 
     composable<Screen.Note> {
         val route = it.toRoute<Screen.Note>()
-        NoteScreen(noteId = route.id) {
+        NoteScreen(noteId = route.id, navigateToScreen = { navHostController.navigate(it) }) {
             navHostController.navigateUp()
         }
     }

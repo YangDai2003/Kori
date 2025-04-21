@@ -111,7 +111,7 @@ import org.yangdai.kori.presentation.component.dialog.FoldersDialog
 import org.yangdai.kori.presentation.component.dialog.NoteSortOptionDialog
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
-import org.yangdai.kori.presentation.viewModel.AppViewModel
+import org.yangdai.kori.presentation.screen.main.AppViewModel
 
 private val surfaceElevation = 0.4.dp
 
