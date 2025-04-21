@@ -198,11 +198,7 @@ fun MainScreenContent(
                             )
                         },
                         colors = TopAppBarDefaults.topAppBarColors()
-                            .copy(
-                                containerColor =
-                                    if (isLargeScreen) MaterialTheme.colorScheme.surfaceContainer
-                                    else MaterialTheme.colorScheme.surfaceColorAtElevation(surfaceElevation)
-                            )
+                            .copy(containerColor = Color.Transparent)
                     )
                 } else {
                     // 常规模式的顶部应用栏
@@ -273,11 +269,7 @@ fun MainScreenContent(
                             },
                             navigationIcon = navigationIcon,
                             colors = TopAppBarDefaults.topAppBarColors()
-                                .copy(
-                                    containerColor =
-                                        if (isLargeScreen) MaterialTheme.colorScheme.surfaceContainer
-                                        else MaterialTheme.colorScheme.surfaceColorAtElevation(surfaceElevation)
-                                )
+                                .copy(containerColor = Color.Transparent)
                         )
                 }
             }
@@ -293,7 +285,8 @@ fun MainScreenContent(
                     Icon(Icons.Default.Edit, contentDescription = "创建笔记")
                 }
         },
-        containerColor = MaterialTheme.colorScheme.surfaceContainer
+        containerColor = if (isLargeScreen) MaterialTheme.colorScheme.surfaceContainer
+        else MaterialTheme.colorScheme.surfaceColorAtElevation(surfaceElevation)
     ) { innerPadding ->
         val page = when (currentDrawerItem) {
             DrawerItem.AllNotes -> 0
@@ -352,6 +345,8 @@ fun MainScreenContent(
                 .background(MaterialTheme.colorScheme.surfaceColorAtElevation(surfaceElevation))
                 .onSizeChanged { size = it },
             state = pagerState,
+            beyondViewportPageCount = 1,
+            key = { it },
             userScrollEnabled = false
         ) { pager ->
             when (pager) {
@@ -606,7 +601,9 @@ fun GroupedPage(
         ) {
             if (!notesMap[true].isNullOrEmpty())
                 stickyHeader(key = "pinned") {
-                    Surface(color = MaterialTheme.colorScheme.surfaceColorAtElevation(surfaceElevation)) {
+                    Surface(
+                        color = MaterialTheme.colorScheme.surfaceColorAtElevation(surfaceElevation)
+                    ) {
                         Text(
                             modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
                             text = stringResource(Res.string.pinned),
@@ -645,7 +642,9 @@ fun GroupedPage(
 
             if (notesMap.size == 2)
                 stickyHeader(key = "others") {
-                    Surface(color = MaterialTheme.colorScheme.surfaceColorAtElevation(surfaceElevation)) {
+                    Surface(
+                        color = MaterialTheme.colorScheme.surfaceColorAtElevation(surfaceElevation)
+                    ) {
                         Text(
                             modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
                             text = stringResource(Res.string.others),
