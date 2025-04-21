@@ -11,7 +11,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Colorize
 import androidx.compose.material.icons.outlined.Star
@@ -23,7 +28,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -45,6 +49,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
@@ -55,6 +60,7 @@ import kori.composeapp.generated.resources.name
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.FolderEntity
+import org.yangdai.kori.presentation.component.HorizontalScrollbar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,9 +70,13 @@ fun ModifyFolderDialog(
     onModify: (FolderEntity) -> Unit
 ) {
     var isStarred by remember { mutableStateOf(folder.isStarred) }
-    var text by remember { mutableStateOf(folder.name) }
+    val textFieldState = rememberTextFieldState(initialText = folder.name)
     var color by remember { mutableLongStateOf(folder.colorValue) }
     var isError by remember { mutableStateOf(false) }
+    LaunchedEffect(textFieldState.text) {
+        isError = false
+    }
+
     val custom = !FolderEntity.colors.contains(Color(color))
     val initValue =
         if (folder.colorValue == FolderEntity.defaultColorValue) 0
@@ -74,15 +84,19 @@ fun ModifyFolderDialog(
         else FolderEntity.colors.indexOf(Color(folder.colorValue)) + 1
     var selectedIndex by remember { mutableIntStateOf(initValue) }
 
-    var showDialog by remember {
-        mutableStateOf(false)
-    }
+    var showColorPicker by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val bottomSheetState =
         rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
     val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
 
     AlertDialog(
+        modifier = Modifier.clickable(
+            indication = null,
+            interactionSource = null
+        ) { focusManager.clearFocus() },
         title = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -107,47 +121,59 @@ fun ModifyFolderDialog(
             Column {
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
-                    value = text,
-                    onValueChange = {
-                        text = it
-                        isError = false // 当用户输入时重置错误状态
-                    },
-                    singleLine = true,
+                    state = textFieldState,
+                    lineLimits = TextFieldLineLimits.SingleLine,
                     isError = isError,
-                    placeholder = { Text(text = stringResource(Res.string.name)) },
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        textColor = MaterialTheme.colorScheme.onSurface,
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        errorBorderColor = MaterialTheme.colorScheme.error,
+                        placeholderColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    placeholder = { Text(text = stringResource(Res.string.name)) }
                 )
-                LazyRow(
-                    modifier = Modifier.padding(vertical = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
+                Box {
+                    val state = rememberLazyListState()
+                    LazyRow(
+                        state = state,
+                        modifier = Modifier.padding(vertical = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
 
-                    items(FolderEntity.colors.size + 2) {
-                        when (it) {
-                            0 -> {
-                                ColoredCircle2(selected = 0 == selectedIndex) {
-                                    selectedIndex = 0
+                        items(FolderEntity.colors.size + 2) {
+                            when (it) {
+                                0 -> {
+                                    ColoredCircle2(selected = 0 == selectedIndex) {
+                                        selectedIndex = 0
+                                    }
                                 }
-                            }
 
-                            FolderEntity.colors.size + 1 -> {
-                                ColoredCircle3(
-                                    background = if (custom) Color(color) else Color.Black,
-                                    selected = FolderEntity.colors.size + 1 == selectedIndex
-                                ) {
-                                    selectedIndex = FolderEntity.colors.size + 1
-                                    showDialog = true
+                                FolderEntity.colors.size + 1 -> {
+                                    ColoredCircle3(
+                                        background = if (custom) Color(color) else Color.Black,
+                                        selected = FolderEntity.colors.size + 1 == selectedIndex
+                                    ) {
+                                        selectedIndex = FolderEntity.colors.size + 1
+                                        showColorPicker = true
+                                    }
                                 }
-                            }
 
-                            else -> {
-                                ColoredCircle(
-                                    color = FolderEntity.colors[it - 1],
-                                    selected = it == selectedIndex,
-                                    onClick = { selectedIndex = it }
-                                )
+                                else -> {
+                                    ColoredCircle(
+                                        color = FolderEntity.colors[it - 1],
+                                        selected = it == selectedIndex,
+                                        onClick = { selectedIndex = it }
+                                    )
+                                }
                             }
                         }
                     }
+                    HorizontalScrollbar(
+                        state = state,
+                        modifier = Modifier.align(Alignment.BottomStart).fillMaxWidth()
+                    )
                 }
             }
         },
@@ -156,7 +182,7 @@ fun ModifyFolderDialog(
             val haptic = LocalHapticFeedback.current
             Button(
                 onClick = {
-                    if (text.isBlank()) {
+                    if (textFieldState.text.isBlank()) {
                         isError = true
                         return@Button
                     }
@@ -172,7 +198,7 @@ fun ModifyFolderDialog(
                     onModify(
                         FolderEntity(
                             id = folder.id,
-                            name = text,
+                            name = textFieldState.text.toString(),
                             colorValue = color,
                             isStarred = isStarred,
                             createdAt = folder.createdAt
@@ -196,16 +222,16 @@ fun ModifyFolderDialog(
         focusRequester.requestFocus()
     }
 
-    if (showDialog) {
+    if (showColorPicker) {
         ColorPickerBottomSheet(
             initialColor = if (custom) Color(color) else Color.White,
             sheetState = bottomSheetState,
-            onDismissRequest = { showDialog = false }
+            onDismissRequest = { showColorPicker = false }
         ) {
             color = it.toLong()
             scope.launch { bottomSheetState.hide() }.invokeOnCompletion {
                 if (!bottomSheetState.isVisible) {
-                    showDialog = false
+                    showColorPicker = false
                 }
             }
         }
