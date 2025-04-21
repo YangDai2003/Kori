@@ -29,7 +29,7 @@ fun PlatformStyleTopAppBar(
     navigationIcon: @Composable (() -> Unit) = {},
     actions: @Composable (RowScope.() -> Unit) = {},
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
-    colors: TopAppBarColors = TopAppBarDefaults.largeTopAppBarColors(),
+    colors: TopAppBarColors? = null,
     scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
     val platform = rememberCurrentPlatform()
@@ -40,7 +40,7 @@ fun PlatformStyleTopAppBar(
             navigationIcon = navigationIcon,
             actions = actions,
             windowInsets = windowInsets,
-            colors = colors,
+            colors = colors ?: TopAppBarDefaults.topAppBarColors(),
             scrollBehavior = scrollBehavior
         )
     } else {
@@ -50,7 +50,7 @@ fun PlatformStyleTopAppBar(
             navigationIcon = navigationIcon,
             actions = actions,
             windowInsets = windowInsets,
-            colors = colors,
+            colors = colors ?: TopAppBarDefaults.largeTopAppBarColors(),
             scrollBehavior = scrollBehavior
         )
     }

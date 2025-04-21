@@ -22,7 +22,6 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -237,11 +236,7 @@ fun NoteScreen(
             TooltipIconButton(
                 tipText = stringResource(Res.string.delete),
                 icon = Icons.Outlined.Delete,
-                colors = IconButtonDefaults.iconButtonColors()
-                    .copy(contentColor = MaterialTheme.colorScheme.error),
-                onClick = {
-                    viewModel.moveNoteToTrash()
-                }
+                onClick = { viewModel.moveNoteToTrash() }
             )
         },
         drawerContent = {

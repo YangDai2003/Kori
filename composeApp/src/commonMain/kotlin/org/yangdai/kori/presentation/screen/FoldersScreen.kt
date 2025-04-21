@@ -120,9 +120,7 @@ fun FoldersScreen(
                         onClick = { showSortDialog = true },
                     )
                 },
-                scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.topAppBarColors()
-                    .copy(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+                scrollBehavior = scrollBehavior
             )
         },
         floatingActionButton = {
@@ -132,8 +130,7 @@ fun FoldersScreen(
                     contentDescription = null
                 )
             }
-        },
-        containerColor = MaterialTheme.colorScheme.surfaceContainer
+        }
     ) { innerPadding ->
         val state = rememberLazyGridState()
         val layoutDirection = LocalLayoutDirection.current
@@ -158,7 +155,7 @@ fun FoldersScreen(
             ) {
                 if (!groupedFolders[true].isNullOrEmpty())
                     stickyHeader(key = "starred") {
-                        Surface(color = MaterialTheme.colorScheme.surfaceContainer) {
+                        Surface {
                             Text(
                                 modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
                                 text = stringResource(Res.string.starred),
@@ -184,7 +181,7 @@ fun FoldersScreen(
 
                 if (groupedFolders.size == 2)
                     stickyHeader(key = "others") {
-                        Surface(color = MaterialTheme.colorScheme.surfaceContainer) {
+                        Surface {
                             Text(
                                 modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
                                 text = stringResource(Res.string.others),

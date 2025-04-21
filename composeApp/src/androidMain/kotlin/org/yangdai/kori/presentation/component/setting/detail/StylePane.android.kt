@@ -135,12 +135,9 @@ actual fun StylePane(settingsViewModel: SettingsViewModel) {
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(
-                8.dp,
-                Alignment.Start
-            )
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Spacer(modifier = Modifier.width(24.dp))
+            Spacer(modifier = Modifier.width(8.dp))
             colorSchemes.forEach { colorSchemePair ->
                 SelectableColorPlatte(
                     selected = stylePaneState.color == colorSchemePair.first,
@@ -152,7 +149,7 @@ actual fun StylePane(settingsViewModel: SettingsViewModel) {
                     )
                 }
             }
-            Spacer(modifier = Modifier.width(32.dp))
+            Spacer(modifier = Modifier.width(16.dp))
         }
 
         Row(

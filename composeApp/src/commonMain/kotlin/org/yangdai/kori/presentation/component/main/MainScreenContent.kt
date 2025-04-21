@@ -113,6 +113,8 @@ import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
 import org.yangdai.kori.presentation.viewModel.AppViewModel
 
+private val surfaceElevation = 0.4.dp
+
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class,
     ExperimentalWindowCoreApi::class
@@ -199,7 +201,7 @@ fun MainScreenContent(
                             .copy(
                                 containerColor =
                                     if (isLargeScreen) MaterialTheme.colorScheme.surfaceContainer
-                                    else MaterialTheme.colorScheme.surfaceColorAtElevation(0.2.dp)
+                                    else MaterialTheme.colorScheme.surfaceColorAtElevation(surfaceElevation)
                             )
                     )
                 } else {
@@ -254,7 +256,7 @@ fun MainScreenContent(
                                         DropdownMenuItem(
                                             leadingIcon = {
                                                 Icon(
-                                                    imageVector = Icons.Outlined.Delete,
+                                                    imageVector = Icons.Outlined.DeleteForever,
                                                     tint = MaterialTheme.colorScheme.error,
                                                     contentDescription = null
                                                 )
@@ -274,7 +276,7 @@ fun MainScreenContent(
                                 .copy(
                                     containerColor =
                                         if (isLargeScreen) MaterialTheme.colorScheme.surfaceContainer
-                                        else MaterialTheme.colorScheme.surfaceColorAtElevation(0.2.dp)
+                                        else MaterialTheme.colorScheme.surfaceColorAtElevation(surfaceElevation)
                                 )
                         )
                 }
@@ -342,12 +344,12 @@ fun MainScreenContent(
                 .fillMaxSize()
                 .graphicsLayer {
                     shape =
-                        if (isLargeScreen && currentDrawerItem !is DrawerItem.AllNotes)
+                        if ((isLargeScreen && currentDrawerItem !is DrawerItem.AllNotes) || isSelectionMode)
                             RoundedCornerShape(topStart = 8.dp)
                         else RectangleShape
                     clip = true
                 }
-                .background(MaterialTheme.colorScheme.surfaceColorAtElevation(0.2.dp))
+                .background(MaterialTheme.colorScheme.surfaceColorAtElevation(surfaceElevation))
                 .onSizeChanged { size = it },
             state = pagerState,
             userScrollEnabled = false
@@ -478,7 +480,7 @@ fun MainScreenContent(
                             )
                         } else {
                             PaddingValues(
-                                top = 74.dp + statusBarPadding,
+                                top = 78.dp + statusBarPadding,
                                 start = 16.dp,
                                 end = 16.dp,
                                 bottom = innerPadding.calculateBottomPadding()
@@ -604,7 +606,7 @@ fun GroupedPage(
         ) {
             if (!notesMap[true].isNullOrEmpty())
                 stickyHeader(key = "pinned") {
-                    Surface(color = MaterialTheme.colorScheme.surfaceColorAtElevation(0.2.dp)) {
+                    Surface(color = MaterialTheme.colorScheme.surfaceColorAtElevation(surfaceElevation)) {
                         Text(
                             modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
                             text = stringResource(Res.string.pinned),
@@ -643,7 +645,7 @@ fun GroupedPage(
 
             if (notesMap.size == 2)
                 stickyHeader(key = "others") {
-                    Surface(color = MaterialTheme.colorScheme.surfaceColorAtElevation(0.2.dp)) {
+                    Surface(color = MaterialTheme.colorScheme.surfaceColorAtElevation(surfaceElevation)) {
                         Text(
                             modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
                             text = stringResource(Res.string.others),

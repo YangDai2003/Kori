@@ -104,8 +104,8 @@ fun NoteSideSheet(
         val drawerWidth = remember(contentWidth) {
             // 计算合适的抽屉宽度：
             // 1. 尽可能接近360dp
-            // 2. 确保与屏幕宽度至少相差80dp
-            val maxAllowedWidth = contentWidth - 80.dp
+            // 2. 确保与屏幕宽度至少相差96dp
+            val maxAllowedWidth = contentWidth - 96.dp
             min(SheetWidth, maxAllowedWidth)
         }
 
