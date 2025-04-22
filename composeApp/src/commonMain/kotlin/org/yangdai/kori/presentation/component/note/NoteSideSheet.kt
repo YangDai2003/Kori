@@ -251,7 +251,7 @@ fun NoteSideSheet(
                     // 概览标题
                     item {
                         Text(
-                            modifier = Modifier.fillMaxWidth().padding(start = 12.dp),
+                            modifier = Modifier.fillMaxWidth().padding(start = 12.dp, bottom = 4.dp),
                             text = stringResource(Res.string.overview),
                             style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurface,

@@ -119,7 +119,9 @@ fun FoldersScreen(
                         onClick = { showSortDialog = true },
                     )
                 },
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                colors = TopAppBarDefaults.topAppBarColors()
+                    .copy(scrolledContainerColor = MaterialTheme.colorScheme.surface)
             )
         },
         floatingActionButton = {

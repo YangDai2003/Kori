@@ -130,13 +130,29 @@ compose.desktop {
 
         nativeDistributions {
             macOS {
+                appCategory = "public.app-category.productivity"
                 jvmArgs(
                     "-Dapple.awt.application.appearance=system"
                 )
             }
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Exe)
+            windows {
+                dirChooser = true
+            }
+            linux {
+                debMaintainer = "https://github.com/YangDai2003"
+                appCategory = "Utility"
+            }
+            targetFormats(
+                TargetFormat.Dmg,
+                TargetFormat.Pkg,
+                TargetFormat.Msi,
+                TargetFormat.Exe,
+                TargetFormat.Deb,
+                TargetFormat.Rpm
+            )
             packageName = "org.yangdai.kori"
             packageVersion = "1.0.0"
+            description = "Compose Multiplatform App"
         }
     }
 }

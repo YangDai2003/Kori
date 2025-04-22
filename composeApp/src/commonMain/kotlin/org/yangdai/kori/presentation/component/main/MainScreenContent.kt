@@ -56,7 +56,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -110,10 +109,8 @@ import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.FoldersDialog
 import org.yangdai.kori.presentation.component.dialog.NoteSortOptionDialog
 import org.yangdai.kori.presentation.navigation.Screen
-import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
 import org.yangdai.kori.presentation.screen.main.AppViewModel
-
-private val surfaceElevation = 0.4.dp
+import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class,
@@ -282,11 +279,11 @@ fun MainScreenContent(
                         navigateToScreen(Screen.Note())
                     }
                 ) {
-                    Icon(Icons.Default.Edit, contentDescription = "创建笔记")
+                    Icon(Icons.Default.Edit, contentDescription = null)
                 }
         },
         containerColor = if (isLargeScreen) MaterialTheme.colorScheme.surfaceContainer
-        else MaterialTheme.colorScheme.surfaceColorAtElevation(surfaceElevation)
+        else MaterialTheme.colorScheme.surfaceContainerLow
     ) { innerPadding ->
         val page = when (currentDrawerItem) {
             DrawerItem.AllNotes -> 0
@@ -342,7 +339,7 @@ fun MainScreenContent(
                         else RectangleShape
                     clip = true
                 }
-                .background(MaterialTheme.colorScheme.surfaceColorAtElevation(surfaceElevation))
+                .background(MaterialTheme.colorScheme.surfaceContainerLow)
                 .onSizeChanged { size = it },
             state = pagerState,
             beyondViewportPageCount = 1,
@@ -602,7 +599,7 @@ fun GroupedPage(
             if (!notesMap[true].isNullOrEmpty())
                 stickyHeader(key = "pinned") {
                     Surface(
-                        color = MaterialTheme.colorScheme.surfaceColorAtElevation(surfaceElevation)
+                        color = MaterialTheme.colorScheme.surfaceContainerLow
                     ) {
                         Text(
                             modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
@@ -643,7 +640,7 @@ fun GroupedPage(
             if (notesMap.size == 2)
                 stickyHeader(key = "others") {
                     Surface(
-                        color = MaterialTheme.colorScheme.surfaceColorAtElevation(surfaceElevation)
+                        color = MaterialTheme.colorScheme.surfaceContainerLow
                     ) {
                         Text(
                             modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),

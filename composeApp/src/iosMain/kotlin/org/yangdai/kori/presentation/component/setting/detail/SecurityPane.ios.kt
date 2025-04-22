@@ -10,12 +10,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.LockOpen
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
@@ -25,8 +23,8 @@ import kori.composeapp.generated.resources.password
 import kori.composeapp.generated.resources.password_description
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.setting.DetailPaneItem
-import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
+import org.yangdai.kori.presentation.util.Constants
 
 @Composable
 actual fun SecurityPane(settingsViewModel: SettingsViewModel) {
@@ -42,7 +40,6 @@ actual fun SecurityPane(settingsViewModel: SettingsViewModel) {
     ) {
 
         DetailPaneItem(
-            modifier = Modifier.clip(MaterialTheme.shapes.large),
             title = stringResource(Res.string.password),
             description = stringResource(Res.string.password_description),
             icon = if (securityPaneState.password.isEmpty()) Icons.Outlined.LockOpen

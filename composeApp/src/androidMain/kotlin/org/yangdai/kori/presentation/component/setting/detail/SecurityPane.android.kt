@@ -17,12 +17,10 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.LockOpen
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -34,8 +32,8 @@ import kori.composeapp.generated.resources.password
 import kori.composeapp.generated.resources.password_description
 import org.yangdai.kori.R
 import org.yangdai.kori.presentation.component.setting.DetailPaneItem
-import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
+import org.yangdai.kori.presentation.util.Constants
 
 @Composable
 actual fun SecurityPane(settingsViewModel: SettingsViewModel) {
@@ -52,9 +50,7 @@ actual fun SecurityPane(settingsViewModel: SettingsViewModel) {
     ) {
 
         DetailPaneItem(
-            modifier = Modifier
-                .padding(bottom = 8.dp)
-                .clip(MaterialTheme.shapes.large),
+            modifier = Modifier.padding(bottom = 8.dp),
             title = stringResource(R.string.screen_protection),
             description = stringResource(R.string.screen_protection_detail),
             icon = if (securityPaneState.isScreenProtected) Icons.Outlined.VisibilityOff
@@ -77,9 +73,7 @@ actual fun SecurityPane(settingsViewModel: SettingsViewModel) {
         )
 
         DetailPaneItem(
-            modifier = Modifier
-                .padding(bottom = 8.dp)
-                .clip(MaterialTheme.shapes.large),
+            modifier = Modifier.padding(bottom = 8.dp),
             title = org.jetbrains.compose.resources.stringResource(Res.string.password),
             description = org.jetbrains.compose.resources.stringResource(Res.string.password_description),
             icon = if (securityPaneState.password.isEmpty()) Icons.Outlined.LockOpen
@@ -118,7 +112,6 @@ actual fun SecurityPane(settingsViewModel: SettingsViewModel) {
 
         AnimatedVisibility(securityPaneState.password.isNotEmpty()) {
             DetailPaneItem(
-                modifier = Modifier.clip(MaterialTheme.shapes.large),
                 title = stringResource(R.string.biometric),
                 description = "",
                 icon = Icons.Outlined.Fingerprint,

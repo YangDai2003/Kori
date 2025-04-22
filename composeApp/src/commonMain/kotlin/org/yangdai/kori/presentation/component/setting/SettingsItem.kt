@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -79,7 +80,7 @@ fun DetailPaneItem(
     colors: ListItemColors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
     trailingContent: @Composable () -> Unit = {},
 ) = ListItem(
-    modifier = modifier,
+    modifier = modifier.clip(MaterialTheme.shapes.large),
     headlineContent = {
         Text(
             modifier = Modifier.basicMarquee(),
