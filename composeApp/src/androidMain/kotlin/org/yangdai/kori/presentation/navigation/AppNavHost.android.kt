@@ -5,11 +5,13 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import org.yangdai.kori.presentation.screen.folders.FoldersScreen
 import org.yangdai.kori.presentation.screen.main.MainScreen
 import org.yangdai.kori.presentation.screen.note.NoteScreen
 import org.yangdai.kori.presentation.screen.settings.SettingsScreen
+import org.yangdai.kori.presentation.util.Constants
 
 @Composable
 actual fun AppNavHost(
@@ -45,7 +47,7 @@ actual fun AppNavHost(
         }
     }
 
-    composable<Screen.Settings> {
+    composable<Screen.Settings>(deepLinks = listOf(navDeepLink<Screen.Settings>(basePath = "${Constants.DEEP_LINK}/settings"))) {
         SettingsScreen {
             navHostController.navigateUp()
         }

@@ -25,7 +25,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.outlined.CreateNewFolder
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DriveFileRenameOutline
 import androidx.compose.material.icons.outlined.FolderDelete
 import androidx.compose.material.icons.outlined.SortByAlpha
@@ -401,9 +400,18 @@ fun LazyGridItemScope.FolderItem(
                 }
             )
             DropdownMenuItem(
-                text = { Text(stringResource(Res.string.delete)) },
+                text = {
+                    Text(
+                        text = stringResource(Res.string.delete),
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                },
                 leadingIcon = {
-                    Icon(Icons.Outlined.Delete, contentDescription = null)
+                    Icon(
+                        Icons.Outlined.FolderDelete,
+                        tint = MaterialTheme.colorScheme.error,
+                        contentDescription = null
+                    )
                 },
                 onClick = {
                     onDeleteRequest(folder)

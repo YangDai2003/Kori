@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -39,6 +40,9 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontSynthesis
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
@@ -48,6 +52,7 @@ import kori.composeapp.generated.resources.report_a_bug_or_request_a_feature
 import kori.composeapp.generated.resources.version
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.yangdai.kori.currentPlatform
 import org.yangdai.kori.presentation.component.ConfettiEffect
 import org.yangdai.kori.presentation.component.CurlyCornerShape
 
@@ -100,7 +105,7 @@ fun AboutPane() {
             Image(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .size(200.dp)
+                    .requiredSize(200.dp)
                     .padding(top = 16.dp),
                 painter = painterResource(Res.drawable.compose_multiplatform),
                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
@@ -114,16 +119,20 @@ fun AboutPane() {
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = stringResource(Res.string.app_name),
-                    style = MaterialTheme.typography.titleLarge,
+                    text = stringResource(Res.string.app_name) + " for " + currentPlatform().name,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontFamily = FontFamily.Serif,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSynthesis = FontSynthesis.Weight
+                    ),
                     textAlign = TextAlign.Center
                 )
-
-                Text(
-                    text = stringResource(Res.string.version) + " ",
-                    style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Center
-                )
+//
+//                Text(
+//                    text = stringResource(Res.string.version) + " ",
+//                    style = MaterialTheme.typography.bodySmall,
+//                    textAlign = TextAlign.Center
+//                )
             }
         }
 
