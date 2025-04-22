@@ -13,13 +13,10 @@ import androidx.compose.ui.graphics.vector.addPathNodes
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun PaletteImage(colorScheme: ColorScheme = MaterialTheme.colorScheme) {
-    val image = rememberPaletteImageVector(colorScheme)
-    Image(
-        imageVector = image,
-        contentDescription = null
-    )
-}
+fun PaletteImage(colorScheme: ColorScheme = MaterialTheme.colorScheme) = Image(
+    imageVector = rememberPaletteImageVector(colorScheme),
+    contentDescription = null
+)
 
 @Composable
 private fun rememberPaletteImageVector(colorScheme: ColorScheme): ImageVector {

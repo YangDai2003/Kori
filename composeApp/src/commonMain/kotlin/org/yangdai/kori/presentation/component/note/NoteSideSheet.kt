@@ -270,7 +270,7 @@ fun NoteSideSheet(
 
                     // 分隔线
                     item {
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                        HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
                     }
 
                     // 大纲标题
