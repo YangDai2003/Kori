@@ -28,6 +28,9 @@ interface FolderDao {
     @Query("DELETE FROM folders WHERE id = :id")
     suspend fun deleteFolderById(id: String)
 
+    @Query("DELETE FROM folders")
+    suspend fun deleteAllFolders()
+
     /**
      * 获取所有文件夹及其包含的笔记数量（按名称升序，星标文件夹优先）
      *

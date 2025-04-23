@@ -44,6 +44,7 @@ import org.yangdai.kori.presentation.screen.settings.AppTheme.Companion.toInt
 import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import org.yangdai.kori.presentation.screen.settings.StylePaneState
 import org.yangdai.kori.presentation.theme.DarkBlueColors
+import org.yangdai.kori.presentation.theme.DarkCyanColors
 import org.yangdai.kori.presentation.theme.DarkGreenColors
 import org.yangdai.kori.presentation.theme.DarkOrangeColors
 import org.yangdai.kori.presentation.theme.DarkPurpleColors
@@ -76,7 +77,8 @@ val colorSchemes = listOf(
     Pair(AppColor.BLUE, DarkBlueColors),
     Pair(AppColor.GREEN, DarkGreenColors),
     Pair(AppColor.ORANGE, DarkOrangeColors),
-    Pair(AppColor.RED, DarkRedColors)
+    Pair(AppColor.RED, DarkRedColors),
+    Pair(AppColor.CYAN, DarkCyanColors),
 )
 
 @Composable

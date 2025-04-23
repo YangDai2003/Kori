@@ -32,6 +32,9 @@ interface NoteDao {
     @Query("UPDATE notes SET is_deleted = 0")
     suspend fun restoreAllFromTrash()
 
+    @Query("DELETE FROM notes")
+    suspend fun deleteAllNotes()
+
     @Query("SELECT COUNT(*) FROM notes WHERE is_deleted = 1")
     fun getTrashNotesCount(): Flow<Int>
 
@@ -166,4 +169,3 @@ interface NoteDao {
     @Query("SELECT * FROM notes WHERE is_template = 1 AND is_deleted = 0 ORDER BY updated_at DESC")
     fun getAllTemplatesOrderByUpdatedDesc(): Flow<List<NoteEntity>>
 }
-

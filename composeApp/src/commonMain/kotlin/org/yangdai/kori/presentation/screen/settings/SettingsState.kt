@@ -30,7 +30,9 @@ enum class AppColor(private val value: Int) {
     BLUE(2),
     GREEN(3),
     ORANGE(4),
-    RED(5);
+    RED(5),
+    CYAN(6);
+
 
     companion object {
         fun fromInt(value: Int) = entries.firstOrNull { it.value == value } ?: DYNAMIC

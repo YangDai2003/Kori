@@ -18,6 +18,7 @@ actual fun KoriTheme(
         AppColor.GREEN -> if (darkMode) DarkGreenColors else LightGreenColors
         AppColor.ORANGE -> if (darkMode) DarkOrangeColors else LightOrangeColors
         AppColor.RED -> if (darkMode) DarkRedColors else LightRedColors
+        AppColor.CYAN -> if (darkMode) DarkCyanColors else LightCyanColors
         else -> if (darkMode) DarkPurpleColors else LightPurpleColors
     }
 
