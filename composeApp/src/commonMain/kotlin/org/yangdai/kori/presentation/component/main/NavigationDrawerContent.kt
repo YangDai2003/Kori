@@ -130,7 +130,7 @@ private fun FolderDrawerItem(
                         .padding(start = 8.dp)
                         .size(14.dp),
                     imageVector = Icons.Outlined.Star,
-                    tint = Color.Yellow,
+                    tint = MaterialTheme.colorScheme.tertiary,
                     contentDescription = null
                 )
             }
