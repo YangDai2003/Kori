@@ -27,6 +27,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.yangdai.kori.data.local.dao.FolderDao
 import org.yangdai.kori.data.local.entity.NoteEntity
+import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
@@ -173,10 +174,14 @@ class NoteViewModel(
     }
 
     fun toggleNotePin() {
-        viewModelScope.launch {
-            _noteEditingState.update {
-                it.copy(isPinned = !it.isPinned)
-            }
+        _noteEditingState.update {
+            it.copy(isPinned = !it.isPinned)
+        }
+    }
+
+    fun updateNoteType(noteType: NoteType) {
+        _noteEditingState.update {
+            it.copy(noteType = noteType)
         }
     }
 }

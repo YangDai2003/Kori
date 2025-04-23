@@ -37,7 +37,7 @@ import org.yangdai.kori.domain.sort.NoteSortType
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteSortOptionDialog(
-    initialNoteSortType: NoteSortType = NoteSortType.NAME_ASC,
+    oNoteSortType: NoteSortType = NoteSortType.NAME_ASC,
     onDismissRequest: () -> Unit,
     onSortTypeSelected: (NoteSortType) -> Unit
 ) {
@@ -61,10 +61,10 @@ fun NoteSortOptionDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .selectable(
-                            selected = (sortType == initialNoteSortType),
+                            selected = (sortType == oNoteSortType),
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                                if (sortType != initialNoteSortType) {
+                                if (sortType != oNoteSortType) {
                                     onSortTypeSelected(sortType)
                                 }
                                 onDismissRequest()
@@ -84,7 +84,7 @@ fun NoteSortOptionDialog(
                     },
                     trailingContent = {
                         RadioButton(
-                            selected = (sortType == initialNoteSortType),
+                            selected = (sortType == oNoteSortType),
                             onClick = null
                         )
                     },
@@ -98,7 +98,7 @@ fun NoteSortOptionDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FolderSortOptionDialog(
-    initialFolderSortType: FolderSortType = FolderSortType.NAME_ASC,
+    oFolderSortType: FolderSortType = FolderSortType.NAME_ASC,
     onDismissRequest: () -> Unit,
     onSortTypeSelected: (FolderSortType) -> Unit
 ) {
@@ -122,10 +122,10 @@ fun FolderSortOptionDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .selectable(
-                            selected = (sortType == initialFolderSortType),
+                            selected = (sortType == oFolderSortType),
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                                if (sortType != initialFolderSortType) {
+                                if (sortType != oFolderSortType) {
                                     onSortTypeSelected(sortType)
                                 }
                                 onDismissRequest()
@@ -143,7 +143,7 @@ fun FolderSortOptionDialog(
                     },
                     trailingContent = {
                         RadioButton(
-                            selected = (sortType == initialFolderSortType),
+                            selected = (sortType == oFolderSortType),
                             onClick = null
                         )
                     },

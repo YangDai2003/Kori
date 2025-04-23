@@ -70,6 +70,8 @@
     <string name="light">Lichtmodus</string>
     <string name="dark">Dunkelmodus</string>
 
+    <string name="type">Typ</string>
+    <string name="plain_text">Nur-Text</string>
     <string name="created">Erstellt</string>
     <string name="updated">Aktualisiert</string>
     <string name="char_count">Zeichen</string>

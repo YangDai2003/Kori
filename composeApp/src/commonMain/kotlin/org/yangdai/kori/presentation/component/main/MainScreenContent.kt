@@ -554,7 +554,7 @@ fun MainScreenContent(
 
     if (showSortDialog)
         NoteSortOptionDialog(
-            initialNoteSortType = viewModel.noteSortType,
+            oNoteSortType = viewModel.noteSortType,
             onDismissRequest = { showSortDialog = false },
             onSortTypeSelected = {
                 viewModel.setNoteSorting(it)

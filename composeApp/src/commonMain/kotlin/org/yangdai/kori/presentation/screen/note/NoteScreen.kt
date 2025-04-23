@@ -13,8 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.material.IconButton
-import androidx.compose.material.IconToggleButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.PushPin
@@ -22,9 +20,12 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.SwapHorizontalCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -52,9 +53,12 @@ import kori.composeapp.generated.resources.char_count
 import kori.composeapp.generated.resources.created
 import kori.composeapp.generated.resources.delete
 import kori.composeapp.generated.resources.line_count
+import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.paragraph_count
+import kori.composeapp.generated.resources.plain_text
 import kori.composeapp.generated.resources.right_panel_open
 import kori.composeapp.generated.resources.title
+import kori.composeapp.generated.resources.type
 import kori.composeapp.generated.resources.updated
 import kori.composeapp.generated.resources.word_count
 import kori.composeapp.generated.resources.word_count_without_punctuation
@@ -64,9 +68,11 @@ import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.FoldersDialog
+import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.FindAndReplaceState
 import org.yangdai.kori.presentation.component.note.HeaderNode
@@ -139,6 +145,7 @@ fun NoteScreen(
 
     val keyboardController = LocalSoftwareKeyboardController.current
     var isSideSheetOpen by rememberSaveable { mutableStateOf(false) }
+    var showNoteTypeDialog by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -265,6 +272,13 @@ fun NoteScreen(
                 )
             }
 
+            IconButton(onClick = { showNoteTypeDialog = true }) {
+                Icon(
+                    imageVector = Icons.Outlined.SwapHorizontalCircle,
+                    contentDescription = null
+                )
+            }
+
             TooltipIconButton(
                 tipText = stringResource(Res.string.delete),
                 icon = Icons.Outlined.Delete,
@@ -272,6 +286,14 @@ fun NoteScreen(
             )
         },
         drawerContent = {
+            NoteSideSheetItem(
+                key = stringResource(Res.string.type),
+                value = when (noteEditingState.noteType) {
+                    NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
+                    NoteType.LITE_MARKDOWN -> stringResource(Res.string.markdown) + " (Lite)"
+                    NoteType.STANDARD_MARKDOWN -> stringResource(Res.string.markdown) + " (Standard)"
+                }
+            )
             NoteSideSheetItem(
                 key = stringResource(Res.string.created),
                 value = noteEditingState.createdAt
@@ -311,6 +333,17 @@ fun NoteScreen(
             onSelect = { folderId ->
                 showFolderDialog = false
                 viewModel.moveNoteToFolder(folderId)
+            }
+        )
+    }
+
+    if (showNoteTypeDialog) {
+        NoteTypeDialog(
+            oNoteType = noteEditingState.noteType,
+            onDismissRequest = { showNoteTypeDialog = false },
+            onNoteTypeSelected = { noteType ->
+                showNoteTypeDialog = false
+                viewModel.updateNoteType(noteType)
             }
         )
     }

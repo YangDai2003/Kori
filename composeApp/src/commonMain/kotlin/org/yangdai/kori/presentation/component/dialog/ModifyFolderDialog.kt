@@ -65,13 +65,13 @@ import org.yangdai.kori.presentation.component.HorizontalScrollbar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModifyFolderDialog(
-    folder: FolderEntity,
+    oFolder: FolderEntity,
     onDismissRequest: () -> Unit,
     onModify: (FolderEntity) -> Unit
 ) {
-    var isStarred by remember { mutableStateOf(folder.isStarred) }
-    val textFieldState = rememberTextFieldState(initialText = folder.name)
-    var color by remember { mutableLongStateOf(folder.colorValue) }
+    var isStarred by remember { mutableStateOf(oFolder.isStarred) }
+    val textFieldState = rememberTextFieldState(initialText = oFolder.name)
+    var color by remember { mutableLongStateOf(oFolder.colorValue) }
     var isError by remember { mutableStateOf(false) }
     LaunchedEffect(textFieldState.text) {
         isError = false
@@ -79,9 +79,9 @@ fun ModifyFolderDialog(
 
     val custom = !FolderEntity.colors.contains(Color(color))
     val initValue =
-        if (folder.colorValue == FolderEntity.defaultColorValue) 0
+        if (oFolder.colorValue == FolderEntity.defaultColorValue) 0
         else if (custom) FolderEntity.colors.size + 1
-        else FolderEntity.colors.indexOf(Color(folder.colorValue)) + 1
+        else FolderEntity.colors.indexOf(Color(oFolder.colorValue)) + 1
     var selectedIndex by remember { mutableIntStateOf(initValue) }
 
     var showColorPicker by remember { mutableStateOf(false) }
@@ -197,11 +197,11 @@ fun ModifyFolderDialog(
 
                     onModify(
                         FolderEntity(
-                            id = folder.id,
+                            id = oFolder.id,
                             name = textFieldState.text.toString(),
                             colorValue = color,
                             isStarred = isStarred,
-                            createdAt = folder.createdAt
+                            createdAt = oFolder.createdAt
                         )
                     )
 
@@ -224,7 +224,7 @@ fun ModifyFolderDialog(
 
     if (showColorPicker) {
         ColorPickerBottomSheet(
-            initialColor = if (custom) Color(color) else Color.White,
+            oColor = if (custom) Color(color) else Color.White,
             sheetState = bottomSheetState,
             onDismissRequest = { showColorPicker = false }
         ) {

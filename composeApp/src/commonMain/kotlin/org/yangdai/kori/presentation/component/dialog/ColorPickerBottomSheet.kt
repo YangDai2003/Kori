@@ -43,12 +43,12 @@ import org.yangdai.kori.presentation.util.toHexColor
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColorPickerBottomSheet(
-    initialColor: Color? = null,
+    oColor: Color? = null,
     sheetState: SheetState,
     onDismissRequest: () -> Unit,
     onConfirm: (Int) -> Unit
 ) {
-    var color by remember { mutableStateOf(initialColor) }
+    var color by remember { mutableStateOf(oColor) }
     val controller = rememberColorPickerController()
 
     ModalBottomSheet(
@@ -93,21 +93,21 @@ fun ColorPickerBottomSheet(
                 onColorChanged = { colorEnvelope: ColorEnvelope ->
                     color = colorEnvelope.color // ARGB color value.
                 },
-                initialColor = initialColor
+                initialColor = oColor
             )
 
             AlphaSlider(
                 modifier = Modifier.fillMaxWidth(0.7f).height(35.dp),
                 borderRadius = 16.dp,
                 controller = controller,
-                initialColor = initialColor
+                initialColor = oColor
             )
 
             BrightnessSlider(
                 modifier = Modifier.fillMaxWidth(0.7f).height(35.dp),
                 borderRadius = 16.dp,
                 controller = controller,
-                initialColor = initialColor
+                initialColor = oColor
             )
 
             Spacer(modifier = Modifier.height(8.dp))

@@ -27,9 +27,13 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import kori.composeapp.generated.resources.Res
+import kori.composeapp.generated.resources.markdown
+import kori.composeapp.generated.resources.plain_text
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
 
@@ -91,9 +95,9 @@ fun LazyGridItemScope.NoteItem(
 
                     Text(
                         text = when (note.noteType) {
-                            NoteType.PLAIN_TEXT -> "纯文本"
-                            NoteType.LITE_MARKDOWN -> "Lite Markdown"
-                            NoteType.STANDARD_MARKDOWN -> "Standard Markdown"
+                            NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
+                            NoteType.LITE_MARKDOWN -> stringResource(Res.string.markdown) + " (Lite)"
+                            NoteType.STANDARD_MARKDOWN -> stringResource(Res.string.markdown) + " (Standard)"
                         },
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -201,9 +205,9 @@ fun LazyStaggeredGridItemScope.NoteItem(
 
                     Text(
                         text = when (note.noteType) {
-                            NoteType.PLAIN_TEXT -> "纯文本"
-                            NoteType.LITE_MARKDOWN -> "Lite Markdown"
-                            NoteType.STANDARD_MARKDOWN -> "Standard Markdown"
+                            NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
+                            NoteType.LITE_MARKDOWN -> stringResource(Res.string.markdown) + " (Lite)"
+                            NoteType.STANDARD_MARKDOWN -> stringResource(Res.string.markdown) + " (Standard)"
                         },
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)

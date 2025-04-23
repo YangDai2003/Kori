@@ -214,7 +214,7 @@ fun FoldersScreen(
 
         if (showAddFolderDialog) {
             ModifyFolderDialog(
-                folder = FolderEntity(Uuid.random().toString()),
+                oFolder = FolderEntity(Uuid.random().toString()),
                 onDismissRequest = { showAddFolderDialog = false }
             ) { viewModel.createFolder(it) }
         }
@@ -233,7 +233,7 @@ fun FoldersScreen(
 
     if (showModifyDialog && selectedFolder != null) {
         ModifyFolderDialog(
-            folder = selectedFolder!!,
+            oFolder = selectedFolder!!,
             onDismissRequest = { showModifyDialog = false }
         ) {
             viewModel.updateFolder(it)
@@ -243,7 +243,7 @@ fun FoldersScreen(
 
     if (showSortDialog)
         FolderSortOptionDialog(
-            initialFolderSortType = viewModel.folderSortType,
+            oFolderSortType = viewModel.folderSortType,
             onDismissRequest = { showSortDialog = false },
             onSortTypeSelected = { viewModel.setFolderSorting(it) }
         )
