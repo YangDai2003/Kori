@@ -14,7 +14,7 @@ import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.presentation.util.AppLockManager
-import org.yangdai.kori.presentation.screen.main.AppViewModel
+import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.screen.folders.FoldersViewModel
 import org.yangdai.kori.presentation.screen.note.NoteViewModel
 import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
@@ -26,7 +26,7 @@ fun appModule() = module {
     single<NoteRepository> { NoteRepositoryImpl(get()) }
     single<DataStoreRepository> { DataStoreRepositoryImpl(get()) }
     singleOf(::AppLockManager)
-    viewModelOf(::AppViewModel)
+    viewModelOf(::MainViewModel)
     viewModelOf(::FoldersViewModel)
     viewModelOf(::NoteViewModel)
     viewModelOf(::SettingsViewModel)

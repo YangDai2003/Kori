@@ -26,7 +26,7 @@ import org.yangdai.kori.domain.sort.FolderSortType
 import org.yangdai.kori.domain.sort.NoteSortType
 import org.yangdai.kori.presentation.util.Constants
 
-class AppViewModel(
+class MainViewModel(
     private val folderRepository: FolderRepository,
     private val noteRepository: NoteRepository,
     private val dataStoreRepository: DataStoreRepository

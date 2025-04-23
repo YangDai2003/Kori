@@ -29,7 +29,7 @@ import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
 
 @Composable
 fun MainScreen(
-    viewModel: AppViewModel = koinViewModel(),
+    viewModel: MainViewModel = koinViewModel(),
     appLockManager: AppLockManager = koinInject(),
     navigateToScreen: (Screen) -> Unit
 ) {

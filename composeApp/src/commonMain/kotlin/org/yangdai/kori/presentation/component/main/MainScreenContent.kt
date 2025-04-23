@@ -109,7 +109,7 @@ import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.FoldersDialog
 import org.yangdai.kori.presentation.component.dialog.NoteSortOptionDialog
 import org.yangdai.kori.presentation.navigation.Screen
-import org.yangdai.kori.presentation.screen.main.AppViewModel
+import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
 
 @OptIn(
@@ -118,7 +118,7 @@ import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
 )
 @Composable
 fun MainScreenContent(
-    viewModel: AppViewModel,
+    viewModel: MainViewModel,
     currentDrawerItem: DrawerItem,
     navigationIcon: @Composable () -> Unit = {},
     navigateToScreen: (Screen) -> Unit
