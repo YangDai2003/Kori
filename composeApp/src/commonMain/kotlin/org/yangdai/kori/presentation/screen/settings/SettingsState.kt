@@ -3,7 +3,8 @@ package org.yangdai.kori.presentation.screen.settings
 data class StylePaneState(
     val theme: AppTheme = AppTheme.SYSTEM,
     val color: AppColor = AppColor.DYNAMIC,
-    val isAppInAmoledMode: Boolean = false
+    val isAppInAmoledMode: Boolean = false,
+    val fontSize: Float = 1f
 )
 
 data class SecurityPaneState(
@@ -11,6 +12,16 @@ data class SecurityPaneState(
     val password: String = "",
     val isCreatingPass: Boolean = false,
     val isBiometricEnabled: Boolean = false
+)
+
+data class EditorPaneState(
+    val showLineNumber: Boolean = false,
+    val isMarkdownLintEnabled: Boolean = false
+)
+
+data class TemplatePaneState(
+    val dateFormatter: String = "",
+    val timeFormatter: String = ""
 )
 
 enum class AppTheme(private val value: Int) {

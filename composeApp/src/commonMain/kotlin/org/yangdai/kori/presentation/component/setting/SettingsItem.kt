@@ -75,8 +75,8 @@ fun ListPaneItem(
 fun DetailPaneItem(
     modifier: Modifier = Modifier,
     title: String,
-    description: String,
-    icon: ImageVector,
+    description: String? = null,
+    icon: ImageVector? = null,
     colors: ListItemColors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
     trailingContent: @Composable () -> Unit = {},
 ) = ListItem(
@@ -88,12 +88,13 @@ fun DetailPaneItem(
             maxLines = 1
         )
     },
-    supportingContent = { if (description.isNotEmpty()) Text(description) },
+    supportingContent = { if (!description.isNullOrEmpty()) Text(description) },
     leadingContent = {
-        Icon(
-            imageVector = icon,
-            contentDescription = null
-        )
+        if (icon != null)
+            Icon(
+                imageVector = icon,
+                contentDescription = null
+            )
     },
     trailingContent = trailingContent,
     colors = colors

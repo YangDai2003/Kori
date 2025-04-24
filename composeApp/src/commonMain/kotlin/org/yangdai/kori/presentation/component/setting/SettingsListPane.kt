@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.PermDeviceInformation
@@ -22,12 +23,14 @@ import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_info
 import kori.composeapp.generated.resources.color_platte
 import kori.composeapp.generated.resources.dark_mode
+import kori.composeapp.generated.resources.editor
 import kori.composeapp.generated.resources.guide
 import kori.composeapp.generated.resources.password
 import kori.composeapp.generated.resources.privacy_policy
 import kori.composeapp.generated.resources.security
 import kori.composeapp.generated.resources.settings
 import kori.composeapp.generated.resources.style
+import kori.composeapp.generated.resources.templates
 import kori.composeapp.generated.resources.version
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.Platform
@@ -85,24 +88,24 @@ fun SettingsListPane(
                 },
                 {
                     ListPaneItem(
-                        title = "Item 2",
+                        title = stringResource(Res.string.editor),
                         description = "Description for item 2",
                         icon = Icons.Outlined.Edit,
                         isSelected = selectedItem == 1,
                         onClick = { navigateToDetail(1) }
                     )
-                },
-                {
-                    ListPaneItem(
-                        title = "Item 3",
-                        description = "Description for item 3",
-                        icon = Icons.Outlined.Edit,
-                        isSelected = selectedItem == 2,
-                        onClick = { navigateToDetail(2) }
-                    )
                 }
             )
             ListPaneSection(
+                {
+                    ListPaneItem(
+                        title = stringResource(Res.string.templates),
+                        description = "Description for item 3",
+                        icon = Icons.AutoMirrored.Outlined.TextSnippet,
+                        isSelected = selectedItem == 3,
+                        onClick = { navigateToDetail(3) }
+                    )
+                },
                 {
                     ListPaneItem(
                         title = stringResource(Res.string.security),
@@ -121,8 +124,8 @@ fun SettingsListPane(
                                 + " • " + stringResource(Res.string.guide)
                                 + " • " + stringResource(Res.string.privacy_policy),
                         icon = Icons.Outlined.PermDeviceInformation,
-                        isSelected = selectedItem == 3,
-                        onClick = { navigateToDetail(3) }
+                        isSelected = selectedItem == 5,
+                        onClick = { navigateToDetail(5) }
                     )
                 }
             )

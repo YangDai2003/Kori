@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
@@ -33,6 +34,8 @@ import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.domain.sort.FolderSortType
 import org.yangdai.kori.presentation.event.UiEvent
+import org.yangdai.kori.presentation.screen.settings.EditorPaneState
+import org.yangdai.kori.presentation.screen.settings.TemplatePaneState
 import org.yangdai.kori.presentation.util.Constants
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -46,6 +49,26 @@ class NoteViewModel(
     val titleState = TextFieldState()
     val contentState = TextFieldState()
     val contentSnapshotFlow = snapshotFlow { contentState.text }
+
+    val templateState = combine(
+        dataStoreRepository.stringFlow(Constants.Preferences.DATE_FORMATTER),
+        dataStoreRepository.stringFlow(Constants.Preferences.TIME_FORMATTER)
+    ) { dateFormatter, timeFormatter ->
+        TemplatePaneState(
+            dateFormatter = dateFormatter,
+            timeFormatter = timeFormatter
+        )
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), TemplatePaneState())
+
+    val editorState = combine(
+        dataStoreRepository.booleanFlow(Constants.Preferences.SHOW_LINE_NUMBER),
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_MARKDOWN_LINT_ENABLED)
+    ) { showLineNumber, isMarkdownLintEnabled ->
+        EditorPaneState(
+            showLineNumber = showLineNumber,
+            isMarkdownLintEnabled = isMarkdownLintEnabled
+        )
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), EditorPaneState())
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     val textState = contentSnapshotFlow.debounce(100).distinctUntilChanged()

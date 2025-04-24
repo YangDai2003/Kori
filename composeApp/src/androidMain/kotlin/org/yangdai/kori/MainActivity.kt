@@ -58,7 +58,8 @@ class MainActivity : AppCompatActivity() {
                 darkMode = if (stylePaneState.theme == AppTheme.SYSTEM) isSystemInDarkTheme()
                 else stylePaneState.theme == AppTheme.DARK,
                 color = stylePaneState.color,
-                amoledMode = stylePaneState.isAppInAmoledMode
+                amoledMode = stylePaneState.isAppInAmoledMode,
+                fontScale = stylePaneState.fontSize
             ) {
                 Surface {
                     val showPassScreen by remember {

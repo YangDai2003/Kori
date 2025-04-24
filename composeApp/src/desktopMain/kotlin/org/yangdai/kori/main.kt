@@ -61,6 +61,7 @@ fun main() {
                     },
                 color = stylePaneState.color,
                 amoledMode = stylePaneState.isAppInAmoledMode,
+                fontScale = stylePaneState.fontSize
             ) {
                 Surface {
                     val showPassScreen by remember {

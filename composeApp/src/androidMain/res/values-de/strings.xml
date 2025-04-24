@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="note_editing">Notizbearbeitung</string>
+    <string name="compose">Erstellen</string>
     <string name="link">Link</string>
     <string name="table">Tabelle</string>
     <string name="undo">Rückgängig</string>

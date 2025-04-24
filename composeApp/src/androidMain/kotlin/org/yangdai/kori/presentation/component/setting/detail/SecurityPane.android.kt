@@ -113,7 +113,6 @@ actual fun SecurityPane(settingsViewModel: SettingsViewModel) {
         AnimatedVisibility(securityPaneState.password.isNotEmpty()) {
             DetailPaneItem(
                 title = stringResource(R.string.biometric),
-                description = "",
                 icon = Icons.Outlined.Fingerprint,
                 trailingContent = {
                     Switch(

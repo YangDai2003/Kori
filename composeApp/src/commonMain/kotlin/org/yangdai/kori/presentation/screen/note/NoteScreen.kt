@@ -64,6 +64,13 @@ import kori.composeapp.generated.resources.word_count
 import kori.composeapp.generated.resources.word_count_without_punctuation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.format.FormatStringsInDatetimeFormats
+import kotlinx.datetime.format.byUnicodePattern
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -83,7 +90,9 @@ import org.yangdai.kori.presentation.event.UiEvent
 import org.yangdai.kori.presentation.navigation.Screen
 import kotlin.uuid.ExperimentalUuidApi
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalUuidApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalUuidApi::class,
+    FormatStringsInDatetimeFormats::class
+)
 @Composable
 fun NoteScreen(
     viewModel: NoteViewModel = koinViewModel(),
@@ -95,6 +104,8 @@ fun NoteScreen(
     val foldersWithNoteCounts by viewModel.foldersWithNoteCounts.collectAsStateWithLifecycle()
     val noteEditingState by viewModel.noteEditingState.collectAsStateWithLifecycle()
     val textState by viewModel.textState.collectAsStateWithLifecycle()
+    val editorState by viewModel.editorState.collectAsStateWithLifecycle()
+    val templateState by viewModel.templateState.collectAsStateWithLifecycle()
 
     // 确保屏幕旋转等配置变更时，不会重复加载笔记
     var lastLoadedNoteId by rememberSaveable { mutableStateOf<String?>(null) }
@@ -244,8 +255,8 @@ fun NoteScreen(
                 state = viewModel.contentState,
                 scrollState = scrollState,
                 readMode = isReadView,
-                showLineNumbers = true,
-                isLintActive = true,
+                showLineNumbers = editorState.showLineNumber,
+                isLintActive = editorState.isMarkdownLintEnabled,
                 headerRange = selectedHeader,
                 findAndReplaceState = findAndReplaceState,
                 onFindAndReplaceUpdate = { findAndReplaceState = it },
@@ -294,14 +305,48 @@ fun NoteScreen(
                     NoteType.STANDARD_MARKDOWN -> stringResource(Res.string.markdown) + " (Standard)"
                 }
             )
+
+            var dateTimeFormatter = remember { LocalDateTime.Format { byUnicodePattern("yyyy-MM-dd HH:mm:ss") } }
+            LaunchedEffect(templateState) {
+                val dateFormatter = if (templateState.dateFormatter.isBlank()) "yyyy-MM-dd"
+                else templateState.dateFormatter
+                val timeFormatter = if (templateState.timeFormatter.isBlank()) "HH:mm:ss"
+                else templateState.timeFormatter
+                dateTimeFormatter = LocalDateTime.Format { byUnicodePattern("$dateFormatter $timeFormatter") }
+            }
+
+            var createdTime by remember { mutableStateOf("") }
+            LaunchedEffect(noteEditingState.createdAt, dateTimeFormatter) {
+                if (noteEditingState.createdAt.isNotBlank())
+                    withContext(Dispatchers.Default) {
+                        val createdInstant = Instant.parse(noteEditingState.createdAt)
+                        val createdLocalDateTime =
+                            createdInstant.toLocalDateTime(TimeZone.currentSystemDefault())
+                        createdTime = createdLocalDateTime.format(dateTimeFormatter)
+                    }
+            }
+
+            var updatedTime by remember { mutableStateOf("") }
+            LaunchedEffect(noteEditingState.updatedAt, dateTimeFormatter) {
+                if (noteEditingState.updatedAt.isNotBlank())
+                    withContext(Dispatchers.Default) {
+                        val updatedInstant = Instant.parse(noteEditingState.updatedAt)
+                        val updatedLocalDateTime =
+                            updatedInstant.toLocalDateTime(TimeZone.currentSystemDefault())
+                        updatedTime = updatedLocalDateTime.format(dateTimeFormatter)
+                    }
+            }
+
             NoteSideSheetItem(
                 key = stringResource(Res.string.created),
-                value = noteEditingState.createdAt
+                value = createdTime
             )
+
             NoteSideSheetItem(
                 key = stringResource(Res.string.updated),
-                value = noteEditingState.updatedAt
+                value = updatedTime
             )
+
             NoteSideSheetItem(
                 key = stringResource(Res.string.char_count),
                 value = textState.charCount.toString()

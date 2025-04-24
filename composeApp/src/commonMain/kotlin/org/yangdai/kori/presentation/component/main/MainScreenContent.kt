@@ -35,7 +35,7 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material.icons.outlined.RestartAlt
+import androidx.compose.material.icons.outlined.RestoreFromTrash
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SortByAlpha
 import androidx.compose.material3.DockedSearchBar
@@ -164,7 +164,7 @@ fun MainScreenContent(
                             if (currentDrawerItem is DrawerItem.Trash) {
                                 TooltipIconButton(
                                     tipText = stringResource(Res.string.restore),
-                                    icon = Icons.Outlined.RestartAlt,
+                                    icon = Icons.Outlined.RestoreFromTrash,
                                     onClick = {
                                         viewModel.restoreNotesFromTrash(selectedNotes.toSet())
                                         selectedNotes.clear()
@@ -239,7 +239,7 @@ fun MainScreenContent(
                                         DropdownMenuItem(
                                             leadingIcon = {
                                                 Icon(
-                                                    imageVector = Icons.Outlined.RestartAlt,
+                                                    imageVector = Icons.Outlined.RestoreFromTrash,
                                                     contentDescription = null
                                                 )
                                             },

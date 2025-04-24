@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
@@ -19,21 +18,28 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.outlined.FormatSize
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.dark
+import kori.composeapp.generated.resources.font_size
+import kori.composeapp.generated.resources.font_size_description
 import kori.composeapp.generated.resources.light
 import kori.composeapp.generated.resources.system_default
 import org.jetbrains.compose.resources.stringResource
@@ -108,6 +114,49 @@ fun ColorPlatteRow(
     Spacer(modifier = Modifier.width(16.dp))
 }
 
+@Composable
+fun FontSizeSlider(
+    stylePaneState: StylePaneState,
+    settingsViewModel: SettingsViewModel
+) {
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .background(
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                shape = MaterialTheme.shapes.large
+            )
+            .clip(MaterialTheme.shapes.large)
+    ) {
+        ListItem(
+            headlineContent = { Text(stringResource(Res.string.font_size)) },
+            leadingContent = {
+                Icon(
+                    imageVector = Icons.Outlined.FormatSize,
+                    contentDescription = null
+                )
+            },
+            supportingContent = { Text(stringResource(Res.string.font_size_description)) },
+            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+        )
+
+        val hapticFeedback = LocalHapticFeedback.current
+        Slider(
+            value = stylePaneState.fontSize,
+            onValueChange = {
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
+                settingsViewModel.putPreferenceValue(
+                    Constants.Preferences.FONT_SIZE,
+                    it
+                )
+            },
+            valueRange = 0.75f..1.25f,
+            steps = 9,
+            modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 4.dp)
+        )
+    }
+}
+
 
 @Composable
 fun AppThemeColumn(
@@ -132,67 +181,57 @@ fun AppThemeColumn(
             .selectableGroup()
     ) {
         modeOptions.forEachIndexed { index, text ->
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .selectable(
-                        selected = (index == stylePaneState.theme.toInt()),
-                        onClick = {
-                            hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                            if (stylePaneState.theme.toInt() != index) {
-                                when (index) {
-                                    0 -> {
-                                        settingsViewModel.putPreferenceValue(
-                                            Constants.Preferences.APP_THEME,
-                                            AppTheme.SYSTEM.toInt()
-                                        )
-                                    }
+            ListItem(
+                modifier = Modifier.selectable(
+                    selected = (index == stylePaneState.theme.toInt()),
+                    onClick = {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                        if (stylePaneState.theme.toInt() != index) {
+                            when (index) {
+                                0 -> {
+                                    settingsViewModel.putPreferenceValue(
+                                        Constants.Preferences.APP_THEME,
+                                        AppTheme.SYSTEM.toInt()
+                                    )
+                                }
 
-                                    1 -> {
-                                        settingsViewModel.putPreferenceValue(
-                                            Constants.Preferences.APP_THEME,
-                                            AppTheme.LIGHT.toInt()
-                                        )
-                                    }
+                                1 -> {
+                                    settingsViewModel.putPreferenceValue(
+                                        Constants.Preferences.APP_THEME,
+                                        AppTheme.LIGHT.toInt()
+                                    )
+                                }
 
-                                    2 -> {
-                                        settingsViewModel.putPreferenceValue(
-                                            Constants.Preferences.APP_THEME,
-                                            AppTheme.DARK.toInt()
-                                        )
-                                    }
+                                2 -> {
+                                    settingsViewModel.putPreferenceValue(
+                                        Constants.Preferences.APP_THEME,
+                                        AppTheme.DARK.toInt()
+                                    )
                                 }
                             }
-                        },
-                        role = Role.RadioButton
-                    )
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                RadioButton(
-                    selected = (index == stylePaneState.theme.toInt()),
-                    onClick = null
-                )
-
-                Icon(
-                    modifier = Modifier
-                        .padding(start = 16.dp),
-                    imageVector = when (index) {
-                        AppTheme.LIGHT.toInt() -> Icons.Default.LightMode
-                        AppTheme.DARK.toInt() -> Icons.Default.DarkMode
-                        else -> Icons.Default.BrightnessAuto
+                        }
                     },
-                    tint = MaterialTheme.colorScheme.secondary,
-                    contentDescription = null
-                )
-
-                Text(
-                    text = text,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-            }
+                    role = Role.RadioButton
+                ),
+                headlineContent = { Text(text) },
+                leadingContent = {
+                    Icon(
+                        imageVector = when (index) {
+                            AppTheme.LIGHT.toInt() -> Icons.Default.LightMode
+                            AppTheme.DARK.toInt() -> Icons.Default.DarkMode
+                            else -> Icons.Default.BrightnessAuto
+                        },
+                        contentDescription = null
+                    )
+                },
+                trailingContent = {
+                    RadioButton(
+                        selected = (index == stylePaneState.theme.toInt()),
+                        onClick = null
+                    )
+                },
+                colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
+            )
 
             if (index < modeOptions.size - 1) {
                 HorizontalDivider(

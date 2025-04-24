@@ -75,7 +75,7 @@ class DataStoreRepositoryImpl(
     override fun floatFlow(key: String): Flow<Float> {
         val preferencesKey = floatPreferencesKey(key)
         return dataStore.data.map { preferences ->
-            preferences[preferencesKey] ?: 0f
+            preferences[preferencesKey] ?: 1f
         }.flowOn(ioDispatcher)
     }
 

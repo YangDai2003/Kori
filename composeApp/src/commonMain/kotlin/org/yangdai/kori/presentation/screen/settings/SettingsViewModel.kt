@@ -16,12 +16,14 @@ class SettingsViewModel(
     val stylePaneState = combine(
         dataStoreRepository.intFlow(Constants.Preferences.APP_THEME),
         dataStoreRepository.intFlow(Constants.Preferences.APP_COLOR),
-        dataStoreRepository.booleanFlow(Constants.Preferences.IS_APP_IN_AMOLED_MODE)
-    ) { theme, color, isAppInAmoledMode ->
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_APP_IN_AMOLED_MODE),
+        dataStoreRepository.floatFlow(Constants.Preferences.FONT_SIZE)
+    ) { theme, color, isAppInAmoledMode, fontSize ->
         StylePaneState(
             theme = AppTheme.Companion.fromInt(theme),
             color = AppColor.Companion.fromInt(color),
-            isAppInAmoledMode = isAppInAmoledMode
+            isAppInAmoledMode = isAppInAmoledMode,
+            fontSize = fontSize
         )
     }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), StylePaneState())
 
@@ -38,6 +40,26 @@ class SettingsViewModel(
             isBiometricEnabled = isBiometricEnabled
         )
     }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), SecurityPaneState())
+
+    val editorPaneState = combine(
+        dataStoreRepository.booleanFlow(Constants.Preferences.SHOW_LINE_NUMBER),
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_MARKDOWN_LINT_ENABLED)
+    ) { showLineNumber, isMarkdownLintEnabled ->
+        EditorPaneState(
+            showLineNumber = showLineNumber,
+            isMarkdownLintEnabled = isMarkdownLintEnabled
+        )
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), EditorPaneState())
+
+    val templatePaneState = combine(
+        dataStoreRepository.stringFlow(Constants.Preferences.DATE_FORMATTER),
+        dataStoreRepository.stringFlow(Constants.Preferences.TIME_FORMATTER)
+    ) { dateFormatter, timeFormatter ->
+        TemplatePaneState(
+            dateFormatter = dateFormatter,
+            timeFormatter = timeFormatter
+        )
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), TemplatePaneState())
 
     fun <T> putPreferenceValue(key: String, value: T) {
         viewModelScope.launch {

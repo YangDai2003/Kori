@@ -23,6 +23,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.color_platte
 import kori.composeapp.generated.resources.dark_mode
+import kori.composeapp.generated.resources.font
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.setting.SettingsHeader
 import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
@@ -68,6 +69,10 @@ actual fun StylePane(settingsViewModel: SettingsViewModel) {
                 modifier = Modifier.padding(start = 8.dp)
             )
         }
+
+        SettingsHeader(stringResource(Res.string.font))
+
+        FontSizeSlider(stylePaneState, settingsViewModel)
 
         SettingsHeader(stringResource(Res.string.dark_mode))
 
