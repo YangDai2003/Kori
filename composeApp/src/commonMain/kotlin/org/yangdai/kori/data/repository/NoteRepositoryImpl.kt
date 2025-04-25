@@ -35,6 +35,10 @@ class NoteRepositoryImpl(
         dao.deleteNoteById(id)
     }
 
+    override suspend fun deleteNoteByIds(ids: List<String>) = withContext(ioDispatcher) {
+        dao.deleteNotesByIds(ids)
+    }
+
     override suspend fun emptyTrash() = withContext(ioDispatcher) {
         dao.emptyTrash()
     }

@@ -160,9 +160,7 @@ class MainViewModel(
 
     fun deleteNotes(noteIds: Set<String>) {
         viewModelScope.launch {
-            noteIds.forEach { noteId ->
-                noteRepository.deleteNoteById(noteId)
-            }
+            noteRepository.deleteNoteByIds(noteIds.toList())
         }
     }
 

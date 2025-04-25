@@ -10,6 +10,7 @@ interface NoteRepository {
     suspend fun updateNote(note: NoteEntity)
     suspend fun deleteNote(note: NoteEntity)
     suspend fun deleteNoteById(id: String)
+    suspend fun deleteNoteByIds(ids: List<String>)
     suspend fun emptyTrash()
     suspend fun restoreAllFromTrash()
     fun getTrashNotesCount(): Flow<Int>
