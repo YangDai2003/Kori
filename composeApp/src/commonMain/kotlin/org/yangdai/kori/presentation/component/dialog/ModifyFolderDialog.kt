@@ -108,7 +108,7 @@ fun ModifyFolderDialog(
                     checked = isStarred,
                     onCheckedChange = { isStarred = it },
                     colors = IconButtonDefaults.iconToggleButtonColors()
-                        .copy(checkedContentColor = Color.Yellow)
+                        .copy(checkedContentColor = MaterialTheme.colorScheme.tertiary)
                 ) {
                     Icon(
                         imageVector = if (isStarred) Icons.Outlined.Star else Icons.Outlined.StarOutline,

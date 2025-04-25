@@ -24,17 +24,15 @@ import org.yangdai.kori.data.di.KoinInitializer
 import org.yangdai.kori.presentation.component.login.NumberLockScreen
 import org.yangdai.kori.presentation.navigation.AppNavHost
 import org.yangdai.kori.presentation.screen.settings.AppTheme
+import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import org.yangdai.kori.presentation.theme.KoriTheme
 import org.yangdai.kori.presentation.util.AppLockManager
 import org.yangdai.kori.presentation.util.Constants
-import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 
 @OptIn(ExperimentalComposeApi::class, ExperimentalComposeUiApi::class)
 fun MainViewController() = ComposeUIViewController(
     configure = {
         KoinInitializer.init()
-        enableBackGesture = true
-        parallelRendering = true
     }
 ) {
     val settingsViewModel: SettingsViewModel = koinViewModel<SettingsViewModel>()
