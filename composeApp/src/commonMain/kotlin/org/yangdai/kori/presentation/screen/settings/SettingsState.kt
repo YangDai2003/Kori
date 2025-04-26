@@ -16,7 +16,8 @@ data class SecurityPaneState(
 
 data class EditorPaneState(
     val showLineNumber: Boolean = false,
-    val isMarkdownLintEnabled: Boolean = false
+    val isMarkdownLintEnabled: Boolean = false,
+    val isDefaultReadingView: Boolean = false
 )
 
 data class TemplatePaneState(

@@ -21,6 +21,7 @@ object Constants {
 
         const val SHOW_LINE_NUMBER = "show_line_number"
         const val IS_MARKDOWN_LINT_ENABLED = "is_markdown_lint_enabled"
+        const val IS_DEFAULT_READING_VIEW = "is_default_reading_view"
 
         const val DATE_FORMATTER = "date_formatter"
         const val TIME_FORMATTER = "time_formatter"

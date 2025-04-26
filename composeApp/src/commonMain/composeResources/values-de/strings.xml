@@ -84,6 +84,10 @@
     <string name="paragraph_count">Absätze</string>
 
     <string name="editor">Editor</string>
+    <string name="default_view_for_note">Die Standardansicht, in der Notizen geöffnet werden.</string>
+    <string name="default_view">Standardansicht</string>
+    <string name="editing_view">Bearbeitungs-Ansicht</string>
+    <string name="reading_view">Lese-Ansicht</string>
     <string name="line_numbers">Zeilennummern</string>
     <string name="lint">Lint</string>
     <string name="lint_description">Wenn aktiviert, werden im Standard Modus das Markdown-Textformat und die Syntax auf die Einhaltung der Spezifikation überprüft und Fehler mit roten Wellenlinien markiert.</string>

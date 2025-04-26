@@ -155,6 +155,11 @@ fun NoteScreen(
     }
 
     var isReadView by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(editorState.isDefaultReadingView) {
+        if (editorState.isDefaultReadingView && noteId.isNotEmpty()) {
+            isReadView = true
+        }
+    }
     var showFolderDialog by rememberSaveable { mutableStateOf(false) }
     var showTemplatesBottomSheet by rememberSaveable { mutableStateOf(false) }
     var folderName by rememberSaveable { mutableStateOf("") }
