@@ -261,10 +261,14 @@ fun MainScreenContent(
             if (currentDrawerItem !is DrawerItem.Trash && !isSelectionMode)
                 FloatingActionButton(
                     onClick = {
-                        val folderId =
-                            if (currentDrawerItem is DrawerItem.Folder) currentDrawerItem.folder.id
-                            else null
-                        navigateToScreen(Screen.Note(folderId = folderId))
+                        if (currentDrawerItem is DrawerItem.Templates)
+                            navigateToScreen(Screen.Template())
+                        else {
+                            val folderId =
+                                if (currentDrawerItem is DrawerItem.Folder) currentDrawerItem.folder.id
+                                else null
+                            navigateToScreen(Screen.Note(folderId = folderId))
+                        }
                     }
                 ) {
                     Icon(Icons.Default.Edit, contentDescription = null)
@@ -495,7 +499,7 @@ fun MainScreenContent(
 
                 1 -> {
                     val templateNotes by viewModel.templateNotes.collectAsStateWithLifecycle()
-                    Page(
+                    TemplatesPage(
                         notes = templateNotes,
                         contentPadding = contentPadding,
                         navigateToScreen = navigateToScreen,

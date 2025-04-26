@@ -11,6 +11,7 @@ import org.yangdai.kori.presentation.screen.folders.FoldersScreen
 import org.yangdai.kori.presentation.screen.main.MainScreen
 import org.yangdai.kori.presentation.screen.note.NoteScreen
 import org.yangdai.kori.presentation.screen.settings.SettingsScreen
+import org.yangdai.kori.presentation.screen.template.TemplateScreen
 import org.yangdai.kori.presentation.util.Constants
 
 @Composable
@@ -45,6 +46,16 @@ actual fun AppNavHost(
         NoteScreen(
             noteId = route.id,
             folderId = route.folderId,
+            navigateToScreen = { navHostController.navigate(it) }
+        ) {
+            navHostController.navigateUp()
+        }
+    }
+
+    composable<Screen.Template> {
+        val route = it.toRoute<Screen.Template>()
+        TemplateScreen(
+            noteId = route.id,
             navigateToScreen = { navHostController.navigate(it) }
         ) {
             navHostController.navigateUp()

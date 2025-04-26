@@ -11,6 +11,9 @@ sealed class Screen() {
     data class Note(val id: String = "", val folderId: String? = null) : Screen()
 
     @Serializable
+    data class Template(val id: String = "") : Screen()
+
+    @Serializable
     data object File : Screen()
 
     @Serializable
