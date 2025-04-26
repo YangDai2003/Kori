@@ -185,7 +185,11 @@ fun StandardTextField(
                         if (state.text.isEmpty()) {
                             Text(
                                 text = stringResource(Res.string.content),
-                                style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                        alpha = 0.6f
+                                    )
+                                )
                             )
                         }
                         innerTextField()
