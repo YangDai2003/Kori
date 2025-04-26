@@ -3,20 +3,29 @@ package org.yangdai.kori.presentation.screen.note
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.EditNote
@@ -28,21 +37,28 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -59,12 +75,14 @@ import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.paragraph_count
 import kori.composeapp.generated.resources.plain_text
 import kori.composeapp.generated.resources.right_panel_open
+import kori.composeapp.generated.resources.saveAsTemplate
 import kori.composeapp.generated.resources.title
 import kori.composeapp.generated.resources.type
 import kori.composeapp.generated.resources.updated
 import kori.composeapp.generated.resources.word_count
 import kori.composeapp.generated.resources.word_count_without_punctuation
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
@@ -82,6 +100,7 @@ import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationI
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.FoldersDialog
 import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
+import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.FindAndReplaceState
 import org.yangdai.kori.presentation.component.note.HeaderNode
@@ -90,9 +109,11 @@ import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditor
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownEditor
+import org.yangdai.kori.presentation.component.note.markdown.addInNewLine
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditorRow
 import org.yangdai.kori.presentation.event.UiEvent
 import org.yangdai.kori.presentation.navigation.Screen
+import org.yangdai.kori.presentation.util.TemplateProcessor
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(
@@ -112,7 +133,8 @@ fun NoteScreen(
     val noteEditingState by viewModel.noteEditingState.collectAsStateWithLifecycle()
     val textState by viewModel.textState.collectAsStateWithLifecycle()
     val editorState by viewModel.editorState.collectAsStateWithLifecycle()
-    val templateState by viewModel.templateState.collectAsStateWithLifecycle()
+    val formatterState by viewModel.formatterState.collectAsStateWithLifecycle()
+    val templates by viewModel.templates.collectAsStateWithLifecycle()
 
     // 确保屏幕旋转等配置变更时，不会重复加载笔记
     var lastLoadedNoteId by rememberSaveable { mutableStateOf<String?>(null) }
@@ -134,6 +156,7 @@ fun NoteScreen(
 
     var isReadView by rememberSaveable { mutableStateOf(false) }
     var showFolderDialog by rememberSaveable { mutableStateOf(false) }
+    var showTemplatesBottomSheet by rememberSaveable { mutableStateOf(false) }
     var folderName by rememberSaveable { mutableStateOf("") }
     LaunchedEffect(noteEditingState.folderId, foldersWithNoteCounts) {
         withContext(Dispatchers.Default) {
@@ -271,7 +294,13 @@ fun NoteScreen(
                             onFindAndReplaceUpdate = { findAndReplaceState = it }
                         )
                         AnimatedVisibility(visible = !isReadView) {
-                            PlainTextEditorRow(viewModel.contentState)
+                            PlainTextEditorRow(viewModel.contentState) { action ->
+                                when (action) {
+                                    EditorRowAction.Templates -> {
+                                        showTemplatesBottomSheet = true
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -290,8 +319,93 @@ fun NoteScreen(
                             onFindAndReplaceUpdate = { findAndReplaceState = it }
                         )
                         AnimatedVisibility(visible = !isReadView) {
-                            MarkdownEditorRow(viewModel.contentState)
+                            MarkdownEditorRow(viewModel.contentState) { action ->
+                                when (action) {
+                                    EditorRowAction.Templates -> {
+                                        showTemplatesBottomSheet = true
+                                    }
+                                }
+                            }
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    if (showFolderDialog) {
+        FoldersDialog(
+            oFolderId = noteEditingState.folderId,
+            foldersWithNoteCounts = foldersWithNoteCounts,
+            onDismissRequest = { showFolderDialog = false },
+            onSelect = { folderId ->
+                showFolderDialog = false
+                viewModel.moveNoteToFolder(folderId)
+            }
+        )
+    }
+
+    val templatesSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val coroutineScope = rememberCoroutineScope()
+    val hideTemplatesBottomSheet: () -> Unit = {
+        coroutineScope.launch {
+            templatesSheetState.hide()
+        }.invokeOnCompletion {
+            if (!templatesSheetState.isVisible) {
+                showTemplatesBottomSheet = false
+            }
+        }
+    }
+    if (showTemplatesBottomSheet) {
+        ModalBottomSheet(
+            sheetState = templatesSheetState,
+            onDismissRequest = { showTemplatesBottomSheet = false },
+            dragHandle = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        modifier = Modifier.padding(end = 8.dp, top = 8.dp),
+                        onClick = hideTemplatesBottomSheet
+                    ) {
+                        Icon(imageVector = Icons.Default.Close, contentDescription = null)
+                    }
+                }
+            }
+        ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                items(templates, key = { it.id }) { template ->
+                    ListItem(
+                        headlineContent = {
+                            Text(
+                                text = template.title,
+                                maxLines = 1,
+                                modifier = Modifier.basicMarquee()
+                            )
+                        },
+                        modifier = Modifier
+                            .padding(bottom = 8.dp)
+                            .clip(CircleShape)
+                            .clickable {
+                                val templateText = TemplateProcessor(
+                                    formatterState.dateFormatter, formatterState.timeFormatter,
+                                ).process(template.content)
+                                viewModel.contentState.edit {
+                                    addInNewLine(templateText)
+                                }
+                                hideTemplatesBottomSheet()
+                            }
+                    )
+                }
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    TextButton(onClick = { viewModel.saveNoteAsTemplate() }) {
+                        Text(stringResource(Res.string.saveAsTemplate))
                     }
                 }
             }
@@ -342,11 +456,11 @@ fun NoteScreen(
 
             var dateTimeFormatter =
                 remember { LocalDateTime.Format { byUnicodePattern("yyyy-MM-dd HH:mm:ss") } }
-            LaunchedEffect(templateState) {
-                val dateFormatter = if (templateState.dateFormatter.isBlank()) "yyyy-MM-dd"
-                else templateState.dateFormatter
-                val timeFormatter = if (templateState.timeFormatter.isBlank()) "HH:mm:ss"
-                else templateState.timeFormatter
+            LaunchedEffect(formatterState) {
+                val dateFormatter = if (formatterState.dateFormatter.isBlank()) "yyyy-MM-dd"
+                else formatterState.dateFormatter
+                val timeFormatter = if (formatterState.timeFormatter.isBlank()) "HH:mm:ss"
+                else formatterState.timeFormatter
                 dateTimeFormatter =
                     LocalDateTime.Format { byUnicodePattern("$dateFormatter $timeFormatter") }
             }
@@ -405,18 +519,6 @@ fun NoteScreen(
             )
         }
     )
-
-    if (showFolderDialog) {
-        FoldersDialog(
-            oFolderId = noteEditingState.folderId,
-            foldersWithNoteCounts = foldersWithNoteCounts,
-            onDismissRequest = { showFolderDialog = false },
-            onSelect = { folderId ->
-                showFolderDialog = false
-                viewModel.moveNoteToFolder(folderId)
-            }
-        )
-    }
 
     if (showNoteTypeDialog) {
         NoteTypeDialog(

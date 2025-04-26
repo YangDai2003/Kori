@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.EditorRowButton
 import org.yangdai.kori.presentation.component.note.EditorRowSection
 import org.yangdai.kori.presentation.component.note.markdown.tab
@@ -27,7 +28,10 @@ import org.yangdai.kori.presentation.component.note.markdown.unTab
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun PlainTextEditorRow(textFieldState: TextFieldState) = Row(
+fun PlainTextEditorRow(
+    textFieldState: TextFieldState,
+    onEditorRowAction: (EditorRowAction) -> Unit
+) = Row(
     modifier = Modifier.fillMaxWidth().height(48.dp).horizontalScroll(rememberScrollState()),
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally)
@@ -76,7 +80,7 @@ fun PlainTextEditorRow(textFieldState: TextFieldState) = Row(
             EditorRowButton(
                 tipText = "",
                 icon = Icons.AutoMirrored.Outlined.TextSnippet,
-                onClick = {}
+                onClick = { onEditorRowAction(EditorRowAction.Templates) }
             )
         }
     )

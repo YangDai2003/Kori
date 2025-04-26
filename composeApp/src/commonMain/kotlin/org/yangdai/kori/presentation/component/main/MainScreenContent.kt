@@ -11,19 +11,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -52,7 +43,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SuggestionChip
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -88,10 +78,8 @@ import kori.composeapp.generated.resources.checked
 import kori.composeapp.generated.resources.delete
 import kori.composeapp.generated.resources.delete_all
 import kori.composeapp.generated.resources.move
-import kori.composeapp.generated.resources.others
 import kori.composeapp.generated.resources.pin
 import kori.composeapp.generated.resources.pinboard
-import kori.composeapp.generated.resources.pinned
 import kori.composeapp.generated.resources.restore
 import kori.composeapp.generated.resources.restore_all
 import kori.composeapp.generated.resources.search
@@ -101,9 +89,7 @@ import kori.composeapp.generated.resources.templates
 import kori.composeapp.generated.resources.trash
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.domain.sort.NoteSortType
-import org.yangdai.kori.presentation.component.LazyGridScrollbar
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.FoldersDialog
@@ -483,7 +469,8 @@ fun MainScreenContent(
 
                         AnimatedContent(inputText.isNotBlank() && !expanded) { showSearchRes ->
                             if (showSearchRes)
-                                Page(
+                                SearchResultsPage(
+                                    keyword = inputText,
                                     notes = searchResults,
                                     contentPadding = paddingValue,
                                     navigateToScreen = navigateToScreen,
@@ -575,160 +562,5 @@ fun MainScreenContent(
                 selectedNotes.clear()
             }
         )
-    }
-}
-
-@Composable
-fun GroupedPage(
-    notesMap: Map<Boolean, List<NoteEntity>>,
-    contentPadding: PaddingValues,
-    columns: Int,
-    showCreatedTime: Boolean,
-    navigateToScreen: (Screen) -> Unit,
-    selectedNotes: MutableSet<String>,
-    isSelectionMode: Boolean
-) {
-    // 显示笔记列表
-    Box {
-        val state = rememberLazyGridState()
-        LazyVerticalGrid(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = contentPadding,
-            columns = GridCells.Fixed(columns),
-            state = state,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            if (!notesMap[true].isNullOrEmpty())
-                stickyHeader(key = "pinned") {
-                    Surface(
-                        color = MaterialTheme.colorScheme.surfaceContainerLow
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
-                            text = stringResource(Res.string.pinned),
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                    }
-                }
-
-            items(notesMap[true] ?: emptyList(), key = { it.id }) { note ->
-                NoteItem(
-                    note = note,
-                    showCreatedTime = showCreatedTime,
-                    isSelected = selectedNotes.contains(note.id),
-                    isSelectionMode = isSelectionMode,
-                    onClick = {
-                        if (isSelectionMode) {
-                            // 在多选模式下，点击切换选中状态
-                            if (selectedNotes.contains(note.id)) {
-                                selectedNotes.remove(note.id)
-                            } else {
-                                selectedNotes.add(note.id)
-                            }
-                        } else {
-                            // 正常导航到笔记详情
-                            navigateToScreen(Screen.Note(note.id))
-                        }
-                    },
-                    onLongClick = {
-                        // 长按进入多选模式
-                        if (!isSelectionMode) {
-                            selectedNotes.add(note.id)
-                        }
-                    }
-                )
-            }
-
-            if (notesMap.size == 2)
-                stickyHeader(key = "others") {
-                    Surface(
-                        color = MaterialTheme.colorScheme.surfaceContainerLow
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
-                            text = stringResource(Res.string.others),
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                    }
-                }
-
-            items(notesMap[false] ?: emptyList(), key = { it.id }) { note ->
-                NoteItem(
-                    note = note,
-                    showCreatedTime = showCreatedTime,
-                    isSelected = selectedNotes.contains(note.id),
-                    isSelectionMode = isSelectionMode,
-                    onClick = {
-                        if (isSelectionMode) {
-                            if (selectedNotes.contains(note.id)) {
-                                selectedNotes.remove(note.id)
-                            } else {
-                                selectedNotes.add(note.id)
-                            }
-                        } else {
-                            navigateToScreen(Screen.Note(note.id))
-                        }
-                    },
-                    onLongClick = {
-                        if (!isSelectionMode) {
-                            selectedNotes.add(note.id)
-                        }
-                    }
-                )
-            }
-        }
-        LazyGridScrollbar(
-            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-            state = state
-        )
-    }
-}
-
-@Composable
-fun Page(
-    notes: List<NoteEntity>,
-    contentPadding: PaddingValues,
-    columns: Int,
-    showCreatedTime: Boolean,
-    navigateToScreen: (Screen) -> Unit,
-    selectedNotes: MutableSet<String>,
-    isSelectionMode: Boolean
-) {
-    val state = rememberLazyStaggeredGridState()
-    LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Fixed(columns),
-        modifier = Modifier.fillMaxSize(),
-        state = state,
-        contentPadding = contentPadding,
-        verticalItemSpacing = 8.dp,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(notes, key = { it.id }) { note ->
-            NoteItem(
-                note = note,
-                showCreatedTime = showCreatedTime,
-                isSelected = selectedNotes.contains(note.id),
-                isSelectionMode = isSelectionMode,
-                onClick = {
-                    if (isSelectionMode) {
-                        // 在多选模式下，点击切换选中状态
-                        if (selectedNotes.contains(note.id)) {
-                            selectedNotes.remove(note.id)
-                        } else {
-                            selectedNotes.add(note.id)
-                        }
-                    } else {
-                        // 正常导航到笔记详情
-                        navigateToScreen(Screen.Note(note.id))
-                    }
-                },
-                onLongClick = {
-                    // 长按进入多选模式
-                    if (!isSelectionMode) {
-                        selectedNotes.add(note.id)
-                    }
-                }
-            )
-        }
     }
 }

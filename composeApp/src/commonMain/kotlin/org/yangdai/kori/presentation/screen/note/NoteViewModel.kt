@@ -26,6 +26,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.toLocalDateTime
 import org.yangdai.kori.data.local.dao.FolderDao
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
@@ -50,7 +54,7 @@ class NoteViewModel(
     val contentState = TextFieldState()
     val contentSnapshotFlow = snapshotFlow { contentState.text }
 
-    val templateState = combine(
+    val formatterState = combine(
         dataStoreRepository.stringFlow(Constants.Preferences.DATE_FORMATTER),
         dataStoreRepository.stringFlow(Constants.Preferences.TIME_FORMATTER)
     ) { dateFormatter, timeFormatter ->
@@ -59,6 +63,13 @@ class NoteViewModel(
             timeFormatter = timeFormatter
         )
     }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), TemplatePaneState())
+
+    val templates = noteRepository.getAllTemplates()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Companion.WhileSubscribed(5_000L),
+            initialValue = emptyList()
+        )
 
     val editorState = combine(
         dataStoreRepository.booleanFlow(Constants.Preferences.SHOW_LINE_NUMBER),
@@ -155,7 +166,7 @@ class NoteViewModel(
                 noteType = _noteEditingState.value.noteType
             )
             if (noteEntity.id.isEmpty() && (noteEntity.title.isNotBlank() || noteEntity.content.isNotBlank())) {
-                noteRepository.insertNote(noteEntity.copy(id = Uuid.Companion.random().toString()))
+                noteRepository.insertNote(noteEntity.copy(id = Uuid.random().toString()))
             } else {
                 if (oNote.title != noteEntity.title || oNote.content != noteEntity.content ||
                     oNote.folderId != noteEntity.folderId || oNote.isTemplate != noteEntity.isTemplate ||
@@ -206,6 +217,31 @@ class NoteViewModel(
     fun updateNoteType(noteType: NoteType) {
         _noteEditingState.update {
             it.copy(noteType = noteType)
+        }
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    fun saveNoteAsTemplate() {
+        viewModelScope.launch {
+            val currentTime = Clock.System.now().toString()
+            val noteEntity = NoteEntity(
+                id = Uuid.random().toString(),
+                title = titleState.text.toString()
+                    .ifBlank {
+                        "Template " + Clock.System.now()
+                            .toLocalDateTime(TimeZone.currentSystemDefault())
+                            .format(LocalDateTime.Formats.ISO)
+                    },
+                content = contentState.text.toString(),
+                folderId = null,
+                createdAt = currentTime,
+                updatedAt = currentTime,
+                isDeleted = false,
+                isTemplate = true,
+                isPinned = false,
+                noteType = _noteEditingState.value.noteType
+            )
+            noteRepository.insertNote(noteEntity)
         }
     }
 }

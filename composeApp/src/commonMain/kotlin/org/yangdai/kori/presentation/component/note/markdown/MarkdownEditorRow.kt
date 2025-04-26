@@ -44,13 +44,17 @@ import kori.composeapp.generated.resources.format_h4
 import kori.composeapp.generated.resources.format_h5
 import kori.composeapp.generated.resources.format_h6
 import org.jetbrains.compose.resources.painterResource
+import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.EditorRowButton
 import org.yangdai.kori.presentation.component.note.EditorRowSection
 import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MarkdownEditorRow(textFieldState: TextFieldState) = Row(
+fun MarkdownEditorRow(
+    textFieldState: TextFieldState,
+    onEditorRowAction: (EditorRowAction) -> Unit
+) = Row(
     modifier = Modifier.fillMaxWidth().height(48.dp).horizontalScroll(rememberScrollState()),
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(
@@ -240,7 +244,7 @@ fun MarkdownEditorRow(textFieldState: TextFieldState) = Row(
             EditorRowButton(
                 tipText = "",
                 icon = Icons.AutoMirrored.Outlined.TextSnippet,
-                onClick = {}
+                onClick = { onEditorRowAction(EditorRowAction.Templates) }
             )
         }
     )
