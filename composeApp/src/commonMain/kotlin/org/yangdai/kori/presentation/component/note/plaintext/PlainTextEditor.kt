@@ -37,7 +37,7 @@ import org.yangdai.kori.presentation.component.note.LineNumbersColumn
 import org.yangdai.kori.presentation.component.note.TextEditorBase
 
 @Composable
-fun PlainTextField(
+fun PlainTextEditor(
     modifier: Modifier = Modifier,
     state: TextFieldState,
     scrollState: ScrollState,

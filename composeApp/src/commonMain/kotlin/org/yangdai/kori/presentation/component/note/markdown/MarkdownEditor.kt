@@ -52,7 +52,7 @@ import kotlin.math.PI
 import kotlin.math.sin
 
 @Composable
-fun StandardTextField(
+fun MarkdownEditor(
     modifier: Modifier = Modifier,
     state: TextFieldState,
     scrollState: ScrollState,

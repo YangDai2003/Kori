@@ -88,8 +88,8 @@ import org.yangdai.kori.presentation.component.note.HeaderNode
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownEditorRow
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
-import org.yangdai.kori.presentation.component.note.plaintext.PlainTextField
-import org.yangdai.kori.presentation.component.note.markdown.StandardTextField
+import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditor
+import org.yangdai.kori.presentation.component.note.markdown.MarkdownEditor
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditorRow
 import org.yangdai.kori.presentation.event.UiEvent
 import org.yangdai.kori.presentation.navigation.Screen
@@ -261,7 +261,7 @@ fun NoteScreen(
             when (noteEditingState.noteType) {
                 NoteType.PLAIN_TEXT -> {
                     Column(Modifier.fillMaxSize().weight(1f)) {
-                        PlainTextField(
+                        PlainTextEditor(
                             modifier = Modifier.fillMaxWidth().weight(1f),
                             state = viewModel.contentState,
                             scrollState = scrollState,
@@ -278,7 +278,7 @@ fun NoteScreen(
 
                 else -> {
                     Column(Modifier.fillMaxSize().weight(1f)) {
-                        StandardTextField(
+                        MarkdownEditor(
                             modifier = Modifier.fillMaxWidth().weight(1f),
                             state = viewModel.contentState,
                             scrollState = scrollState,
