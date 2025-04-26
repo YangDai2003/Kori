@@ -1,12 +1,14 @@
 package org.yangdai.kori.presentation.screen.note
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.rememberScrollState
@@ -83,20 +85,24 @@ import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.FindAndReplaceState
 import org.yangdai.kori.presentation.component.note.HeaderNode
+import org.yangdai.kori.presentation.component.note.MarkdownEditorRow
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
+import org.yangdai.kori.presentation.component.note.PlainTextField
 import org.yangdai.kori.presentation.component.note.StandardTextField
 import org.yangdai.kori.presentation.event.UiEvent
 import org.yangdai.kori.presentation.navigation.Screen
 import kotlin.uuid.ExperimentalUuidApi
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalUuidApi::class,
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalUuidApi::class,
     FormatStringsInDatetimeFormats::class
 )
 @Composable
 fun NoteScreen(
     viewModel: NoteViewModel = koinViewModel(),
     noteId: String,
+    folderId: String?,
     navigateToScreen: (Screen) -> Unit,
     navigateUp: () -> Unit
 ) {
@@ -113,7 +119,7 @@ fun NoteScreen(
     DisposableEffect(Unit) {
         if (noteId != lastLoadedNoteId) {
             lastLoadedNoteId = noteId
-            viewModel.loadNoteById(noteId)
+            viewModel.loadNoteById(noteId, folderId)
         }
         onDispose {
             viewModel.saveOrUpdateNote()
@@ -159,6 +165,7 @@ fun NoteScreen(
     var showNoteTypeDialog by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
+        modifier = Modifier.fillMaxSize().imePadding(),
         topBar = {
             TopAppBar(
                 title = {
@@ -250,17 +257,38 @@ fun NoteScreen(
             }
 
             val scrollState = rememberScrollState()
-            StandardTextField(
-                modifier = Modifier.fillMaxWidth().weight(1f),
-                state = viewModel.contentState,
-                scrollState = scrollState,
-                readMode = isReadView,
-                showLineNumbers = editorState.showLineNumber,
-                isLintActive = editorState.isMarkdownLintEnabled,
-                headerRange = selectedHeader,
-                findAndReplaceState = findAndReplaceState,
-                onFindAndReplaceUpdate = { findAndReplaceState = it },
-            )
+            when (noteEditingState.noteType) {
+                NoteType.PLAIN_TEXT -> {
+                    PlainTextField(
+                        modifier = Modifier.fillMaxSize().weight(1f),
+                        state = viewModel.contentState,
+                        scrollState = scrollState,
+                        readMode = isReadView,
+                        showLineNumbers = editorState.showLineNumber,
+                        findAndReplaceState = findAndReplaceState,
+                        onFindAndReplaceUpdate = { findAndReplaceState = it }
+                    )
+                }
+
+                else -> {
+                    Column(Modifier.fillMaxSize().weight(1f)) {
+                        StandardTextField(
+                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            state = viewModel.contentState,
+                            scrollState = scrollState,
+                            readMode = isReadView,
+                            showLineNumbers = editorState.showLineNumber,
+                            isLintActive = editorState.isMarkdownLintEnabled,
+                            headerRange = selectedHeader,
+                            findAndReplaceState = findAndReplaceState,
+                            onFindAndReplaceUpdate = { findAndReplaceState = it }
+                        )
+                        AnimatedVisibility(visible = !isReadView) {
+                            MarkdownEditorRow(viewModel.contentState)
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -306,13 +334,15 @@ fun NoteScreen(
                 }
             )
 
-            var dateTimeFormatter = remember { LocalDateTime.Format { byUnicodePattern("yyyy-MM-dd HH:mm:ss") } }
+            var dateTimeFormatter =
+                remember { LocalDateTime.Format { byUnicodePattern("yyyy-MM-dd HH:mm:ss") } }
             LaunchedEffect(templateState) {
                 val dateFormatter = if (templateState.dateFormatter.isBlank()) "yyyy-MM-dd"
                 else templateState.dateFormatter
                 val timeFormatter = if (templateState.timeFormatter.isBlank()) "HH:mm:ss"
                 else templateState.timeFormatter
-                dateTimeFormatter = LocalDateTime.Format { byUnicodePattern("$dateFormatter $timeFormatter") }
+                dateTimeFormatter =
+                    LocalDateTime.Format { byUnicodePattern("$dateFormatter $timeFormatter") }
             }
 
             var createdTime by remember { mutableStateOf("") }

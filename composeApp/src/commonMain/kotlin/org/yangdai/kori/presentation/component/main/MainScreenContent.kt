@@ -275,8 +275,10 @@ fun MainScreenContent(
             if (currentDrawerItem !is DrawerItem.Trash && !isSelectionMode)
                 FloatingActionButton(
                     onClick = {
-                        // 创建新笔记时不传递ID
-                        navigateToScreen(Screen.Note())
+                        val folderId =
+                            if (currentDrawerItem is DrawerItem.Folder) currentDrawerItem.folder.id
+                            else null
+                        navigateToScreen(Screen.Note(folderId = folderId))
                     }
                 ) {
                     Icon(Icons.Default.Edit, contentDescription = null)

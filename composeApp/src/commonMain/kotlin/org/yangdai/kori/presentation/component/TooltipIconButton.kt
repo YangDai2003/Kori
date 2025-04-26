@@ -1,6 +1,5 @@
 package org.yangdai.kori.presentation.component
 
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,7 +24,6 @@ fun TooltipIconButton(
     icon: ImageVector,
     colors: IconButtonColors = IconButtonDefaults.iconButtonColors(),
     enabled: Boolean = true,
-    interactionSource: MutableInteractionSource? = null,
     onClick: () -> Unit
 ) = TooltipBox(
     positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
@@ -42,7 +40,6 @@ fun TooltipIconButton(
         modifier = buttonModifier,
         enabled = enabled,
         colors = colors,
-        interactionSource = interactionSource,
         onClick = onClick
     ) {
         Icon(
@@ -62,7 +59,6 @@ fun TooltipIconButton(
     icon: Painter,
     colors: IconButtonColors = IconButtonDefaults.iconButtonColors(),
     enabled: Boolean = true,
-    interactionSource: MutableInteractionSource? = null,
     onClick: () -> Unit
 ) = TooltipBox(
     positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
@@ -79,7 +75,6 @@ fun TooltipIconButton(
         modifier = buttonModifier,
         enabled = enabled,
         colors = colors,
-        interactionSource = interactionSource,
         onClick = onClick
     ) {
         Icon(

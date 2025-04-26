@@ -102,13 +102,14 @@ class NoteViewModel(
 
     var oNote = NoteEntity()
 
-    fun loadNoteById(id: String) {
+    fun loadNoteById(id: String, folderId: String?) {
         viewModelScope.launch {
             if (id.isEmpty()) {
                 val currentTime = Clock.System.now().toString()
                 _noteEditingState.update {
                     it.copy(
                         id = id,
+                        folderId = folderId,
                         createdAt = currentTime,
                         updatedAt = currentTime,
                     )

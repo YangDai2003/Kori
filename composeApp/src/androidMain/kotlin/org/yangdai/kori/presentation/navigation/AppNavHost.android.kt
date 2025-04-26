@@ -42,7 +42,11 @@ actual fun AppNavHost(
 
     composable<Screen.Note>(deepLinks = listOf(navDeepLink<Screen.Note>(basePath = "${Constants.DEEP_LINK}/note"))) {
         val route = it.toRoute<Screen.Note>()
-        NoteScreen(noteId = route.id, navigateToScreen = { navHostController.navigate(it) }) {
+        NoteScreen(
+            noteId = route.id,
+            folderId = route.folderId,
+            navigateToScreen = { navHostController.navigate(it) }
+        ) {
             navHostController.navigateUp()
         }
     }
