@@ -85,11 +85,12 @@ import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.FindAndReplaceState
 import org.yangdai.kori.presentation.component.note.HeaderNode
-import org.yangdai.kori.presentation.component.note.MarkdownEditorRow
+import org.yangdai.kori.presentation.component.note.markdown.MarkdownEditorRow
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
-import org.yangdai.kori.presentation.component.note.PlainTextField
-import org.yangdai.kori.presentation.component.note.StandardTextField
+import org.yangdai.kori.presentation.component.note.plaintext.PlainTextField
+import org.yangdai.kori.presentation.component.note.markdown.StandardTextField
+import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditorRow
 import org.yangdai.kori.presentation.event.UiEvent
 import org.yangdai.kori.presentation.navigation.Screen
 import kotlin.uuid.ExperimentalUuidApi
@@ -259,15 +260,20 @@ fun NoteScreen(
             val scrollState = rememberScrollState()
             when (noteEditingState.noteType) {
                 NoteType.PLAIN_TEXT -> {
-                    PlainTextField(
-                        modifier = Modifier.fillMaxSize().weight(1f),
-                        state = viewModel.contentState,
-                        scrollState = scrollState,
-                        readMode = isReadView,
-                        showLineNumbers = editorState.showLineNumber,
-                        findAndReplaceState = findAndReplaceState,
-                        onFindAndReplaceUpdate = { findAndReplaceState = it }
-                    )
+                    Column(Modifier.fillMaxSize().weight(1f)) {
+                        PlainTextField(
+                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            state = viewModel.contentState,
+                            scrollState = scrollState,
+                            readMode = isReadView,
+                            showLineNumbers = editorState.showLineNumber,
+                            findAndReplaceState = findAndReplaceState,
+                            onFindAndReplaceUpdate = { findAndReplaceState = it }
+                        )
+                        AnimatedVisibility(visible = !isReadView) {
+                            PlainTextEditorRow(viewModel.contentState)
+                        }
+                    }
                 }
 
                 else -> {

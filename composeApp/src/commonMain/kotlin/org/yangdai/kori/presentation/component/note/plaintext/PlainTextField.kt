@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.component.note
+package org.yangdai.kori.presentation.component.note.plaintext
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box
@@ -32,6 +32,9 @@ import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.content
 import org.jetbrains.compose.resources.stringResource
+import org.yangdai.kori.presentation.component.note.FindAndReplaceState
+import org.yangdai.kori.presentation.component.note.LineNumbersColumn
+import org.yangdai.kori.presentation.component.note.TextEditorBase
 
 @Composable
 fun PlainTextField(

@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.component.note
+package org.yangdai.kori.presentation.component.note.markdown
 
 import androidx.compose.foundation.text.input.TextFieldBuffer
 import androidx.compose.runtime.Composable

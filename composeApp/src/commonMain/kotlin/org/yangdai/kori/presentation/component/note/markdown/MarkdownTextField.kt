@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.component.note
+package org.yangdai.kori.presentation.component.note.markdown
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -45,6 +45,9 @@ import kori.composeapp.generated.resources.content
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
+import org.yangdai.kori.presentation.component.note.FindAndReplaceState
+import org.yangdai.kori.presentation.component.note.LineNumbersColumn
+import org.yangdai.kori.presentation.component.note.TextEditorBase
 import kotlin.math.PI
 import kotlin.math.sin
 
