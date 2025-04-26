@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.component.note
+package org.yangdai.kori.presentation.component.editor
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Canvas
@@ -80,7 +80,7 @@ import org.yangdai.kori.presentation.navigation.Screen
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-private val SheetWidth = 360.dp
+private val SheetWidth = 320.dp
 private val ActionWidth = 48.dp
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -103,7 +103,7 @@ fun NoteSideSheet(
 
         val drawerWidth = remember(contentWidth) {
             // 计算合适的抽屉宽度：
-            // 1. 尽可能接近360dp
+            // 1. 尽可能接近320dp
             // 2. 确保与屏幕宽度至少相差96dp
             val maxAllowedWidth = contentWidth - 96.dp
             min(SheetWidth, maxAllowedWidth)
@@ -268,14 +268,10 @@ fun NoteSideSheet(
                         }
                     }
 
-                    // 分隔线
-                    item {
-                        HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
-                    }
-
                     // 大纲标题
                     item {
-//                        if (outline.children.isNotEmpty())
+                        if (outline.children.isNotEmpty()){
+                            HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -301,6 +297,7 @@ fun NoteSideSheet(
                                     )
                                 }
                             }
+                        }
                     }
 
                     // 大纲内容

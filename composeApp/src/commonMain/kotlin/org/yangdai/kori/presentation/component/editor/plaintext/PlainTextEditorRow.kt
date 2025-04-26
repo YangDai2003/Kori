@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.component.note.plaintext
+package org.yangdai.kori.presentation.component.editor.plaintext
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.horizontalScroll
@@ -16,15 +16,23 @@ import androidx.compose.material.icons.automirrored.outlined.FormatIndentIncreas
 import androidx.compose.material.icons.automirrored.outlined.Redo
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.automirrored.outlined.Undo
+import androidx.compose.material.icons.outlined.DataArray
+import androidx.compose.material.icons.outlined.DataObject
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.yangdai.kori.presentation.component.note.EditorRowAction
-import org.yangdai.kori.presentation.component.note.EditorRowButton
-import org.yangdai.kori.presentation.component.note.EditorRowSection
-import org.yangdai.kori.presentation.component.note.markdown.tab
-import org.yangdai.kori.presentation.component.note.markdown.unTab
+import kori.composeapp.generated.resources.Res
+import kori.composeapp.generated.resources.parentheses
+import org.jetbrains.compose.resources.painterResource
+import org.yangdai.kori.presentation.component.editor.EditorRowAction
+import org.yangdai.kori.presentation.component.editor.EditorRowButton
+import org.yangdai.kori.presentation.component.editor.EditorRowSection
+import org.yangdai.kori.presentation.component.editor.markdown.inlineBraces
+import org.yangdai.kori.presentation.component.editor.markdown.inlineBrackets
+import org.yangdai.kori.presentation.component.editor.markdown.inlineParentheses
+import org.yangdai.kori.presentation.component.editor.markdown.tab
+import org.yangdai.kori.presentation.component.editor.markdown.unTab
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -71,6 +79,30 @@ fun PlainTextEditorRow(
                 tipText = "",
                 icon = Icons.AutoMirrored.Outlined.FormatIndentDecrease,
                 onClick = { textFieldState.edit { unTab() } }
+            )
+        }
+    )
+
+    EditorRowSection(
+        {
+            EditorRowButton(
+                tipText = "",
+                icon = painterResource(Res.drawable.parentheses),
+                onClick = { textFieldState.edit { inlineParentheses() } }
+            )
+        },
+        {
+            EditorRowButton(
+                tipText = "",
+                icon = Icons.Outlined.DataArray,
+                onClick = { textFieldState.edit { inlineBrackets() } }
+            )
+        },
+        {
+            EditorRowButton(
+                tipText = "",
+                icon = Icons.Outlined.DataObject,
+                onClick = { textFieldState.edit { inlineBraces() } }
             )
         }
     )

@@ -1,11 +1,5 @@
-package org.yangdai.kori.presentation.component.note.markdown
+package org.yangdai.kori.presentation.component.editor.template
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -18,7 +12,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,11 +22,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.input.ImeAction
@@ -42,56 +31,29 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.content
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
-import org.yangdai.kori.presentation.component.note.FindAndReplaceState
-import org.yangdai.kori.presentation.component.note.LineNumbersColumn
-import org.yangdai.kori.presentation.component.note.TextEditorBase
-import kotlin.math.PI
-import kotlin.math.sin
+import org.yangdai.kori.presentation.component.editor.FindAndReplaceState
+import org.yangdai.kori.presentation.component.editor.LineNumbersColumn
+import org.yangdai.kori.presentation.component.editor.TextEditorBase
 
 @Composable
-fun MarkdownEditor(
+fun TemplateEditor(
     modifier: Modifier = Modifier,
     state: TextFieldState,
     scrollState: ScrollState,
     readMode: Boolean,
     showLineNumbers: Boolean,
-    isLintActive: Boolean,
-    headerRange: IntRange?,
     findAndReplaceState: FindAndReplaceState,
     onFindAndReplaceUpdate: (FindAndReplaceState) -> Unit
 ) {
-
     var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
-
-    val infiniteTransition = rememberInfiniteTransition(label = "wavy-line")
-    val phase by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 2f * PI.toFloat(),
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "wave-phase"
-    )
-    var lintErrors by remember { mutableStateOf(emptyList<Pair<Int, Int>>()) }
-
-    LaunchedEffect(state.text, isLintActive) {
-        withContext(Dispatchers.Default) {
-            lintErrors =
-                if (isLintActive) MarkdownLint().validate(state.text.toString())
-                else emptyList()
-        }
-    }
 
     TextEditorBase(
         state = state,
         scrollState = scrollState,
         readMode = readMode,
         showLineNumbers = showLineNumbers,
-        headerRange = headerRange,
+        headerRange = null,
         findAndReplaceState = findAndReplaceState,
         onFindAndReplaceUpdate = onFindAndReplaceUpdate,
         textLayoutResult = textLayoutResult
@@ -114,7 +76,6 @@ fun MarkdownEditor(
             }
 
             BasicTextField(
-                // The contentReceiver modifier is used to receive text content from the clipboard or drag-and-drop operations.
                 modifier = Modifier
                     .padding(start = if (showLineNumbers) 4.dp else 16.dp, end = 16.dp)
                     .fillMaxSize(),
@@ -161,24 +122,6 @@ fun MarkdownEditor(
                                             }
                                         }
                                     }
-
-                                    // 批量绘制波浪线
-                                    if (isLintActive) {
-                                        withTransform({
-                                            translate(
-                                                scrollOffset.x,
-                                                scrollOffset.y
-                                            )
-                                        }) {
-                                            lintErrors.forEach { (start, end) ->
-                                                if (start < end && end <= text.length) {
-                                                    val path =
-                                                        layoutResult.getPathForRange(start, end)
-                                                    drawWavyUnderline(this, path, phase)
-                                                }
-                                            }
-                                        }
-                                    }
                                 }
                             }
                     ) {
@@ -198,39 +141,4 @@ fun MarkdownEditor(
             )
         }
     }
-}
-
-private fun drawWavyUnderline(
-    drawScope: DrawScope,
-    path: Path,
-    phase: Float,
-    amplitude: Float = 3f,
-    wavelength: Float = 25f
-) {
-    val bounds = path.getBounds()
-
-    // 预计算正弦波点数
-    val pointCount = ((bounds.right - bounds.left) * 2).toInt()
-    if (pointCount <= 0) return
-
-    val points = FloatArray(pointCount * 2)
-    val startX = bounds.left
-    val y = bounds.bottom + 2f
-
-    // 批量计算波浪点
-    for (i in 0 until pointCount) {
-        val x = startX + i * 0.5f
-        val yOffset = amplitude * sin((x * (2f * PI / wavelength)) + phase).toFloat()
-        points[i * 2] = x
-        points[i * 2 + 1] = y + yOffset
-    }
-
-    // 单次绘制所有点
-    drawScope.drawPoints(
-        points = points.toList().chunked(2).map { (x, y) -> Offset(x, y) },
-        pointMode = PointMode.Polygon,
-        color = Color.Red,
-        strokeWidth = 1.5f,
-        cap = StrokeCap.Round
-    )
 }

@@ -40,10 +40,7 @@ actual fun AppNavHost(
 
     composable<Screen.Template> {
         val route = it.toRoute<Screen.Template>()
-        TemplateScreen(
-            noteId = route.id,
-            navigateToScreen = { navHostController.navigate(it) }
-        ) {
+        TemplateScreen(noteId = route.id) {
             navHostController.navigateUp()
         }
     }

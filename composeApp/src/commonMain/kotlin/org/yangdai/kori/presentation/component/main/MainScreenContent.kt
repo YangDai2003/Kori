@@ -39,6 +39,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
@@ -158,24 +159,19 @@ fun MainScreenContent(
                                 )
                             }
 
+                            val deleteForever =
+                                currentDrawerItem is DrawerItem.Trash || currentDrawerItem is DrawerItem.Templates
                             TooltipIconButton(
                                 tipText = stringResource(Res.string.delete),
-                                icon = if (currentDrawerItem is DrawerItem.Trash) Icons.Outlined.DeleteForever
+                                icon = if (deleteForever) Icons.Outlined.DeleteForever
                                 else Icons.Outlined.Delete,
                                 colors = IconButtonDefaults.iconButtonColors()
-                                    .copy(contentColor = MaterialTheme.colorScheme.error),
+                                    .copy(contentColor = if (deleteForever) MaterialTheme.colorScheme.error else LocalContentColor.current),
                                 onClick = {
-                                    when (currentDrawerItem) {
-                                        DrawerItem.Trash -> {
-                                            // 从回收站永久删除
-                                            viewModel.deleteNotes(selectedNotes.toSet())
-                                        }
-
-                                        else -> {
-                                            // 移到回收站
-                                            viewModel.moveNotesToTrash(selectedNotes.toSet())
-                                        }
-                                    }
+                                    if (deleteForever) // 永久删除
+                                        viewModel.deleteNotes(selectedNotes.toSet())
+                                    else
+                                        viewModel.moveNotesToTrash(selectedNotes.toSet())
                                     selectedNotes.clear()
                                 }
                             )

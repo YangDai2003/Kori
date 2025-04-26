@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.component.note.markdown
+package org.yangdai.kori.presentation.component.editor.markdown
 
 import androidx.compose.foundation.text.input.TextFieldBuffer
 import androidx.compose.runtime.Composable
@@ -180,6 +180,8 @@ fun TextFieldBuffer.underline() = inlineWrap("++")
 fun TextFieldBuffer.strikeThrough() = inlineWrap("~~")
 
 fun TextFieldBuffer.highlight() = inlineWrap("==")
+
+fun TextFieldBuffer.inlineParentheses() = inlineWrap("(", ")")
 
 fun TextFieldBuffer.inlineBrackets() = inlineWrap("[", "]")
 

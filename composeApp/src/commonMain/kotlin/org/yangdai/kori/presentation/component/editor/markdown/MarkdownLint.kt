@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.component.note.markdown
+package org.yangdai.kori.presentation.component.editor.markdown
 
 class MarkdownLint {
     companion object {

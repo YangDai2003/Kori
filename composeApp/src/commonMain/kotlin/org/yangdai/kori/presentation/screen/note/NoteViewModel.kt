@@ -153,17 +153,18 @@ class NoteViewModel(
             return
         }
         viewModelScope.launch {
+            val noteState = _noteEditingState.value
             val noteEntity = NoteEntity(
-                id = _noteEditingState.value.id,
+                id = noteState.id,
                 title = titleState.text.toString(),
                 content = contentState.text.toString(),
-                folderId = _noteEditingState.value.folderId,
-                createdAt = _noteEditingState.value.createdAt,
+                folderId = noteState.folderId,
+                createdAt = noteState.createdAt,
                 updatedAt = Clock.System.now().toString(),
-                isDeleted = _noteEditingState.value.isDeleted,
-                isTemplate = _noteEditingState.value.isTemplate,
-                isPinned = _noteEditingState.value.isPinned,
-                noteType = _noteEditingState.value.noteType
+                isDeleted = noteState.isDeleted,
+                isTemplate = noteState.isTemplate,
+                isPinned = noteState.isPinned,
+                noteType = noteState.noteType
             )
             if (noteEntity.id.isEmpty() && (noteEntity.title.isNotBlank() || noteEntity.content.isNotBlank())) {
                 noteRepository.insertNote(noteEntity.copy(id = Uuid.random().toString()))
@@ -179,10 +180,10 @@ class NoteViewModel(
 
     fun moveNoteToTrash() {
         viewModelScope.launch {
+            _noteEditingState.update {
+                it.copy(isDeleted = true, isPinned = false)
+            }
             if (_noteEditingState.value.id.isNotEmpty()) {
-                _noteEditingState.update {
-                    it.copy(isDeleted = true, isPinned = false)
-                }
                 noteRepository.updateNote(
                     NoteEntity(
                         id = _noteEditingState.value.id,

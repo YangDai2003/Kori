@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.component.note
+package org.yangdai.kori.presentation.component.editor
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.text.input.TextFieldState

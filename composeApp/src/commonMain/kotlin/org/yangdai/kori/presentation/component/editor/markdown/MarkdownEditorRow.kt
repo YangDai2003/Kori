@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.component.note.markdown
+package org.yangdai.kori.presentation.component.editor.markdown
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -43,11 +43,11 @@ import kori.composeapp.generated.resources.format_h3
 import kori.composeapp.generated.resources.format_h4
 import kori.composeapp.generated.resources.format_h5
 import kori.composeapp.generated.resources.format_h6
+import kori.composeapp.generated.resources.parentheses
 import org.jetbrains.compose.resources.painterResource
-import org.yangdai.kori.presentation.component.note.EditorRowAction
-import org.yangdai.kori.presentation.component.note.EditorRowButton
-import org.yangdai.kori.presentation.component.note.EditorRowSection
-import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
+import org.yangdai.kori.presentation.component.editor.EditorRowAction
+import org.yangdai.kori.presentation.component.editor.EditorRowButton
+import org.yangdai.kori.presentation.component.editor.EditorRowSection
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -57,10 +57,7 @@ fun MarkdownEditorRow(
 ) = Row(
     modifier = Modifier.fillMaxWidth().height(48.dp).horizontalScroll(rememberScrollState()),
     verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(
-        4.dp,
-        if (rememberIsScreenSizeLarge()) Alignment.CenterHorizontally else Alignment.Start
-    )
+    horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally)
 ) {
 
     Spacer(Modifier.width(4.dp))
@@ -216,6 +213,13 @@ fun MarkdownEditorRow(
     )
 
     EditorRowSection(
+        {
+            EditorRowButton(
+                tipText = "",
+                icon = painterResource(Res.drawable.parentheses),
+                onClick = { textFieldState.edit { inlineParentheses() } }
+            )
+        },
         {
             EditorRowButton(
                 tipText = "",
