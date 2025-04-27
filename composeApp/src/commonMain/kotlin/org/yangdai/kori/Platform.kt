@@ -22,3 +22,15 @@ sealed class Platform {
 }
 
 expect fun currentPlatform(): Platform
+
+enum class OS {
+    IOS,
+    ANDROID,
+    LINUX,
+    MACOS,
+    WINDOWS,
+    UNKNOWN,
+    WEB
+}
+
+expect fun currentOperatingSystem(): OS

@@ -181,15 +181,19 @@ fun TextFieldBuffer.strikeThrough() = inlineWrap("~~")
 
 fun TextFieldBuffer.highlight() = inlineWrap("==")
 
-fun TextFieldBuffer.inlineParentheses() = inlineWrap("(", ")")
+fun TextFieldBuffer.parentheses() = inlineWrap("(", ")")
 
-fun TextFieldBuffer.inlineBrackets() = inlineWrap("[", "]")
+fun TextFieldBuffer.brackets() = inlineWrap("[", "]")
 
-fun TextFieldBuffer.inlineBraces() = inlineWrap("{", "}")
+fun TextFieldBuffer.braces() = inlineWrap("{", "}")
 
 fun TextFieldBuffer.inlineCode() = inlineWrap("`")
 
+fun TextFieldBuffer.codeBlock() = inlineWrap("```\n", "\n```\n")
+
 fun TextFieldBuffer.inlineMath() = inlineWrap("$")
+
+fun TextFieldBuffer.mathBlock() = inlineWrap("$$\n", "\n$$\n")
 
 fun TextFieldBuffer.quote() {
     val text = toString()

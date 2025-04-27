@@ -10,7 +10,7 @@
     <string name="italic">斜体</string>
     <string name="underline">下划线</string>
     <string name="strikethrough">删除线</string>
-    <string name="mark">标记</string>
+    <string name="highlight">高亮</string>
     <string name="scan">扫描</string>
     <string name="preview">预览</string>
     <string name="code">代码</string>

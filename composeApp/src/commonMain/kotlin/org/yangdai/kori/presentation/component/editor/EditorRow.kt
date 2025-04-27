@@ -23,10 +23,17 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import org.yangdai.kori.OS
+import org.yangdai.kori.currentOperatingSystem
 
 sealed class EditorRowAction {
     object Templates : EditorRowAction()
 }
+
+val platformKeyboardShortCut =
+    if (currentOperatingSystem() == OS.MACOS || currentOperatingSystem() == OS.IOS)
+        "Cmd"
+    else "Ctrl"
 
 @Composable
 fun EditorRowSection(vararg content: @Composable () -> Unit) {
@@ -51,7 +58,7 @@ fun EditorRowSection(vararg content: @Composable () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditorRowButton(
-    tipText: String,
+    tipText: String? = null,
     icon: ImageVector,
     enabled: Boolean = true,
     onClick: () -> Unit
@@ -60,6 +67,7 @@ fun EditorRowButton(
         .clickable(enabled = enabled, role = Role.Button) { onClick() },
     positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
     tooltip = {
+        if (tipText == null) return@TooltipBox
         PlainTooltip(
             content = { Text(tipText) }
         )
@@ -85,7 +93,7 @@ fun EditorRowButton(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditorRowButton(
-    tipText: String,
+    tipText: String? = null,
     icon: Painter,
     enabled: Boolean = true,
     onClick: () -> Unit
@@ -94,6 +102,7 @@ fun EditorRowButton(
         .clickable(enabled = enabled, role = Role.Button) { onClick() },
     positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
     tooltip = {
+        if (tipText == null) return@TooltipBox
         PlainTooltip(
             content = { Text(tipText) }
         )

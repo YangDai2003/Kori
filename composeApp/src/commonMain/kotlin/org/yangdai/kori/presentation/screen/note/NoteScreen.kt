@@ -60,6 +60,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
@@ -104,13 +110,14 @@ import org.yangdai.kori.presentation.component.editor.EditorRowAction
 import org.yangdai.kori.presentation.component.editor.FindAndReplaceField
 import org.yangdai.kori.presentation.component.editor.FindAndReplaceState
 import org.yangdai.kori.presentation.component.editor.HeaderNode
-import org.yangdai.kori.presentation.component.editor.markdown.MarkdownEditorRow
 import org.yangdai.kori.presentation.component.editor.NoteSideSheet
 import org.yangdai.kori.presentation.component.editor.NoteSideSheetItem
-import org.yangdai.kori.presentation.component.editor.plaintext.PlainTextEditor
 import org.yangdai.kori.presentation.component.editor.markdown.MarkdownEditor
+import org.yangdai.kori.presentation.component.editor.markdown.MarkdownEditorRow
 import org.yangdai.kori.presentation.component.editor.markdown.addInNewLine
+import org.yangdai.kori.presentation.component.editor.plaintext.PlainTextEditor
 import org.yangdai.kori.presentation.component.editor.plaintext.PlainTextEditorRow
+import org.yangdai.kori.presentation.component.editor.platformKeyboardShortCut
 import org.yangdai.kori.presentation.event.UiEvent
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.util.TemplateProcessor
@@ -194,7 +201,18 @@ fun NoteScreen(
     var showNoteTypeDialog by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize().imePadding(),
+        modifier = Modifier.fillMaxSize().imePadding().onPreviewKeyEvent { keyEvent ->
+            if (keyEvent.type == KeyEventType.KeyDown && keyEvent.isCtrlPressed) {
+                when (keyEvent.key) {
+                    Key.F -> {
+                        isSearching = !isSearching
+                        true
+                    }
+
+                    else -> false
+                }
+            } else false
+        },
         topBar = {
             TopAppBar(
                 title = {
@@ -212,12 +230,11 @@ fun NoteScreen(
                 },
                 actions = {
 
-                    IconButton(onClick = { isSearching = !isSearching }) {
-                        Icon(
-                            imageVector = Icons.Outlined.Search,
-                            contentDescription = null
-                        )
-                    }
+                    TooltipIconButton(
+                        tipText = "$platformKeyboardShortCut + F",
+                        icon = Icons.Outlined.Search,
+                        onClick = { isSearching = !isSearching }
+                    )
 
                     IconButton(onClick = { isReadView = !isReadView }) {
                         Icon(

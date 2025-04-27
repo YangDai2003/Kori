@@ -26,6 +26,7 @@ import androidx.compose.material.icons.outlined.FormatPaint
 import androidx.compose.material.icons.outlined.FormatQuote
 import androidx.compose.material.icons.outlined.FormatUnderlined
 import androidx.compose.material.icons.outlined.HorizontalRule
+import androidx.compose.material.icons.outlined.IntegrationInstructions
 import androidx.compose.material.icons.outlined.StrikethroughS
 import androidx.compose.material.icons.outlined.Title
 import androidx.compose.runtime.Composable
@@ -48,6 +49,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.yangdai.kori.presentation.component.editor.EditorRowAction
 import org.yangdai.kori.presentation.component.editor.EditorRowButton
 import org.yangdai.kori.presentation.component.editor.EditorRowSection
+import org.yangdai.kori.presentation.component.editor.platformKeyboardShortCut
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -65,7 +67,7 @@ fun MarkdownEditorRow(
     EditorRowSection(
         {
             EditorRowButton(
-                tipText = "Ctrl + Z",
+                tipText = "$platformKeyboardShortCut + Z",
                 icon = Icons.AutoMirrored.Outlined.Undo,
                 enabled = textFieldState.undoState.canUndo,
                 onClick = { textFieldState.undoState.undo() }
@@ -73,7 +75,7 @@ fun MarkdownEditorRow(
         },
         {
             EditorRowButton(
-                tipText = "Ctrl + Y",
+                tipText = "$platformKeyboardShortCut + Y",
                 icon = Icons.AutoMirrored.Outlined.Redo,
                 enabled = textFieldState.undoState.canRedo,
                 onClick = { textFieldState.undoState.redo() }
@@ -86,7 +88,6 @@ fun MarkdownEditorRow(
     EditorRowSection(
         {
             EditorRowButton(
-                tipText = "",
                 icon = Icons.Outlined.Title,
                 onClick = { isHeadingSectionExpanded = !isHeadingSectionExpanded }
             )
@@ -97,42 +98,42 @@ fun MarkdownEditorRow(
         EditorRowSection(
             {
                 EditorRowButton(
-                    tipText = "",
+                    tipText = "$platformKeyboardShortCut + 1",
                     icon = painterResource(Res.drawable.format_h1),
                     onClick = { textFieldState.edit { addHeader(1) } }
                 )
             },
             {
                 EditorRowButton(
-                    tipText = "",
+                    tipText = "$platformKeyboardShortCut + 2",
                     icon = painterResource(Res.drawable.format_h2),
                     onClick = { textFieldState.edit { addHeader(2) } }
                 )
             },
             {
                 EditorRowButton(
-                    tipText = "",
+                    tipText = "$platformKeyboardShortCut + 3",
                     icon = painterResource(Res.drawable.format_h3),
                     onClick = { textFieldState.edit { addHeader(3) } }
                 )
             },
             {
                 EditorRowButton(
-                    tipText = "",
+                    tipText = "$platformKeyboardShortCut + 4",
                     icon = painterResource(Res.drawable.format_h4),
                     onClick = { textFieldState.edit { addHeader(4) } }
                 )
             },
             {
                 EditorRowButton(
-                    tipText = "",
+                    tipText = "$platformKeyboardShortCut + 5",
                     icon = painterResource(Res.drawable.format_h5),
                     onClick = { textFieldState.edit { addHeader(5) } }
                 )
             },
             {
                 EditorRowButton(
-                    tipText = "",
+                    tipText = "$platformKeyboardShortCut + 6",
                     icon = painterResource(Res.drawable.format_h6),
                     onClick = { textFieldState.edit { addHeader(6) } }
                 )
@@ -143,35 +144,35 @@ fun MarkdownEditorRow(
     EditorRowSection(
         {
             EditorRowButton(
-                tipText = "",
+                tipText = "$platformKeyboardShortCut + B",
                 icon = Icons.Outlined.FormatBold,
                 onClick = { textFieldState.edit { bold() } }
             )
         },
         {
             EditorRowButton(
-                tipText = "",
+                tipText = "$platformKeyboardShortCut + I",
                 icon = Icons.Outlined.FormatItalic,
                 onClick = { textFieldState.edit { italic() } }
             )
         },
         {
             EditorRowButton(
-                tipText = "",
+                tipText = "$platformKeyboardShortCut + U",
                 icon = Icons.Outlined.FormatUnderlined,
                 onClick = { textFieldState.edit { underline() } }
             )
         },
         {
             EditorRowButton(
-                tipText = "",
+                tipText = "$platformKeyboardShortCut + D",
                 icon = Icons.Outlined.StrikethroughS,
                 onClick = { textFieldState.edit { strikeThrough() } }
             )
         },
         {
             EditorRowButton(
-                tipText = "",
+                tipText = "$platformKeyboardShortCut + H",
                 icon = Icons.Outlined.FormatPaint,
                 onClick = { textFieldState.edit { highlight() } }
             )
@@ -181,14 +182,12 @@ fun MarkdownEditorRow(
     EditorRowSection(
         {
             EditorRowButton(
-                tipText = "",
                 icon = Icons.AutoMirrored.Outlined.FormatIndentIncrease,
                 onClick = { textFieldState.edit { tab() } }
             )
         },
         {
             EditorRowButton(
-                tipText = "",
                 icon = Icons.AutoMirrored.Outlined.FormatIndentDecrease,
                 onClick = { textFieldState.edit { unTab() } }
             )
@@ -198,14 +197,21 @@ fun MarkdownEditorRow(
     EditorRowSection(
         {
             EditorRowButton(
-                tipText = "",
+                tipText = "$platformKeyboardShortCut + E",
                 icon = Icons.Outlined.Code,
                 onClick = { textFieldState.edit { inlineCode() } }
             )
         },
         {
             EditorRowButton(
-                tipText = "",
+                tipText = "$platformKeyboardShortCut + Shift + E",
+                icon = Icons.Outlined.IntegrationInstructions,
+                onClick = { textFieldState.edit { codeBlock() } }
+            )
+        },
+        {
+            EditorRowButton(
+                tipText = "$platformKeyboardShortCut + Q",
                 icon = Icons.Outlined.FormatQuote,
                 onClick = { textFieldState.edit { quote() } }
             )
@@ -215,28 +221,25 @@ fun MarkdownEditorRow(
     EditorRowSection(
         {
             EditorRowButton(
-                tipText = "",
                 icon = painterResource(Res.drawable.parentheses),
-                onClick = { textFieldState.edit { inlineParentheses() } }
+                onClick = { textFieldState.edit { parentheses() } }
             )
         },
         {
             EditorRowButton(
-                tipText = "",
                 icon = Icons.Outlined.DataArray,
-                onClick = { textFieldState.edit { inlineBrackets() } }
+                onClick = { textFieldState.edit { brackets() } }
             )
         },
         {
             EditorRowButton(
-                tipText = "",
                 icon = Icons.Outlined.DataObject,
-                onClick = { textFieldState.edit { inlineBraces() } }
+                onClick = { textFieldState.edit { braces() } }
             )
         },
         {
             EditorRowButton(
-                tipText = "",
+                tipText = "$platformKeyboardShortCut + R",
                 icon = Icons.Outlined.HorizontalRule,
                 onClick = { textFieldState.edit { addRule() } }
             )
@@ -246,7 +249,6 @@ fun MarkdownEditorRow(
     EditorRowSection(
         {
             EditorRowButton(
-                tipText = "",
                 icon = Icons.AutoMirrored.Outlined.TextSnippet,
                 onClick = { onEditorRowAction(EditorRowAction.Templates) }
             )

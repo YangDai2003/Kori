@@ -8,7 +8,7 @@
     <string name="italic">Italic</string>
     <string name="underline">Underline</string>
     <string name="strikethrough">Strikethrough</string>
-    <string name="mark">Mark</string>
+    <string name="highlight">Highlight</string>
     <string name="scan">Scan</string>
     <string name="preview">Preview</string>
     <string name="code">Code</string>

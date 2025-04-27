@@ -33,6 +33,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -46,8 +52,10 @@ import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
+import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.editor.FindAndReplaceField
 import org.yangdai.kori.presentation.component.editor.FindAndReplaceState
+import org.yangdai.kori.presentation.component.editor.platformKeyboardShortCut
 import org.yangdai.kori.presentation.component.editor.template.TemplateEditor
 import org.yangdai.kori.presentation.component.editor.template.TemplateEditorRow
 import org.yangdai.kori.presentation.event.UiEvent
@@ -94,7 +102,18 @@ fun TemplateScreen(
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize().imePadding(),
+        modifier = Modifier.fillMaxSize().imePadding().onPreviewKeyEvent { keyEvent ->
+            if (keyEvent.type == KeyEventType.KeyDown && keyEvent.isCtrlPressed) {
+                when (keyEvent.key) {
+                    Key.F -> {
+                        isSearching = !isSearching
+                        true
+                    }
+
+                    else -> false
+                }
+            } else false
+        },
         topBar = {
             TopAppBar(
                 title = {
@@ -135,12 +154,11 @@ fun TemplateScreen(
                     PlatformStyleTopAppBarNavigationIcon(onClick = navigateUp)
                 },
                 actions = {
-                    IconButton(onClick = { isSearching = !isSearching }) {
-                        Icon(
-                            imageVector = Icons.Outlined.Search,
-                            contentDescription = null
-                        )
-                    }
+                    TooltipIconButton(
+                        tipText = "$platformKeyboardShortCut + F",
+                        icon = Icons.Outlined.Search,
+                        onClick = { isSearching = !isSearching }
+                    )
 
                     IconButton(onClick = { viewModel.deleteTemplate() }) {
                         Icon(

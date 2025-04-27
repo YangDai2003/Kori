@@ -10,7 +10,7 @@
     <string name="italic">Kursiv</string>
     <string name="underline">Unterstrichen</string>
     <string name="strikethrough">Durchgestrichen</string>
-    <string name="mark">Markieren</string>
+    <string name="highlight">Markieren</string>
     <string name="scan">Scannen</string>
     <string name="preview">Vorschau</string>
     <string name="code">Code</string>

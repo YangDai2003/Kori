@@ -28,11 +28,12 @@ import org.jetbrains.compose.resources.painterResource
 import org.yangdai.kori.presentation.component.editor.EditorRowAction
 import org.yangdai.kori.presentation.component.editor.EditorRowButton
 import org.yangdai.kori.presentation.component.editor.EditorRowSection
-import org.yangdai.kori.presentation.component.editor.markdown.inlineBraces
-import org.yangdai.kori.presentation.component.editor.markdown.inlineBrackets
-import org.yangdai.kori.presentation.component.editor.markdown.inlineParentheses
+import org.yangdai.kori.presentation.component.editor.markdown.braces
+import org.yangdai.kori.presentation.component.editor.markdown.brackets
+import org.yangdai.kori.presentation.component.editor.markdown.parentheses
 import org.yangdai.kori.presentation.component.editor.markdown.tab
 import org.yangdai.kori.presentation.component.editor.markdown.unTab
+import org.yangdai.kori.presentation.component.editor.platformKeyboardShortCut
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -50,7 +51,7 @@ fun PlainTextEditorRow(
     EditorRowSection(
         {
             EditorRowButton(
-                tipText = "Ctrl + Z",
+                tipText = "$platformKeyboardShortCut + Z",
                 icon = Icons.AutoMirrored.Outlined.Undo,
                 enabled = textFieldState.undoState.canUndo,
                 onClick = { textFieldState.undoState.undo() }
@@ -58,7 +59,7 @@ fun PlainTextEditorRow(
         },
         {
             EditorRowButton(
-                tipText = "Ctrl + Y",
+                tipText = "$platformKeyboardShortCut + Y",
                 icon = Icons.AutoMirrored.Outlined.Redo,
                 enabled = textFieldState.undoState.canRedo,
                 onClick = { textFieldState.undoState.redo() }
@@ -69,14 +70,12 @@ fun PlainTextEditorRow(
     EditorRowSection(
         {
             EditorRowButton(
-                tipText = "",
                 icon = Icons.AutoMirrored.Outlined.FormatIndentIncrease,
                 onClick = { textFieldState.edit { tab() } }
             )
         },
         {
             EditorRowButton(
-                tipText = "",
                 icon = Icons.AutoMirrored.Outlined.FormatIndentDecrease,
                 onClick = { textFieldState.edit { unTab() } }
             )
@@ -86,23 +85,20 @@ fun PlainTextEditorRow(
     EditorRowSection(
         {
             EditorRowButton(
-                tipText = "",
                 icon = painterResource(Res.drawable.parentheses),
-                onClick = { textFieldState.edit { inlineParentheses() } }
+                onClick = { textFieldState.edit { parentheses() } }
             )
         },
         {
             EditorRowButton(
-                tipText = "",
                 icon = Icons.Outlined.DataArray,
-                onClick = { textFieldState.edit { inlineBrackets() } }
+                onClick = { textFieldState.edit { brackets() } }
             )
         },
         {
             EditorRowButton(
-                tipText = "",
                 icon = Icons.Outlined.DataObject,
-                onClick = { textFieldState.edit { inlineBraces() } }
+                onClick = { textFieldState.edit { braces() } }
             )
         }
     )
@@ -110,7 +106,6 @@ fun PlainTextEditorRow(
     EditorRowSection(
         {
             EditorRowButton(
-                tipText = "",
                 icon = Icons.AutoMirrored.Outlined.TextSnippet,
                 onClick = { onEditorRowAction(EditorRowAction.Templates) }
             )

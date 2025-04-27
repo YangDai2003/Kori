@@ -139,8 +139,17 @@ class MainActivity : AppCompatActivity() {
                 ), KeyboardShortcutInfo(
                     getString(R.string.strikethrough), KeyEvent.KEYCODE_D, KeyEvent.META_CTRL_ON
                 ), KeyboardShortcutInfo(
-                    getString(R.string.mark), KeyEvent.KEYCODE_M, KeyEvent.META_CTRL_ON
+                    getString(R.string.highlight), KeyEvent.KEYCODE_H, KeyEvent.META_CTRL_ON
                 ), KeyboardShortcutInfo(
+                    getString(R.string.code), KeyEvent.KEYCODE_E, KeyEvent.META_CTRL_ON
+                ), KeyboardShortcutInfo(
+                    getString(R.string.quote), KeyEvent.KEYCODE_Q, KeyEvent.META_CTRL_ON
+                ), KeyboardShortcutInfo(
+                    getString(R.string.horizontal_rule), KeyEvent.KEYCODE_R, KeyEvent.META_CTRL_ON
+                ),
+
+
+                KeyboardShortcutInfo(
                     getString(R.string.table), KeyEvent.KEYCODE_T, KeyEvent.META_CTRL_ON
                 ), KeyboardShortcutInfo(
                     getString(R.string.link), KeyEvent.KEYCODE_K, KeyEvent.META_CTRL_ON
@@ -148,10 +157,7 @@ class MainActivity : AppCompatActivity() {
                     getString(R.string.preview), KeyEvent.KEYCODE_P, KeyEvent.META_CTRL_ON
                 ), KeyboardShortcutInfo(
                     getString(R.string.find), KeyEvent.KEYCODE_F, KeyEvent.META_CTRL_ON
-                ),
-
-
-                KeyboardShortcutInfo(
+                ), KeyboardShortcutInfo(
                     getString(R.string.list),
                     KeyEvent.KEYCODE_L,
                     KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_ON
@@ -160,20 +166,8 @@ class MainActivity : AppCompatActivity() {
                     KeyEvent.KEYCODE_S,
                     KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_ON
                 ), KeyboardShortcutInfo(
-                    getString(R.string.code),
-                    KeyEvent.KEYCODE_K,
-                    KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_ON
-                ), KeyboardShortcutInfo(
-                    getString(R.string.quote),
-                    KeyEvent.KEYCODE_Q,
-                    KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_ON
-                ), KeyboardShortcutInfo(
                     getString(R.string.math),
                     KeyEvent.KEYCODE_M,
-                    KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_ON
-                ), KeyboardShortcutInfo(
-                    getString(R.string.horizontal_rule),
-                    KeyEvent.KEYCODE_R,
                     KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_ON
                 ), KeyboardShortcutInfo(
                     getString(R.string.task_list),
