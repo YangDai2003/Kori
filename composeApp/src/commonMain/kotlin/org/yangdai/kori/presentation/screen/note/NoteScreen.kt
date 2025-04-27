@@ -253,7 +253,7 @@ fun NoteScreen(
                         .padding(horizontal = 16.dp),
                     state = viewModel.titleState,
                     lineLimits = TextFieldLineLimits.SingleLine,
-                    textStyle = MaterialTheme.typography.headlineLarge.copy(
+                    textStyle = MaterialTheme.typography.titleLarge.copy(
                         color = MaterialTheme.colorScheme.onSurface
                     ),
                     readOnly = isReadView,
@@ -271,7 +271,7 @@ fun NoteScreen(
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
                                     text = stringResource(Res.string.title),
-                                    style = MaterialTheme.typography.headlineLarge.copy(
+                                    style = MaterialTheme.typography.titleLarge.copy(
                                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
                                             alpha = 0.6f
                                         )
