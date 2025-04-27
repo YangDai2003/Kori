@@ -8,11 +8,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -52,55 +55,60 @@ fun main() {
             val appLockManager = koinInject<AppLockManager>()
             val isUnlocked by appLockManager.isUnlocked.collectAsStateWithLifecycle()
 
-            KoriTheme(
-                darkMode =
-                    if (stylePaneState.theme == AppTheme.SYSTEM) {
-                        isSystemInDarkTheme()
-                    } else {
-                        stylePaneState.theme == AppTheme.DARK
-                    },
-                color = stylePaneState.color,
-                amoledMode = stylePaneState.isAppInAmoledMode,
-                fontScale = stylePaneState.fontSize
-            ) {
-                Surface {
-                    val showPassScreen by remember {
-                        derivedStateOf {
-                            (securityPaneState.password.isNotEmpty() && !isUnlocked) ||
-                                    (securityPaneState.isCreatingPass && !isUnlocked)
+            val standardDensity = LocalDensity.current.density
+            CompositionLocalProvider(
+                LocalDensity provides Density(standardDensity * 0.8f)
+            ){
+                KoriTheme(
+                    darkMode =
+                        if (stylePaneState.theme == AppTheme.SYSTEM) {
+                            isSystemInDarkTheme()
+                        } else {
+                            stylePaneState.theme == AppTheme.DARK
+                        },
+                    color = stylePaneState.color,
+                    amoledMode = stylePaneState.isAppInAmoledMode,
+                    fontScale = stylePaneState.fontSize
+                ) {
+                    Surface {
+                        val showPassScreen by remember {
+                            derivedStateOf {
+                                (securityPaneState.password.isNotEmpty() && !isUnlocked) ||
+                                        (securityPaneState.isCreatingPass && !isUnlocked)
+                            }
                         }
-                    }
-                    val blur by animateDpAsState(targetValue = if (showPassScreen) 16.dp else 0.dp)
+                        val blur by animateDpAsState(targetValue = if (showPassScreen) 16.dp else 0.dp)
 
-                    AppNavHost(modifier = Modifier.blur(blur))
-                    AnimatedVisibility(
-                        visible = showPassScreen,
-                        enter = fadeIn(),
-                        exit = fadeOut()
-                    ) {
-                        NumberLockScreen(
-                            modifier =  Modifier.background(MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.25f)),
-                            storedPassword = securityPaneState.password,
-                            isCreatingPassword = securityPaneState.isCreatingPass,
-                            onCreatingCanceled = {
-                                settingsViewModel.putPreferenceValue(
-                                    Constants.Preferences.IS_CREATING_PASSWORD,
-                                    false
-                                )
-                            },
-                            onPassCreated = {
-                                settingsViewModel.putPreferenceValue(
-                                    Constants.Preferences.PASSWORD,
-                                    it
-                                )
-                                settingsViewModel.putPreferenceValue(
-                                    Constants.Preferences.IS_CREATING_PASSWORD,
-                                    false
-                                )
-                                appLockManager.unlock()
-                            },
-                            onAuthenticated = { appLockManager.unlock() }
-                        )
+                        AppNavHost(modifier = Modifier.blur(blur))
+                        AnimatedVisibility(
+                            visible = showPassScreen,
+                            enter = fadeIn(),
+                            exit = fadeOut()
+                        ) {
+                            NumberLockScreen(
+                                modifier =  Modifier.background(MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.25f)),
+                                storedPassword = securityPaneState.password,
+                                isCreatingPassword = securityPaneState.isCreatingPass,
+                                onCreatingCanceled = {
+                                    settingsViewModel.putPreferenceValue(
+                                        Constants.Preferences.IS_CREATING_PASSWORD,
+                                        false
+                                    )
+                                },
+                                onPassCreated = {
+                                    settingsViewModel.putPreferenceValue(
+                                        Constants.Preferences.PASSWORD,
+                                        it
+                                    )
+                                    settingsViewModel.putPreferenceValue(
+                                        Constants.Preferences.IS_CREATING_PASSWORD,
+                                        false
+                                    )
+                                    appLockManager.unlock()
+                                },
+                                onAuthenticated = { appLockManager.unlock() }
+                            )
+                        }
                     }
                 }
             }
