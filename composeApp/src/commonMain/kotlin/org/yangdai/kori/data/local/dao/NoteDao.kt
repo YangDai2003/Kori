@@ -43,7 +43,7 @@ interface NoteDao {
 
     @Query("SELECT COUNT(*) FROM notes WHERE is_deleted = 0 AND is_template = 0")
     fun getActiveNotesCount(): Flow<Int>
-    
+
     @Query("SELECT COUNT(*) FROM notes WHERE is_template = 1 AND is_deleted = 0")
     fun getTemplatesCount(): Flow<Int>
 
@@ -98,76 +98,142 @@ interface NoteDao {
     @Query("SELECT * FROM notes WHERE is_deleted = 0 AND is_template = 0 ORDER BY is_pinned DESC, updated_at DESC")
     fun getAllNotesOrderByUpdatedDesc(): Flow<List<NoteEntity>>
 
-    // 根据文件夹 ID 获取笔记，按名称升序（排除模板笔记），置顶笔记优先
-    @Query("SELECT * FROM notes WHERE folder_id = :folderId AND is_deleted = 0 AND is_template = 0 ORDER BY is_pinned DESC, title ASC")
+    // 根据文件夹 ID 获取笔记，按名称升序，置顶笔记优先
+    @Query("SELECT * FROM notes WHERE folder_id = :folderId AND is_deleted = 0 ORDER BY is_pinned DESC, title ASC")
     fun getNotesByFolderIdOrderByNameAsc(folderId: String): Flow<List<NoteEntity>>
 
-    // 根据文件夹 ID 获取笔记，按名称降序（排除模板笔记），置顶笔记优先
-    @Query("SELECT * FROM notes WHERE folder_id = :folderId AND is_deleted = 0 AND is_template = 0 ORDER BY is_pinned DESC, title DESC")
+    // 根据文件夹 ID 获取笔记，按名称降序，置顶笔记优先
+    @Query("SELECT * FROM notes WHERE folder_id = :folderId AND is_deleted = 0 ORDER BY is_pinned DESC, title DESC")
     fun getNotesByFolderIdOrderByNameDesc(folderId: String): Flow<List<NoteEntity>>
 
-    // 根据文件夹 ID 获取笔记，按创建时间升序（排除模板笔记），置顶笔记优先
-    @Query("SELECT * FROM notes WHERE folder_id = :folderId AND is_deleted = 0 AND is_template = 0 ORDER BY is_pinned DESC, created_at ASC")
+    // 根据文件夹 ID 获取笔记，按创建时间升序，置顶笔记优先
+    @Query("SELECT * FROM notes WHERE folder_id = :folderId AND is_deleted = 0 ORDER BY is_pinned DESC, created_at ASC")
     fun getNotesByFolderIdOrderByCreatedAsc(folderId: String): Flow<List<NoteEntity>>
 
-    // 根据文件夹 ID 获取笔记，按创建时间降序（排除模板笔记），置顶笔记优先
-    @Query("SELECT * FROM notes WHERE folder_id = :folderId AND is_deleted = 0 AND is_template = 0 ORDER BY is_pinned DESC, created_at DESC")
+    // 根据文件夹 ID 获取笔记，按创建时间降序，置顶笔记优先
+    @Query("SELECT * FROM notes WHERE folder_id = :folderId AND is_deleted = 0 ORDER BY is_pinned DESC, created_at DESC")
     fun getNotesByFolderIdOrderByCreatedDesc(folderId: String): Flow<List<NoteEntity>>
 
-    // 根据文件夹 ID 获取笔记，按修改时间升序（排除模板笔记），置顶笔记优先
-    @Query("SELECT * FROM notes WHERE folder_id = :folderId AND is_deleted = 0 AND is_template = 0 ORDER BY is_pinned DESC, updated_at ASC")
+    // 根据文件夹 ID 获取笔记，按修改时间升序，置顶笔记优先
+    @Query("SELECT * FROM notes WHERE folder_id = :folderId AND is_deleted = 0 ORDER BY is_pinned DESC, updated_at ASC")
     fun getNotesByFolderIdOrderByUpdatedAsc(folderId: String): Flow<List<NoteEntity>>
 
-    // 根据文件夹 ID 获取笔记，按修改时间降序（排除模板笔记），置顶笔记优先
-    @Query("SELECT * FROM notes WHERE folder_id = :folderId AND is_deleted = 0 AND is_template = 0 ORDER BY is_pinned DESC, updated_at DESC")
+    // 根据文件夹 ID 获取笔记，按修改时间降序，置顶笔记优先
+    @Query("SELECT * FROM notes WHERE folder_id = :folderId AND is_deleted = 0 ORDER BY is_pinned DESC, updated_at DESC")
     fun getNotesByFolderIdOrderByUpdatedDesc(folderId: String): Flow<List<NoteEntity>>
-    
+
     // 根据关键词搜索笔记，按名称升序（排除模板笔记），置顶笔记优先
-    @Query("SELECT * FROM notes WHERE (title LIKE '%' || :keyword || '%' OR content LIKE '%' || :keyword || '%') AND is_deleted = 0 AND is_template = 0 ORDER BY is_pinned DESC, title ASC")
+    @Query(
+        """
+    SELECT * FROM notes
+    WHERE (title LIKE '%' || :keyword || '%' OR content LIKE '%' || :keyword || '%')
+      AND is_deleted = 0
+      AND is_template = 0
+    ORDER BY
+      is_pinned DESC,
+      CASE WHEN title LIKE '%' || :keyword || '%' THEN 1 ELSE 0 END DESC,
+      title ASC
+"""
+    )
     fun searchNotesByKeywordOrderByNameAsc(keyword: String): Flow<List<NoteEntity>>
 
-    // 根据关键词搜索笔记，按名称降序（排除模板笔记），置顶笔记优先
-    @Query("SELECT * FROM notes WHERE (title LIKE '%' || :keyword || '%' OR content LIKE '%' || :keyword || '%') AND is_deleted = 0 AND is_template = 0 ORDER BY is_pinned DESC, title DESC")
+    // 按名称降序，优先匹配标题关键字，再匹配内容关键字
+    @Query(
+        """
+    SELECT * FROM notes
+    WHERE (title LIKE '%' || :keyword || '%' OR content LIKE '%' || :keyword || '%')
+      AND is_deleted = 0
+      AND is_template = 0
+    ORDER BY
+      is_pinned DESC,
+      CASE WHEN title LIKE '%' || :keyword || '%' THEN 1 ELSE 0 END DESC,
+      title DESC
+"""
+    )
     fun searchNotesByKeywordOrderByNameDesc(keyword: String): Flow<List<NoteEntity>>
 
-    // 根据关键词搜索笔记，按创建时间升序（排除模板笔记），置顶笔记优先
-    @Query("SELECT * FROM notes WHERE (title LIKE '%' || :keyword || '%' OR content LIKE '%' || :keyword || '%') AND is_deleted = 0 AND is_template = 0 ORDER BY is_pinned DESC, created_at ASC")
+    // 按创建时间升序，优先匹配标题关键字，再匹配内容关键字
+    @Query(
+        """
+    SELECT * FROM notes
+    WHERE (title LIKE '%' || :keyword || '%' OR content LIKE '%' || :keyword || '%')
+      AND is_deleted = 0
+      AND is_template = 0
+    ORDER BY
+      is_pinned DESC,
+      CASE WHEN title LIKE '%' || :keyword || '%' THEN 1 ELSE 0 END DESC,
+      created_at ASC
+"""
+    )
     fun searchNotesByKeywordOrderByCreatedAsc(keyword: String): Flow<List<NoteEntity>>
 
-    // 根据关键词搜索笔记，按创建时间降序（排除模板笔记），置顶笔记优先
-    @Query("SELECT * FROM notes WHERE (title LIKE '%' || :keyword || '%' OR content LIKE '%' || :keyword || '%') AND is_deleted = 0 AND is_template = 0 ORDER BY is_pinned DESC, created_at DESC")
+    // 按创建时间降序，优先匹配标题关键字，再匹配内容关键字
+    @Query(
+        """
+    SELECT * FROM notes
+    WHERE (title LIKE '%' || :keyword || '%' OR content LIKE '%' || :keyword || '%')
+      AND is_deleted = 0
+      AND is_template = 0
+    ORDER BY
+      is_pinned DESC,
+      CASE WHEN title LIKE '%' || :keyword || '%' THEN 1 ELSE 0 END DESC,
+      created_at DESC
+"""
+    )
     fun searchNotesByKeywordOrderByCreatedDesc(keyword: String): Flow<List<NoteEntity>>
 
-    // 根据关键词搜索笔记，按修改时间升序（排除模板笔记），置顶笔记优先
-    @Query("SELECT * FROM notes WHERE (title LIKE '%' || :keyword || '%' OR content LIKE '%' || :keyword || '%') AND is_deleted = 0 AND is_template = 0 ORDER BY is_pinned DESC, updated_at ASC")
+    // 按修改时间升序，优先匹配标题关键字，再匹配内容关键字
+    @Query(
+        """
+    SELECT * FROM notes
+    WHERE (title LIKE '%' || :keyword || '%' OR content LIKE '%' || :keyword || '%')
+      AND is_deleted = 0
+      AND is_template = 0
+    ORDER BY
+      is_pinned DESC,
+      CASE WHEN title LIKE '%' || :keyword || '%' THEN 1 ELSE 0 END DESC,
+      updated_at ASC
+"""
+    )
     fun searchNotesByKeywordOrderByUpdatedAsc(keyword: String): Flow<List<NoteEntity>>
 
-    // 根据关键词搜索笔记，按修改时间降序（排除模板笔记），置顶笔记优先
-    @Query("SELECT * FROM notes WHERE (title LIKE '%' || :keyword || '%' OR content LIKE '%' || :keyword || '%') AND is_deleted = 0 AND is_template = 0 ORDER BY is_pinned DESC, updated_at DESC")
+    // 按修改时间降序，优先匹配标题关键字，再匹配内容关键字
+    @Query(
+        """
+    SELECT * FROM notes
+    WHERE (title LIKE '%' || :keyword || '%' OR content LIKE '%' || :keyword || '%')
+      AND is_deleted = 0
+      AND is_template = 0
+    ORDER BY
+      is_pinned DESC,
+      CASE WHEN title LIKE '%' || :keyword || '%' THEN 1 ELSE 0 END DESC,
+      updated_at DESC
+"""
+    )
     fun searchNotesByKeywordOrderByUpdatedDesc(keyword: String): Flow<List<NoteEntity>>
-    
+
     // 获取模板笔记相关查询
-    
+
     // 获取所有模板笔记，按名称升序
     @Query("SELECT * FROM notes WHERE is_template = 1 AND is_deleted = 0 ORDER BY title ASC")
     fun getAllTemplatesOrderByNameAsc(): Flow<List<NoteEntity>>
-    
+
     // 获取所有模板笔记，按名称降序
     @Query("SELECT * FROM notes WHERE is_template = 1 AND is_deleted = 0 ORDER BY title DESC")
     fun getAllTemplatesOrderByNameDesc(): Flow<List<NoteEntity>>
-    
+
     // 获取所有模板笔记，按创建时间升序
     @Query("SELECT * FROM notes WHERE is_template = 1 AND is_deleted = 0 ORDER BY created_at ASC")
     fun getAllTemplatesOrderByCreatedAsc(): Flow<List<NoteEntity>>
-    
+
     // 获取所有模板笔记，按创建时间降序
     @Query("SELECT * FROM notes WHERE is_template = 1 AND is_deleted = 0 ORDER BY created_at DESC")
     fun getAllTemplatesOrderByCreatedDesc(): Flow<List<NoteEntity>>
-    
+
     // 获取所有模板笔记，按修改时间升序
     @Query("SELECT * FROM notes WHERE is_template = 1 AND is_deleted = 0 ORDER BY updated_at ASC")
     fun getAllTemplatesOrderByUpdatedAsc(): Flow<List<NoteEntity>>
-    
+
     // 获取所有模板笔记，按修改时间降序
     @Query("SELECT * FROM notes WHERE is_template = 1 AND is_deleted = 0 ORDER BY updated_at DESC")
     fun getAllTemplatesOrderByUpdatedDesc(): Flow<List<NoteEntity>>

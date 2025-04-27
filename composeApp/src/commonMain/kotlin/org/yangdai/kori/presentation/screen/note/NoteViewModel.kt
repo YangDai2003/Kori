@@ -151,22 +151,19 @@ class NoteViewModel(
 
     @OptIn(ExperimentalUuidApi::class)
     fun saveOrUpdateNote() {
-        if (_noteEditingState.value.isDeleted) {
-            return
-        }
+        if (_noteEditingState.value.isDeleted) return
         viewModelScope.launch {
-            val noteState = _noteEditingState.value
             val noteEntity = NoteEntity(
-                id = noteState.id,
+                id = _noteEditingState.value.id,
                 title = titleState.text.toString(),
                 content = contentState.text.toString(),
-                folderId = noteState.folderId,
-                createdAt = noteState.createdAt,
+                folderId = _noteEditingState.value.folderId,
+                createdAt = _noteEditingState.value.createdAt,
                 updatedAt = Clock.System.now().toString(),
-                isDeleted = noteState.isDeleted,
-                isTemplate = noteState.isTemplate,
-                isPinned = noteState.isPinned,
-                noteType = noteState.noteType
+                isDeleted = false,
+                isTemplate = false,
+                isPinned = _noteEditingState.value.isPinned,
+                noteType = _noteEditingState.value.noteType
             )
             if (noteEntity.id.isEmpty() && (noteEntity.title.isNotBlank() || noteEntity.content.isNotBlank())) {
                 noteRepository.insertNote(noteEntity.copy(id = Uuid.random().toString()))
@@ -182,9 +179,7 @@ class NoteViewModel(
 
     fun moveNoteToTrash() {
         viewModelScope.launch {
-            _noteEditingState.update {
-                it.copy(isDeleted = true, isPinned = false)
-            }
+            _noteEditingState.update { it.copy(isDeleted = true) }
             if (_noteEditingState.value.id.isNotEmpty()) {
                 noteRepository.updateNote(
                     NoteEntity(
@@ -195,7 +190,7 @@ class NoteViewModel(
                         createdAt = _noteEditingState.value.createdAt,
                         updatedAt = Clock.System.now().toString(),
                         isDeleted = true,
-                        isTemplate = _noteEditingState.value.isTemplate,
+                        isTemplate = false,
                         isPinned = false,
                         noteType = _noteEditingState.value.noteType
                     )

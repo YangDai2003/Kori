@@ -84,18 +84,16 @@ class TemplateViewModel(
 
     @OptIn(ExperimentalUuidApi::class)
     fun saveOrUpdateNote() {
-        if (_noteEditingState.value.isDeleted) {
-            return
-        }
+        if (_noteEditingState.value.isDeleted) return
         viewModelScope.launch {
             val noteEntity = NoteEntity(
                 id = _noteEditingState.value.id,
                 title = titleState.text.toString(),
                 content = contentState.text.toString(),
-                folderId = _noteEditingState.value.folderId,
+                folderId = null,
                 createdAt = _noteEditingState.value.createdAt,
                 updatedAt = Clock.System.now().toString(),
-                isDeleted = _noteEditingState.value.isDeleted,
+                isDeleted = false,
                 isTemplate = true,
                 isPinned = false,
                 noteType = _noteEditingState.value.noteType
@@ -114,9 +112,7 @@ class TemplateViewModel(
 
     fun deleteTemplate() {
         viewModelScope.launch {
-            _noteEditingState.update {
-                it.copy(isDeleted = true, isPinned = false)
-            }
+            _noteEditingState.update { it.copy(isDeleted = true) }
             if (_noteEditingState.value.id.isNotEmpty()) {
                 noteRepository.deleteNoteById(_noteEditingState.value.id)
             }
