@@ -58,14 +58,11 @@ fun main() {
             val standardDensity = LocalDensity.current.density
             CompositionLocalProvider(
                 LocalDensity provides Density(standardDensity * 0.8f)
-            ){
+            ) {
                 KoriTheme(
                     darkMode =
-                        if (stylePaneState.theme == AppTheme.SYSTEM) {
-                            isSystemInDarkTheme()
-                        } else {
-                            stylePaneState.theme == AppTheme.DARK
-                        },
+                        if (stylePaneState.theme == AppTheme.SYSTEM) isSystemInDarkTheme()
+                        else stylePaneState.theme == AppTheme.DARK,
                     color = stylePaneState.color,
                     amoledMode = stylePaneState.isAppInAmoledMode,
                     fontScale = stylePaneState.fontSize
@@ -86,7 +83,11 @@ fun main() {
                             exit = fadeOut()
                         ) {
                             NumberLockScreen(
-                                modifier =  Modifier.background(MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.25f)),
+                                modifier = Modifier.background(
+                                    MaterialTheme.colorScheme.surfaceDim.copy(
+                                        alpha = 0.25f
+                                    )
+                                ),
                                 storedPassword = securityPaneState.password,
                                 isCreatingPassword = securityPaneState.isCreatingPass,
                                 onCreatingCanceled = {
