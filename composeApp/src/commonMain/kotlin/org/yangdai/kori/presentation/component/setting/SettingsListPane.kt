@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_info
 import kori.composeapp.generated.resources.card
+import kori.composeapp.generated.resources.card_size
 import kori.composeapp.generated.resources.color_platte
 import kori.composeapp.generated.resources.dark_mode
 import kori.composeapp.generated.resources.date_format
@@ -36,6 +37,7 @@ import kori.composeapp.generated.resources.security
 import kori.composeapp.generated.resources.settings
 import kori.composeapp.generated.resources.style
 import kori.composeapp.generated.resources.templates
+import kori.composeapp.generated.resources.text_overflow
 import kori.composeapp.generated.resources.time_format
 import kori.composeapp.generated.resources.version
 import org.jetbrains.compose.resources.stringResource
@@ -105,7 +107,8 @@ fun SettingsListPane(
                 {
                     ListPaneItem(
                         title = stringResource(Res.string.card),
-                        description = "",
+                        description = stringResource(Res.string.text_overflow)
+                                + "  •  " + stringResource(Res.string.card_size),
                         icon = Icons.Outlined.GridView,
                         isSelected = selectedItem == 2,
                         onClick = { navigateToDetail(2) }

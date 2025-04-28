@@ -2,12 +2,12 @@
 
 package org.yangdai.kori.presentation.component.main
 
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,11 +16,11 @@ import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridItemScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PushPin
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -47,30 +47,45 @@ import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
+import org.yangdai.kori.presentation.screen.settings.CardSize
+
+data class NoteItemProperties(
+    val showCreatedTime: Boolean = false,
+    val cardSize: CardSize = CardSize.DEFAULT,
+    val clipOverflow: Boolean = false
+)
+
+@Composable
+private fun NoteItemCard(
+    modifier: Modifier,
+    isSelected: Boolean,
+    content: @Composable () -> Unit
+) = Surface(
+    modifier = modifier,
+    shape = CardDefaults.shape,
+    border = if (isSelected) CardDefaults.outlinedCardBorder() else null,
+    content = content
+)
 
 @Composable
 fun LazyGridItemScope.NoteItem(
     note: NoteEntity,
-    showCreatedTime: Boolean,
+    noteItemProperties: NoteItemProperties,
     isSelected: Boolean = false,
     isSelectionMode: Boolean = false,
     onClick: () -> Unit,
     onLongClick: () -> Unit
 ) {
-    Card(
+    NoteItemCard(
         modifier = Modifier
             .fillMaxWidth()
-            .height(160.dp)
             .padding(bottom = 8.dp)
             .animateItem(),
-        colors = if (isSelected) CardDefaults.outlinedCardColors()
-        else CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = if (isSelected) CardDefaults.outlinedCardBorder() else null,
-        elevation = if (isSelected) CardDefaults.outlinedCardElevation() else CardDefaults.cardElevation()
+        isSelected = isSelected
     ) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .combinedClickable(
                     onClick = onClick,
                     onLongClick = onLongClick
@@ -84,17 +99,21 @@ fun LazyGridItemScope.NoteItem(
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        modifier = Modifier.basicMarquee()
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
 
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = note.content,
-                    style = MaterialTheme.typography.bodyMedium,
-                    overflow = TextOverflow.Ellipsis
-                )
+                if (noteItemProperties.cardSize != CardSize.TITLE_ONLY) {
+                    val lines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 5 else 2
+                    Text(
+                        text = note.content,
+                        style = MaterialTheme.typography.bodyMedium,
+                        minLines = lines,
+                        maxLines = lines,
+                        overflow = if (noteItemProperties.clipOverflow) TextOverflow.Clip else TextOverflow.Ellipsis
+                    )
+                }
 
                 // 底部行：笔记类型和更新时间信息
                 Row(
@@ -121,12 +140,13 @@ fun LazyGridItemScope.NoteItem(
 
                     // 格式化更新时间
                     val updatedAtFormatted = try {
-                        val instant = if (showCreatedTime) Instant.parse(note.createdAt)
-                        else Instant.parse(note.updatedAt)
+                        val instant =
+                            if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
+                            else Instant.parse(note.updatedAt)
                         val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
                         localDateTime.format(dateTimeFormatter)
                     } catch (_: Exception) {
-                        if (showCreatedTime) note.createdAt else note.updatedAt
+                        if (noteItemProperties.showCreatedTime) note.createdAt else note.updatedAt
                     }
 
                     Text(
@@ -154,18 +174,15 @@ fun LazyGridItemScope.NoteItem(
 @Composable
 fun LazyStaggeredGridItemScope.NoteItem(
     note: NoteEntity,
-    showCreatedTime: Boolean,
+    noteItemProperties: NoteItemProperties,
     isSelected: Boolean = false,
     isSelectionMode: Boolean = false,
     onClick: () -> Unit,
     onLongClick: () -> Unit
 ) {
-    Card(
+    NoteItemCard(
         modifier = Modifier.fillMaxWidth().animateItem(),
-        colors = if (isSelected) CardDefaults.outlinedCardColors()
-        else CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = if (isSelected) CardDefaults.outlinedCardBorder() else null,
-        elevation = if (isSelected) CardDefaults.outlinedCardElevation() else CardDefaults.cardElevation()
+        isSelected = isSelected
     ) {
         Box(
             modifier = Modifier
@@ -183,21 +200,21 @@ fun LazyStaggeredGridItemScope.NoteItem(
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        modifier = Modifier.basicMarquee()
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
 
-
                 // 内容预览
-                if (note.content.isNotBlank())
+                if (noteItemProperties.cardSize != CardSize.TITLE_ONLY) {
+                    val lines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 5 else 2
                     Text(
                         text = note.content,
                         style = MaterialTheme.typography.bodyMedium,
-                        maxLines = 8,
-                        overflow = TextOverflow.Ellipsis
+                        maxLines = lines,
+                        overflow = if (noteItemProperties.clipOverflow) TextOverflow.Clip else TextOverflow.Ellipsis
                     )
-
+                }
 
                 // 底部行：笔记类型和更新时间信息
                 Row(
@@ -231,12 +248,13 @@ fun LazyStaggeredGridItemScope.NoteItem(
 
                     // 格式化更新时间
                     val updatedAtFormatted = try {
-                        val instant = if (showCreatedTime) Instant.parse(note.createdAt)
-                        else Instant.parse(note.updatedAt)
+                        val instant =
+                            if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
+                            else Instant.parse(note.updatedAt)
                         val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
                         localDateTime.format(dateTimeFormatter)
                     } catch (_: Exception) {
-                        if (showCreatedTime) note.createdAt else note.updatedAt
+                        if (noteItemProperties.showCreatedTime) note.createdAt else note.updatedAt
                     }
 
                     Text(
@@ -265,18 +283,15 @@ fun LazyStaggeredGridItemScope.NoteItem(
 fun LazyStaggeredGridItemScope.SearchResultNoteItem(
     keyword: String,
     note: NoteEntity,
-    showCreatedTime: Boolean,
+    noteItemProperties: NoteItemProperties,
     isSelected: Boolean = false,
     isSelectionMode: Boolean = false,
     onClick: () -> Unit,
     onLongClick: () -> Unit
 ) {
-    Card(
+    NoteItemCard(
         modifier = Modifier.fillMaxWidth().animateItem(),
-        colors = if (isSelected) CardDefaults.outlinedCardColors()
-        else CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = if (isSelected) CardDefaults.outlinedCardBorder() else null,
-        elevation = if (isSelected) CardDefaults.outlinedCardElevation() else CardDefaults.cardElevation()
+        isSelected = isSelected
     ) {
         Box(
             modifier = Modifier
@@ -312,20 +327,22 @@ fun LazyStaggeredGridItemScope.SearchResultNoteItem(
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        modifier = Modifier.basicMarquee()
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
 
 
                 // 内容预览
-                if (note.content.isNotBlank())
+                if (noteItemProperties.cardSize != CardSize.TITLE_ONLY) {
+                    val lines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 5 else 2
                     Text(
                         text = note.content,
                         style = MaterialTheme.typography.bodyMedium,
-                        maxLines = 8,
-                        overflow = TextOverflow.Ellipsis
+                        maxLines = lines,
+                        overflow = if (noteItemProperties.clipOverflow) TextOverflow.Clip else TextOverflow.Ellipsis
                     )
+                }
 
 
                 // 底部行：笔记类型和更新时间信息
@@ -359,12 +376,13 @@ fun LazyStaggeredGridItemScope.SearchResultNoteItem(
 
                     // 格式化更新时间
                     val updatedAtFormatted = try {
-                        val instant = if (showCreatedTime) Instant.parse(note.createdAt)
-                        else Instant.parse(note.updatedAt)
+                        val instant =
+                            if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
+                            else Instant.parse(note.updatedAt)
                         val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
                         localDateTime.format(dateTimeFormatter)
                     } catch (_: Exception) {
-                        if (showCreatedTime) note.createdAt else note.updatedAt
+                        if (noteItemProperties.showCreatedTime) note.createdAt else note.updatedAt
                     }
 
                     Text(

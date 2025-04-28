@@ -109,4 +109,11 @@
     <string name="explore_and_share_community_note_templates">Explore and Share Note Templates with the Community</string>
 
     <string name="card">Card</string>
+    <string name="ellipsis">Ellipsis</string>
+    <string name="clip">Clip</string>
+    <string name="default_size">Normal</string>
+    <string name="title_only">Title only</string>
+    <string name="compact">Compact</string>
+    <string name="text_overflow">Text overflow</string>
+    <string name="card_size">Card size</string>
 </resources>

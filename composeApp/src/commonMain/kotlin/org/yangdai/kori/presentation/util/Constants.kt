@@ -25,5 +25,8 @@ object Constants {
 
         const val DATE_FORMATTER = "date_formatter"
         const val TIME_FORMATTER = "time_formatter"
+
+        const val CARD_SIZE = "card_size"
+        const val CLIP_OVERFLOW_TEXT = "clip_overflow_text"
     }
 }

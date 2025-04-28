@@ -34,7 +34,7 @@ fun GroupedPage(
     notesMap: Map<Boolean, List<NoteEntity>>,
     contentPadding: PaddingValues,
     columns: Int,
-    showCreatedTime: Boolean,
+    noteItemProperties: NoteItemProperties,
     navigateToScreen: (Screen) -> Unit,
     selectedNotes: MutableSet<String>,
     isSelectionMode: Boolean
@@ -65,7 +65,7 @@ fun GroupedPage(
             items(notesMap[true] ?: emptyList(), key = { it.id }) { note ->
                 NoteItem(
                     note = note,
-                    showCreatedTime = showCreatedTime,
+                    noteItemProperties = noteItemProperties,
                     isSelected = selectedNotes.contains(note.id),
                     isSelectionMode = isSelectionMode,
                     onClick = {
@@ -106,7 +106,7 @@ fun GroupedPage(
             items(notesMap[false] ?: emptyList(), key = { it.id }) { note ->
                 NoteItem(
                     note = note,
-                    showCreatedTime = showCreatedTime,
+                    noteItemProperties = noteItemProperties,
                     isSelected = selectedNotes.contains(note.id),
                     isSelectionMode = isSelectionMode,
                     onClick = {
@@ -140,7 +140,7 @@ fun Page(
     notes: List<NoteEntity>,
     contentPadding: PaddingValues,
     columns: Int,
-    showCreatedTime: Boolean,
+    noteItemProperties: NoteItemProperties,
     navigateToScreen: (Screen) -> Unit,
     selectedNotes: MutableSet<String>,
     isSelectionMode: Boolean
@@ -157,7 +157,7 @@ fun Page(
         items(notes, key = { it.id }) { note ->
             NoteItem(
                 note = note,
-                showCreatedTime = showCreatedTime,
+                noteItemProperties = noteItemProperties,
                 isSelected = selectedNotes.contains(note.id),
                 isSelectionMode = isSelectionMode,
                 onClick = {
@@ -189,7 +189,7 @@ fun TemplatesPage(
     notes: List<NoteEntity>,
     contentPadding: PaddingValues,
     columns: Int,
-    showCreatedTime: Boolean,
+    noteItemProperties: NoteItemProperties,
     navigateToScreen: (Screen) -> Unit,
     selectedNotes: MutableSet<String>,
     isSelectionMode: Boolean
@@ -206,7 +206,7 @@ fun TemplatesPage(
         items(notes, key = { it.id }) { note ->
             NoteItem(
                 note = note,
-                showCreatedTime = showCreatedTime,
+                noteItemProperties = noteItemProperties,
                 isSelected = selectedNotes.contains(note.id),
                 isSelectionMode = isSelectionMode,
                 onClick = {
@@ -239,7 +239,7 @@ fun SearchResultsPage(
     notes: List<NoteEntity>,
     contentPadding: PaddingValues,
     columns: Int,
-    showCreatedTime: Boolean,
+    noteItemProperties: NoteItemProperties,
     navigateToScreen: (Screen) -> Unit,
     selectedNotes: MutableSet<String>,
     isSelectionMode: Boolean
@@ -257,7 +257,7 @@ fun SearchResultsPage(
             SearchResultNoteItem(
                 keyword = keyword,
                 note = note,
-                showCreatedTime = showCreatedTime,
+                noteItemProperties = noteItemProperties,
                 isSelected = selectedNotes.contains(note.id),
                 isSelectionMode = isSelectionMode,
                 onClick = {

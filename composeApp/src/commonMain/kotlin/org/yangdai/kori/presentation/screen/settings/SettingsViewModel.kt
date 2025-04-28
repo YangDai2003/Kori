@@ -20,8 +20,8 @@ class SettingsViewModel(
         dataStoreRepository.floatFlow(Constants.Preferences.FONT_SIZE)
     ) { theme, color, isAppInAmoledMode, fontSize ->
         StylePaneState(
-            theme = AppTheme.Companion.fromInt(theme),
-            color = AppColor.Companion.fromInt(color),
+            theme = AppTheme.fromInt(theme),
+            color = AppColor.fromInt(color),
             isAppInAmoledMode = isAppInAmoledMode,
             fontSize = fontSize
         )
@@ -62,6 +62,16 @@ class SettingsViewModel(
             timeFormatter = timeFormatter
         )
     }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), TemplatePaneState())
+
+    val cardPaneState = combine(
+        dataStoreRepository.intFlow(Constants.Preferences.CARD_SIZE),
+        dataStoreRepository.booleanFlow(Constants.Preferences.CLIP_OVERFLOW_TEXT)
+    ) { cardSize, clipOverflow ->
+        CardPaneState(
+            cardSize = CardSize.fromInt(cardSize),
+            clipOverflow = clipOverflow
+        )
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), CardPaneState())
 
     fun <T> putPreferenceValue(key: String, value: T) {
         viewModelScope.launch {

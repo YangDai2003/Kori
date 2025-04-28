@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
@@ -24,6 +25,8 @@ import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.domain.sort.FolderSortType
 import org.yangdai.kori.domain.sort.NoteSortType
+import org.yangdai.kori.presentation.screen.settings.CardPaneState
+import org.yangdai.kori.presentation.screen.settings.CardSize
 import org.yangdai.kori.presentation.util.Constants
 
 class MainViewModel(
@@ -108,7 +111,9 @@ class MainViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val foldersWithNoteCounts: StateFlow<List<FolderDao.FolderWithNoteCount>> = dataStoreRepository
         .intFlow(Constants.Preferences.FOLDER_SORT_TYPE)
-        .map { FolderSortType.Companion.fromValue(it).also { sortType -> folderSortType = sortType } }
+        .map {
+            FolderSortType.Companion.fromValue(it).also { sortType -> folderSortType = sortType }
+        }
         .distinctUntilChanged()
         .flatMapLatest { sortType ->
             folderRepository.getFoldersWithNoteCounts(sortType)
@@ -118,6 +123,16 @@ class MainViewModel(
             started = SharingStarted.Companion.WhileSubscribed(5_000L),
             initialValue = emptyList()
         )
+
+    val cardPaneState = combine(
+        dataStoreRepository.intFlow(Constants.Preferences.CARD_SIZE),
+        dataStoreRepository.booleanFlow(Constants.Preferences.CLIP_OVERFLOW_TEXT)
+    ) { cardSize, clipOverflow ->
+        CardPaneState(
+            cardSize = CardSize.fromInt(cardSize),
+            clipOverflow = clipOverflow
+        )
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), CardPaneState())
 
     fun loadNotesByFolder(folderId: String) {
         _currentFolderId = folderId

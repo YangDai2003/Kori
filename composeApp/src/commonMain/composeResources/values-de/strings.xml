@@ -107,4 +107,11 @@
     <string name="explore_and_share_community_note_templates">Erkunde und teile Notizvorlagen mit der Community</string>
 
     <string name="card">Karte</string>
+    <string name="ellipsis">Ellipsen</string>
+    <string name="clip">Ausschnitt</string>
+    <string name="default_size">Normal</string>
+    <string name="title_only">Nur Title</string>
+    <string name="compact">Klein</string>
+    <string name="text_overflow">Textüberlauf</string>
+    <string name="card_size">Kartengröße</string>
 </resources>

@@ -308,12 +308,23 @@ fun MainScreenContent(
                 }
             }
         }
+
+        val cardPaneState by viewModel.cardPaneState.collectAsStateWithLifecycle()
         val showCreatedTime by remember(viewModel.noteSortType) {
             derivedStateOf {
                 when (viewModel.noteSortType) {
                     NoteSortType.CREATE_TIME_DESC, NoteSortType.CREATE_TIME_ASC -> true
                     else -> false
                 }
+            }
+        }
+        val noteItemProperties by remember(cardPaneState, showCreatedTime) {
+            derivedStateOf {
+                NoteItemProperties(
+                    showCreatedTime = showCreatedTime,
+                    cardSize = cardPaneState.cardSize,
+                    clipOverflow = cardPaneState.clipOverflow
+                )
             }
         }
         VerticalPager(
@@ -476,7 +487,7 @@ fun MainScreenContent(
                                     navigateToScreen = navigateToScreen,
                                     selectedNotes = selectedNotes,
                                     columns = columns,
-                                    showCreatedTime = showCreatedTime,
+                                    noteItemProperties = noteItemProperties,
                                     isSelectionMode = isSelectionMode
                                 )
                             else
@@ -486,7 +497,7 @@ fun MainScreenContent(
                                     navigateToScreen = navigateToScreen,
                                     selectedNotes = selectedNotes,
                                     columns = columns,
-                                    showCreatedTime = showCreatedTime,
+                                    noteItemProperties = noteItemProperties,
                                     isSelectionMode = isSelectionMode
                                 )
                         }
@@ -501,7 +512,7 @@ fun MainScreenContent(
                         navigateToScreen = navigateToScreen,
                         selectedNotes = selectedNotes,
                         columns = columns,
-                        showCreatedTime = showCreatedTime,
+                        noteItemProperties = noteItemProperties,
                         isSelectionMode = isSelectionMode
                     )
                 }
@@ -514,7 +525,7 @@ fun MainScreenContent(
                         navigateToScreen = { },
                         selectedNotes = selectedNotes,
                         columns = columns,
-                        showCreatedTime = showCreatedTime,
+                        noteItemProperties = noteItemProperties,
                         isSelectionMode = isSelectionMode
                     )
                 }
@@ -532,7 +543,7 @@ fun MainScreenContent(
                             navigateToScreen = navigateToScreen,
                             selectedNotes = selectedNotes,
                             columns = columns,
-                            showCreatedTime = showCreatedTime,
+                            noteItemProperties = noteItemProperties,
                             isSelectionMode = isSelectionMode
                         )
                     }

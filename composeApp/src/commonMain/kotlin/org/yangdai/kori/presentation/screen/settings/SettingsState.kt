@@ -25,6 +25,22 @@ data class TemplatePaneState(
     val timeFormatter: String = ""
 )
 
+data class CardPaneState(
+    val cardSize: CardSize = CardSize.DEFAULT,
+    val clipOverflow: Boolean = false
+)
+
+enum class CardSize(private val value: Int) {
+    DEFAULT(0),
+    TITLE_ONLY(1),
+    COMPACT(2);
+
+    companion object {
+        fun fromInt(value: Int) = entries.firstOrNull { it.value == value } ?: DEFAULT
+        fun CardSize.toInt() = value
+    }
+}
+
 enum class AppTheme(private val value: Int) {
     SYSTEM(0),
     LIGHT(1),

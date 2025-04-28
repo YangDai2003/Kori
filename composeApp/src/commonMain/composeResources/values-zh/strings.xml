@@ -107,4 +107,11 @@
     <string name="explore_and_share_community_note_templates">在社区探索或分享笔记模板</string>
 
     <string name="card">卡片</string>
+    <string name="ellipsis">省略号</string>
+    <string name="clip">裁切</string>
+    <string name="default_size">正常</string>
+    <string name="title_only">仅标题</string>
+    <string name="compact">紧凑</string>
+    <string name="text_overflow">文本溢出</string>
+    <string name="card_size">卡片尺寸</string>
 </resources>
