@@ -54,8 +54,7 @@ import kori.composeapp.generated.resources.report_a_bug_or_request_a_feature
 import kori.composeapp.generated.resources.share_this_app
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.yangdai.kori.OS
-import org.yangdai.kori.currentOperatingSystem
+import org.yangdai.kori.Platform
 import org.yangdai.kori.currentPlatform
 import org.yangdai.kori.presentation.component.ConfettiEffect
 import org.yangdai.kori.presentation.component.CurlyCornerShape
@@ -166,8 +165,8 @@ fun AboutPane() {
             colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             leadingContent = {
                 Icon(
-                    imageVector = if (currentOperatingSystem() == OS.IOS || currentOperatingSystem() == OS.MACOS) Icons.Outlined.IosShare
-                    else Icons.Outlined.Share,
+                    imageVector = if (currentPlatform() == Platform.Android) Icons.Outlined.Share
+                    else Icons.Outlined.IosShare,
                     contentDescription = null
                 )
             },

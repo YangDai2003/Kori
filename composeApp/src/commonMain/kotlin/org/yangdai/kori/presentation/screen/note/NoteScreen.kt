@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -31,8 +32,10 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.EditNote
+import androidx.compose.material.icons.outlined.IosShare
 import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.SwapHorizontalCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -126,6 +129,7 @@ import org.yangdai.kori.presentation.component.editor.plaintext.PlainTextEditorR
 import org.yangdai.kori.presentation.event.UiEvent
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.util.TemplateProcessor
+import org.yangdai.kori.presentation.util.clickToShareText
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(
@@ -503,6 +507,19 @@ fun NoteScreen(
                 icon = Icons.Outlined.Delete,
                 onClick = { viewModel.moveNoteToTrash() }
             )
+
+            Box(
+                Modifier.size(48.dp)
+                    .padding(4.dp)
+                    .clip(CircleShape)
+                    .clickToShareText(viewModel.contentState.text.toString()),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = if (currentPlatform() == Platform.Android) Icons.Outlined.Share else Icons.Outlined.IosShare,
+                    contentDescription = null
+                )
+            }
         },
         drawerContent = {
             NoteSideSheetItem(
