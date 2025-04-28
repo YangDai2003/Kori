@@ -19,6 +19,7 @@ import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
@@ -40,7 +41,8 @@ fun EditorRowSection(vararg content: @Composable () -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxHeight()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 4.dp)
+            .focusProperties { canFocus = false },
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
@@ -63,8 +65,6 @@ fun EditorRowButton(
     enabled: Boolean = true,
     onClick: () -> Unit
 ) = TooltipBox(
-    modifier = Modifier.fillMaxHeight()
-        .clickable(enabled = enabled, role = Role.Button) { onClick() },
     positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
     tooltip = {
         if (tipText == null) return@TooltipBox
@@ -77,14 +77,14 @@ fun EditorRowButton(
     enableUserInput = enabled
 ) {
     Box(
-        modifier = Modifier.fillMaxHeight().aspectRatio(1f),
+        modifier = Modifier.fillMaxHeight().aspectRatio(1f)
+            .clickable(enabled = enabled, role = Role.Button) { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Icon(
             imageVector = icon,
-            tint = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(
-                alpha = 0.3f
-            ),
+            tint = if (enabled) MaterialTheme.colorScheme.onSurface
+            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
             contentDescription = null
         )
     }
@@ -98,8 +98,6 @@ fun EditorRowButton(
     enabled: Boolean = true,
     onClick: () -> Unit
 ) = TooltipBox(
-    modifier = Modifier.fillMaxHeight()
-        .clickable(enabled = enabled, role = Role.Button) { onClick() },
     positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
     tooltip = {
         if (tipText == null) return@TooltipBox
@@ -112,14 +110,14 @@ fun EditorRowButton(
     enableUserInput = enabled
 ) {
     Box(
-        modifier = Modifier.fillMaxHeight().aspectRatio(1f),
+        modifier = Modifier.fillMaxHeight().aspectRatio(1f)
+            .clickable(enabled = enabled, role = Role.Button) { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Icon(
             painter = icon,
-            tint = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(
-                alpha = 0.3f
-            ),
+            tint = if (enabled) MaterialTheme.colorScheme.onSurface
+            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
             contentDescription = null
         )
     }

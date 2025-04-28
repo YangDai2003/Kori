@@ -119,50 +119,42 @@ fun TextFieldBuffer.unTab() {
     }
 }
 
+fun TextFieldBuffer.add(str: String) {
+    val initialSelection = selection
+    replace(initialSelection.max, initialSelection.max, str)
+}
+
 fun TextFieldBuffer.addInNewLine(str: String) {
     val text = toString()
-    if (selection.collapsed) {
-        if (selection.min > 0 && text[selection.min - 1] != '\n') {
-            // 如果不是换行符，那么就先添加一个换行符
-            appendLine()
-        }
-        append(str)
-    } else {
-        val endIndex = selection.max
-        if (endIndex > 0 && text[endIndex - 1] != '\n') {
-            replace(endIndex, endIndex, "\n$str")
-        } else {
-            replace(endIndex, endIndex, str)
-        }
+    if (selection.max > 0 && text[selection.max - 1] != '\n') {
+        // 如果不是换行符，那么就先添加一个换行符
+        add("\n")
     }
+    add(str)
 }
 
 fun TextFieldBuffer.header(level: Int) {
     val heading = "#".repeat(level) + " "
-    if (selection.collapsed) {
-        addInNewLine(heading)
-    } else {
-        val text = toString()
-        val lineStart = text.take(selection.min)
-            .lastIndexOf('\n')
-            .takeIf { it != -1 }
-            ?.let { it + 1 }
-            ?: 0
+    val text = toString()
+    val lineStart = text.take(selection.min)
+        .lastIndexOf('\n')
+        .takeIf { it != -1 }
+        ?.let { it + 1 }
+        ?: 0
 
-        val initialSelection = selection
+    val initialSelection = selection
 
-        replace(lineStart, lineStart, heading)
-        selection = TextRange(
-            initialSelection.min + heading.length,
-            initialSelection.max + heading.length
-        )
-    }
+    replace(lineStart, lineStart, heading)
+    selection = TextRange(
+        initialSelection.min + heading.length,
+        initialSelection.max + heading.length
+    )
 }
 
 fun TextFieldBuffer.horizontalRule() {
     addInNewLine("\n")
-    appendLine("------")
-    appendLine()
+    add("------\n")
+    add("\n")
 }
 
 fun TextFieldBuffer.bulletList() {

@@ -160,7 +160,9 @@ fun Modifier.markdownKeyEvents(textFieldState: TextFieldState): Modifier =
 
                         // 确保起始位置小于结束位置
                         if (currentLineStart >= currentLineEnd) {
-                            textFieldState.edit { appendLine() }
+                            textFieldState.edit {
+                                add("\n")
+                            }
                             return@onPreviewKeyEvent true
                         }
 
@@ -212,9 +214,9 @@ fun Modifier.markdownKeyEvents(textFieldState: TextFieldState): Modifier =
                         }
 
                         textFieldState.edit {
-                            appendLine()
+                            add("\n")
                             if (newLinePrefix.isNotEmpty()) {
-                                append(indentation + newLinePrefix)
+                                add(indentation + newLinePrefix)
                             }
                         }
                         true

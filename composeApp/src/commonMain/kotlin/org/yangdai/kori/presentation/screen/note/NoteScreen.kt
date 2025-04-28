@@ -119,7 +119,6 @@ import org.yangdai.kori.presentation.component.editor.NoteSideSheet
 import org.yangdai.kori.presentation.component.editor.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.editor.markdown.MarkdownEditor
 import org.yangdai.kori.presentation.component.editor.markdown.MarkdownEditorRow
-import org.yangdai.kori.presentation.component.editor.markdown.addInNewLine
 import org.yangdai.kori.presentation.component.editor.markdown.moveCursorLeftStateless
 import org.yangdai.kori.presentation.component.editor.markdown.moveCursorRightStateless
 import org.yangdai.kori.presentation.component.editor.plaintext.PlainTextEditor
@@ -458,9 +457,7 @@ fun NoteScreen(
                                 val templateText = TemplateProcessor(
                                     formatterState.dateFormatter, formatterState.timeFormatter,
                                 ).process(template.content)
-                                viewModel.contentState.edit {
-                                    addInNewLine(templateText)
-                                }
+                                viewModel.contentState.edit { appendLine(templateText) }
                                 hideTemplatesBottomSheet()
                             }
                     )
