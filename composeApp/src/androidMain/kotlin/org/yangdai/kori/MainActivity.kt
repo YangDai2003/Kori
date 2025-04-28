@@ -146,21 +146,25 @@ class MainActivity : AppCompatActivity() {
                     getString(R.string.quote), KeyEvent.KEYCODE_Q, KeyEvent.META_CTRL_ON
                 ), KeyboardShortcutInfo(
                     getString(R.string.horizontal_rule), KeyEvent.KEYCODE_R, KeyEvent.META_CTRL_ON
+                ), KeyboardShortcutInfo(
+                    getString(R.string.link), KeyEvent.KEYCODE_L, KeyEvent.META_CTRL_ON
+                ), KeyboardShortcutInfo(
+                    getString(R.string.list),
+                    KeyEvent.KEYCODE_B,
+                    KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_ON
+                ), KeyboardShortcutInfo(
+                    getString(R.string.task_list),
+                    KeyEvent.KEYCODE_T,
+                    KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_ON
                 ),
 
 
                 KeyboardShortcutInfo(
                     getString(R.string.table), KeyEvent.KEYCODE_T, KeyEvent.META_CTRL_ON
                 ), KeyboardShortcutInfo(
-                    getString(R.string.link), KeyEvent.KEYCODE_K, KeyEvent.META_CTRL_ON
-                ), KeyboardShortcutInfo(
                     getString(R.string.preview), KeyEvent.KEYCODE_P, KeyEvent.META_CTRL_ON
                 ), KeyboardShortcutInfo(
                     getString(R.string.find), KeyEvent.KEYCODE_F, KeyEvent.META_CTRL_ON
-                ), KeyboardShortcutInfo(
-                    getString(R.string.list),
-                    KeyEvent.KEYCODE_L,
-                    KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_ON
                 ), KeyboardShortcutInfo(
                     getString(R.string.scan),
                     KeyEvent.KEYCODE_S,
@@ -168,10 +172,6 @@ class MainActivity : AppCompatActivity() {
                 ), KeyboardShortcutInfo(
                     getString(R.string.math),
                     KeyEvent.KEYCODE_M,
-                    KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_ON
-                ), KeyboardShortcutInfo(
-                    getString(R.string.task_list),
-                    KeyEvent.KEYCODE_T,
                     KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_ON
                 ), KeyboardShortcutInfo(
                     getString(R.string.mermaid_diagram),

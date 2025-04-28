@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import org.yangdai.kori.Platform
@@ -35,3 +36,6 @@ fun Int.toHexColor(): String {
 private fun Int.toHexByte(): String {
     return this.toString(16).padStart(2, '0').uppercase()
 }
+
+@Composable
+expect fun Modifier.clickToShareText(text: String): Modifier

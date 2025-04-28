@@ -19,6 +19,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BugReport
+import androidx.compose.material.icons.outlined.IosShare
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -49,12 +51,15 @@ import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_name
 import kori.composeapp.generated.resources.compose_multiplatform
 import kori.composeapp.generated.resources.report_a_bug_or_request_a_feature
-import kori.composeapp.generated.resources.version
+import kori.composeapp.generated.resources.share_this_app
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.yangdai.kori.OS
+import org.yangdai.kori.currentOperatingSystem
 import org.yangdai.kori.currentPlatform
 import org.yangdai.kori.presentation.component.ConfettiEffect
 import org.yangdai.kori.presentation.component.CurlyCornerShape
+import org.yangdai.kori.presentation.util.clickToShareText
 
 @Composable
 fun AboutPane() {
@@ -151,6 +156,23 @@ fun AboutPane() {
             },
             headlineContent = {
                 Text(text = stringResource(Res.string.report_a_bug_or_request_a_feature))
+            })
+
+        ListItem(
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .clip(CircleShape)
+                .clickToShareText(stringResource(Res.string.share_this_app)),
+            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+            leadingContent = {
+                Icon(
+                    imageVector = if (currentOperatingSystem() == OS.IOS || currentOperatingSystem() == OS.MACOS) Icons.Outlined.IosShare
+                    else Icons.Outlined.Share,
+                    contentDescription = null
+                )
+            },
+            headlineContent = {
+                Text(text = stringResource(Res.string.share_this_app))
             })
     }
 
