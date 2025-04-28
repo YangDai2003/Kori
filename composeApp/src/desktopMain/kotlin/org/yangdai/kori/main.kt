@@ -4,6 +4,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.DarkDefaultContextMenuRepresentation
+import androidx.compose.foundation.LightDefaultContextMenuRepresentation
+import androidx.compose.foundation.LocalContextMenuRepresentation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -54,15 +57,25 @@ fun main() {
             val securityPaneState by settingsViewModel.securityPaneState.collectAsStateWithLifecycle()
             val appLockManager = koinInject<AppLockManager>()
             val isUnlocked by appLockManager.isUnlocked.collectAsStateWithLifecycle()
+            val isSystemInDarkTheme = isSystemInDarkTheme()
+
+            val darkMode by remember(isSystemInDarkTheme, stylePaneState.theme) {
+                derivedStateOf {
+                    if (stylePaneState.theme == AppTheme.SYSTEM) isSystemInDarkTheme
+                    else stylePaneState.theme == AppTheme.DARK
+                }
+            }
+
+            val contextMenuRepresentation =
+                if (darkMode) DarkDefaultContextMenuRepresentation else LightDefaultContextMenuRepresentation
 
             val standardDensity = LocalDensity.current.density
             CompositionLocalProvider(
-                LocalDensity provides Density(standardDensity * 0.8f)
+                LocalDensity provides Density(standardDensity * 0.8f),
+                LocalContextMenuRepresentation provides contextMenuRepresentation
             ) {
                 KoriTheme(
-                    darkMode =
-                        if (stylePaneState.theme == AppTheme.SYSTEM) isSystemInDarkTheme()
-                        else stylePaneState.theme == AppTheme.DARK,
+                    darkMode = darkMode,
                     color = stylePaneState.color,
                     amoledMode = stylePaneState.isAppInAmoledMode,
                     fontScale = stylePaneState.fontSize
