@@ -2,8 +2,12 @@ package org.yangdai.kori.presentation.component.main
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
@@ -21,7 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.DriveFileMove
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.History
@@ -33,7 +37,7 @@ import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -44,6 +48,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -63,8 +68,11 @@ import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
@@ -93,6 +101,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.domain.sort.NoteSortType
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
 import org.yangdai.kori.presentation.component.TooltipIconButton
+import org.yangdai.kori.presentation.component.dialog.FilePickerDialog
 import org.yangdai.kori.presentation.component.dialog.FoldersDialog
 import org.yangdai.kori.presentation.component.dialog.NoteSortOptionDialog
 import org.yangdai.kori.presentation.navigation.Screen
@@ -112,6 +121,7 @@ fun MainScreenContent(
 ) {
     var showSortDialog by rememberSaveable { mutableStateOf(false) }
     var showFoldersDialog by rememberSaveable { mutableStateOf(false) }
+    var showFilePickerDialog by rememberSaveable { mutableStateOf(false) }
     val selectedNotes = remember { mutableStateSetOf<String>() }
     val isSelectionMode by remember(selectedNotes) {
         derivedStateOf { selectedNotes.isNotEmpty() }
@@ -254,21 +264,55 @@ fun MainScreenContent(
             }
         },
         floatingActionButton = {
-            if (currentDrawerItem !is DrawerItem.Trash && !isSelectionMode)
-                FloatingActionButton(
-                    onClick = {
-                        if (currentDrawerItem is DrawerItem.Templates)
-                            navigateToScreen(Screen.Template())
-                        else {
-                            val folderId =
-                                if (currentDrawerItem is DrawerItem.Folder) currentDrawerItem.folder.id
-                                else null
-                            navigateToScreen(Screen.Note(folderId = folderId))
+            if (currentDrawerItem !is DrawerItem.Trash && !isSelectionMode){
+                val hapticFeedback = LocalHapticFeedback.current
+                val interactionSource = remember { MutableInteractionSource() }
+                val isPressed by interactionSource.collectIsPressedAsState()
+                val scale by animateFloatAsState(
+                    targetValue = if (isPressed) 0.9f else 1f,
+                    label = "scale"
+                )
+
+                Surface(
+                    modifier = Modifier
+                        .graphicsLayer {
+                            scaleX = scale
+                            scaleY = scale
                         }
-                    }
+                        .combinedClickable(
+                            interactionSource = interactionSource,
+                            indication = null,
+                            role = Role.Button,
+                            onClick = {
+                                hapticFeedback.performHapticFeedback(HapticFeedbackType.ContextClick)
+                                if (currentDrawerItem is DrawerItem.Templates)
+                                    navigateToScreen(Screen.Template())
+                                else {
+                                    val folderId =
+                                        if (currentDrawerItem is DrawerItem.Folder) currentDrawerItem.folder.id
+                                        else null
+                                    navigateToScreen(Screen.Note(folderId = folderId))
+                                }
+                            },
+                            onLongClick = {
+                                showFilePickerDialog = true
+                            },
+                            onDoubleClick = {
+                                showFilePickerDialog = true
+                            }
+                        ),
+                    shape = FloatingActionButtonDefaults.shape,
+                    color = FloatingActionButtonDefaults.containerColor,
+                    shadowElevation = 6.dp
                 ) {
-                    Icon(Icons.Default.Edit, contentDescription = null)
+                    Box(
+                        modifier = Modifier.defaultMinSize(56.dp, 56.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(imageVector = Icons.Outlined.Create, contentDescription = "Add")
+                    }
                 }
+            }
         },
         containerColor = if (isLargeScreen) MaterialTheme.colorScheme.surfaceContainer
         else MaterialTheme.colorScheme.surfaceContainerLow
@@ -574,4 +618,10 @@ fun MainScreenContent(
             }
         )
     }
+
+    if (showFilePickerDialog)
+        FilePickerDialog {
+            showFilePickerDialog = false
+            // TODO
+        }
 }
