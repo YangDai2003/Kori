@@ -48,6 +48,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.editor.FindAndReplaceState
 import org.yangdai.kori.presentation.component.editor.LineNumbersColumn
 import org.yangdai.kori.presentation.component.editor.TextEditorBase
+import org.yangdai.kori.presentation.component.editor.dragAndDropText
 import kotlin.math.PI
 import kotlin.math.sin
 
@@ -118,7 +119,8 @@ fun MarkdownEditor(
                 modifier = Modifier
                     .padding(start = if (showLineNumbers) 4.dp else 16.dp, end = 16.dp)
                     .fillMaxSize()
-                    .markdownKeyEvents(state),
+                    .markdownKeyEvents(state)
+                    .dragAndDropText(state),
                 scrollState = scrollState,
                 readOnly = readMode,
                 state = state,
