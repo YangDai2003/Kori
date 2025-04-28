@@ -34,7 +34,7 @@ actual fun FilePickerDialog(onFilePicked: (PickedFile?) -> Unit) {
                 if (content != null) {
                     onFilePicked(
                         PickedFile(
-                            name = name ?: "",
+                            name = name.orEmpty(),
                             path = path,
                             content = content
                         )
@@ -59,7 +59,13 @@ actual fun FilePickerDialog(onFilePicked: (PickedFile?) -> Unit) {
 
     val documentPicker = remember {
         UIDocumentPickerViewController(
-            documentTypes = listOf("public.text"),
+            documentTypes = listOf(
+                "public.text",
+                "public.plain-text",
+                "public.text-file",
+                "public.data",
+                "public.content"
+            ),
             inMode = UIDocumentPickerMode.UIDocumentPickerModeOpen
         )
     }
