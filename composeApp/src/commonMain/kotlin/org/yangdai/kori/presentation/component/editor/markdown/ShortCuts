@@ -8,3 +8,7 @@ Ctrl + E Inline Code
 Ctrl + Shift + E Code Block
 Ctrl + Q Quote
 Ctrl + R Horizontal Rule
+Ctrl + L Link
+Ctrl + Shift + B BulletList
+Ctrl + Shift + N NumberedList
+Ctrl + Shift + T TaskList

@@ -1,5 +1,6 @@
 package org.yangdai.kori.presentation.component
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
@@ -15,4 +16,10 @@ expect fun LazyGridScrollbar(
 expect fun HorizontalScrollbar(
     modifier: Modifier,
     state: LazyListState,
+)
+
+@Composable
+expect fun EditorScrollbar(
+    modifier: Modifier,
+    state: ScrollState,
 )

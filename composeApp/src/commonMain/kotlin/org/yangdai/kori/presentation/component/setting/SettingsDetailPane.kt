@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_info
+import kori.composeapp.generated.resources.card
 import kori.composeapp.generated.resources.editor
 import kori.composeapp.generated.resources.security
 import kori.composeapp.generated.resources.style
@@ -42,12 +43,13 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.Platform
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
 import org.yangdai.kori.presentation.component.setting.detail.AboutPane
+import org.yangdai.kori.presentation.component.setting.detail.CardPane
 import org.yangdai.kori.presentation.component.setting.detail.EditorPane
 import org.yangdai.kori.presentation.component.setting.detail.SecurityPane
 import org.yangdai.kori.presentation.component.setting.detail.StylePane
 import org.yangdai.kori.presentation.component.setting.detail.TemplatePane
-import org.yangdai.kori.presentation.util.rememberCurrentPlatform
 import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
+import org.yangdai.kori.presentation.util.rememberCurrentPlatform
 
 @Composable
 fun SettingsDetailPane(
@@ -84,6 +86,11 @@ fun SettingsDetailPane(
             1 -> {
                 topBarTitle = stringResource(Res.string.editor)
                 EditorPane(viewModel)
+            }
+
+            2 -> {
+                topBarTitle = stringResource(Res.string.card)
+                CardPane(viewModel)
             }
 
             3 -> {

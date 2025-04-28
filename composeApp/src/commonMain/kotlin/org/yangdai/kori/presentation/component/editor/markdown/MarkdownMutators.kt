@@ -1,65 +1,7 @@
 package org.yangdai.kori.presentation.component.editor.markdown
 
 import androidx.compose.foundation.text.input.TextFieldBuffer
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.text.TextRange
-
-// 用于存储行信息的数据类
-data class LineInfo(
-    val startOffset: Int,    // 行起始位置
-    val endOffset: Int,      // 行结束位置
-    val content: String      // 行内容
-)
-
-// 优化 1: 缓存行信息
-class TextLinesCache {
-    private var text: String = ""
-    private var lines: List<LineInfo> = emptyList()
-
-    fun getLines(buffer: TextFieldBuffer): List<LineInfo> {
-        val currentText = buffer.toString()
-        // 只有当文本变化时才重新计算行信息
-        if (currentText != text) {
-            text = currentText
-            lines = calculateLines(currentText)
-        }
-        return lines
-    }
-
-    private fun calculateLines(text: String): List<LineInfo> {
-        val result = mutableListOf<LineInfo>()
-        var startOffset = 0
-
-        // 优化 2: 使用 lineSequence() 避免创建中间 List
-        text.lineSequence().forEach { line ->
-            val endOffset = startOffset + line.length
-            result.add(LineInfo(startOffset, endOffset, line))
-            startOffset = endOffset + 1
-        }
-
-        return result
-    }
-}
-
-// 优化 3: 使用二分查找找到光标所在行
-fun List<LineInfo>.findLineByOffset(offset: Int): LineInfo {
-    var left = 0
-    var right = size - 1
-
-    while (left <= right) {
-        val mid = (left + right) / 2
-        val line = get(mid)
-
-        when {
-            offset < line.startOffset -> right = mid - 1
-            offset > line.endOffset -> left = mid + 1
-            else -> return line
-        }
-    }
-
-    return last()
-}
 
 fun TextFieldBuffer.moveCursorLeftStateless() {
     if (selection.min > 0) {
@@ -70,80 +12,6 @@ fun TextFieldBuffer.moveCursorLeftStateless() {
 fun TextFieldBuffer.moveCursorRightStateless() {
     if (selection.max < length) {
         selection = TextRange(selection.max + 1, selection.max + 1)
-    }
-}
-
-class CursorState {
-    var preferredRelativeX: Int? = null
-
-    // 优化 4: 添加行信息缓存
-    val linesCache = TextLinesCache()
-}
-
-@Composable
-fun rememberCursorState(): CursorState {
-    return remember { CursorState() }
-}
-
-// 优化 5: 提取获取行信息的扩展函数
-fun TextFieldBuffer.getLineInfoWithCache(state: CursorState): Pair<List<LineInfo>, LineInfo> {
-    val lines = state.linesCache.getLines(this)
-    val currentLine = lines.findLineByOffset(selection.min)
-    return Pair(lines, currentLine)
-}
-
-fun TextFieldBuffer.moveCursorLeft(state: CursorState) {
-    if (selection.min > 0) {
-        selection = TextRange(selection.min - 1, selection.min - 1)
-        val (_, currentLine) = getLineInfoWithCache(state)
-        state.preferredRelativeX = selection.min - currentLine.startOffset
-    }
-}
-
-fun TextFieldBuffer.moveCursorRight(state: CursorState) {
-    if (selection.max < length) {
-        selection = TextRange(selection.max + 1, selection.max + 1)
-        val (_, currentLine) = getLineInfoWithCache(state)
-        state.preferredRelativeX = selection.max - currentLine.startOffset
-    }
-}
-
-fun TextFieldBuffer.moveCursorUpWithState(state: CursorState) {
-    val (lines, currentLine) = getLineInfoWithCache(state)
-    val relativePosition = selection.min - currentLine.startOffset
-    state.preferredRelativeX = state.preferredRelativeX ?: relativePosition
-
-    // 优化 6: 使用 binarySearch 找到当前行索引
-    val currentLineIndex = lines.binarySearch {
-        it.startOffset.compareTo(currentLine.startOffset)
-    }
-
-    if (currentLineIndex > 0) {
-        val previousLine = lines[currentLineIndex - 1]
-        val newPosition = previousLine.startOffset + minOf(
-            state.preferredRelativeX ?: relativePosition,
-            previousLine.content.length
-        )
-        selection = TextRange(newPosition, newPosition)
-    }
-}
-
-fun TextFieldBuffer.moveCursorDownWithState(state: CursorState) {
-    val (lines, currentLine) = getLineInfoWithCache(state)
-    val relativePosition = selection.min - currentLine.startOffset
-    state.preferredRelativeX = state.preferredRelativeX ?: relativePosition
-
-    val currentLineIndex = lines.binarySearch {
-        it.startOffset.compareTo(currentLine.startOffset)
-    }
-
-    if (currentLineIndex < lines.size - 1) {
-        val nextLine = lines[currentLineIndex + 1]
-        val newPosition = nextLine.startOffset + minOf(
-            state.preferredRelativeX ?: relativePosition,
-            nextLine.content.length
-        )
-        selection = TextRange(newPosition, newPosition)
     }
 }
 
@@ -186,6 +54,8 @@ fun TextFieldBuffer.parentheses() = inlineWrap("(", ")")
 fun TextFieldBuffer.brackets() = inlineWrap("[", "]")
 
 fun TextFieldBuffer.braces() = inlineWrap("{", "}")
+
+fun TextFieldBuffer.link() = inlineWrap("[", "]()")
 
 fun TextFieldBuffer.inlineCode() = inlineWrap("`")
 
@@ -249,52 +119,168 @@ fun TextFieldBuffer.unTab() {
     }
 }
 
-fun TextFieldBuffer.add(str: String) {
-    val initialSelection = selection
-    replace(initialSelection.min, initialSelection.max, str)
-}
-
 fun TextFieldBuffer.addInNewLine(str: String) {
     val text = toString()
-    if (selection.min != 0 && text[selection.min - 1] != '\n') {
-        // 如果不是换行符，那么就先添加一个换行符
-        add("\n")
-    }
-    add(str)
-}
-
-fun TextFieldBuffer.addMermaid() {
-    addInNewLine("<pre class=\"mermaid\">\n</pre>")
-}
-
-fun TextFieldBuffer.addHeader(level: Int) {
-    addInNewLine("#".repeat(level) + " ")
-}
-
-fun TextFieldBuffer.addRule() {
-    addInNewLine("\n")
-    add("------")
-    add("\n")
-    add("\n")
-}
-
-fun TextFieldBuffer.addTask(task: String, checked: Boolean) {
-    if (checked) {
-        addInNewLine("- [x] $task")
+    if (selection.collapsed) {
+        if (selection.min > 0 && text[selection.min - 1] != '\n') {
+            // 如果不是换行符，那么就先添加一个换行符
+            appendLine()
+        }
+        append(str)
     } else {
-        addInNewLine("- [ ] $task")
-    }
-}
-
-fun TextFieldBuffer.addTable(row: Int, column: Int) = addInNewLine(
-    buildString {
-        append("|")
-        repeat(column) { append(" HEADER |") }
-        append("\n|")
-        repeat(column) { append(" :-----------: |") }
-        repeat(row) {
-            append("\n|")
-            repeat(column) { append(" Element |") }
+        val endIndex = selection.max
+        if (endIndex > 0 && text[endIndex - 1] != '\n') {
+            replace(endIndex, endIndex, "\n$str")
+        } else {
+            replace(endIndex, endIndex, str)
         }
     }
-)
+}
+
+fun TextFieldBuffer.header(level: Int) {
+    val heading = "#".repeat(level) + " "
+    if (selection.collapsed) {
+        addInNewLine(heading)
+    } else {
+        val text = toString()
+        val lineStart = text.take(selection.min)
+            .lastIndexOf('\n')
+            .takeIf { it != -1 }
+            ?.let { it + 1 }
+            ?: 0
+
+        val initialSelection = selection
+
+        replace(lineStart, lineStart, heading)
+        selection = TextRange(
+            initialSelection.min + heading.length,
+            initialSelection.max + heading.length
+        )
+    }
+}
+
+fun TextFieldBuffer.horizontalRule() {
+    addInNewLine("\n")
+    appendLine("------")
+    appendLine()
+}
+
+fun TextFieldBuffer.bulletList() {
+    if (selection.collapsed) {
+        // 如果没有选中任何文本，则直接在新行插入 "- "
+        addInNewLine("- ")
+    } else {
+        val start = selection.start
+        val end = selection.end
+        val allText = toString()
+        val selectedText = allText.substring(start, end)
+
+        // 逐行在第一个非空格字符之前插入 "- "
+        val transformedText = selectedText
+            .lineSequence()
+            .map { line ->
+                // 找到当前行第一个非空格字符下标
+                val index = line.indexOfFirst { !it.isWhitespace() }
+                if (index >= 0) {
+                    val prefix = line.substring(0, index)
+                    val content = line.substring(index)
+                    "$prefix- $content"
+                } else {
+                    // 整行都是空格或为空，则不处理
+                    line
+                }
+            }
+            .joinToString("\n")
+
+        // 用处理后的文本替换原选中区域
+        replace(start, end, transformedText)
+        selection = TextRange(start, start + transformedText.length)
+    }
+}
+
+fun TextFieldBuffer.numberedList() {
+    if (selection.collapsed) {
+        // 无选中区域时，直接插入 "1. "
+        addInNewLine("1. ")
+    } else {
+        val start = selection.start
+        val end = selection.end
+        val allText = this.toString()
+        val selectedText = allText.substring(start, end)
+
+        // 计算行首缩进级别，这里简单假设 4 个空格相当于 1 级缩进，tab 视为 4 个空格
+        fun getIndentLevel(line: String): Int {
+            var count = 0
+            for (char in line) {
+                when (char) {
+                    ' ' -> count++
+                    '\t' -> count += 4
+                    else -> break
+                }
+            }
+            return count / 4
+        }
+
+        // 记录各级缩进对应的编号计数
+        val counters = mutableListOf<Int>()
+
+        val transformedText = selectedText
+            .lineSequence()
+            .map { line ->
+                // 获取本行缩进级别
+                val indentLevel = getIndentLevel(line)
+                // 如果当前 counters 大小不够，则补充到对应级别
+                while (counters.size <= indentLevel) {
+                    counters.add(0)
+                }
+                // 如果当前 counters 大小太大，则将不需要的级别弹出
+                while (counters.size > indentLevel + 1) {
+                    counters.removeAt(counters.size - 1)
+                }
+                // 给本级缩进对应的编号 +1
+                counters[indentLevel] = counters[indentLevel] + 1
+
+                // 将标号插入行首缩进的后面
+                val firstNonSpaceIndex = line.indexOfFirst { !it.isWhitespace() }
+                if (firstNonSpaceIndex >= 0) {
+                    val prefix = line.substring(0, firstNonSpaceIndex)
+                    val content = line.substring(firstNonSpaceIndex)
+                    "$prefix${counters[indentLevel]}. $content"
+                } else {
+                    line
+                }
+            }
+            .joinToString("\n")
+
+        replace(start, end, transformedText)
+        selection = TextRange(start, start + transformedText.length)
+    }
+}
+
+fun TextFieldBuffer.taskList() {
+    if (selection.collapsed) {
+        addInNewLine("- [ ] ")
+    } else {
+        val start = selection.start
+        val end = selection.end
+        val allText = toString()
+        val selectedText = allText.substring(start, end)
+
+        val transformedText = selectedText
+            .lineSequence()
+            .map { line ->
+                val index = line.indexOfFirst { !it.isWhitespace() }
+                if (index >= 0) {
+                    val prefix = line.substring(0, index)
+                    val content = line.substring(index)
+                    "$prefix- [ ] $content"
+                } else {
+                    line
+                }
+            }
+            .joinToString("\n")
+
+        replace(start, end, transformedText)
+        selection = TextRange(start, start + transformedText.length)
+    }
+}

@@ -107,4 +107,6 @@
     <string name="files_in_this_folder_will_be_available_as_templates">Files in this folder will be available as templates.</string>
     <string name="saveAsTemplate">Save this note as a template</string>
     <string name="explore_and_share_community_note_templates">Explore and Share Note Templates with the Community</string>
+
+    <string name="card">Card</string>
 </resources>

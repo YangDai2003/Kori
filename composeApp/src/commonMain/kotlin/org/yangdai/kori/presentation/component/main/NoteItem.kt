@@ -1,3 +1,5 @@
+@file:OptIn(FormatStringsInDatetimeFormats::class)
+
 package org.yangdai.kori.presentation.component.main
 
 import androidx.compose.foundation.combinedClickable
@@ -21,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -35,7 +38,11 @@ import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.plain_text
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.format.FormatStringsInDatetimeFormats
+import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.NoteEntity
@@ -109,16 +116,15 @@ fun LazyGridItemScope.NoteItem(
 
                     Spacer(modifier = Modifier.weight(1f))
 
+                    var dateTimeFormatter =
+                        remember { LocalDateTime.Format { byUnicodePattern("yyyy-MM-dd HH:mm") } }
+
                     // 格式化更新时间
                     val updatedAtFormatted = try {
                         val instant = if (showCreatedTime) Instant.parse(note.createdAt)
                         else Instant.parse(note.updatedAt)
                         val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-                        val month = localDateTime.monthNumber.toString().padStart(2, '0')
-                        val day = localDateTime.dayOfMonth.toString().padStart(2, '0')
-                        val hour = localDateTime.hour.toString().padStart(2, '0')
-                        val minute = localDateTime.minute.toString().padStart(2, '0')
-                        "${localDateTime.year}-$month-$day $hour:$minute"
+                        localDateTime.format(dateTimeFormatter)
                     } catch (_: Exception) {
                         if (showCreatedTime) note.createdAt else note.updatedAt
                     }
@@ -220,16 +226,15 @@ fun LazyStaggeredGridItemScope.NoteItem(
 
                     Spacer(modifier = Modifier.weight(1f))
 
+                    var dateTimeFormatter =
+                        remember { LocalDateTime.Format { byUnicodePattern("yyyy-MM-dd HH:mm") } }
+
                     // 格式化更新时间
                     val updatedAtFormatted = try {
                         val instant = if (showCreatedTime) Instant.parse(note.createdAt)
                         else Instant.parse(note.updatedAt)
                         val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-                        val month = localDateTime.monthNumber.toString().padStart(2, '0')
-                        val day = localDateTime.dayOfMonth.toString().padStart(2, '0')
-                        val hour = localDateTime.hour.toString().padStart(2, '0')
-                        val minute = localDateTime.minute.toString().padStart(2, '0')
-                        "${localDateTime.year}-$month-$day $hour:$minute"
+                        localDateTime.format(dateTimeFormatter)
                     } catch (_: Exception) {
                         if (showCreatedTime) note.createdAt else note.updatedAt
                     }
@@ -349,16 +354,15 @@ fun LazyStaggeredGridItemScope.SearchResultNoteItem(
 
                     Spacer(modifier = Modifier.weight(1f))
 
+                    var dateTimeFormatter =
+                        remember { LocalDateTime.Format { byUnicodePattern("yyyy-MM-dd HH:mm") } }
+
                     // 格式化更新时间
                     val updatedAtFormatted = try {
                         val instant = if (showCreatedTime) Instant.parse(note.createdAt)
                         else Instant.parse(note.updatedAt)
                         val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-                        val month = localDateTime.monthNumber.toString().padStart(2, '0')
-                        val day = localDateTime.dayOfMonth.toString().padStart(2, '0')
-                        val hour = localDateTime.hour.toString().padStart(2, '0')
-                        val minute = localDateTime.minute.toString().padStart(2, '0')
-                        "${localDateTime.year}-$month-$day $hour:$minute"
+                        localDateTime.format(dateTimeFormatter)
                     } catch (_: Exception) {
                         if (showCreatedTime) note.createdAt else note.updatedAt
                     }

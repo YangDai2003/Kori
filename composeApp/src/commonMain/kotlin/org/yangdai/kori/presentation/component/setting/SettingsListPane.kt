@@ -8,6 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.PermDeviceInformation
 import androidx.compose.material.icons.outlined.Security
@@ -21,16 +22,21 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_info
+import kori.composeapp.generated.resources.card
 import kori.composeapp.generated.resources.color_platte
 import kori.composeapp.generated.resources.dark_mode
+import kori.composeapp.generated.resources.date_format
+import kori.composeapp.generated.resources.default_view
 import kori.composeapp.generated.resources.editor
 import kori.composeapp.generated.resources.guide
+import kori.composeapp.generated.resources.line_numbers
 import kori.composeapp.generated.resources.password
 import kori.composeapp.generated.resources.privacy_policy
 import kori.composeapp.generated.resources.security
 import kori.composeapp.generated.resources.settings
 import kori.composeapp.generated.resources.style
 import kori.composeapp.generated.resources.templates
+import kori.composeapp.generated.resources.time_format
 import kori.composeapp.generated.resources.version
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.Platform
@@ -89,10 +95,20 @@ fun SettingsListPane(
                 {
                     ListPaneItem(
                         title = stringResource(Res.string.editor),
-                        description = "Description for item 2",
+                        description = stringResource(Res.string.default_view)
+                                + "  •  " + stringResource(Res.string.line_numbers),
                         icon = Icons.Outlined.Edit,
                         isSelected = selectedItem == 1,
                         onClick = { navigateToDetail(1) }
+                    )
+                },
+                {
+                    ListPaneItem(
+                        title = stringResource(Res.string.card),
+                        description = "",
+                        icon = Icons.Outlined.GridView,
+                        isSelected = selectedItem == 2,
+                        onClick = { navigateToDetail(2) }
                     )
                 }
             )
@@ -100,7 +116,8 @@ fun SettingsListPane(
                 {
                     ListPaneItem(
                         title = stringResource(Res.string.templates),
-                        description = "Description for item 3",
+                        description = stringResource(Res.string.time_format)
+                                + "  •  " + stringResource(Res.string.date_format),
                         icon = Icons.AutoMirrored.Outlined.TextSnippet,
                         isSelected = selectedItem == 3,
                         onClick = { navigateToDetail(3) }

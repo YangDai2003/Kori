@@ -2,8 +2,10 @@ package org.yangdai.kori.presentation.screen.template
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -31,6 +33,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.Key
@@ -51,11 +54,15 @@ import kotlinx.coroutines.withContext
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import org.yangdai.kori.Platform
+import org.yangdai.kori.currentPlatform
+import org.yangdai.kori.presentation.component.EditorScrollbar
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.editor.FindAndReplaceField
 import org.yangdai.kori.presentation.component.editor.FindAndReplaceState
-import org.yangdai.kori.presentation.component.editor.platformKeyboardShortCut
+import org.yangdai.kori.presentation.component.editor.markdown.moveCursorLeftStateless
+import org.yangdai.kori.presentation.component.editor.markdown.moveCursorRightStateless
 import org.yangdai.kori.presentation.component.editor.template.TemplateEditor
 import org.yangdai.kori.presentation.component.editor.template.TemplateEditorRow
 import org.yangdai.kori.presentation.event.UiEvent
@@ -118,6 +125,29 @@ fun TemplateScreen(
             TopAppBar(
                 title = {
                     BasicTextField(
+                        modifier = Modifier.onPreviewKeyEvent { keyEvent ->
+                            if (keyEvent.type == KeyEventType.KeyDown) {
+                                when (keyEvent.key) {
+                                    Key.DirectionLeft -> {
+                                        if (currentPlatform() == Platform.Android) {
+                                            viewModel.titleState.edit { moveCursorLeftStateless() }
+                                            true
+                                        } else false
+                                    }
+
+                                    Key.DirectionRight -> {
+                                        if (currentPlatform() == Platform.Android) {
+                                            viewModel.titleState.edit { moveCursorRightStateless() }
+                                            true
+                                        } else false
+                                    }
+
+                                    else -> false
+                                }
+                            } else {
+                                false
+                            }
+                        },
                         state = viewModel.titleState,
                         lineLimits = TextFieldLineLimits.SingleLine,
                         textStyle = MaterialTheme.typography.titleMedium.copy(
@@ -155,7 +185,7 @@ fun TemplateScreen(
                 },
                 actions = {
                     TooltipIconButton(
-                        tipText = "$platformKeyboardShortCut + F",
+                        tipText = "Ctrl + F",
                         icon = Icons.Outlined.Search,
                         onClick = { isSearching = !isSearching }
                     )
@@ -180,17 +210,20 @@ fun TemplateScreen(
             }
 
             val scrollState = rememberScrollState()
-            Column(Modifier.fillMaxSize().weight(1f)) {
-                TemplateEditor(
-                    modifier = Modifier.fillMaxWidth().weight(1f),
-                    state = viewModel.contentState,
-                    scrollState = scrollState,
-                    readMode = false,
-                    showLineNumbers = editorState.showLineNumber,
-                    findAndReplaceState = findAndReplaceState,
-                    onFindAndReplaceUpdate = { findAndReplaceState = it }
-                )
-                TemplateEditorRow(viewModel.contentState)
+            Box(Modifier.weight(1f)) {
+                Column(Modifier.fillMaxSize()) {
+                    TemplateEditor(
+                        modifier = Modifier.fillMaxWidth().weight(1f),
+                        state = viewModel.contentState,
+                        scrollState = scrollState,
+                        readMode = false,
+                        showLineNumbers = editorState.showLineNumber,
+                        findAndReplaceState = findAndReplaceState,
+                        onFindAndReplaceUpdate = { findAndReplaceState = it }
+                    )
+                    TemplateEditorRow(viewModel.contentState)
+                }
+                EditorScrollbar(Modifier.align(Alignment.CenterEnd).fillMaxHeight(), scrollState)
             }
         }
     }

@@ -83,7 +83,7 @@ private fun DrawerItem(
     modifier = Modifier
         .padding(bottom = 4.dp)
         .padding(NavigationDrawerItemDefaults.ItemPadding)
-        .height(48.dp),
+        .height(52.dp),
     icon = { Icon(imageVector = icon, contentDescription = null) },
     label = {
         Text(
@@ -116,7 +116,7 @@ private fun FolderDrawerItem(
     modifier = Modifier
         .padding(bottom = 4.dp)
         .padding(NavigationDrawerItemDefaults.ItemPadding)
-        .height(48.dp),
+        .height(52.dp),
     icon = {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(

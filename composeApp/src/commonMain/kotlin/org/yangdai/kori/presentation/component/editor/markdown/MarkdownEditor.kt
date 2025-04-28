@@ -117,7 +117,8 @@ fun MarkdownEditor(
                 // The contentReceiver modifier is used to receive text content from the clipboard or drag-and-drop operations.
                 modifier = Modifier
                     .padding(start = if (showLineNumbers) 4.dp else 16.dp, end = 16.dp)
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .markdownKeyEvents(state),
                 scrollState = scrollState,
                 readOnly = readMode,
                 state = state,

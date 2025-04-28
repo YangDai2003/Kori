@@ -14,19 +14,23 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.FormatIndentDecrease
 import androidx.compose.material.icons.automirrored.outlined.FormatIndentIncrease
+import androidx.compose.material.icons.automirrored.outlined.FormatListBulleted
 import androidx.compose.material.icons.automirrored.outlined.Redo
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.automirrored.outlined.Undo
+import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.DataArray
 import androidx.compose.material.icons.outlined.DataObject
 import androidx.compose.material.icons.outlined.FormatBold
 import androidx.compose.material.icons.outlined.FormatItalic
+import androidx.compose.material.icons.outlined.FormatListNumbered
 import androidx.compose.material.icons.outlined.FormatPaint
 import androidx.compose.material.icons.outlined.FormatQuote
 import androidx.compose.material.icons.outlined.FormatUnderlined
 import androidx.compose.material.icons.outlined.HorizontalRule
 import androidx.compose.material.icons.outlined.IntegrationInstructions
+import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.StrikethroughS
 import androidx.compose.material.icons.outlined.Title
 import androidx.compose.runtime.Composable
@@ -98,44 +102,44 @@ fun MarkdownEditorRow(
         EditorRowSection(
             {
                 EditorRowButton(
-                    tipText = "$platformKeyboardShortCut + 1",
+                    tipText = "Ctrl + 1",
                     icon = painterResource(Res.drawable.format_h1),
-                    onClick = { textFieldState.edit { addHeader(1) } }
+                    onClick = { textFieldState.edit { header(1) } }
                 )
             },
             {
                 EditorRowButton(
-                    tipText = "$platformKeyboardShortCut + 2",
+                    tipText = "Ctrl + 2",
                     icon = painterResource(Res.drawable.format_h2),
-                    onClick = { textFieldState.edit { addHeader(2) } }
+                    onClick = { textFieldState.edit { header(2) } }
                 )
             },
             {
                 EditorRowButton(
-                    tipText = "$platformKeyboardShortCut + 3",
+                    tipText = "Ctrl + 3",
                     icon = painterResource(Res.drawable.format_h3),
-                    onClick = { textFieldState.edit { addHeader(3) } }
+                    onClick = { textFieldState.edit { header(3) } }
                 )
             },
             {
                 EditorRowButton(
-                    tipText = "$platformKeyboardShortCut + 4",
+                    tipText = "Ctrl + 4",
                     icon = painterResource(Res.drawable.format_h4),
-                    onClick = { textFieldState.edit { addHeader(4) } }
+                    onClick = { textFieldState.edit { header(4) } }
                 )
             },
             {
                 EditorRowButton(
-                    tipText = "$platformKeyboardShortCut + 5",
+                    tipText = "Ctrl + 5",
                     icon = painterResource(Res.drawable.format_h5),
-                    onClick = { textFieldState.edit { addHeader(5) } }
+                    onClick = { textFieldState.edit { header(5) } }
                 )
             },
             {
                 EditorRowButton(
-                    tipText = "$platformKeyboardShortCut + 6",
+                    tipText = "Ctrl + 6",
                     icon = painterResource(Res.drawable.format_h6),
-                    onClick = { textFieldState.edit { addHeader(6) } }
+                    onClick = { textFieldState.edit { header(6) } }
                 )
             }
         )
@@ -144,35 +148,35 @@ fun MarkdownEditorRow(
     EditorRowSection(
         {
             EditorRowButton(
-                tipText = "$platformKeyboardShortCut + B",
+                tipText = "Ctrl + B",
                 icon = Icons.Outlined.FormatBold,
                 onClick = { textFieldState.edit { bold() } }
             )
         },
         {
             EditorRowButton(
-                tipText = "$platformKeyboardShortCut + I",
+                tipText = "Ctrl + I",
                 icon = Icons.Outlined.FormatItalic,
                 onClick = { textFieldState.edit { italic() } }
             )
         },
         {
             EditorRowButton(
-                tipText = "$platformKeyboardShortCut + U",
+                tipText = "Ctrl + U",
                 icon = Icons.Outlined.FormatUnderlined,
                 onClick = { textFieldState.edit { underline() } }
             )
         },
         {
             EditorRowButton(
-                tipText = "$platformKeyboardShortCut + D",
+                tipText = "Ctrl + D",
                 icon = Icons.Outlined.StrikethroughS,
                 onClick = { textFieldState.edit { strikeThrough() } }
             )
         },
         {
             EditorRowButton(
-                tipText = "$platformKeyboardShortCut + H",
+                tipText = "Ctrl + H",
                 icon = Icons.Outlined.FormatPaint,
                 onClick = { textFieldState.edit { highlight() } }
             )
@@ -197,23 +201,54 @@ fun MarkdownEditorRow(
     EditorRowSection(
         {
             EditorRowButton(
-                tipText = "$platformKeyboardShortCut + E",
+                tipText = "Ctrl + E",
                 icon = Icons.Outlined.Code,
                 onClick = { textFieldState.edit { inlineCode() } }
             )
         },
         {
             EditorRowButton(
-                tipText = "$platformKeyboardShortCut + Shift + E",
+                tipText = "Ctrl + Shift + E",
                 icon = Icons.Outlined.IntegrationInstructions,
                 onClick = { textFieldState.edit { codeBlock() } }
             )
         },
         {
             EditorRowButton(
-                tipText = "$platformKeyboardShortCut + Q",
+                tipText = "Ctrl + Q",
                 icon = Icons.Outlined.FormatQuote,
                 onClick = { textFieldState.edit { quote() } }
+            )
+        },
+        {
+            EditorRowButton(
+                tipText = "Ctrl + L",
+                icon = Icons.Outlined.Link,
+                onClick = { textFieldState.edit { link() } }
+            )
+        }
+    )
+
+    EditorRowSection(
+        {
+            EditorRowButton(
+                tipText = "Ctrl + Shift + B",
+                icon = Icons.AutoMirrored.Outlined.FormatListBulleted,
+                onClick = { textFieldState.edit { bulletList() } }
+            )
+        },
+        {
+            EditorRowButton(
+                tipText = "Ctrl + Shift + N",
+                icon = Icons.Outlined.FormatListNumbered,
+                onClick = { textFieldState.edit { numberedList() } }
+            )
+        },
+        {
+            EditorRowButton(
+                tipText = "Ctrl + Shift + T",
+                icon = Icons.Outlined.Checklist,
+                onClick = { textFieldState.edit { taskList() } }
             )
         }
     )
@@ -239,9 +274,9 @@ fun MarkdownEditorRow(
         },
         {
             EditorRowButton(
-                tipText = "$platformKeyboardShortCut + R",
+                tipText = "Ctrl + R",
                 icon = Icons.Outlined.HorizontalRule,
-                onClick = { textFieldState.edit { addRule() } }
+                onClick = { textFieldState.edit { horizontalRule() } }
             )
         }
     )

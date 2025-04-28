@@ -78,7 +78,8 @@ fun PlainTextEditor(
             BasicTextField(
                 modifier = Modifier
                     .padding(start = if (showLineNumbers) 4.dp else 16.dp, end = 16.dp)
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .plainTextKeyEvents(state),
                 scrollState = scrollState,
                 readOnly = readMode,
                 state = state,

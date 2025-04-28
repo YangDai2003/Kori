@@ -105,4 +105,6 @@
     <string name="time_in_the_template_file_will_be_replaced_with_this_value">模板文件中的 {{time}} 字段将被一个时间值替换。时间值的格式由此项控制。\n</string>
     <string name="saveAsTemplate">保存此笔记为模板</string>
     <string name="explore_and_share_community_note_templates">在社区探索或分享笔记模板</string>
+
+    <string name="card">卡片</string>
 </resources>

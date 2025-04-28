@@ -37,12 +37,10 @@ fun TextEditorBase(
 
     // Search functionality
     LaunchedEffect(state.text, findAndReplaceState.searchWord, readMode) {
-        if (!readMode && findAndReplaceState.searchWord.isNotBlank()) {
-            withContext(Dispatchers.Default) {
-                indices = findAllIndices(state.text.toString(), findAndReplaceState.searchWord)
-            }
+        indices = if (!readMode && findAndReplaceState.searchWord.isNotBlank()) {
+            findAllIndices(state.text.toString(), findAndReplaceState.searchWord)
         } else {
-            indices = emptyList()
+            emptyList()
         }
     }
 
@@ -51,8 +49,10 @@ fun TextEditorBase(
         if (indices.isNotEmpty() && textLayoutResult != null && findAndReplaceState.scrollDirection != null) {
             // Update current index
             currentIndex = when (findAndReplaceState.scrollDirection) {
-                ScrollDirection.NEXT -> (currentIndex + 1) % indices.size
-                ScrollDirection.PREVIOUS -> if (currentIndex <= 0) indices.size - 1 else currentIndex - 1
+                ScrollDirection.NEXT -> (currentIndex + 1).takeIf { it < indices.size }
+                    ?: 0 // Wrap around
+                ScrollDirection.PREVIOUS -> (currentIndex - 1).takeIf { it >= 0 }
+                    ?: (indices.size - 1) // Wrap around
             }
 
             // Get the target match position
@@ -106,46 +106,57 @@ fun TextEditorBase(
         }
     }
 
-    // Calculate line positions for line numbers
     LaunchedEffect(showLineNumbers, textLayoutResult) {
-        if (!showLineNumbers || textLayoutResult == null) {
-            actualLinePositions = emptyList()
-            return@LaunchedEffect
-        }
+        // Exit condition: No line numbers needed or layout result isn't ready
+        if (!showLineNumbers || textLayoutResult == null) return@LaunchedEffect
+
+        val currentText = state.text
 
         withContext(Dispatchers.Default) {
-            val text = state.text.toString()
-            val layout = textLayoutResult
-            val newLines = ArrayList<Pair<Int, Float>>(text.count { it == '\n' } + 1)
+            val lineCount = textLayoutResult.lineCount
+            val newLines = ArrayList<Pair<Int, Float>>()
 
-            // Always add the first line
-            newLines.add(0 to layout.getLineTop(0))
+            for (lineIndex in 0 until lineCount) {
+                // Get the starting character offset of the line
+                val lineStartOffset = textLayoutResult.getLineStart(lineIndex)
 
-            // Find all newline characters and map them to layout positions
-            var lineStartIndex = 0
-            text.forEachIndexed { index, char ->
-                if (char == '\n') {
-                    lineStartIndex = index + 1
-                    val lineNumber = layout.getLineForOffset(lineStartIndex)
-                    newLines.add(lineStartIndex to layout.getLineTop(lineNumber))
+                // Determine if this line should be included based on the requirement
+                val includeLine = if (lineIndex == 0) {
+                    // Always include the very first line
+                    true
+                } else {
+                    // For subsequent lines, check if the previous character exists and is a newline
+                    // Check lineStartOffset > 0 to safely access index [lineStartOffset - 1]
+                    // Add <= currentText.length check for robustness against potential edge cases in textLayoutResult
+                    lineStartOffset > 0 && lineStartOffset <= currentText.length && currentText[lineStartOffset - 1] == '\n'
+                }
+
+                // If the line meets the criteria, get its top position and add it
+                if (includeLine) {
+                    val lineTopY = textLayoutResult.getLineTop(lineIndex)
+                    newLines.add(lineStartOffset to lineTopY)
                 }
             }
 
-            actualLinePositions = newLines
+            if (newLines != actualLinePositions) {
+                actualLinePositions = newLines
+            }
         }
     }
 
     content(indices, currentIndex, actualLinePositions)
 }
 
-private fun findAllIndices(text: String, word: String): List<Pair<Int, Int>> {
+private suspend fun findAllIndices(text: String, word: String): List<Pair<Int, Int>> {
     if (word.isBlank()) return emptyList()
 
-    return buildList {
-        var index = text.indexOf(word)
-        while (index != -1) {
-            add(index to (index + word.length))
-            index = text.indexOf(word, index + 1)
+    return withContext(Dispatchers.Default) {
+        buildList {
+            var index = text.indexOf(word)
+            while (index != -1) {
+                add(index to (index + word.length))
+                index = text.indexOf(word, index + 1)
+            }
         }
     }
 }

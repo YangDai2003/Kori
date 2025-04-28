@@ -7,7 +7,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -19,6 +23,7 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
+import kotlin.math.max
 
 @Composable
 fun LineNumbersColumn(
@@ -31,9 +36,13 @@ fun LineNumbersColumn(
     val textStyle = MaterialTheme.typography.bodyLarge.copy(fontFamily = FontFamily.Monospace)
     val textColor = MaterialTheme.colorScheme.onSurfaceVariant
 
-    val maxDigits = remember(actualLinePositions.size) {
-        actualLinePositions.size.toString().length + 1
+    val maxDigits by remember(actualLinePositions.size) {
+        derivedStateOf {
+            // Use size + 1 for max digits to handle potential padding/alignment nicely
+            max(1, actualLinePositions.size).toString().length + 1
+        }
     }
+
     val columnWidth = remember(maxDigits, textStyle) {
         val maxLineNumber = "9".repeat(maxDigits)
         val measureResult = textMeasurer.measure(
@@ -45,24 +54,20 @@ fun LineNumbersColumn(
     }
 
     val lineLayoutsCache = remember { mutableMapOf<String, TextLayoutResult>() }
+    var canvasHeightPx by remember { mutableIntStateOf(0) }
 
     Box(
         Modifier
             .width(columnWidth)
             .padding(horizontal = 4.dp)
             .fillMaxHeight()
-            .clipToBounds(),
+            .clipToBounds()
+            .onSizeChanged { canvasHeightPx = it.height },
         contentAlignment = Alignment.TopEnd
     ) {
-        var height = 0
-
-        Canvas(
-            modifier = Modifier
-                .fillMaxHeight()
-                .onSizeChanged { height = it.height }
-        ) {
+        Canvas(modifier = Modifier.fillMaxHeight()) {
             val scrollOffset = scrollProvider()
-            val visibleEnd = scrollOffset + height
+            val visibleEnd = scrollOffset + canvasHeightPx
 
             // Only draw line numbers that are visible in the viewport, measuring on demand.
             actualLinePositions.forEachIndexed { index, (_, top) ->

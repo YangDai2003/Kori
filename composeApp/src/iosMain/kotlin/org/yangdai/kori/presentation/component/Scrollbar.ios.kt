@@ -1,5 +1,6 @@
 package org.yangdai.kori.presentation.component
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
@@ -15,5 +16,12 @@ actual fun LazyGridScrollbar(
 actual fun HorizontalScrollbar(
     modifier: Modifier,
     state: LazyListState
+) {
+}
+
+@Composable
+actual fun EditorScrollbar(
+    modifier: Modifier,
+    state: ScrollState
 ) {
 }
