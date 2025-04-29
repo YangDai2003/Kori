@@ -1,6 +1,7 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.gradle.internal.os.OperatingSystem
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -11,6 +12,17 @@ plugins {
     alias(libs.plugins.room)
     alias(libs.plugins.ksp)
 }
+
+val os: OperatingSystem = OperatingSystem.current()
+val arch: String = System.getProperty("os.arch")
+val isAarch64: Boolean = arch.contains("aarch64")
+
+val platform =
+    when {
+        os.isWindows -> "win"
+        os.isMacOsX -> "mac"
+        else -> "linux"
+    } + if (isAarch64) "-aarch64" else ""
 
 kotlin {
     androidTarget {
@@ -81,6 +93,13 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
+            val javafxVersion = "21.0.7"
+            implementation("org.openjfx:javafx-base:$javafxVersion:$platform")
+            implementation("org.openjfx:javafx-graphics:$javafxVersion:$platform")
+            implementation("org.openjfx:javafx-controls:$javafxVersion:$platform")
+            implementation("org.openjfx:javafx-media:$javafxVersion:$platform")
+            implementation("org.openjfx:javafx-web:$javafxVersion:$platform")
+            implementation("org.openjfx:javafx-swing:$javafxVersion:$platform")
         }
     }
 }

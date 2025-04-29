@@ -26,15 +26,22 @@ fun rememberIsScreenSizeLarge(): Boolean {
 fun rememberCurrentPlatform(): Platform = remember { currentPlatform() }
 
 fun Int.toHexColor(): String {
-    val r = (this shr 16) and 0xFF
-    val g = (this shr 8) and 0xFF
-    val b = this and 0xFF
-    val a = (this shr 24) and 0xFF
-    return "#${a.toHexByte()}${r.toHexByte()}${g.toHexByte()}${b.toHexByte()}"
-}
+    // 1. 使用 0xFFFFFF 进行位与操作，保留低 24 位 (RGB)
+    //    并确保结果为非负数，这对于 toString(16) 很重要，
+    //    虽然对于 0xFFFFFF and this 来说，结果总是正数或零。
+    val rgb = 0xFFFFFF and this
 
-private fun Int.toHexByte(): String {
-    return this.toString(16).padStart(2, '0').uppercase()
+    // 2. 将 RGB 整数值转换为十六进制字符串
+    //    toString(16) 会生成小写字母的十六进制，例如 "ff00ff"
+    val hexString = rgb.toString(16)
+
+    // 3. 使用 padStart 确保字符串长度为 6
+    //    如果 hexString 长度小于 6（例如颜色值为 0xFF，转换后是 "ff"），
+    //    则在前面用 '0' 填充，直到长度达到 6 ("0000ff")。
+    val paddedHexString = hexString.padStart(6, '0')
+
+    // 4. 在前面加上 '#' 符号
+    return "#$paddedHexString"
 }
 
 @Composable

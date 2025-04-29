@@ -59,12 +59,12 @@ import org.yangdai.kori.currentPlatform
 import org.yangdai.kori.presentation.component.EditorScrollbar
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
 import org.yangdai.kori.presentation.component.TooltipIconButton
-import org.yangdai.kori.presentation.component.editor.FindAndReplaceField
-import org.yangdai.kori.presentation.component.editor.FindAndReplaceState
-import org.yangdai.kori.presentation.component.editor.markdown.moveCursorLeftStateless
-import org.yangdai.kori.presentation.component.editor.markdown.moveCursorRightStateless
-import org.yangdai.kori.presentation.component.editor.template.TemplateEditor
-import org.yangdai.kori.presentation.component.editor.template.TemplateEditorRow
+import org.yangdai.kori.presentation.component.note.FindAndReplaceField
+import org.yangdai.kori.presentation.component.note.FindAndReplaceState
+import org.yangdai.kori.presentation.component.note.markdown.moveCursorLeftStateless
+import org.yangdai.kori.presentation.component.note.markdown.moveCursorRightStateless
+import org.yangdai.kori.presentation.component.note.template.TemplateEditor
+import org.yangdai.kori.presentation.component.note.template.TemplateEditorRow
 import org.yangdai.kori.presentation.event.UiEvent
 
 @OptIn(ExperimentalMaterial3Api::class, FormatStringsInDatetimeFormats::class)

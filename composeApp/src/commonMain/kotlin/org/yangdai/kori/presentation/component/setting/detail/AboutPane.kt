@@ -51,6 +51,7 @@ import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_name
 import kori.composeapp.generated.resources.compose_multiplatform
 import kori.composeapp.generated.resources.report_a_bug_or_request_a_feature
+import kori.composeapp.generated.resources.shareContent
 import kori.composeapp.generated.resources.share_this_app
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -161,7 +162,7 @@ fun AboutPane() {
             modifier = Modifier
                 .padding(bottom = 8.dp)
                 .clip(CircleShape)
-                .clickToShareText(stringResource(Res.string.share_this_app)),
+                .clickToShareText(stringResource(Res.string.shareContent)),
             colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             leadingContent = {
                 Icon(

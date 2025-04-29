@@ -68,10 +68,8 @@ import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -108,8 +106,7 @@ import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
 
-@OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class,
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class,
     ExperimentalWindowCoreApi::class
 )
 @Composable
@@ -264,8 +261,7 @@ fun MainScreenContent(
             }
         },
         floatingActionButton = {
-            if (currentDrawerItem !is DrawerItem.Trash && !isSelectionMode){
-                val hapticFeedback = LocalHapticFeedback.current
+            if (currentDrawerItem !is DrawerItem.Trash && !isSelectionMode) {
                 val interactionSource = remember { MutableInteractionSource() }
                 val isPressed by interactionSource.collectIsPressedAsState()
                 val scale by animateFloatAsState(
@@ -284,7 +280,6 @@ fun MainScreenContent(
                             indication = null,
                             role = Role.Button,
                             onClick = {
-                                hapticFeedback.performHapticFeedback(HapticFeedbackType.ContextClick)
                                 if (currentDrawerItem is DrawerItem.Templates)
                                     navigateToScreen(Screen.Template())
                                 else {

@@ -5,9 +5,11 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kori.composeapp.generated.resources.Res
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -37,10 +39,14 @@ import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.domain.sort.FolderSortType
+import org.yangdai.kori.presentation.component.note.HeaderNode
 import org.yangdai.kori.presentation.event.UiEvent
+import org.yangdai.kori.presentation.screen.settings.AppTheme
 import org.yangdai.kori.presentation.screen.settings.EditorPaneState
 import org.yangdai.kori.presentation.screen.settings.TemplatePaneState
 import org.yangdai.kori.presentation.util.Constants
+import org.yangdai.kori.presentation.util.Properties.getPropertiesLineRange
+import org.yangdai.kori.presentation.util.Properties.splitPropertiesAndContent
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -53,6 +59,10 @@ class NoteViewModel(
     val titleState = TextFieldState()
     val contentState = TextFieldState()
     val contentSnapshotFlow = snapshotFlow { contentState.text }
+
+    val appTheme = dataStoreRepository.intFlow(Constants.Preferences.APP_THEME)
+        .map { AppTheme.fromInt(it) }
+        .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), AppTheme.SYSTEM)
 
     val formatterState = combine(
         dataStoreRepository.stringFlow(Constants.Preferences.DATE_FORMATTER),
@@ -109,6 +119,46 @@ class NoteViewModel(
             started = SharingStarted.Companion.WhileSubscribed(5_000L),
             initialValue = emptyList()
         )
+
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    val outline = contentSnapshotFlow.debounce(1000)
+        .mapLatest {
+            val text = it.toString()
+            val root = HeaderNode("", 0, IntRange.EMPTY)
+            if (text.isBlank()) return@mapLatest root
+            val propertiesLineRange = text.getPropertiesLineRange()
+            val headerStack = mutableListOf(root)
+
+            root
+        }
+        .flowOn(Dispatchers.Default)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000L),
+            initialValue = HeaderNode("", 0, IntRange.EMPTY)
+        )
+
+    var baseHtml: String? = null
+
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    val html = contentSnapshotFlow.debounce(100)
+        .mapLatest {
+            var content = it.toString()
+            content = content.splitPropertiesAndContent().second
+            baseHtml?.replace("{{CONTENT}}", content) ?: ""
+        }
+        .flowOn(Dispatchers.Default)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000L),
+            initialValue = ""
+        )
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            baseHtml = Res.readBytes("files/template.html").decodeToString()
+        }
+    }
 
     private val _uiEventFlow = MutableSharedFlow<UiEvent>()
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()

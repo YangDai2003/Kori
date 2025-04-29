@@ -42,6 +42,7 @@ import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import java.awt.Dimension
 
 fun main() {
+    System.setProperty("compose.interop.blending", "true")
     KoinInitializer.init()
     application {
         val state = rememberWindowState()

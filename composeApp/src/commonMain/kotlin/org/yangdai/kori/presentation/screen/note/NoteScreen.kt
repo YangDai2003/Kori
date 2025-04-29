@@ -4,7 +4,11 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +25,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
@@ -55,7 +61,9 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -71,7 +79,9 @@ import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -87,6 +97,7 @@ import kori.composeapp.generated.resources.paragraph_count
 import kori.composeapp.generated.resources.plain_text
 import kori.composeapp.generated.resources.right_panel_open
 import kori.composeapp.generated.resources.saveAsTemplate
+import kori.composeapp.generated.resources.templates
 import kori.composeapp.generated.resources.title
 import kori.composeapp.generated.resources.type
 import kori.composeapp.generated.resources.updated
@@ -114,22 +125,25 @@ import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationI
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.FoldersDialog
 import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
-import org.yangdai.kori.presentation.component.editor.EditorRowAction
-import org.yangdai.kori.presentation.component.editor.FindAndReplaceField
-import org.yangdai.kori.presentation.component.editor.FindAndReplaceState
-import org.yangdai.kori.presentation.component.editor.HeaderNode
-import org.yangdai.kori.presentation.component.editor.NoteSideSheet
-import org.yangdai.kori.presentation.component.editor.NoteSideSheetItem
-import org.yangdai.kori.presentation.component.editor.markdown.MarkdownEditor
-import org.yangdai.kori.presentation.component.editor.markdown.MarkdownEditorRow
-import org.yangdai.kori.presentation.component.editor.markdown.moveCursorLeftStateless
-import org.yangdai.kori.presentation.component.editor.markdown.moveCursorRightStateless
-import org.yangdai.kori.presentation.component.editor.plaintext.PlainTextEditor
-import org.yangdai.kori.presentation.component.editor.plaintext.PlainTextEditorRow
+import org.yangdai.kori.presentation.component.note.Editor
+import org.yangdai.kori.presentation.component.note.EditorRow
+import org.yangdai.kori.presentation.component.note.EditorRowAction
+import org.yangdai.kori.presentation.component.note.FindAndReplaceField
+import org.yangdai.kori.presentation.component.note.FindAndReplaceState
+import org.yangdai.kori.presentation.component.note.NoteSideSheet
+import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
+import org.yangdai.kori.presentation.component.note.VerticalDragHandle
+import org.yangdai.kori.presentation.component.note.markdown.MarkdownView
+import org.yangdai.kori.presentation.component.note.markdown.moveCursorLeftStateless
+import org.yangdai.kori.presentation.component.note.markdown.moveCursorRightStateless
+import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditor
 import org.yangdai.kori.presentation.event.UiEvent
 import org.yangdai.kori.presentation.navigation.Screen
+import org.yangdai.kori.presentation.screen.settings.AppTheme
 import org.yangdai.kori.presentation.util.TemplateProcessor
 import org.yangdai.kori.presentation.util.clickToShareText
+import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
+import kotlin.math.abs
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(
@@ -151,6 +165,19 @@ fun NoteScreen(
     val editorState by viewModel.editorState.collectAsStateWithLifecycle()
     val formatterState by viewModel.formatterState.collectAsStateWithLifecycle()
     val templates by viewModel.templates.collectAsStateWithLifecycle()
+    val outline by viewModel.outline.collectAsStateWithLifecycle()
+    val html by viewModel.html.collectAsStateWithLifecycle()
+    val appTheme by viewModel.appTheme.collectAsStateWithLifecycle()
+    val isSystemInDarkTheme = isSystemInDarkTheme()
+    val isAppInDarkTheme by remember(appTheme, isSystemInDarkTheme) {
+        derivedStateOf {
+            when (appTheme) {
+                AppTheme.SYSTEM -> isSystemInDarkTheme
+                AppTheme.DARK -> true
+                AppTheme.LIGHT -> false
+            }
+        }
+    }
 
     // 确保屏幕旋转等配置变更时，不会重复加载笔记
     var lastLoadedNoteId by rememberSaveable { mutableStateOf<String?>(null) }
@@ -170,12 +197,14 @@ fun NoteScreen(
         }
     }
 
+    val pagerState = rememberPagerState(pageCount = { 2 })
     var isReadView by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(editorState.isDefaultReadingView) {
         if (editorState.isDefaultReadingView && noteId.isNotEmpty()) {
             isReadView = true
         }
     }
+
     var showFolderDialog by rememberSaveable { mutableStateOf(false) }
     var showTemplatesBottomSheet by rememberSaveable { mutableStateOf(false) }
     var folderName by rememberSaveable { mutableStateOf("") }
@@ -205,10 +234,22 @@ fun NoteScreen(
         }
     }
 
+    val isLargeScreen = rememberIsScreenSizeLarge()
     val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+    val scope = rememberCoroutineScope()
     var isSideSheetOpen by rememberSaveable { mutableStateOf(false) }
     var showNoteTypeDialog by rememberSaveable { mutableStateOf(false) }
-
+    LaunchedEffect(isReadView) {
+        keyboardController?.hide()
+        focusManager.clearFocus()
+        isSearching = false
+        if (!isLargeScreen) {
+            scope.launch {
+                pagerState.animateScrollToPage(if (isReadView) 1 else 0)
+            }
+        }
+    }
     Scaffold(
         modifier = Modifier.fillMaxSize().imePadding().onPreviewKeyEvent { keyEvent ->
             if (keyEvent.type == KeyEventType.KeyDown && keyEvent.isCtrlPressed) {
@@ -249,12 +290,12 @@ fun NoteScreen(
                     PlatformStyleTopAppBarNavigationIcon(onClick = navigateUp)
                 },
                 actions = {
-
-                    TooltipIconButton(
-                        tipText = "Ctrl + F",
-                        icon = Icons.Outlined.Search,
-                        onClick = { isSearching = !isSearching }
-                    )
+                    if (!isReadView)
+                        TooltipIconButton(
+                            tipText = "Ctrl + F",
+                            icon = Icons.Outlined.Search,
+                            onClick = { isSearching = !isSearching }
+                        )
 
                     TooltipIconButton(
                         tipText = "Ctrl + P",
@@ -345,50 +386,113 @@ fun NoteScreen(
 
             val scrollState = rememberScrollState()
             Box(Modifier.weight(1f)) {
-                when (noteEditingState.noteType) {
-                    NoteType.PLAIN_TEXT -> {
-                        Column(Modifier.fillMaxSize()) {
-                            PlainTextEditor(
-                                modifier = Modifier.fillMaxWidth().weight(1f),
-                                state = viewModel.contentState,
-                                scrollState = scrollState,
-                                readMode = isReadView,
-                                showLineNumbers = editorState.showLineNumber,
-                                findAndReplaceState = findAndReplaceState,
-                                onFindAndReplaceUpdate = { findAndReplaceState = it }
-                            )
-                            AnimatedVisibility(visible = !isReadView) {
-                                PlainTextEditorRow(viewModel.contentState) { action ->
-                                    when (action) {
-                                        EditorRowAction.Templates -> {
-                                            showTemplatesBottomSheet = true
+                Column(Modifier.fillMaxSize()) {
+                    if (noteEditingState.noteType == NoteType.PLAIN_TEXT) {
+                        PlainTextEditor(
+                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            state = viewModel.contentState,
+                            scrollState = scrollState,
+                            readMode = isReadView,
+                            showLineNumbers = editorState.showLineNumber,
+                            findAndReplaceState = findAndReplaceState,
+                            onFindAndReplaceUpdate = { findAndReplaceState = it }
+                        )
+                    } else {
+                        if (isLargeScreen) {
+                            Row(
+                                modifier = Modifier.weight(1f),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+
+                                val interactionSource = remember { MutableInteractionSource() }
+                                var editorWeight by remember { mutableFloatStateOf(0.5f) }
+                                val windowWidth = LocalWindowInfo.current.containerSize.width
+
+                                Editor(
+                                    modifier = Modifier.fillMaxHeight().weight(editorWeight),
+                                    type = noteEditingState.noteType,
+                                    state = viewModel.contentState,
+                                    scrollState = scrollState,
+                                    readMode = isReadView,
+                                    showLineNumbers = editorState.showLineNumber,
+                                    isLintActive = editorState.isMarkdownLintEnabled,
+                                    headerRange = selectedHeader,
+                                    findAndReplaceState = findAndReplaceState,
+                                    onFindAndReplaceUpdate = { findAndReplaceState = it }
+                                )
+
+                                VerticalDragHandle(
+                                    modifier = Modifier.draggable(
+                                        interactionSource = interactionSource,
+                                        state = rememberDraggableState { delta ->
+                                            editorWeight =
+                                                (editorWeight + delta / windowWidth).coerceIn(
+                                                    0.3f, 0.7f
+                                                )
+                                        },
+                                        orientation = Orientation.Horizontal,
+                                        onDragStopped = {
+                                            val positions = listOf(1f / 3f, 0.5f, 2f / 3f)
+                                            val closest =
+                                                positions.minByOrNull { abs(it - editorWeight) }
+                                            if (closest != null) {
+                                                editorWeight = closest
+                                            }
                                         }
+                                    ),
+                                    interactionSource = interactionSource
+                                )
+
+                                MarkdownView(
+                                    modifier = Modifier.fillMaxHeight().weight(1f - editorWeight),
+                                    html = html,
+                                    scrollState = scrollState,
+                                    isAppInDarkTheme = isAppInDarkTheme
+                                )
+                            }
+                        } else {
+                            HorizontalPager(
+                                modifier = Modifier.weight(1f),
+                                state = pagerState,
+                                beyondViewportPageCount = 1,
+                                userScrollEnabled = false
+                            ) { currentPage ->
+                                when (currentPage) {
+                                    0 -> {
+                                        Editor(
+                                            modifier = Modifier.fillMaxSize(),
+                                            type = noteEditingState.noteType,
+                                            state = viewModel.contentState,
+                                            scrollState = scrollState,
+                                            readMode = isReadView,
+                                            showLineNumbers = editorState.showLineNumber,
+                                            isLintActive = editorState.isMarkdownLintEnabled,
+                                            headerRange = selectedHeader,
+                                            findAndReplaceState = findAndReplaceState,
+                                            onFindAndReplaceUpdate = { findAndReplaceState = it }
+                                        )
+                                    }
+
+                                    1 -> {
+                                        MarkdownView(
+                                            modifier = Modifier.fillMaxSize(),
+                                            html = html,
+                                            scrollState = scrollState,
+                                            isAppInDarkTheme = isAppInDarkTheme
+                                        )
                                     }
                                 }
                             }
                         }
                     }
-
-                    else -> {
-                        Column(Modifier.fillMaxSize()) {
-                            MarkdownEditor(
-                                modifier = Modifier.fillMaxWidth().weight(1f),
-                                state = viewModel.contentState,
-                                scrollState = scrollState,
-                                readMode = isReadView,
-                                showLineNumbers = editorState.showLineNumber,
-                                isLintActive = editorState.isMarkdownLintEnabled,
-                                headerRange = selectedHeader,
-                                findAndReplaceState = findAndReplaceState,
-                                onFindAndReplaceUpdate = { findAndReplaceState = it }
-                            )
-                            AnimatedVisibility(visible = !isReadView) {
-                                MarkdownEditorRow(viewModel.contentState) { action ->
-                                    when (action) {
-                                        EditorRowAction.Templates -> {
-                                            showTemplatesBottomSheet = true
-                                        }
-                                    }
+                    AnimatedVisibility(visible = !isReadView) {
+                        EditorRow(
+                            type = noteEditingState.noteType,
+                            textFieldState = viewModel.contentState
+                        ) { action ->
+                            when (action) {
+                                EditorRowAction.Templates -> {
+                                    showTemplatesBottomSheet = true
                                 }
                             }
                         }
@@ -429,9 +533,13 @@ fun NoteScreen(
             dragHandle = {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Text(
+                        text = stringResource(Res.string.templates),
+                        modifier = Modifier.padding(start = 16.dp, top = 8.dp)
+                    )
                     IconButton(
                         modifier = Modifier.padding(end = 8.dp, top = 8.dp),
                         onClick = hideTemplatesBottomSheet
@@ -479,7 +587,7 @@ fun NoteScreen(
     NoteSideSheet(
         isDrawerOpen = isSideSheetOpen,
         onDismiss = { isSideSheetOpen = false },
-        outline = HeaderNode(title = "test", level = 1, range = IntRange(0, 0)),
+        outline = outline,
         onHeaderClick = { selectedHeader = it },
         navigateTo = { navigateToScreen(it) },
         actionContent = {
