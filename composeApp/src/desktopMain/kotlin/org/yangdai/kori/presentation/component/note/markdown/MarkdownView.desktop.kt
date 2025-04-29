@@ -2,6 +2,7 @@ package org.yangdai.kori.presentation.component.note.markdown
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,7 +14,6 @@ import javafx.application.Platform
 import javafx.concurrent.Worker
 import javafx.embed.swing.JFXPanel
 import javafx.scene.Scene
-import javafx.scene.layout.StackPane
 import javafx.scene.web.WebView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.swing.Swing
@@ -32,6 +32,11 @@ actual fun MarkdownView(
 ) {
     // State to hold the WebView for access in LaunchedEffect and update
     var webView by remember { mutableStateOf<WebView?>(null) }
+    DisposableEffect(Unit) {
+        onDispose {
+            webView = null
+        }
+    }
 
     val data by remember(html, styles, isAppInDarkTheme) {
         mutableStateOf(
@@ -81,10 +86,6 @@ actual fun MarkdownView(
                     val wv = WebView()
                     webView = wv
 
-                    // *** FIX: Make WebView fill its parent ***
-                    wv.maxWidth = Double.MAX_VALUE
-                    wv.maxHeight = Double.MAX_VALUE
-
                     wv.engine.apply {
                         loadWorker.stateProperty().addListener { _, _, newState ->
                             if (newState == Worker.State.SCHEDULED) {
@@ -108,26 +109,10 @@ actual fun MarkdownView(
                                 println("WebView load failed: ${wv.engine.loadWorker.exception}")
                             }
                         }
-                        wv.isContextMenuEnabled = false
                     }
 
-                    wv.engine.loadContent(data, "text/html")
-
-                    // *** FIX: Use a layout pane (StackPane) to contain the WebView ***
-                    // StackPane by default resizes its children to fill
-                    val rootPane = StackPane(wv)
-                    rootPane.maxWidth = Double.MAX_VALUE // Ensure the pane itself resizes
-                    rootPane.maxHeight = Double.MAX_VALUE
-
-                    // Set the root pane as the root of the scene
-                    val scene = Scene(rootPane) // Use rootPane here
+                    val scene = Scene(wv)
                     jfxPanel.scene = scene
-
-                    // The JFXPanel should also resize to fill its Swing parent,
-                    // which SwingPanel typically handles, but ensuring its size
-                    // and layout managers are set up correctly can help.
-                    // For simple cases like this within SwingPanel, setting the
-                    // JavaFX root to fill the scene is usually sufficient.
                 }
             }
         },

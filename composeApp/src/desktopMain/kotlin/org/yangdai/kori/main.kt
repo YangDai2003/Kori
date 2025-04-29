@@ -17,8 +17,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -35,10 +33,10 @@ import org.yangdai.kori.data.di.KoinInitializer
 import org.yangdai.kori.presentation.component.login.NumberLockScreen
 import org.yangdai.kori.presentation.navigation.AppNavHost
 import org.yangdai.kori.presentation.screen.settings.AppTheme
+import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import org.yangdai.kori.presentation.theme.KoriTheme
 import org.yangdai.kori.presentation.util.AppLockManager
 import org.yangdai.kori.presentation.util.Constants
-import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import java.awt.Dimension
 
 fun main() {
@@ -70,9 +68,7 @@ fun main() {
             val contextMenuRepresentation =
                 if (darkMode) DarkDefaultContextMenuRepresentation else LightDefaultContextMenuRepresentation
 
-            val standardDensity = LocalDensity.current.density
             CompositionLocalProvider(
-                LocalDensity provides Density(standardDensity * 0.8f),
                 LocalContextMenuRepresentation provides contextMenuRepresentation
             ) {
                 KoriTheme(
