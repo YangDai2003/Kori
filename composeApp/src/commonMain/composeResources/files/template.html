@@ -289,9 +289,9 @@
         if (typeof renderMathInElement !== 'undefined') {
             const mathElements = document.querySelectorAll('span.math');
             mathElements.forEach(function(element) {
-               katex.render(element.textContent, element, {
-                   throwOnError: false
-               });
+                katex.render(element.textContent, element, {
+                    throwOnError: false
+                });
             });
         }
     });
