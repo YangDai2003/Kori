@@ -59,7 +59,7 @@ actual fun AppNavHost(
         }
     }
 
-    composable<Screen.Settings>(deepLinks = listOf(navDeepLink<Screen.Settings>(basePath = "${Constants.DEEP_LINK}/settings"))) {
+    composable<Screen.Settings> {
         SettingsScreen {
             navHostController.navigateUp()
         }
