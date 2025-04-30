@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.viewinterop.UIKitView
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.UIKit.UIApplication
@@ -21,7 +22,8 @@ import platform.CoreGraphics.CGRectMake
 actual fun MarkdownView(
     modifier: Modifier,
     html: String,
-    scrollState: ScrollState, // Used for scrolling the WebView via JS
+    selection: TextRange,
+    scrollState: ScrollState,
     isAppInDarkTheme: Boolean,
     styles: MarkdownStyles
 ) {
@@ -36,36 +38,44 @@ actual fun MarkdownView(
         )
     }
 
-    // Effect to synchronize Compose ScrollState -> WKWebView scroll position
-    LaunchedEffect(webView, scrollState.value) {
-        val currentWebView = webView ?: return@LaunchedEffect // Exit if webView is null
+    // Effect to synchronize Editor Cursor -> WebView Scroll
+    LaunchedEffect(selection) { // Trigger when cursorPosition changes
+        val webViewInstance = webView ?: return@LaunchedEffect // Ensure webview is initialized
+        val start = selection.min // For IntRange, min is inclusive
+        val end = selection.max // For IntRange, last is inclusive
+        // Ignore default/initial cursor position if it's often 0 or -1
+        if (start < 0 || end < 0) {
+            // Log.d("MarkdownScrollSync", "Ignoring invalid cursor position: $cursorPosition")
+            return@LaunchedEffect
+        }
+        webViewInstance.evaluateJavaScript("scrollToRangePosition($start, $end);", null)
+    }
 
-        val totalHeight = scrollState.maxValue // Max scroll position from Compose state
+    LaunchedEffect(scrollState.value) {
+        val totalHeight = scrollState.maxValue
         val currentScrollPercent = when {
-            // Calculate scroll percentage from Compose ScrollState
             totalHeight <= 0 -> 0f
             scrollState.value >= totalHeight -> 1f
             else -> (scrollState.value.toFloat() / totalHeight).coerceIn(0f, 1f)
         }
 
-        // JavaScript to scroll the web page based on the percentage
-        // Note: document.body.scrollHeight might be more reliable across content types
-        val jsCode = """
+        webView?.evaluateJavaScript(
+            """
         (function() {
-            const scrollableHeight = document.body.scrollHeight - window.innerHeight;
-            if (scrollableHeight > 0) {
-                 window.scrollTo({
-                    top: scrollableHeight * $currentScrollPercent,
-                    behavior: 'auto' // Use 'auto' for immediate jump matching state
-                 });
-            } else {
-                 // Content is not scrollable or height calculation failed, maybe scroll to top
-                 window.scrollTo({ top: 0, behavior: 'auto' });
-            }
+            const d = document.documentElement;
+            const b = document.body;
+            const maxHeight = Math.max(
+                d.scrollHeight, d.offsetHeight, d.clientHeight,
+                b.scrollHeight, b.offsetHeight
+            );
+            window.scrollTo({ 
+                top: maxHeight * $currentScrollPercent, 
+                behavior: 'auto' 
+            });
         })();
-        """.trimIndent()
-
-        currentWebView.evaluateJavaScript(jsCode, null)
+        """.trimIndent(),
+            null
+        )
     }
 
     UIKitView(

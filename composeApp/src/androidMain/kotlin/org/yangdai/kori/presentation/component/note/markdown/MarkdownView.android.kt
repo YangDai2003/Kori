@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
 import org.yangdai.kori.presentation.util.rememberCustomTabsIntent
@@ -25,6 +26,7 @@ import org.yangdai.kori.presentation.util.rememberCustomTabsIntent
 actual fun MarkdownView(
     modifier: Modifier,
     html: String,
+    selection: TextRange,
     scrollState: ScrollState,
     isAppInDarkTheme: Boolean,
     styles: MarkdownStyles
@@ -36,6 +38,19 @@ actual fun MarkdownView(
         mutableStateOf(
             processHtml(html, styles, isAppInDarkTheme)
         )
+    }
+
+    // Effect to synchronize Editor Cursor -> WebView Scroll
+    LaunchedEffect(selection) { // Trigger when cursorPosition changes
+        val webViewInstance = webView ?: return@LaunchedEffect // Ensure webview is initialized
+        val start = selection.min // For IntRange, min is inclusive
+        val end = selection.max // For IntRange, last is inclusive
+        // Ignore default/initial cursor position if it's often 0 or -1
+        if (start < 0 || end < 0) {
+            // Log.d("MarkdownScrollSync", "Ignoring invalid cursor position: $cursorPosition")
+            return@LaunchedEffect
+        }
+        webViewInstance.evaluateJavascript("scrollToRangePosition($start, $end);", null)
     }
 
     LaunchedEffect(scrollState.value) {

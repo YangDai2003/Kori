@@ -32,6 +32,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.Close
@@ -446,6 +447,7 @@ fun NoteScreen(
                                 MarkdownView(
                                     modifier = Modifier.fillMaxHeight().weight(1f - editorWeight),
                                     html = html,
+                                    selection = viewModel.contentState.selection,
                                     scrollState = scrollState,
                                     isAppInDarkTheme = isAppInDarkTheme
                                 )
@@ -474,9 +476,15 @@ fun NoteScreen(
                                     }
 
                                     1 -> {
+//                                        Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+//                                            Text(
+//                                                text = html
+//                                            )
+//                                        }
                                         MarkdownView(
                                             modifier = Modifier.fillMaxSize(),
                                             html = html,
+                                            selection = viewModel.contentState.selection,
                                             scrollState = scrollState,
                                             isAppInDarkTheme = isAppInDarkTheme
                                         )

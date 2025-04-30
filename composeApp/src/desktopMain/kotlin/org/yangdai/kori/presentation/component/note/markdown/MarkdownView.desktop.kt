@@ -3,21 +3,18 @@ package org.yangdai.kori.presentation.component.note.markdown
 import androidx.compose.foundation.ScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingPanel
+import androidx.compose.ui.text.TextRange
 import javafx.application.Platform
 import javafx.concurrent.Worker
 import javafx.embed.swing.JFXPanel
 import javafx.scene.Scene
 import javafx.scene.web.WebView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.swing.Swing
-import kotlinx.coroutines.withContext
 import java.awt.Desktop
 import java.net.URI
 
@@ -26,6 +23,7 @@ import java.net.URI
 actual fun MarkdownView(
     modifier: Modifier,
     html: String,
+    selection: TextRange,
     scrollState: ScrollState,
     isAppInDarkTheme: Boolean,
     styles: MarkdownStyles
@@ -42,41 +40,6 @@ actual fun MarkdownView(
         mutableStateOf(
             processHtml(html, styles, isAppInDarkTheme)
         )
-    }
-
-    // Effect to sync scroll state (Compose -> WebView)
-    LaunchedEffect(webView, scrollState.value) {
-        val currentWebView = webView ?: return@LaunchedEffect
-        val totalHeight = scrollState.maxValue
-        val currentScrollPercent = when {
-            totalHeight <= 0 -> 0f
-            scrollState.value >= totalHeight -> 1f
-            else -> (scrollState.value.toFloat() / totalHeight).coerceIn(0f, 1f)
-        }
-
-        // Execute JS on the JavaFX Application Thread
-        withContext(Dispatchers.Swing) { // Switch to JavaFX thread
-            try {
-                currentWebView.engine.executeScript(
-                    """
-                    (function() {
-                        const scrollableHeight = document.body.scrollHeight - window.innerHeight;
-                        if (scrollableHeight > 0) {
-                            window.scrollTo({
-                                top: scrollableHeight * $currentScrollPercent,
-                                behavior: 'auto'
-                            });
-                        } else {
-                            window.scrollTo({ top: 0, behavior: 'auto' });
-                        }
-                    })();
-                    """.trimIndent()
-                )
-            } catch (e: Exception) {
-                // Handle potential JS errors (e.g., netscape.javascript.JSException)
-                println("Error executing scroll script: ${e.message}")
-            }
-        }
     }
 
     SwingPanel(

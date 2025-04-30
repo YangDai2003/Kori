@@ -52,7 +52,6 @@ import org.yangdai.kori.presentation.screen.settings.EditorPaneState
 import org.yangdai.kori.presentation.screen.settings.TemplatePaneState
 import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.util.Properties.getPropertiesLineRange
-import org.yangdai.kori.presentation.util.Properties.splitPropertiesAndContent
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -134,7 +133,6 @@ class NoteViewModel(
     val html = contentSnapshotFlow.debounce(100)
         .mapLatest {
             var content = it.toString()
-            content = content.splitPropertiesAndContent().second
             val parsedTree = parser.buildMarkdownTreeFromString(content)
             content = HtmlGenerator(content, parsedTree, flavor, true).generateHtml()
             baseHtml?.replace("{{CONTENT}}", content) ?: ""

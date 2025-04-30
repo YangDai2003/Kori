@@ -7,6 +7,7 @@ import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import org.yangdai.kori.presentation.theme.linkColor
@@ -58,6 +59,7 @@ fun processHtml(
 expect fun MarkdownView(
     modifier: Modifier = Modifier,
     html: String,
+    selection: TextRange,
     scrollState: ScrollState,
     isAppInDarkTheme: Boolean,
     styles: MarkdownStyles = MarkdownStyles.fromColorScheme(MaterialTheme.colorScheme)
