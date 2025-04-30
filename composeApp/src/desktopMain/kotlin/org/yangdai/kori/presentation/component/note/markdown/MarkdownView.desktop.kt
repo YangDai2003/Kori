@@ -18,7 +18,6 @@ import javafx.scene.web.WebView
 import java.awt.Desktop
 import java.net.URI
 
-// TODO 使用其他方法实现，FXJAVA 过于笨重
 @Composable
 actual fun MarkdownView(
     modifier: Modifier,

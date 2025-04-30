@@ -4,6 +4,9 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +15,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,6 +25,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
@@ -44,7 +50,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -53,19 +58,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.layout.AnimatedPane
-import androidx.compose.material3.adaptive.layout.PaneExpansionAnchor.Proportion
-import androidx.compose.material3.adaptive.layout.SupportingPaneScaffold
-import androidx.compose.material3.adaptive.layout.SupportingPaneScaffoldRole
-import androidx.compose.material3.adaptive.layout.defaultDragHandleSemantics
-import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
-import androidx.compose.material3.adaptive.navigation.rememberSupportingPaneScaffoldNavigator
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -83,6 +82,7 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -139,6 +139,8 @@ import org.yangdai.kori.presentation.screen.settings.AppTheme
 import org.yangdai.kori.presentation.util.TemplateProcessor
 import org.yangdai.kori.presentation.util.clickToShareText
 import org.yangdai.kori.presentation.util.rememberDefaultDateTimeFormatter
+import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
+import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -223,8 +225,9 @@ fun NoteScreen(
         }
     }
 
-    val scaffoldNavigator =
-        rememberSupportingPaneScaffoldNavigator(isDestinationHistoryAware = false)
+
+    val isLargeScreen = rememberIsScreenSizeLarge()
+    val pagerState = rememberPagerState { 2 }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     var isSideSheetOpen by rememberSaveable { mutableStateOf(false) }
@@ -233,10 +236,7 @@ fun NoteScreen(
         keyboardController?.hide()
         focusManager.clearFocus()
         isSearching = false
-        scaffoldNavigator.navigateTo(
-            pane = if (isReadView) SupportingPaneScaffoldRole.Supporting
-            else SupportingPaneScaffoldRole.Main
-        )
+        pagerState.animateScrollToPage(if (isReadView) 1 else 0)
     }
 
     Scaffold(
@@ -388,62 +388,99 @@ fun NoteScreen(
                     onFindAndReplaceUpdate = { findAndReplaceState = it }
                 )
             } else {
-                val paneExpansionState = rememberPaneExpansionState(
-                    keyProvider = scaffoldNavigator.scaffoldValue,
-                    anchors = listOf(
-                        Proportion(0f),
-                        Proportion(0.33f),
-                        Proportion(0.5f),
-                        Proportion(0.67f),
-                        Proportion(1f)
-                    ),
-                    initialAnchoredIndex = 2
-                )
-                SupportingPaneScaffold(
-                    modifier = Modifier.fillMaxWidth().weight(1f),
-                    directive = scaffoldNavigator.scaffoldDirective,
-                    value = scaffoldNavigator.scaffoldValue,
-                    mainPane = {
-                        AnimatedPane {
-                            Editor(
-                                modifier = Modifier.fillMaxSize(),
-                                type = noteEditingState.noteType,
-                                state = viewModel.contentState,
-                                scrollState = scrollState,
-                                readMode = isReadView,
-                                showLineNumbers = editorState.showLineNumber,
-                                isLintActive = editorState.isMarkdownLintEnabled,
-                                headerRange = selectedHeader,
-                                findAndReplaceState = findAndReplaceState,
-                                onFindAndReplaceUpdate = { findAndReplaceState = it }
-                            )
-                        }
-                    },
-                    supportingPane = {
-                        AnimatedPane {
-                            MarkdownView(
-                                modifier = Modifier.fillMaxSize(),
-                                html = html,
-                                selection = viewModel.contentState.selection,
-                                scrollState = scrollState,
-                                isAppInDarkTheme = isAppInDarkTheme
-                            )
-                        }
-                    },
-                    paneExpansionDragHandle = {
+                if (isLargeScreen) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().weight(1f),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
                         val interactionSource = remember { MutableInteractionSource() }
-                        VerticalDragHandle(
-                            modifier = Modifier.padding(horizontal = 4.dp).paneExpansionDraggable(
-                                state = paneExpansionState,
-                                minTouchTargetSize = LocalMinimumInteractiveComponentSize.current,
-                                interactionSource = interactionSource,
-                                semanticsProperties = paneExpansionState.defaultDragHandleSemantics()
-                            ),
-                            interactionSource = interactionSource,
+                        var editorWeight by remember { mutableFloatStateOf(0.5f) }
+                        val windowWidth = LocalWindowInfo.current.containerSize.width
+
+                        Editor(
+                            modifier = Modifier.fillMaxHeight().weight(editorWeight),
+                            type = noteEditingState.noteType,
+                            state = viewModel.contentState,
+                            scrollState = scrollState,
+                            readMode = isReadView,
+                            showLineNumbers = editorState.showLineNumber,
+                            isLintActive = editorState.isMarkdownLintEnabled,
+                            headerRange = selectedHeader,
+                            findAndReplaceState = findAndReplaceState,
+                            onFindAndReplaceUpdate = { findAndReplaceState = it }
                         )
-                    },
-                    paneExpansionState = paneExpansionState
-                )
+
+                        VerticalDragHandle(
+                            modifier = Modifier.draggable(
+                                interactionSource = interactionSource,
+                                state = rememberDraggableState { delta ->
+                                    editorWeight =
+                                        (editorWeight + delta / windowWidth).coerceIn(
+                                            0.3f, 0.7f
+                                        )
+                                },
+                                orientation = Orientation.Horizontal,
+                                onDragStopped = {
+                                    val positions = listOf(1f / 3f, 0.5f, 2f / 3f)
+                                    val closest =
+                                        positions.minByOrNull { abs(it - editorWeight) }
+                                    if (closest != null) {
+                                        editorWeight = closest
+                                    }
+                                }
+                            ),
+                            interactionSource = interactionSource
+                        )
+
+                        MarkdownView(
+                            modifier = Modifier.fillMaxHeight().weight(1f - editorWeight),
+                            html = html,
+                            selection = viewModel.contentState.selection,
+                            scrollState = scrollState,
+                            isAppInDarkTheme = isAppInDarkTheme
+                        )
+                    }
+                } else {
+                    HorizontalPager(
+                        modifier = Modifier.fillMaxWidth().weight(1f),
+                        state = pagerState,
+                        beyondViewportPageCount = 1,
+                        userScrollEnabled = false
+                    ) { currentPage ->
+                        when (currentPage) {
+                            0 -> {
+                                Editor(
+                                    modifier = Modifier.fillMaxSize(),
+                                    type = noteEditingState.noteType,
+                                    state = viewModel.contentState,
+                                    scrollState = scrollState,
+                                    readMode = isReadView,
+                                    showLineNumbers = editorState.showLineNumber,
+                                    isLintActive = editorState.isMarkdownLintEnabled,
+                                    headerRange = selectedHeader,
+                                    findAndReplaceState = findAndReplaceState,
+                                    onFindAndReplaceUpdate = { findAndReplaceState = it }
+                                )
+                            }
+
+                            1 -> {
+//                                        Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+//                                            Text(
+//                                                text = html
+//                                            )
+//                                        }
+                                MarkdownView(
+                                    modifier = Modifier.fillMaxSize(),
+                                    html = html,
+                                    selection = viewModel.contentState.selection,
+                                    scrollState = scrollState,
+                                    isAppInDarkTheme = isAppInDarkTheme
+                                )
+                            }
+                        }
+                    }
+                }
             }
             AnimatedVisibility(visible = !isReadView) {
                 EditorRow(

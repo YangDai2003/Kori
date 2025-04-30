@@ -11,11 +11,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.viewinterop.UIKitView
 import kotlinx.cinterop.ExperimentalForeignApi
+import platform.CoreGraphics.CGRectMake
 import platform.UIKit.UIApplication
 import platform.UIKit.UIColor
-import platform.WebKit.*
+import platform.WebKit.WKNavigationAction
+import platform.WebKit.WKNavigationActionPolicy
+import platform.WebKit.WKNavigationDelegateProtocol
+import platform.WebKit.WKNavigationTypeLinkActivated
+import platform.WebKit.WKWebView
+import platform.WebKit.WKWebViewConfiguration
+import platform.WebKit.javaScriptEnabled
 import platform.darwin.NSObject
-import platform.CoreGraphics.CGRectMake
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
@@ -80,55 +86,32 @@ actual fun MarkdownView(
 
     UIKitView(
         factory = {
-            // Create configuration
             val config = WKWebViewConfiguration()
-            // Optionally disable JavaScript if not needed for content itself (though needed for scroll sync)
-            // config.preferences.javaScriptEnabled = true // Default is true
+            config.preferences().javaScriptEnabled = true
 
-            // Create WebView
-            val wv =
-                WKWebView(frame = CGRectMake(0.0, 0.0, 0.0, 0.0), configuration = config).apply {
-                    this.opaque = false // Make WebView background transparent
-                    // Set background color explicitly (or rely solely on CSS body background)
-                    // this.backgroundColor = UIColor.clearColor
-                    this.scrollView.backgroundColor =
-                        UIColor.clearColor // Ensure scroll view is also transparent
+            WKWebView(frame = CGRectMake(0.0, 0.0, 0.0, 0.0), configuration = config).apply {
+                this.opaque = false // To stop 'white flash'
+                this.scrollView.backgroundColor =
+                    UIColor.clearColor // Ensure scroll view is also transparent
 
-                    // --- Configuration similar to Android ---
-                    this.navigationDelegate = navigationDelegate // Handle link clicks
+                // --- Configuration similar to Android ---
+                this.navigationDelegate = navigationDelegate // Handle link clicks
 
-                    this.scrollView.showsVerticalScrollIndicator = false
-                    this.scrollView.showsHorizontalScrollIndicator = false
-                    this.scrollView.bounces = false // Disable bounce effect
-
-                    // Disable zoom - handled by viewport meta tag + potentially disabling gestures
-                    // The viewport tag in generateHtml ("user-scalable=no") is the primary method.
-                    // For extra measure, disabling pinch gesture (might interfere with selection):
-                    // this.scrollView.pinchGestureRecognizer?.enabled = false
-                }
-            webView = wv // Store the created webview instance
-            wv // Return the configured WebView
+                this.scrollView.showsVerticalScrollIndicator = true
+                this.scrollView.showsHorizontalScrollIndicator = false
+                this.scrollView.bounces = false // Disable bounce effect
+            }.also { webView = it }
         },
         modifier = modifier, // Apply Compose modifiers
-        update = { wv ->
-            // Check if content actually changed to avoid unnecessary reloads
-            // NOTE: This simple check might not be sufficient if only styles/theme changed
-            // The `remember` block handles this better. Just load the latest htmlContent.
-            wv.loadHTMLString(data, baseURL = null)
-        },
+        update = { wv -> wv.loadHTMLString(data, baseURL = null) },
         onRelease = { wv ->
-            // Cleanup when the Composable leaves the composition
             wv.stopLoading()
             wv.navigationDelegate = null // Break reference cycle
             webView = null // Clear the state variable
-            // WKWebView doesn't have an explicit destroy() like Android.
-            // Setting delegate to null and removing from view hierarchy handles cleanup.
         }
     )
 }
 
-// --- Navigation Delegate ---
-// Needs to inherit NSObject to be used as a delegate
 private class NavigationDelegate : NSObject(), WKNavigationDelegateProtocol {
 
     override fun webView(
@@ -149,7 +132,11 @@ private class NavigationDelegate : NSObject(), WKNavigationDelegateProtocol {
                 // Check if UIApplication can open the URL and open it externally
                 val application = UIApplication.sharedApplication
                 if (application.canOpenURL(url)) {
-                    application.openURL(url)
+                    application.openURL(
+                        url,
+                        options = emptyMap<Any?, Any>(),
+                        completionHandler = null
+                    )
                     // Cancel the navigation within the WebView
                     decisionHandler(WKNavigationActionPolicy.WKNavigationActionPolicyCancel) // Use WKNavigationActionPolicyCancel constant
                     return

@@ -108,7 +108,7 @@ actual fun MarkdownView(
                 settings.domStorageEnabled = true
                 settings.javaScriptEnabled = true
                 settings.loadsImagesAutomatically = true
-                isVerticalScrollBarEnabled = false
+                isVerticalScrollBarEnabled = true
                 isHorizontalScrollBarEnabled = false
                 settings.setSupportZoom(false)
                 settings.builtInZoomControls = false
