@@ -51,6 +51,7 @@ fun processHtml(
         .replace("{{MERMAID}}", Res.getUri("files/mermaid.min.js"))
         .replace("{{KATEX}}", Res.getUri("files/katex/katex.min.js"))
         .replace("{{KATEX-CSS}}", Res.getUri("files/katex/katex.min.css"))
+        .replace("{{KATEX-RENDER}}", Res.getUri("files/katex/auto-render.min.js"))
 }
 
 @Composable
