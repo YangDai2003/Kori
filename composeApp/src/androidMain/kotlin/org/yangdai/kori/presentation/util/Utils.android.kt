@@ -1,8 +1,10 @@
 package org.yangdai.kori.presentation.util
 
 import android.content.Intent
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import org.yangdai.kori.R
@@ -20,5 +22,14 @@ actual fun Modifier.clickToShareText(text: String): Modifier {
             Intent.EXTRA_TEXT, text
         )
         context.startActivity(Intent.createChooser(sendIntent, null))
+    }
+}
+
+@Composable
+fun rememberCustomTabsIntent(): CustomTabsIntent {
+    return remember {
+        CustomTabsIntent.Builder()
+            .setShowTitle(true)
+            .build()
     }
 }

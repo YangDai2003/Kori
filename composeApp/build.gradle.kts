@@ -57,6 +57,7 @@ kotlin {
             implementation(libs.koin.androidx.compose)
             implementation(libs.androidx.biometric)
             implementation(libs.androidx.documentfile)
+            implementation(libs.androidx.browser)
         }
         commonMain.dependencies {
             implementation(compose.runtime)

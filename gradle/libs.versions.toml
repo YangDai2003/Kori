@@ -25,6 +25,7 @@ koin = "4.0.4"
 colorpickerCompose = "1.1.2"
 biometricVersion = "1.4.0-alpha03"
 documentfile = "1.0.1"
+browser = "1.8.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -68,6 +69,7 @@ colorpicker-compose = { module = "com.github.skydoves:colorpicker-compose", vers
 
 androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometricVersion" }
 androidx-documentfile = { module = "androidx.documentfile:documentfile", version.ref = "documentfile" }
+androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

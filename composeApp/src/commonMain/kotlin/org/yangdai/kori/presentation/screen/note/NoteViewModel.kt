@@ -136,7 +136,7 @@ class NoteViewModel(
             var content = it.toString()
             content = content.splitPropertiesAndContent().second
             val parsedTree = parser.buildMarkdownTreeFromString(content)
-            content = HtmlGenerator(content, parsedTree, flavor).generateHtml()
+            content = HtmlGenerator(content, parsedTree, flavor, true).generateHtml()
             baseHtml?.replace("{{CONTENT}}", content) ?: ""
         }
         .flowOn(Dispatchers.Default)

@@ -16,8 +16,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.net.toUri
+import org.yangdai.kori.presentation.util.rememberCustomTabsIntent
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
@@ -28,7 +29,7 @@ actual fun MarkdownView(
     isAppInDarkTheme: Boolean,
     styles: MarkdownStyles
 ) {
-    val uriHandler = LocalUriHandler.current
+    val customTabsIntent = rememberCustomTabsIntent()
     var webView by remember { mutableStateOf<WebView?>(null) }
 
     val data by remember(html, styles, isAppInDarkTheme) {
@@ -79,7 +80,7 @@ actual fun MarkdownView(
                     ): Boolean {
                         val url = request.url.toString()
                         if (url.startsWith("http://") || url.startsWith("https://")) {
-                            uriHandler.openUri(url)
+                            customTabsIntent.launchUrl(it, url.toUri())
                         }
                         return true
                     }

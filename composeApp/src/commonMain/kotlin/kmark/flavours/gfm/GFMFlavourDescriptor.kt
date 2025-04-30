@@ -41,9 +41,9 @@ import kmark.parser.sequentialparsers.impl.ReferenceLinkParser
  * @param makeHttpsAutoLinks enables use of HTTPS schema for auto links.
  */
 open class GFMFlavourDescriptor(
-    useSafeLinks: Boolean = true,
+    useSafeLinks: Boolean = false,
     absolutizeAnchorLinks: Boolean = false,
-    private val makeHttpsAutoLinks: Boolean = false
+    private val makeHttpsAutoLinks: Boolean = true
 ) : CommonMarkFlavourDescriptor(useSafeLinks, absolutizeAnchorLinks) {
     override val markerProcessorFactory: MarkerProcessorFactory = GFMMarkerProcessor.Factory
 
