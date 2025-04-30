@@ -185,7 +185,7 @@ compose.desktop {
             packageName = "org.yangdai.kori"
             packageVersion = "1.0.1"
             description = "Compose Multiplatform App"
-            licenseFile.set(project.file("LICENSE.txt"))
+            licenseFile.set(rootProject.file("LICENSE.txt"))
         }
     }
 }
