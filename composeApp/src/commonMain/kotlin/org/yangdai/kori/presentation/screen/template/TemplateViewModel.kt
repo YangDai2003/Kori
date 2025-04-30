@@ -26,7 +26,7 @@ import kotlin.uuid.Uuid
 
 class TemplateViewModel(
     private val noteRepository: NoteRepository,
-    private val dataStoreRepository: DataStoreRepository
+    dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
     // 笔记状态
     val titleState = TextFieldState()

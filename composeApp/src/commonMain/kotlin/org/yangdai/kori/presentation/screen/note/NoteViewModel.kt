@@ -5,6 +5,12 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kmark.MarkdownElementTypes
+import kmark.ast.ASTNode
+import kmark.ast.getTextInNode
+import kmark.flavours.gfm.GFMFlavourDescriptor
+import kmark.html.HtmlGenerator
+import kmark.parser.MarkdownParser
 import kori.composeapp.generated.resources.Res
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -53,7 +59,7 @@ import kotlin.uuid.Uuid
 class NoteViewModel(
     private val folderRepository: FolderRepository,
     private val noteRepository: NoteRepository,
-    private val dataStoreRepository: DataStoreRepository
+    dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
     // 笔记状态
     val titleState = TextFieldState()
@@ -120,6 +126,26 @@ class NoteViewModel(
             initialValue = emptyList()
         )
 
+    var baseHtml: String? = null
+    val flavor = GFMFlavourDescriptor()
+    val parser = MarkdownParser(flavor)
+
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    val html = contentSnapshotFlow.debounce(100)
+        .mapLatest {
+            var content = it.toString()
+            content = content.splitPropertiesAndContent().second
+            val parsedTree = parser.buildMarkdownTreeFromString(content)
+            content = HtmlGenerator(content, parsedTree, flavor).generateHtml()
+            baseHtml?.replace("{{CONTENT}}", content) ?: ""
+        }
+        .flowOn(Dispatchers.Default)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000L),
+            initialValue = ""
+        )
+
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     val outline = contentSnapshotFlow.debounce(1000)
         .mapLatest {
@@ -127,8 +153,13 @@ class NoteViewModel(
             val root = HeaderNode("", 0, IntRange.EMPTY)
             if (text.isBlank()) return@mapLatest root
             val propertiesLineRange = text.getPropertiesLineRange()
-            val headerStack = mutableListOf(root)
-
+            try {
+                val headerStack = mutableListOf(root)
+                val document = parser.buildMarkdownTreeFromString(text)
+                findHeadersRecursive(document, text, headerStack, propertiesLineRange)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
             root
         }
         .flowOn(Dispatchers.Default)
@@ -138,21 +169,48 @@ class NoteViewModel(
             initialValue = HeaderNode("", 0, IntRange.EMPTY)
         )
 
-    var baseHtml: String? = null
-
-    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    val html = contentSnapshotFlow.debounce(100)
-        .mapLatest {
-            var content = it.toString()
-            content = content.splitPropertiesAndContent().second
-            baseHtml?.replace("{{CONTENT}}", content) ?: ""
+    /**
+     * Recursively traverses the AST, finds headers, and builds the hierarchy.
+     */
+    private fun findHeadersRecursive(
+        node: ASTNode,
+        fullText: String,
+        headerStack: MutableList<HeaderNode>,
+        propertiesRange: IntRange?
+    ) {
+        // --- Check if the current node IS a header ---
+        val headerLevel = when (node.type) {
+            MarkdownElementTypes.ATX_1 -> 1
+            MarkdownElementTypes.ATX_2 -> 2
+            MarkdownElementTypes.ATX_3 -> 3
+            MarkdownElementTypes.ATX_4 -> 4
+            MarkdownElementTypes.ATX_5 -> 5
+            MarkdownElementTypes.ATX_6 -> 6
+            else -> 0 // Not a header type we are processing
         }
-        .flowOn(Dispatchers.Default)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = ""
-        )
+        if (headerLevel > 0) {
+            val range = IntRange(node.startOffset, node.endOffset - 1)
+            // --- Skip if inside properties range ---
+            if (propertiesRange == null || !propertiesRange.contains(range.first)) {
+                val title = node.getTextInNode(fullText).trim().dropWhile { it == '#' }.toString()
+                val headerNode = HeaderNode(title, headerLevel, range)
+                // --- Manage Hierarchy ---
+                // Pop stack until parent level is less than current level
+                while (headerStack.last().level >= headerLevel && headerStack.size > 1) {
+                    headerStack.removeAt(headerStack.lastIndex)
+                }
+                // Add new header as child of the correct parent
+                headerStack.last().children.add(headerNode)
+                // Push new header onto stack to be the parent for subsequent deeper headers
+                headerStack.add(headerNode)
+            }
+            return // Stop descent once a header is processed
+        }
+        // --- If not a header, recurse into children ---
+        node.children.forEach { child ->
+            findHeadersRecursive(child, fullText, headerStack, propertiesRange)
+        }
+    }
 
     init {
         viewModelScope.launch(Dispatchers.IO) {

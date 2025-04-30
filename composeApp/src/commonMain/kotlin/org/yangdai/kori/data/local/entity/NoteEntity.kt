@@ -23,9 +23,18 @@ import kotlinx.datetime.Clock
         // Covers getAllNotesOrderBy* and searchNotesByKeywordOrderBy* (partially)
         // Prioritizes the common filter and the primary sort key (is_pinned)
         // Uses updated_at as the default secondary sort key example
-        Index(value = ["is_deleted", "is_template", "is_pinned", "updated_at"], name = "idx_notes_active_pin_updated"),
-        Index(value = ["is_deleted", "is_template", "is_pinned", "created_at"], name = "idx_notes_active_pin_created"),
-        Index(value = ["is_deleted", "is_template", "is_pinned", "title"], name = "idx_notes_active_pin_title"),
+        Index(
+            value = ["is_deleted", "is_template", "is_pinned", "updated_at"],
+            name = "idx_notes_active_pin_updated"
+        ),
+        Index(
+            value = ["is_deleted", "is_template", "is_pinned", "created_at"],
+            name = "idx_notes_active_pin_created"
+        ),
+        Index(
+            value = ["is_deleted", "is_template", "is_pinned", "title"],
+            name = "idx_notes_active_pin_title"
+        ),
 
         // --- Index for Foreign Key (often implicitly useful, but good practice) ---
         // While Room manages FK constraints, explicitly indexing the FK column

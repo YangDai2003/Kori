@@ -34,7 +34,10 @@ class FoldersViewModel(
     val foldersMap: StateFlow<Map<Boolean, List<FolderDao.FolderWithNoteCount>>> =
         dataStoreRepository
             .intFlow(Constants.Preferences.FOLDER_SORT_TYPE)
-            .map { FolderSortType.Companion.fromValue(it).also { sortType -> folderSortType = sortType } }
+            .map {
+                FolderSortType.Companion.fromValue(it)
+                    .also { sortType -> folderSortType = sortType }
+            }
             .distinctUntilChanged()
             .flatMapLatest { sortType ->
                 folderRepository.getFoldersWithNoteCounts(sortType)

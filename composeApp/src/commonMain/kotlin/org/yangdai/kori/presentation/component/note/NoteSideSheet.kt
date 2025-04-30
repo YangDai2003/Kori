@@ -251,7 +251,8 @@ fun NoteSideSheet(
                     // 概览标题
                     item {
                         Text(
-                            modifier = Modifier.fillMaxWidth().padding(start = 12.dp, bottom = 4.dp),
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(start = 12.dp, bottom = 4.dp),
                             text = stringResource(Res.string.overview),
                             style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurface,
@@ -270,7 +271,7 @@ fun NoteSideSheet(
 
                     // 大纲标题
                     item {
-                        if (outline.children.isNotEmpty()){
+                        if (outline.children.isNotEmpty()) {
                             HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
                             Row(
                                 modifier = Modifier

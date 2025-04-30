@@ -69,7 +69,7 @@ actual fun FilePickerDialog(onFilePicked: (PickedFile?) -> Unit) {
             inMode = UIDocumentPickerMode.UIDocumentPickerModeOpen
         )
     }
-    
+
     documentPicker.delegate = delegate
     documentPicker.allowsMultipleSelection = false
 

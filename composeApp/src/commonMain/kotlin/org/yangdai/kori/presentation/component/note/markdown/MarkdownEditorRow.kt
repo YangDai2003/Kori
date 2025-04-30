@@ -12,12 +12,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Announcement
 import androidx.compose.material.icons.automirrored.outlined.FormatIndentDecrease
 import androidx.compose.material.icons.automirrored.outlined.FormatIndentIncrease
 import androidx.compose.material.icons.automirrored.outlined.FormatListBulleted
+import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material.icons.automirrored.outlined.Redo
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.automirrored.outlined.Undo
+import androidx.compose.material.icons.outlined.AttachMoney
 import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.DataArray
@@ -28,11 +31,16 @@ import androidx.compose.material.icons.outlined.FormatListNumbered
 import androidx.compose.material.icons.outlined.FormatPaint
 import androidx.compose.material.icons.outlined.FormatQuote
 import androidx.compose.material.icons.outlined.FormatUnderlined
+import androidx.compose.material.icons.outlined.Functions
 import androidx.compose.material.icons.outlined.HorizontalRule
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.IntegrationInstructions
+import androidx.compose.material.icons.outlined.Lightbulb
 import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.ReportGmailerrorred
 import androidx.compose.material.icons.outlined.StrikethroughS
 import androidx.compose.material.icons.outlined.Title
+import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -215,9 +223,16 @@ fun MarkdownEditorRow(
         },
         {
             EditorRowButton(
-                tipText = "Ctrl + Q",
-                icon = Icons.Outlined.FormatQuote,
-                onClick = { textFieldState.edit { quote() } }
+                tipText = "Ctrl + M",
+                icon = Icons.Outlined.AttachMoney,
+                onClick = { textFieldState.edit { inlineMath() } }
+            )
+        },
+        {
+            EditorRowButton(
+                tipText = "Ctrl + Shift + M",
+                icon = Icons.Outlined.Functions,
+                onClick = { textFieldState.edit { mathBlock() } }
             )
         },
         {
@@ -226,8 +241,66 @@ fun MarkdownEditorRow(
                 icon = Icons.Outlined.Link,
                 onClick = { textFieldState.edit { link() } }
             )
+        },
+        {
+            EditorRowButton(
+                tipText = "Ctrl + Q",
+                icon = Icons.Outlined.FormatQuote,
+                onClick = { textFieldState.edit { quote() } }
+            )
+        },
+    )
+
+    var isAlertSectionExpanded by rememberSaveable { mutableStateOf(false) }
+    EditorRowSection(
+        {
+            EditorRowButton(
+                tipText = "Github Alert",
+                icon = Icons.AutoMirrored.Outlined.Label,
+                onClick = { isAlertSectionExpanded = !isAlertSectionExpanded }
+            )
         }
     )
+
+    AnimatedVisibility(visible = isAlertSectionExpanded) {
+        EditorRowSection(
+            {
+                EditorRowButton(
+                    tipText = "NOTE",
+                    icon = Icons.Outlined.Info,
+                    onClick = { textFieldState.edit { alert("NOTE") } }
+                )
+            },
+            {
+                EditorRowButton(
+                    tipText = "TIP",
+                    icon = Icons.Outlined.Lightbulb,
+                    onClick = { textFieldState.edit { alert("TIP") } }
+                )
+            },
+            {
+                EditorRowButton(
+                    tipText = "IMPORTANT",
+                    icon = Icons.AutoMirrored.Outlined.Announcement,
+                    onClick = { textFieldState.edit { alert("IMPORTANT") } }
+                )
+            },
+            {
+                EditorRowButton(
+                    tipText = "WARNING",
+                    icon = Icons.Outlined.WarningAmber,
+                    onClick = { textFieldState.edit { alert("WARNING") } }
+                )
+            },
+            {
+                EditorRowButton(
+                    tipText = "CAUTION",
+                    icon = Icons.Outlined.ReportGmailerrorred,
+                    onClick = { textFieldState.edit { alert("CAUTION") } }
+                )
+            }
+        )
+    }
 
     EditorRowSection(
         {

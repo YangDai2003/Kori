@@ -14,7 +14,7 @@ class KoriApp : Application() {
     override fun onCreate() {
         super.onCreate()
         // Initialize your app here
-        KoinInitializer.init{
+        KoinInitializer.init {
             androidContext(this@KoriApp)
             // Add other Koin modules here
         }

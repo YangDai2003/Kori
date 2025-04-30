@@ -37,12 +37,14 @@ interface FolderDao {
      * @return 包含文件夹及其笔记数量的Flow
      */
     @Transaction
-    @Query("""
+    @Query(
+        """
         SELECT f.*,
                (SELECT COUNT(*) FROM notes WHERE folder_id = f.id AND is_deleted = 0) AS noteCount
         FROM folders f
         ORDER BY f.is_starred DESC, f.name ASC
-    """)
+    """
+    )
     fun getFoldersWithNoteCountsByNameAsc(): Flow<List<FolderWithNoteCount>>
 
     /**
@@ -51,12 +53,14 @@ interface FolderDao {
      * @return 包含文件夹及其笔记数量的Flow
      */
     @Transaction
-    @Query("""
+    @Query(
+        """
         SELECT f.*,
                (SELECT COUNT(*) FROM notes WHERE folder_id = f.id AND is_deleted = 0) AS noteCount
         FROM folders f
         ORDER BY f.is_starred DESC, f.name DESC
-    """)
+    """
+    )
     fun getFoldersWithNoteCountsByNameDesc(): Flow<List<FolderWithNoteCount>>
 
     /**
@@ -65,12 +69,14 @@ interface FolderDao {
      * @return 包含文件夹及其笔记数量的Flow
      */
     @Transaction
-    @Query("""
+    @Query(
+        """
         SELECT f.*,
                (SELECT COUNT(*) FROM notes WHERE folder_id = f.id AND is_deleted = 0) AS noteCount
         FROM folders f
         ORDER BY f.is_starred DESC, f.created_at ASC
-    """)
+    """
+    )
     fun getFoldersWithNoteCountsByCreatedAsc(): Flow<List<FolderWithNoteCount>>
 
     /**
@@ -79,12 +85,14 @@ interface FolderDao {
      * @return 包含文件夹及其笔记数量的Flow
      */
     @Transaction
-    @Query("""
+    @Query(
+        """
         SELECT f.*,
                (SELECT COUNT(*) FROM notes WHERE folder_id = f.id AND is_deleted = 0) AS noteCount
         FROM folders f
         ORDER BY f.is_starred DESC, f.created_at DESC
-    """)
+    """
+    )
     fun getFoldersWithNoteCountsByCreatedDesc(): Flow<List<FolderWithNoteCount>>
 
     /**

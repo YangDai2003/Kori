@@ -24,10 +24,10 @@ actual fun KoriTheme(
 
     // 获取带动画的颜色方案（首次启动时无动画）
     val colorScheme = getColorSchemeWithAnimation(targetColorScheme)
-    
+
     // 处理AMOLED模式
     val finalColorScheme = processAmoledMode(darkMode, amoledMode, colorScheme)
-    
+
     // 获取缩放后的排版
     val koriTypography = getScaledTypography(fontScale)
 

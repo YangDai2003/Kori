@@ -56,7 +56,7 @@ class TemplateProcessor(
             try {
                 localDate.format(LocalDate.Format { byUnicodePattern(format) })
             } catch (_: Exception) {
-                localDate.format(LocalDate.Format { byUnicodePattern("yyyy-MM-dd")})
+                localDate.format(LocalDate.Format { byUnicodePattern("yyyy-MM-dd") })
             }
         }
 

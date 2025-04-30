@@ -64,7 +64,7 @@ fun MainViewController() = ComposeUIViewController(
                 exit = fadeOut()
             ) {
                 NumberLockScreen(
-                    modifier =  Modifier.background(MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.25f)),
+                    modifier = Modifier.background(MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.25f)),
                     storedPassword = securityPaneState.password,
                     isCreatingPassword = securityPaneState.isCreatingPass,
                     onCreatingCanceled = {

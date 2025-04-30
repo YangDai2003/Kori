@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
+import kori.composeapp.generated.resources.Res
 import org.yangdai.kori.presentation.theme.linkColor
 import org.yangdai.kori.presentation.util.toHexColor
 
@@ -47,6 +48,9 @@ fun processHtml(
         .replace("{{LINK_COLOR}}", markdownStyles.hexLinkColor)
         .replace("{{BORDER_COLOR}}", markdownStyles.hexBorderColor)
         .replace("{{COLOR_SCHEME}}", if (isAppInDarkMode) "dark" else "light")
+        .replace("{{MERMAID}}", Res.getUri("files/mermaid.min.js"))
+        .replace("{{KATEX}}", Res.getUri("files/katex/katex.min.js"))
+        .replace("{{KATEX-CSS}}", Res.getUri("files/katex/katex.min.css"))
 }
 
 @Composable

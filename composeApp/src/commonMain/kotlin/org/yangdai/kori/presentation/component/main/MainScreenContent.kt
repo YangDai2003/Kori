@@ -106,7 +106,8 @@ import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class,
+@OptIn(
+    ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class,
     ExperimentalWindowCoreApi::class
 )
 @Composable

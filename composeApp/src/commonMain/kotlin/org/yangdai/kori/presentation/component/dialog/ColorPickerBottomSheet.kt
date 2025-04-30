@@ -77,7 +77,7 @@ fun ColorPickerBottomSheet(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 val haptic = LocalHapticFeedback.current
-                FilledIconButton (
+                FilledIconButton(
                     onClick = {
                         haptic.performHapticFeedback(HapticFeedbackType.Confirm)
                         onConfirm(color?.toArgb() ?: Color.White.toArgb())
