@@ -126,8 +126,7 @@ fun LazyGridItemScope.NoteItem(
                     Text(
                         text = when (note.noteType) {
                             NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
-                            NoteType.LITE_MARKDOWN -> stringResource(Res.string.markdown) + " (Lite)"
-                            NoteType.STANDARD_MARKDOWN -> stringResource(Res.string.markdown) + " (Standard)"
+                            NoteType.MARKDOWN -> stringResource(Res.string.markdown)
                         },
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -234,8 +233,7 @@ fun LazyStaggeredGridItemScope.NoteItem(
                         Text(
                             text = when (note.noteType) {
                                 NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
-                                NoteType.LITE_MARKDOWN -> stringResource(Res.string.markdown) + " (Lite)"
-                                NoteType.STANDARD_MARKDOWN -> stringResource(Res.string.markdown) + " (Standard)"
+                                NoteType.MARKDOWN -> stringResource(Res.string.markdown)
                             },
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
@@ -362,8 +360,7 @@ fun LazyStaggeredGridItemScope.SearchResultNoteItem(
                     Text(
                         text = when (note.noteType) {
                             NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
-                            NoteType.LITE_MARKDOWN -> stringResource(Res.string.markdown) + " (Lite)"
-                            NoteType.STANDARD_MARKDOWN -> stringResource(Res.string.markdown) + " (Standard)"
+                            NoteType.MARKDOWN -> stringResource(Res.string.markdown)
                         },
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)

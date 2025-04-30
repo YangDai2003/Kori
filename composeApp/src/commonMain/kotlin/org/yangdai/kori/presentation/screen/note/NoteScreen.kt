@@ -642,8 +642,7 @@ fun NoteScreen(
                 key = stringResource(Res.string.type),
                 value = when (noteEditingState.noteType) {
                     NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
-                    NoteType.LITE_MARKDOWN -> stringResource(Res.string.markdown) + " (Lite)"
-                    NoteType.STANDARD_MARKDOWN -> stringResource(Res.string.markdown) + " (Standard)"
+                    NoteType.MARKDOWN -> stringResource(Res.string.markdown)
                 }
             )
 

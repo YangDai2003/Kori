@@ -20,7 +20,7 @@ fun Editor(
     findAndReplaceState: FindAndReplaceState,
     onFindAndReplaceUpdate: (FindAndReplaceState) -> Unit
 ) = when (type) {
-    NoteType.STANDARD_MARKDOWN -> {
+    NoteType.MARKDOWN -> {
         MarkdownEditor(
             modifier = modifier,
             state = state,

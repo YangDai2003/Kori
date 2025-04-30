@@ -12,7 +12,7 @@ import org.yangdai.kori.data.local.dao.NoteDao
 import org.yangdai.kori.data.local.entity.FolderEntity
 import org.yangdai.kori.data.local.entity.NoteEntity
 
-internal const val dbFileName = "kori_room.db"
+internal const val dbFileName = "kori.db"
 
 @Database(
     entities = [NoteEntity::class, FolderEntity::class],

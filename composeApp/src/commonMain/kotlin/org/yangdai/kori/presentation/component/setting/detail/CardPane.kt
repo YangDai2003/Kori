@@ -198,7 +198,7 @@ val sampleNotes = listOf(
         title = "Grocery List for the Week",
         content = "Don't forget to buy:\n- Milk\n- Eggs\n- Bread\n- Cheese\n- Fruits (Apples, Bananas)\n- Vegetables (Carrots, Broccoli)",
         isPinned = true,
-        noteType = NoteType.STANDARD_MARKDOWN
+        noteType = NoteType.MARKDOWN
     ),
     NoteEntity(
         id = Uuid.random().toString(),
@@ -218,7 +218,7 @@ val sampleNotes = listOf(
         title = "Thoughts on Kotlin",
         content = "Kotlin is a modern, statically typed programming language targeting the JVM, Android, Browser, etc. Kotlin is concise and safe, designed to be interoperable with Java.",
         isPinned = false,
-        noteType = NoteType.STANDARD_MARKDOWN
+        noteType = NoteType.MARKDOWN
     ),
     NoteEntity(
         id = Uuid.random().toString(),
@@ -237,7 +237,7 @@ val sampleNotes = listOf(
         title = "Books to read",
         content = "1. The Lord of the Rings\n2. Pride and Prejudice\n3. The Hitchhiker's Guide to the Galaxy\n4. 1984\n5. To Kill a Mockingbird",
         isPinned = true,
-        noteType = NoteType.STANDARD_MARKDOWN
+        noteType = NoteType.MARKDOWN
     ),
     NoteEntity(
         id = Uuid.random().toString(),
@@ -257,6 +257,6 @@ val sampleNotes = listOf(
                   More test content.
         """.trimIndent(),
         isPinned = false,
-        noteType = NoteType.STANDARD_MARKDOWN
+        noteType = NoteType.MARKDOWN
     )
 )

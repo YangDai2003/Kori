@@ -41,11 +41,7 @@ fun EditorRow(
         PlainTextEditorRow(textFieldState, onEditorRowAction)
     }
 
-    NoteType.LITE_MARKDOWN -> {
-        TODO()
-    }
-
-    NoteType.STANDARD_MARKDOWN -> {
+    NoteType.MARKDOWN -> {
         MarkdownEditorRow(textFieldState, onEditorRowAction)
     }
 }
