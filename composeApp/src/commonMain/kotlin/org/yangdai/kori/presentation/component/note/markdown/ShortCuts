@@ -1,3 +1,6 @@
+Ctrl/Command + C,V,X,A Copy, Paste, Cut, Select All
+Ctrl/Command + Z,Y Undo, Redo
+
 Ctrl + 1-6 Heading Level
 Ctrl + B Bold
 Ctrl + I Italic
@@ -12,3 +15,6 @@ Ctrl + L Link
 Ctrl + Shift + B BulletList
 Ctrl + Shift + N NumberedList
 Ctrl + Shift + T TaskList
+Ctrl + M Inline Math
+Ctrl + Shift + M Block Math
+Ctrl + Shift + D Mermaid

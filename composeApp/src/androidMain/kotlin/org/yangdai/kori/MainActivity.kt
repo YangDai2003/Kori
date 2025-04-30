@@ -156,36 +156,34 @@ class MainActivity : AppCompatActivity() {
                     getString(R.string.task_list),
                     KeyEvent.KEYCODE_T,
                     KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_ON
-                ),
-
-
-                KeyboardShortcutInfo(
-                    getString(R.string.table), KeyEvent.KEYCODE_T, KeyEvent.META_CTRL_ON
                 ), KeyboardShortcutInfo(
-                    getString(R.string.preview), KeyEvent.KEYCODE_P, KeyEvent.META_CTRL_ON
-                ), KeyboardShortcutInfo(
-                    getString(R.string.find), KeyEvent.KEYCODE_F, KeyEvent.META_CTRL_ON
-                ), KeyboardShortcutInfo(
-                    getString(R.string.scan),
-                    KeyEvent.KEYCODE_S,
-                    KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_ON
-                ), KeyboardShortcutInfo(
-                    getString(R.string.math),
-                    KeyEvent.KEYCODE_M,
-                    KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_ON
+                    getString(R.string.math), KeyEvent.KEYCODE_M, KeyEvent.META_CTRL_ON
                 ), KeyboardShortcutInfo(
                     getString(R.string.mermaid_diagram),
                     KeyEvent.KEYCODE_D,
                     KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_ON
                 ), KeyboardShortcutInfo(
-                    getString(R.string.image),
-                    KeyEvent.KEYCODE_I,
-                    KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_ON
+                    getString(R.string.preview), KeyEvent.KEYCODE_P, KeyEvent.META_CTRL_ON
                 ), KeyboardShortcutInfo(
-                    getString(R.string.templates),
-                    KeyEvent.KEYCODE_P,
-                    KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_ON
-                )
+                    getString(R.string.find), KeyEvent.KEYCODE_F, KeyEvent.META_CTRL_ON
+                ),
+
+
+//                KeyboardShortcutInfo(
+//                    getString(R.string.table), KeyEvent.KEYCODE_T, KeyEvent.META_CTRL_ON
+//                ), KeyboardShortcutInfo(
+//                    getString(R.string.scan),
+//                    KeyEvent.KEYCODE_S,
+//                    KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_ON
+//                ), KeyboardShortcutInfo(
+//                    getString(R.string.image),
+//                    KeyEvent.KEYCODE_I,
+//                    KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_ON
+//                ), KeyboardShortcutInfo(
+//                    getString(R.string.templates),
+//                    KeyEvent.KEYCODE_P,
+//                    KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_ON
+//                )
             )
         )
 

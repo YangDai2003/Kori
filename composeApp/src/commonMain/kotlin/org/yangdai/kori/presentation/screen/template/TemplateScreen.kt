@@ -109,7 +109,7 @@ fun TemplateScreen(
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize().imePadding().onPreviewKeyEvent { keyEvent ->
+        modifier = Modifier.imePadding().onPreviewKeyEvent { keyEvent ->
             if (keyEvent.type == KeyEventType.KeyDown && keyEvent.isCtrlPressed) {
                 when (keyEvent.key) {
                     Key.F -> {

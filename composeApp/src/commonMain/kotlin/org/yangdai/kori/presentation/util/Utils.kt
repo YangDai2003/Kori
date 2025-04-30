@@ -8,6 +8,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.format.DateTimeFormat
+import kotlinx.datetime.format.char
 import org.yangdai.kori.Platform
 import org.yangdai.kori.currentPlatform
 
@@ -24,6 +27,15 @@ fun rememberIsScreenSizeLarge(): Boolean {
 
 @Composable
 fun rememberCurrentPlatform(): Platform = remember { currentPlatform() }
+
+@Composable
+fun rememberDefaultDateTimeFormatter(): DateTimeFormat<LocalDateTime> {
+    return remember {
+        LocalDateTime.Format {
+            year(); char('-'); monthNumber(); char('-'); dayOfMonth(); char(' '); hour(); char(':'); minute()
+        }
+    }
+}
 
 fun Int.toHexColor(): String {
     // 1. 使用 0xFFFFFF 进行位与操作，保留低 24 位 (RGB)

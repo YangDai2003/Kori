@@ -1,5 +1,3 @@
-@file:OptIn(FormatStringsInDatetimeFormats::class)
-
 package org.yangdai.kori.presentation.component.main
 
 import androidx.compose.foundation.basicMarquee
@@ -23,7 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -38,16 +35,14 @@ import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.plain_text
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
-import kotlinx.datetime.format.FormatStringsInDatetimeFormats
-import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.screen.settings.CardSize
+import org.yangdai.kori.presentation.util.rememberDefaultDateTimeFormatter
 
 data class NoteItemProperties(
     val showCreatedTime: Boolean = false,
@@ -134,11 +129,8 @@ fun LazyGridItemScope.NoteItem(
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    var dateTimeFormatter =
-                        remember { LocalDateTime.Format { byUnicodePattern("yyyy-MM-dd HH:mm") } }
-
-                    // 格式化更新时间
-                    val updatedAtFormatted = try {
+                    val dateTimeFormatter = rememberDefaultDateTimeFormatter()
+                    val formattedDateTime = try {
                         val instant =
                             if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
                             else Instant.parse(note.updatedAt)
@@ -149,7 +141,7 @@ fun LazyGridItemScope.NoteItem(
                     }
 
                     Text(
-                        text = updatedAtFormatted,
+                        text = formattedDateTime,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -241,11 +233,8 @@ fun LazyStaggeredGridItemScope.NoteItem(
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    var dateTimeFormatter =
-                        remember { LocalDateTime.Format { byUnicodePattern("yyyy-MM-dd HH:mm") } }
-
-                    // 格式化更新时间
-                    val updatedAtFormatted = try {
+                    val dateTimeFormatter = rememberDefaultDateTimeFormatter()
+                    val formattedDateTime = try {
                         val instant =
                             if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
                             else Instant.parse(note.updatedAt)
@@ -256,7 +245,7 @@ fun LazyStaggeredGridItemScope.NoteItem(
                     }
 
                     Text(
-                        text = updatedAtFormatted,
+                        text = formattedDateTime,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                     )
@@ -368,11 +357,8 @@ fun LazyStaggeredGridItemScope.SearchResultNoteItem(
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    var dateTimeFormatter =
-                        remember { LocalDateTime.Format { byUnicodePattern("yyyy-MM-dd HH:mm") } }
-
-                    // 格式化更新时间
-                    val updatedAtFormatted = try {
+                    val dateTimeFormatter = rememberDefaultDateTimeFormatter()
+                    val formattedDateTime = try {
                         val instant =
                             if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
                             else Instant.parse(note.updatedAt)
@@ -383,7 +369,7 @@ fun LazyStaggeredGridItemScope.SearchResultNoteItem(
                     }
 
                     Text(
-                        text = updatedAtFormatted,
+                        text = formattedDateTime,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                     )

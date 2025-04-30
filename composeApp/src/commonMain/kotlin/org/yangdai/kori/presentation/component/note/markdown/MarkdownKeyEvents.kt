@@ -42,6 +42,16 @@ fun Modifier.markdownKeyEvents(textFieldState: TextFieldState): Modifier =
                             true
                         }
 
+                        Key.M -> {
+                            textFieldState.edit { mathBlock() }
+                            true
+                        }
+
+                        Key.D -> {
+                            textFieldState.edit { mermaidDiagram() }
+                            true
+                        }
+
                         else -> false
                     }
                 } else {
@@ -88,6 +98,11 @@ fun Modifier.markdownKeyEvents(textFieldState: TextFieldState): Modifier =
 
                         Key.L -> {
                             textFieldState.edit { link() }
+                            true
+                        }
+
+                        Key.M -> {
+                            textFieldState.edit { inlineMath() }
                             true
                         }
 

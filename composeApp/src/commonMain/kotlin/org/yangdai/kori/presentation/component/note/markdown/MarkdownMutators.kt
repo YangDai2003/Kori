@@ -65,6 +65,8 @@ fun TextFieldBuffer.inlineMath() = inlineWrap("$")
 
 fun TextFieldBuffer.mathBlock() = inlineWrap("$$\n", "\n$$\n")
 
+fun TextFieldBuffer.mermaidDiagram() = inlineWrap("<pre class=\"mermaid\">\n", "\n</pre>\n")
+
 fun TextFieldBuffer.quote() {
     val text = toString()
     val lineStart = text.take(selection.min)

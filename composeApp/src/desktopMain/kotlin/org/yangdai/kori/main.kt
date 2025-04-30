@@ -41,6 +41,7 @@ import java.awt.Dimension
 
 fun main() {
     System.setProperty("compose.interop.blending", "true")
+    System.setProperty("compose.swing.render.on.graphics", "true")
     KoinInitializer.init()
     application {
         val state = rememberWindowState()

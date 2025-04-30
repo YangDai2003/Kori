@@ -20,6 +20,7 @@ import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material.icons.automirrored.outlined.Redo
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.automirrored.outlined.Undo
+import androidx.compose.material.icons.outlined.AddChart
 import androidx.compose.material.icons.outlined.AttachMoney
 import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.Code
@@ -350,6 +351,13 @@ fun MarkdownEditorRow(
                 tipText = "Ctrl + R",
                 icon = Icons.Outlined.HorizontalRule,
                 onClick = { textFieldState.edit { horizontalRule() } }
+            )
+        },
+        {
+            EditorRowButton(
+                tipText = "Ctrl + Shift + D",
+                icon = Icons.Outlined.AddChart,
+                onClick = { textFieldState.edit { mermaidDiagram() } }
             )
         }
     )
