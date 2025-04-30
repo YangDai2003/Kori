@@ -233,31 +233,29 @@ fun NoteSideSheet(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            TooltipIconButton(
-                                tipText = stringResource(Res.string.settings),
-                                icon = Icons.Outlined.Settings,
-                                onClick = { navigateTo(Screen.Settings) }
+                            Text(
+                                modifier = Modifier.padding(start = 12.dp),
+                                text = stringResource(Res.string.overview),
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Bold
                             )
-                            IconButton(onClick = onDismiss) {
-                                Icon(
-                                    painter = painterResource(Res.drawable.right_panel_close),
-                                    tint = MaterialTheme.colorScheme.onSurface,
-                                    contentDescription = null
+
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                TooltipIconButton(
+                                    tipText = stringResource(Res.string.settings),
+                                    icon = Icons.Outlined.Settings,
+                                    onClick = { navigateTo(Screen.Settings) }
                                 )
+                                IconButton(onClick = onDismiss) {
+                                    Icon(
+                                        painter = painterResource(Res.drawable.right_panel_close),
+                                        tint = MaterialTheme.colorScheme.onSurface,
+                                        contentDescription = null
+                                    )
+                                }
                             }
                         }
-                    }
-
-                    // 概览标题
-                    item {
-                        Text(
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(start = 12.dp, bottom = 4.dp),
-                            text = stringResource(Res.string.overview),
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontWeight = FontWeight.Bold
-                        )
                     }
 
                     // 详细内容
