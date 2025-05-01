@@ -136,6 +136,10 @@ android {
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     compileOptions {
@@ -159,7 +163,9 @@ room {
 compose.desktop {
     application {
         mainClass = "org.yangdai.kori.MainKt"
-
+        buildTypes.release.proguard {
+            configurationFiles.from(rootProject.file("proguard-rules.pro"))
+        }
         nativeDistributions {
             macOS {
                 appCategory = "public.app-category.productivity"
