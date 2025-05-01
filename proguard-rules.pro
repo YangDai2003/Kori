@@ -20,7 +20,28 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep @kotlinx.serialization.Serializable class * {*;}
+-keepattributes Annotation, InnerClasses
+-dontnote kotlinx.serialization.AnnotationsKt
+-dontnote kotlinx.serialization.SerializationKt
+
+# Keep Serializers
+
+-keep,includedescriptorclasses class org.yangdai.kori.**$$serializer { *; }
+-keepclassmembers class org.yangdai.kori.** {
+    *** Companion;
+}
+-keepclasseswithmembers class org.yangdai.kori.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+
+# When kotlinx.serialization.json.JsonObjectSerializer occurs
+
+-keepclassmembers class kotlinx.serialization.json.** {
+    *** Companion;
+}
+-keepclasseswithmembers class kotlinx.serialization.json.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
 
 # Keep `Companion` object fields of serializable classes.
 # This avoids serializer lookup through `getDeclaredClasses` as done for named companion objects.
