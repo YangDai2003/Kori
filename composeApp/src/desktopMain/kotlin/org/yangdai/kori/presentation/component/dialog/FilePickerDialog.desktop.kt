@@ -21,10 +21,7 @@ actual fun FilePickerDialog(onFilePicked: (PickedFile?) -> Unit) {
         if (file.exists() && (file.extension == "txt" || file.extension == "md")) {
             val content = file.readText()
             onFilePicked(PickedFile(name = file.name, path = file.absolutePath, content = content))
-        } else {
-            onFilePicked(null)
         }
-    } else {
-        onFilePicked(null)
     }
+    onFilePicked(null)
 }
