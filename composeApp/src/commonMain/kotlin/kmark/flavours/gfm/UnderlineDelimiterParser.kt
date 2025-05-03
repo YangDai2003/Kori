@@ -11,13 +11,13 @@ class UnderlineDelimiterParser : DelimiterParser() {
         iterator: TokensCache.Iterator,
         delimiters: MutableList<Info>
     ): Int {
-        if (iterator.type != GFMTokenTypes.TILDE) {
+        if (iterator.type != GFMTokenTypes.PlUS) {
             return 0
         }
         var stepsToAdvance = 1
         var rightIterator = iterator
         for (index in 0 until maxAdvance) {
-            if (rightIterator.rawLookup(1) != GFMTokenTypes.TILDE) {
+            if (rightIterator.rawLookup(1) != GFMTokenTypes.PlUS) {
                 break
             }
             rightIterator = rightIterator.advance()
@@ -26,7 +26,7 @@ class UnderlineDelimiterParser : DelimiterParser() {
         val (canOpen, canClose) = canOpenClose(tokens, iterator, rightIterator, canSplitText = true)
         for (index in 0 until stepsToAdvance) {
             val info = Info(
-                tokenType = GFMTokenTypes.TILDE,
+                tokenType = GFMTokenTypes.PlUS,
                 position = iterator.index + index,
                 length = 0,
                 canOpen = canOpen,
@@ -89,4 +89,4 @@ class UnderlineDelimiterParser : DelimiterParser() {
 }
 
 private fun DelimiterParser.Info.isOpeningTilde(): Boolean =
-    tokenType == GFMTokenTypes.TILDE && closerIndex != -1
+    tokenType == GFMTokenTypes.PlUS && closerIndex != -1

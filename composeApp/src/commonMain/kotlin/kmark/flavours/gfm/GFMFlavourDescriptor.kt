@@ -63,8 +63,8 @@ open class GFMFlavourDescriptor(
                 EmphasisLikeParser(
                     EmphStrongDelimiterParser(),
                     StrikeThroughDelimiterParser(),
-//                    UnderlineDelimiterParser(),
-//                    HighlightDelimiterParser()
+                    UnderlineDelimiterParser(),
+                    HighlightDelimiterParser()
                 )
             )
         }

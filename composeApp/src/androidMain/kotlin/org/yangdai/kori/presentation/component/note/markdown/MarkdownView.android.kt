@@ -40,6 +40,23 @@ actual fun MarkdownView(
         )
     }
 
+    val webViewClient = remember {
+        object : WebViewClient() {
+            override fun shouldOverrideUrlLoading(
+                view: WebView?,
+                request: WebResourceRequest
+            ): Boolean {
+                val url = request.url.toString()
+                if (url.startsWith("http://") || url.startsWith("https://")) {
+                    view?.context?.let {
+                        customTabsIntent.launchUrl(it, url.toUri())
+                    }
+                }
+                return true
+            }
+        }
+    }
+
     LaunchedEffect(scrollState.value, scrollState.maxValue, webView) {
         val webViewInstance = webView ?: return@LaunchedEffect
         val totalHeight = scrollState.maxValue
@@ -77,18 +94,7 @@ actual fun MarkdownView(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
-                webViewClient = object : WebViewClient() {
-                    override fun shouldOverrideUrlLoading(
-                        view: WebView?,
-                        request: WebResourceRequest
-                    ): Boolean {
-                        val url = request.url.toString()
-                        if (url.startsWith("http://") || url.startsWith("https://")) {
-                            customTabsIntent.launchUrl(it, url.toUri())
-                        }
-                        return true
-                    }
-                }
+                this.webViewClient = webViewClient
                 settings.allowFileAccess = true
                 settings.allowContentAccess = true
                 settings.allowFileAccessFromFileURLs = true
