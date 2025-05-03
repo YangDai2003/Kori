@@ -59,7 +59,7 @@ fun processHtml(
 expect fun MarkdownView(
     modifier: Modifier = Modifier,
     html: String,
-    selection: TextRange,
+    selection: TextRange, // TODO 改进滚动同步，通过textlayoutresult和scrollstate获取当前第一个可见行和字符offset范围，滚动html至对应位置
     scrollState: ScrollState,
     isAppInDarkTheme: Boolean,
     styles: MarkdownStyles = MarkdownStyles.fromColorScheme(MaterialTheme.colorScheme)

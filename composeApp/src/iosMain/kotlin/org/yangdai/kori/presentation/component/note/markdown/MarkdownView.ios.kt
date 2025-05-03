@@ -44,44 +44,32 @@ actual fun MarkdownView(
         )
     }
 
-    // Effect to synchronize Editor Cursor -> WebView Scroll
-    LaunchedEffect(selection) { // Trigger when cursorPosition changes
-        val webViewInstance = webView ?: return@LaunchedEffect // Ensure webview is initialized
-        val start = selection.min // For IntRange, min is inclusive
-        val end = selection.max // For IntRange, last is inclusive
-        // Ignore default/initial cursor position if it's often 0 or -1
-        if (start < 0 || end < 0) {
-            // Log.d("MarkdownScrollSync", "Ignoring invalid cursor position: $cursorPosition")
-            return@LaunchedEffect
-        }
-        webViewInstance.evaluateJavaScript("scrollToRangePosition($start, $end);", null)
-    }
-
-    LaunchedEffect(scrollState.value) {
+    LaunchedEffect(scrollState.value, scrollState.maxValue, webView) {
+        val webViewInstance = webView ?: return@LaunchedEffect
         val totalHeight = scrollState.maxValue
-        val currentScrollPercent = when {
-            totalHeight <= 0 -> 0f
-            scrollState.value >= totalHeight -> 1f
-            else -> (scrollState.value.toFloat() / totalHeight).coerceIn(0f, 1f)
-        }
+        val currentScroll = scrollState.value
+        if (totalHeight <= 0) return@LaunchedEffect
 
-        webView?.evaluateJavaScript(
-            """
+        // Calculate scroll percentage (0.0 to 1.0)
+        val currentScrollPercent = (currentScroll.toFloat() / totalHeight).coerceIn(0f, 1f)
+        val script = """
         (function() {
-            const d = document.documentElement;
-            const b = document.body;
-            const maxHeight = Math.max(
-                d.scrollHeight, d.offsetHeight, d.clientHeight,
-                b.scrollHeight, b.offsetHeight
-            );
-            window.scrollTo({ 
-                top: maxHeight * $currentScrollPercent, 
-                behavior: 'auto' 
-            });
+            // Only scroll if not currently loading to avoid conflicts
+             if (document.readyState === 'complete' || document.readyState === 'interactive') { // Basic check
+                const d = document.documentElement;
+                const b = document.body;
+                const maxHeight = Math.max(
+                    d.scrollHeight, d.offsetHeight, d.clientHeight,
+                    b.scrollHeight, b.offsetHeight
+                );
+                window.scrollTo({
+                    top: maxHeight * $currentScrollPercent,
+                    behavior: 'auto' // Use 'auto' for immediate jump syncing with ScrollState
+                });
+             }
         })();
-        """.trimIndent(),
-            null
-        )
+        """.trimIndent()
+        webViewInstance.evaluateJavaScript(script, null)
     }
 
     UIKitView(
