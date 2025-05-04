@@ -102,4 +102,13 @@ class DataStoreRepositoryImpl(private val dataStore: DataStore<Preferences>) : D
             }.first()
         }
     }
+
+    override fun getInt(key: String, defaultValue: Int): Int {
+        val preferencesKey = intPreferencesKey(key)
+        return runBlocking {
+            dataStore.data.map { preferences ->
+                preferences[preferencesKey] ?: defaultValue
+            }.first()
+        }
+    }
 }

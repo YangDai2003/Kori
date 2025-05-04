@@ -58,7 +58,7 @@ import kotlin.uuid.Uuid
 class NoteViewModel(
     private val folderRepository: FolderRepository,
     private val noteRepository: NoteRepository,
-    dataStoreRepository: DataStoreRepository
+    private val dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
     // 笔记状态
     val titleState = TextFieldState()
@@ -231,6 +231,10 @@ class NoteViewModel(
                         folderId = folderId,
                         createdAt = currentTime,
                         updatedAt = currentTime,
+                        noteType = NoteType.entries[dataStoreRepository.getInt(
+                            Constants.Preferences.DEFAULT_NOTE_TYPE,
+                            0
+                        )]
                     )
                 }
                 oNote = NoteEntity()

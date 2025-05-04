@@ -139,7 +139,13 @@ fun CardPane(settingsViewModel: SettingsViewModel) {
                                 )
                             },
                             selected = if (cardPaneState.clipOverflow) 1 == index else 0 == index,
-                            label = { Text(label) }
+                            label = {
+                                Text(
+                                    label,
+                                    maxLines = 1,
+                                    modifier = Modifier.basicMarquee()
+                                )
+                            }
                         )
                     }
                 }
@@ -182,7 +188,13 @@ fun CardPane(settingsViewModel: SettingsViewModel) {
                                 )
                             },
                             selected = index == cardPaneState.cardSize.toInt(),
-                            label = { Text(label) }
+                            label = {
+                                Text(
+                                    label,
+                                    maxLines = 1,
+                                    modifier = Modifier.basicMarquee()
+                                )
+                            }
                         )
                     }
                 }

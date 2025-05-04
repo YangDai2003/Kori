@@ -12,7 +12,7 @@ import okio.Path.Companion.toPath
  */
 fun createDataStore(producePath: () -> String): DataStore<Preferences> =
     PreferenceDataStoreFactory.createWithPath(
-        corruptionHandler = ReplaceFileCorruptionHandler{ emptyPreferences() },
+        corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
         produceFile = { producePath().toPath() }
     )
 

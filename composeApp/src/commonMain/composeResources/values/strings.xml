@@ -88,6 +88,8 @@
     <string name="paragraph_count">Paragraphs</string>
 
     <string name="editor">Editor</string>
+    <string name="default_note_type">Default note type</string>
+    <string name="default_note_type_description">The default note type for new notes.</string>
     <string name="default_view_for_note">The default view that notes get opened in.</string>
     <string name="default_view">Default view</string>
     <string name="editing_view">Editing view</string>

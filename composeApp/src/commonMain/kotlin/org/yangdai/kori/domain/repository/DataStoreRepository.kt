@@ -17,4 +17,5 @@ interface DataStoreRepository {
 
     fun getString(key: String, defaultValue: String): String
     fun getBoolean(key: String, defaultValue: Boolean): Boolean
+    fun getInt(key: String, defaultValue: Int): Int
 }

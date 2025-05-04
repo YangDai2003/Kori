@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.presentation.util.Constants
 
@@ -44,12 +45,14 @@ class SettingsViewModel(
     val editorPaneState = combine(
         dataStoreRepository.booleanFlow(Constants.Preferences.SHOW_LINE_NUMBER),
         dataStoreRepository.booleanFlow(Constants.Preferences.IS_MARKDOWN_LINT_ENABLED),
-        dataStoreRepository.booleanFlow(Constants.Preferences.IS_DEFAULT_READING_VIEW)
-    ) { showLineNumber, isMarkdownLintEnabled, isDefaultReadingView ->
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_DEFAULT_READING_VIEW),
+        dataStoreRepository.intFlow(Constants.Preferences.DEFAULT_NOTE_TYPE)
+    ) { showLineNumber, isMarkdownLintEnabled, isDefaultReadingView, defaultNoteType ->
         EditorPaneState(
             showLineNumber = showLineNumber,
             isMarkdownLintEnabled = isMarkdownLintEnabled,
-            isDefaultReadingView = isDefaultReadingView
+            isDefaultReadingView = isDefaultReadingView,
+            defaultNoteType = NoteType.entries[defaultNoteType]
         )
     }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), EditorPaneState())
 

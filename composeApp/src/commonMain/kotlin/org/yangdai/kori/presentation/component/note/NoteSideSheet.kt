@@ -62,6 +62,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -224,7 +226,6 @@ fun NoteSideSheet(
                     modifier = Modifier
                         .fillMaxSize()
                         .systemBarsPadding()
-                        .padding(end = 8.dp)
                 ) {
                     // 顶部操作按钮
                     item {
@@ -370,22 +371,15 @@ private fun HeaderItem(
     }
     Row(
         modifier = Modifier
-            .padding(start = (depth * 8).dp)
             .fillMaxWidth()
-            .heightIn(min = 32.dp)
-            .clickable {
-                onHeaderClick(header.range)
-            },
+            .clickable { onHeaderClick(header.range) }
+            .heightIn(min = 32.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (header.children.isNotEmpty()) {
             IconButton(
-                modifier = Modifier.size(32.dp),
-                onClick = {
-                    if (header.children.isNotEmpty()) {
-                        expanded = !expanded
-                    }
-                }
+                modifier = Modifier.padding(start = (depth * 8).dp).size(32.dp),
+                onClick = { expanded = !expanded }
             ) {
                 Icon(
                     imageVector = if (expanded) Icons.Default.ArrowDropDown
@@ -395,13 +389,16 @@ private fun HeaderItem(
                 )
             }
         } else {
-            Spacer(modifier = Modifier.width(32.dp))
+            Spacer(modifier = Modifier.padding(start = (depth * 8).dp).width(32.dp))
         }
 
         Text(
+            modifier = Modifier.padding(vertical = 2.dp),
             text = header.title,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge.copy(lineBreak = LineBreak.Heading),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
         )
     }
 
@@ -416,4 +413,3 @@ private fun HeaderItem(
         }
     }
 }
-

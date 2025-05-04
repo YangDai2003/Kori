@@ -86,6 +86,8 @@
     <string name="paragraph_count">Absätze</string>
 
     <string name="editor">Editor</string>
+    <string name="default_note_type">Standard-Notiztyp</string>
+    <string name="default_note_type_description">Der Standard-Notiztyp für neue Notizen.</string>
     <string name="default_view_for_note">Die Standardansicht, in der Notizen geöffnet werden.</string>
     <string name="default_view">Standardansicht</string>
     <string name="editing_view">Bearbeitungs-Ansicht</string>

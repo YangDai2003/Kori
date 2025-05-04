@@ -1,62 +1,38 @@
 package org.yangdai.kori.data.repository
 
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.withContext
 import org.yangdai.kori.data.local.dao.NoteDao
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.domain.sort.NoteSortType
 
-class NoteRepositoryImpl(
-    private val dao: NoteDao,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : NoteRepository {
-    override suspend fun insertNote(note: NoteEntity): Long = withContext(ioDispatcher) {
-        dao.insertNote(note)
+class NoteRepositoryImpl(private val dao: NoteDao) : NoteRepository {
+    override suspend fun insertNote(note: NoteEntity): Long {
+        return dao.insertNote(note)
     }
 
-    override suspend fun insertNotes(notes: List<NoteEntity>) = withContext(ioDispatcher) {
-        dao.insertNotes(notes)
-    }
+    override suspend fun insertNotes(notes: List<NoteEntity>) = dao.insertNotes(notes)
 
-    override suspend fun updateNote(note: NoteEntity) = withContext(ioDispatcher) {
-        dao.updateNote(note)
-    }
+    override suspend fun updateNote(note: NoteEntity) = dao.updateNote(note)
 
-    override suspend fun deleteNote(note: NoteEntity) = withContext(ioDispatcher) {
-        dao.deleteNote(note)
-    }
+    override suspend fun deleteNote(note: NoteEntity) = dao.deleteNote(note)
 
-    override suspend fun deleteNoteById(id: String) = withContext(ioDispatcher) {
-        dao.deleteNoteById(id)
-    }
+    override suspend fun deleteNoteById(id: String) = dao.deleteNoteById(id)
 
-    override suspend fun deleteNoteByIds(ids: List<String>) = withContext(ioDispatcher) {
-        dao.deleteNotesByIds(ids)
-    }
+    override suspend fun deleteNoteByIds(ids: List<String>) = dao.deleteNotesByIds(ids)
 
-    override suspend fun emptyTrash() = withContext(ioDispatcher) {
-        dao.emptyTrash()
-    }
+    override suspend fun emptyTrash() = dao.emptyTrash()
 
-    override suspend fun restoreAllFromTrash() = withContext(ioDispatcher) {
-        dao.restoreAllFromTrash()
-    }
-
-    override fun getTrashNotesCount(): Flow<Int> = dao.getTrashNotesCount().flowOn(ioDispatcher)
+    override suspend fun restoreAllFromTrash() = dao.restoreAllFromTrash()
 
 
-    override fun getActiveNotesCount(): Flow<Int> = dao.getActiveNotesCount().flowOn(ioDispatcher)
+    override fun getTrashNotesCount(): Flow<Int> = dao.getTrashNotesCount()
+    override fun getActiveNotesCount(): Flow<Int> = dao.getActiveNotesCount()
+    override fun getTemplatesCount(): Flow<Int> = dao.getTemplatesCount()
 
 
-    override fun getTemplatesCount(): Flow<Int> = dao.getTemplatesCount().flowOn(ioDispatcher)
-
-    override suspend fun getNoteById(id: String): NoteEntity? = withContext(ioDispatcher) {
-        dao.getNoteById(id)
+    override suspend fun getNoteById(id: String): NoteEntity? {
+        return dao.getNoteById(id)
     }
 
     override fun getNotesInTrash(sortType: NoteSortType): Flow<List<NoteEntity>> = when (sortType) {
@@ -66,7 +42,7 @@ class NoteRepositoryImpl(
         NoteSortType.CREATE_TIME_DESC -> dao.getNotesInTrashOrderByCreatedDesc()
         NoteSortType.UPDATE_TIME_ASC -> dao.getNotesInTrashOrderByUpdatedAsc()
         NoteSortType.UPDATE_TIME_DESC -> dao.getNotesInTrashOrderByUpdatedDesc()
-    }.flowOn(ioDispatcher)
+    }
 
     override fun getAllNotes(sortType: NoteSortType): Flow<List<NoteEntity>> = when (sortType) {
         NoteSortType.NAME_ASC -> dao.getAllNotesOrderByNameAsc()
@@ -75,11 +51,10 @@ class NoteRepositoryImpl(
         NoteSortType.CREATE_TIME_DESC -> dao.getAllNotesOrderByCreatedDesc()
         NoteSortType.UPDATE_TIME_ASC -> dao.getAllNotesOrderByUpdatedAsc()
         NoteSortType.UPDATE_TIME_DESC -> dao.getAllNotesOrderByUpdatedDesc()
-    }.flowOn(ioDispatcher)
+    }
 
     override fun getNotesByFolderId(
-        folderId: String,
-        sortType: NoteSortType
+        folderId: String, sortType: NoteSortType
     ): Flow<List<NoteEntity>> = when (sortType) {
         NoteSortType.NAME_ASC -> dao.getNotesByFolderIdOrderByNameAsc(folderId)
         NoteSortType.NAME_DESC -> dao.getNotesByFolderIdOrderByNameDesc(folderId)
@@ -87,11 +62,10 @@ class NoteRepositoryImpl(
         NoteSortType.CREATE_TIME_DESC -> dao.getNotesByFolderIdOrderByCreatedDesc(folderId)
         NoteSortType.UPDATE_TIME_ASC -> dao.getNotesByFolderIdOrderByUpdatedAsc(folderId)
         NoteSortType.UPDATE_TIME_DESC -> dao.getNotesByFolderIdOrderByUpdatedDesc(folderId)
-    }.flowOn(ioDispatcher)
+    }
 
     override fun searchNotesByKeyword(
-        keyword: String,
-        sortType: NoteSortType
+        keyword: String, sortType: NoteSortType
     ): Flow<List<NoteEntity>> = when (sortType) {
         NoteSortType.NAME_ASC -> dao.searchNotesByKeywordOrderByNameAsc(keyword)
         NoteSortType.NAME_DESC -> dao.searchNotesByKeywordOrderByNameDesc(keyword)
@@ -99,7 +73,7 @@ class NoteRepositoryImpl(
         NoteSortType.CREATE_TIME_DESC -> dao.searchNotesByKeywordOrderByCreatedDesc(keyword)
         NoteSortType.UPDATE_TIME_ASC -> dao.searchNotesByKeywordOrderByUpdatedAsc(keyword)
         NoteSortType.UPDATE_TIME_DESC -> dao.searchNotesByKeywordOrderByUpdatedDesc(keyword)
-    }.flowOn(ioDispatcher)
+    }
 
     override fun getAllTemplates(sortType: NoteSortType): Flow<List<NoteEntity>> = when (sortType) {
         NoteSortType.NAME_ASC -> dao.getAllTemplatesOrderByNameAsc()
@@ -108,5 +82,5 @@ class NoteRepositoryImpl(
         NoteSortType.CREATE_TIME_DESC -> dao.getAllTemplatesOrderByCreatedDesc()
         NoteSortType.UPDATE_TIME_ASC -> dao.getAllTemplatesOrderByUpdatedAsc()
         NoteSortType.UPDATE_TIME_DESC -> dao.getAllTemplatesOrderByUpdatedDesc()
-    }.flowOn(ioDispatcher)
+    }
 }
