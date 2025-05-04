@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -35,7 +36,7 @@ actual fun MarkdownView(
     // Store the latest processed HTML data for link interception reload
     var latestData by remember { mutableStateOf("") }
     // Store the scroll position before loading new content
-    var scrollPositionBeforeLoad by remember { mutableStateOf(0.0) } // Use Double for JS number
+    var scrollPositionBeforeLoad by remember { mutableDoubleStateOf(0.0) } // Use Double for JS number
 
     val processedData by remember(html, styles, isAppInDarkTheme) {
         mutableStateOf(
