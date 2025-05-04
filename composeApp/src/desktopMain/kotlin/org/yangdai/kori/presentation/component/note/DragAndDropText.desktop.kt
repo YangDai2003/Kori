@@ -15,7 +15,7 @@ import java.awt.datatransfer.DataFlavor
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 actual fun Modifier.dragAndDropText(state: TextFieldState): Modifier {
-    val dragAndDropTarget = remember {
+    val target = remember {
         object : DragAndDropTarget {
             override fun onDrop(event: DragAndDropEvent): Boolean {
                 val receivedText = event.awtTransferable.let {
@@ -31,6 +31,6 @@ actual fun Modifier.dragAndDropText(state: TextFieldState): Modifier {
     }
     return dragAndDropTarget(
         shouldStartDragAndDrop = { true },
-        target = dragAndDropTarget
+        target = target
     )
 }

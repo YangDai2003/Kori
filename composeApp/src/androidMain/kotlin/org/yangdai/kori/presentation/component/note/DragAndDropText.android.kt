@@ -14,7 +14,7 @@ import org.yangdai.kori.presentation.component.note.markdown.addInNewLine
 
 @Composable
 actual fun Modifier.dragAndDropText(state: TextFieldState): Modifier {
-    val callback = remember {
+    val target = remember {
         object : DragAndDropTarget {
             override fun onDrop(event: DragAndDropEvent): Boolean {
                 state.edit { addInNewLine(event.toAndroidDragEvent().clipData.getItemAt(0).text.toString()) }
@@ -25,6 +25,6 @@ actual fun Modifier.dragAndDropText(state: TextFieldState): Modifier {
     return dragAndDropTarget(
         shouldStartDragAndDrop = { event ->
             event.mimeTypes().contains(ClipDescription.MIMETYPE_TEXT_PLAIN)
-        }, target = callback
+        }, target = target
     )
 }

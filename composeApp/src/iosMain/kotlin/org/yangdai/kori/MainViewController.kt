@@ -32,6 +32,7 @@ import org.yangdai.kori.presentation.util.Constants
 @OptIn(ExperimentalComposeApi::class, ExperimentalComposeUiApi::class)
 fun MainViewController() = ComposeUIViewController(
     configure = {
+        parallelRendering = true
         KoinInitializer.init()
     }
 ) {
