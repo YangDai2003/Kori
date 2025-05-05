@@ -77,7 +77,7 @@ fun MarkdownEditor(
         ),
         label = "wave-phase"
     )
-    var lintErrors by remember { mutableStateOf(emptyList<Pair<Int, Int>>()) }
+    var lintErrors by remember { mutableStateOf(emptyList<MarkdownLint.Issue>()) }
 
     LaunchedEffect(state.text, isLintActive) {
         withContext(Dispatchers.Default) {
@@ -173,7 +173,9 @@ fun MarkdownEditor(
                                                 scrollOffset.y
                                             )
                                         }) {
-                                            lintErrors.forEach { (start, end) ->
+                                            lintErrors.forEach { issue ->
+                                                val start = issue.startIndex
+                                                val end = issue.endIndex
                                                 if (start < end && end <= text.length) {
                                                     val path =
                                                         layoutResult.getPathForRange(start, end)

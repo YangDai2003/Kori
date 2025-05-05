@@ -63,7 +63,7 @@ class NoteViewModel(
     // 笔记状态
     val titleState = TextFieldState()
     val contentState = TextFieldState()
-    val contentSnapshotFlow = snapshotFlow { contentState.text }
+    private val contentSnapshotFlow = snapshotFlow { contentState.text }
 
     val appTheme = dataStoreRepository.intFlow(Constants.Preferences.APP_THEME)
         .map { AppTheme.fromInt(it) }
@@ -130,12 +130,20 @@ class NoteViewModel(
     val parser = MarkdownParser(flavor)
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    val html = contentSnapshotFlow.debounce(100)
-        .mapLatest {
-            var content = it.toString()
-            val parsedTree = parser.buildMarkdownTreeFromString(content)
-            content = HtmlGenerator(content, parsedTree, flavor, true).generateHtml()
-            baseHtml?.replace("{{CONTENT}}", content) ?: ""
+    private val contentAndTreeFlow = contentSnapshotFlow.debounce(100).distinctUntilChanged()
+        .mapLatest { content ->
+            val text = content.toString()
+            val tree = parser.buildMarkdownTreeFromString(text)
+            text to tree
+        }
+        .flowOn(Dispatchers.Default)
+
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val html = contentAndTreeFlow
+        .mapLatest { (content, tree) ->
+            val main = HtmlGenerator(content, tree, flavor, true).generateHtml()
+            baseHtml?.replace("{{CONTENT}}", main) ?: ""
         }
         .flowOn(Dispatchers.Default)
         .stateIn(
@@ -144,17 +152,16 @@ class NoteViewModel(
             initialValue = ""
         )
 
-    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    val outline = contentSnapshotFlow.debounce(1000)
-        .mapLatest {
-            val text = it.toString()
+
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+    val outline = contentAndTreeFlow.debounce(1000)
+        .mapLatest { (content, tree) ->
             val root = HeaderNode("", 0, IntRange.EMPTY)
-            if (text.isBlank()) return@mapLatest root
-            val propertiesLineRange = text.getPropertiesLineRange()
+            if (content.isBlank()) return@mapLatest root
+            val propertiesLineRange = content.getPropertiesLineRange()
             try {
                 val headerStack = mutableListOf(root)
-                val document = parser.buildMarkdownTreeFromString(text)
-                findHeadersRecursive(document, text, headerStack, propertiesLineRange)
+                findHeadersRecursive(tree, content, headerStack, propertiesLineRange)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

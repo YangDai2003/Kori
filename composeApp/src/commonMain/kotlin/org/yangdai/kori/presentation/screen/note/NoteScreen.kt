@@ -133,7 +133,7 @@ import org.yangdai.kori.presentation.component.note.markdown.moveCursorRightStat
 import org.yangdai.kori.presentation.event.UiEvent
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.screen.settings.AppTheme
-import org.yangdai.kori.presentation.util.TemplateProcessor
+import org.yangdai.kori.presentation.component.note.template.TemplateProcessor
 import org.yangdai.kori.presentation.util.clickToShareText
 import org.yangdai.kori.presentation.util.formatInstant
 import org.yangdai.kori.presentation.util.formatNumber
