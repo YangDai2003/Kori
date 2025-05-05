@@ -35,14 +35,11 @@ import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.plain_text
 import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.screen.settings.CardSize
-import org.yangdai.kori.presentation.util.rememberDefaultDateTimeFormatter
+import org.yangdai.kori.presentation.util.formatInstant
 
 data class NoteItemProperties(
     val showCreatedTime: Boolean = false,
@@ -129,19 +126,11 @@ fun LazyGridItemScope.NoteItem(
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    val dateTimeFormatter = rememberDefaultDateTimeFormatter()
-                    val formattedDateTime = try {
-                        val instant =
-                            if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
-                            else Instant.parse(note.updatedAt)
-                        val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-                        localDateTime.format(dateTimeFormatter)
-                    } catch (_: Exception) {
-                        if (noteItemProperties.showCreatedTime) note.createdAt else note.updatedAt
-                    }
-
+                    val instant =
+                        if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
+                        else Instant.parse(note.updatedAt)
                     Text(
-                        text = formattedDateTime,
+                        text = formatInstant(instant),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -233,19 +222,11 @@ fun LazyStaggeredGridItemScope.NoteItem(
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    val dateTimeFormatter = rememberDefaultDateTimeFormatter()
-                    val formattedDateTime = try {
-                        val instant =
-                            if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
-                            else Instant.parse(note.updatedAt)
-                        val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-                        localDateTime.format(dateTimeFormatter)
-                    } catch (_: Exception) {
-                        if (noteItemProperties.showCreatedTime) note.createdAt else note.updatedAt
-                    }
-
+                    val instant =
+                        if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
+                        else Instant.parse(note.updatedAt)
                     Text(
-                        text = formattedDateTime,
+                        text = formatInstant(instant),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                     )
@@ -357,19 +338,11 @@ fun LazyStaggeredGridItemScope.SearchResultNoteItem(
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    val dateTimeFormatter = rememberDefaultDateTimeFormatter()
-                    val formattedDateTime = try {
-                        val instant =
-                            if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
-                            else Instant.parse(note.updatedAt)
-                        val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-                        localDateTime.format(dateTimeFormatter)
-                    } catch (_: Exception) {
-                        if (noteItemProperties.showCreatedTime) note.createdAt else note.updatedAt
-                    }
-
+                    val instant =
+                        if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
+                        else Instant.parse(note.updatedAt)
                     Text(
-                        text = formattedDateTime,
+                        text = formatInstant(instant),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                     )

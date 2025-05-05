@@ -108,9 +108,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -138,7 +135,8 @@ import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.screen.settings.AppTheme
 import org.yangdai.kori.presentation.util.TemplateProcessor
 import org.yangdai.kori.presentation.util.clickToShareText
-import org.yangdai.kori.presentation.util.rememberDefaultDateTimeFormatter
+import org.yangdai.kori.presentation.util.formatInstant
+import org.yangdai.kori.presentation.util.formatNumber
 import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
 import kotlin.math.abs
 
@@ -632,58 +630,42 @@ fun NoteScreen(
                 }
             )
 
-            val dateTimeFormatter = rememberDefaultDateTimeFormatter()
-            var createdTime by remember { mutableStateOf("") }
-            LaunchedEffect(noteEditingState.createdAt) {
-                if (noteEditingState.createdAt.isNotBlank())
-                    withContext(Dispatchers.Default) {
-                        val createdInstant = Instant.parse(noteEditingState.createdAt)
-                        val createdLocalDateTime =
-                            createdInstant.toLocalDateTime(TimeZone.currentSystemDefault())
-                        createdTime = createdLocalDateTime.format(dateTimeFormatter)
-                    }
+            val formattedCreated = remember(noteEditingState.createdAt) {
+                if (noteEditingState.createdAt.isBlank()) ""
+                else formatInstant(Instant.parse(noteEditingState.createdAt))
             }
-
-            var updatedTime by remember { mutableStateOf("") }
-            LaunchedEffect(noteEditingState.updatedAt) {
-                if (noteEditingState.updatedAt.isNotBlank())
-                    withContext(Dispatchers.Default) {
-                        val updatedInstant = Instant.parse(noteEditingState.updatedAt)
-                        val updatedLocalDateTime =
-                            updatedInstant.toLocalDateTime(TimeZone.currentSystemDefault())
-                        updatedTime = updatedLocalDateTime.format(dateTimeFormatter)
-                    }
-            }
-
             NoteSideSheetItem(
                 key = stringResource(Res.string.created),
-                value = createdTime
+                value = formattedCreated
             )
-
+            val formattedUpdated = remember(noteEditingState.updatedAt) {
+                if (noteEditingState.updatedAt.isBlank()) ""
+                else formatInstant(Instant.parse(noteEditingState.updatedAt))
+            }
             NoteSideSheetItem(
                 key = stringResource(Res.string.updated),
-                value = updatedTime
+                value = formattedUpdated
             )
 
             NoteSideSheetItem(
                 key = stringResource(Res.string.char_count),
-                value = textState.charCount.toString()
+                value = formatNumber(textState.charCount)
             )
             NoteSideSheetItem(
                 key = stringResource(Res.string.word_count),
-                value = textState.wordCountWithPunctuation.toString()
+                value = formatNumber(textState.wordCountWithPunctuation)
             )
             NoteSideSheetItem(
                 key = stringResource(Res.string.word_count_without_punctuation),
-                value = textState.wordCountWithoutPunctuation.toString()
+                value = formatNumber(textState.wordCountWithoutPunctuation)
             )
             NoteSideSheetItem(
                 key = stringResource(Res.string.line_count),
-                value = textState.lineCount.toString()
+                value = formatNumber(textState.lineCount)
             )
             NoteSideSheetItem(
                 key = stringResource(Res.string.paragraph_count),
-                value = textState.paragraphCount.toString()
+                value = formatNumber(textState.paragraphCount)
             )
         }
     )

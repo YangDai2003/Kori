@@ -292,9 +292,6 @@ fun MainScreenContent(
                             },
                             onLongClick = {
                                 showFilePickerDialog = true
-                            },
-                            onDoubleClick = {
-                                showFilePickerDialog = true
                             }
                         ),
                     shape = FloatingActionButtonDefaults.shape,

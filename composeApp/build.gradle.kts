@@ -1,7 +1,8 @@
+
+import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.gradle.internal.os.OperatingSystem
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -113,7 +114,7 @@ android {
         applicationId = "org.yangdai.kori"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 101
+        versionCode = 1
         versionName = "1.0.1"
     }
     splits {
