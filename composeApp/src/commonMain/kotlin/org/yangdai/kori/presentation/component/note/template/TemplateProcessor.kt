@@ -27,7 +27,8 @@ class TemplateProcessor(
     fun process(content: String): String {
         if (content.isBlank()) return content
 
-        val localeDateTime = Clock.System.now().toLocalDateTime(TimeZone.Companion.currentSystemDefault())
+        val localeDateTime =
+            Clock.System.now().toLocalDateTime(TimeZone.Companion.currentSystemDefault())
         val localDate = localeDateTime.date
         val localTime = localeDateTime.time
 

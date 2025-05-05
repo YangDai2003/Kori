@@ -225,8 +225,8 @@ class LinkReferenceDefinitionProvider : MarkerBlockProvider<MarkerProcessor.Stat
             return offset
         }
 
-        private inline fun isSpace(c: Char) = c == ' ' || c == '\t'
+        private fun isSpace(c: Char) = c == ' ' || c == '\t'
 
-        private inline fun isSpaceOrNewline(c: Char) = isSpace(c) || c == '\n'
+        private fun isSpaceOrNewline(c: Char) = isSpace(c) || c == '\n'
     }
 }

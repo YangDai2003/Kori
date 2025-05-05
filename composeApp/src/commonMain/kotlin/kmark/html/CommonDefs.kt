@@ -18,8 +18,7 @@ expect class BitSet(size: Int) {
     fun set(index: Int, value: Boolean)
 }
 
-inline fun BitSet.clear(index: Int) =
-    set(index, false)
+fun BitSet.clear(index: Int) = set(index, false)
 
 expect fun isWhitespace(char: Char): Boolean
 
