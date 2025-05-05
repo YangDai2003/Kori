@@ -10,6 +10,7 @@ import android.webkit.WebViewClient
 import androidx.compose.foundation.ScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,9 +36,9 @@ actual fun MarkdownView(
     var webView by remember { mutableStateOf<WebView?>(null) }
 
     val data by remember(html, styles, isAppInDarkTheme) {
-        mutableStateOf(
+        derivedStateOf {
             processHtml(html, styles, isAppInDarkTheme)
-        )
+        }
     }
 
     val webViewClient = remember {

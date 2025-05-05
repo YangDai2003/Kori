@@ -4,6 +4,7 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -38,10 +39,10 @@ actual fun MarkdownView(
     // Store the scroll position before loading new content
     var scrollPositionBeforeLoad by remember { mutableDoubleStateOf(0.0) } // Use Double for JS number
 
-    val processedData by remember(html, styles, isAppInDarkTheme) {
-        mutableStateOf(
+    val data by remember(html, styles, isAppInDarkTheme) {
+        derivedStateOf {
             processHtml(html, styles, isAppInDarkTheme)
-        )
+        }
     }
 
     // Effect to initialize JavaFX environment and WebView
@@ -164,7 +165,7 @@ actual fun MarkdownView(
                 scrollPositionBeforeLoad = (scrollYObject as? Number)?.toDouble() ?: 0.0
 
                 // Now trigger the load. The loadWorker listener will handle restoring scroll.
-                latestData = processedData // Update data used for link interception too
+                latestData = data // Update data used for link interception too
                 webView!!.engine.loadContent(latestData, "text/html")
             }
         }

@@ -3,6 +3,7 @@ package org.yangdai.kori.presentation.component.note.markdown
 import androidx.compose.foundation.ScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,9 +40,9 @@ actual fun MarkdownView(
     val navigationDelegate = remember { NavigationDelegate() }
 
     val data by remember(html, styles, isAppInDarkTheme) {
-        mutableStateOf(
+        derivedStateOf {
             processHtml(html, styles, isAppInDarkTheme)
-        )
+        }
     }
 
     LaunchedEffect(scrollState.value, scrollState.maxValue, webView) {
