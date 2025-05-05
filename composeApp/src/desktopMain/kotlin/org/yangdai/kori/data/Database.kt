@@ -7,8 +7,9 @@ import org.yangdai.kori.data.local.dbFileName
 import java.io.File
 
 fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase> {
-    val dbFile = File(System.getProperty("java.io.tmpdir"), dbFileName)
-    return Room.databaseBuilder<AppDatabase>(
-        name = dbFile.absolutePath,
-    )
+    val userHome: String = System.getProperty("user.home") ?: System.getProperty("java.io.tmpdir")
+    val koriDir = File(userHome, ".kori")
+    if (!koriDir.exists()) koriDir.mkdirs()
+    val dbFile = File(koriDir, dbFileName)
+    return Room.databaseBuilder<AppDatabase>(dbFile.absolutePath)
 }

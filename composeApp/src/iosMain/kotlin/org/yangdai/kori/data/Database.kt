@@ -6,13 +6,13 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import org.yangdai.kori.data.local.AppDatabase
 import org.yangdai.kori.data.local.dbFileName
 import platform.Foundation.NSDocumentDirectory
-import platform.Foundation.NSUserDomainMask
 import platform.Foundation.NSFileManager
+import platform.Foundation.NSUserDomainMask
 
 fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase> {
     val dbFilePath = documentDirectory() + "/$dbFileName"
     return Room.databaseBuilder<AppDatabase>(
-        name = dbFilePath,
+        name = dbFilePath
     )
 }
 

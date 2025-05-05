@@ -53,6 +53,9 @@ fun processHtml(
         .replace("{{KATEX}}", Res.getUri("files/katex/katex.min.js"))
         .replace("{{KATEX-CSS}}", Res.getUri("files/katex/katex.min.css"))
         .replace("{{KATEX-RENDER}}", Res.getUri("files/katex/auto-render.min.js"))
+        .replace("{{PRISM}}", Res.getUri("files/prism/prism-core.min.js"))
+        .replace("{{PRISM-LIGHT-CSS}}", Res.getUri("files/prism/prism-theme-light.css"))
+        .replace("{{PRISM-DARK-CSS}}", Res.getUri("files/prism/prism-theme-dark.css"))
 }
 
 @Composable

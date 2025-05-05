@@ -152,6 +152,10 @@
     </style>
 
     <link rel="stylesheet" href="{{KATEX-CSS}}">
+    <link rel="stylesheet" href="{{PRISM-LIGHT-CSS}}"
+          id="prism-light-theme">
+    <link rel="stylesheet" href="{{PRISM-DARK-CSS}}"
+          id="prism-dark-theme">
 
     <script type="text/javascript">
         function scrollToRangePosition(rangeStart, rangeEnd) {
@@ -349,6 +353,14 @@
     document.addEventListener('DOMContentLoaded', () => {
         handlers.processMediaItems();
 
+        const lightTheme = document.getElementById('prism-light-theme');
+        const darkTheme = document.getElementById('prism-dark-theme');
+
+        // Set initial state based on COLOR_SCHEME
+        const isDarkMode = '{{COLOR_SCHEME}}' === 'dark';
+        lightTheme.disabled = isDarkMode;
+        darkTheme.disabled = !isDarkMode;
+
         // 初始化 Mermaid（如果可用）
         if (typeof mermaid !== 'undefined') {
             mermaid.initialize({
@@ -373,6 +385,9 @@
 <script src="{{MERMAID}}"></script>
 <script src="{{KATEX}}"></script>
 <script src="{{KATEX-RENDER}}"></script>
+<script src="{{PRISM}}"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"
+        async></script>
 
 </body>
 </html>
