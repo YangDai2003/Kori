@@ -151,6 +151,7 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+    add("kspCommonMainMetadata", libs.androidx.room.compiler)
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspDesktop", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
@@ -165,7 +166,8 @@ compose.desktop {
     application {
         mainClass = "org.yangdai.kori.MainKt"
         buildTypes.release.proguard {
-            configurationFiles.from(rootProject.file("proguard-rules.pro"))
+//            configurationFiles.from(rootProject.file("proguard-rules.pro"))
+            isEnabled = false
         }
         nativeDistributions {
             macOS {
@@ -175,6 +177,7 @@ compose.desktop {
                 )
             }
             windows {
+                shortcut = true
                 dirChooser = true
             }
             linux {
