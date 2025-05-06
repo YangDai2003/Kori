@@ -39,7 +39,6 @@ import kori.composeapp.generated.resources.style
 import kori.composeapp.generated.resources.templates
 import kori.composeapp.generated.resources.text_overflow
 import kori.composeapp.generated.resources.time_format
-import kori.composeapp.generated.resources.version
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.Platform
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBar
@@ -140,8 +139,7 @@ fun SettingsListPane(
                 {
                     ListPaneItem(
                         title = stringResource(Res.string.app_info),
-                        description = stringResource(Res.string.version)
-                                + " • " + stringResource(Res.string.guide)
+                        description = stringResource(Res.string.guide)
                                 + " • " + stringResource(Res.string.privacy_policy),
                         icon = Icons.Outlined.PermDeviceInformation,
                         isSelected = selectedItem == 5,

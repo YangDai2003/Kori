@@ -20,7 +20,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.IosShare
+import androidx.compose.material.icons.outlined.PrivacyTip
 import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.icons.outlined.TipsAndUpdates
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -50,6 +52,8 @@ import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_name
 import kori.composeapp.generated.resources.compose_multiplatform
+import kori.composeapp.generated.resources.guide
+import kori.composeapp.generated.resources.privacy_policy
 import kori.composeapp.generated.resources.report_a_bug_or_request_a_feature
 import kori.composeapp.generated.resources.shareContent
 import kori.composeapp.generated.resources.share_this_app
@@ -148,7 +152,7 @@ fun AboutPane() {
                 .padding(bottom = 8.dp)
                 .clip(CircleShape)
                 .clickable {
-                    uriHandler.openUri("https://github.com/YangDai2003/Kori")
+                    uriHandler.openUri("https://github.com/YangDai2003/Kori/issues")
                 },
             colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             leadingContent = {
@@ -156,6 +160,36 @@ fun AboutPane() {
             },
             headlineContent = {
                 Text(text = stringResource(Res.string.report_a_bug_or_request_a_feature))
+            })
+
+        ListItem(
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .clip(CircleShape)
+                .clickable {
+                    uriHandler.openUri("https://github.com/YangDai2003/Kori/blob/master/Guide.md")
+                },
+            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+            leadingContent = {
+                Icon(imageVector = Icons.Outlined.TipsAndUpdates, contentDescription = null)
+            },
+            headlineContent = {
+                Text(text = stringResource(Res.string.guide))
+            })
+
+        ListItem(
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .clip(CircleShape)
+                .clickable {
+                    uriHandler.openUri("https://github.com/YangDai2003/Kori/blob/master/PRIVACY_POLICY.md")
+                },
+            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+            leadingContent = {
+                Icon(imageVector = Icons.Outlined.PrivacyTip, contentDescription = null)
+            },
+            headlineContent = {
+                Text(text = stringResource(Res.string.privacy_policy))
             })
 
         ListItem(
