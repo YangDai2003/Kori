@@ -192,7 +192,7 @@ compose.desktop {
                 TargetFormat.Deb,
                 TargetFormat.Rpm
             )
-            packageName = "org.yangdai.kori"
+            packageName = "Kori"
             packageVersion = "1.0.1"
             description = "Compose Multiplatform App"
             licenseFile.set(rootProject.file("LICENSE.txt"))
