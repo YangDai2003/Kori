@@ -2,6 +2,8 @@ package kmark.html
 
 import kmark.MarkdownElementTypes
 import kmark.MarkdownTokenTypes
+import kmark.MarkdownTokenTypes.Companion.ATX_CONTENT
+import kmark.MarkdownTokenTypes.Companion.SETEXT_CONTENT
 import kmark.ast.ASTNode
 import kmark.ast.LeafASTNode
 import kmark.ast.accept
@@ -69,7 +71,69 @@ open class SimpleTagProvider(val tagName: String) : OpenCloseGeneratingProvider(
     ) {
         visitor.consumeTagClose(tagName)
     }
+}
 
+open class SimpleTagWithLinkProvider(val tagName: String) : OpenCloseGeneratingProvider() {
+
+    override fun openTag(
+        visitor: HtmlGenerator.HtmlGeneratingVisitor,
+        text: String,
+        node: ASTNode
+    ) {
+        visitor.consumeTagOpen(
+            node,
+            tagName,
+            getPureIdString(node, text)
+        )
+    }
+
+    override fun closeTag(
+        visitor: HtmlGenerator.HtmlGeneratingVisitor,
+        text: String,
+        node: ASTNode
+    ) {
+        visitor.consumeTagClose(tagName)
+    }
+
+    private fun getPureIdString(
+        node: ASTNode,
+        text: String
+    ): String {
+        val stringBuilder = StringBuilder()
+        getPureIdStringDfs(
+            node,
+            text,
+            stringBuilder
+        )
+        val idValue = normalizeText(stringBuilder.toString())
+        return "id = \"$idValue\""
+    }
+
+    private val allowedCharacters: Regex = Regex("[\\w\\-_]+")
+
+    private fun normalizeText(text: String): String {
+        val firstPassNormalising = text.trim().lowercase().replace(" ", "-")
+        return allowedCharacters.findAll(firstPassNormalising)
+            .joinToString("") { it.value }
+    }
+
+    private fun getPureIdStringDfs(
+        node: ASTNode,
+        text: String,
+        stringBuilder: StringBuilder
+    ) {
+        if (node.type in listOf(SETEXT_CONTENT, ATX_CONTENT)) {
+            stringBuilder.append(text.substring(node.startOffset, node.endOffset))
+        } else {
+            for (children in node.children) {
+                getPureIdStringDfs(
+                    children,
+                    text,
+                    stringBuilder
+                )
+            }
+        }
+    }
 }
 
 open class SimpleInlineTagProvider(

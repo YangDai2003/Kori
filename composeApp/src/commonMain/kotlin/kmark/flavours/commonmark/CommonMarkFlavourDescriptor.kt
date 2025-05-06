@@ -19,6 +19,7 @@ import kmark.html.ListItemGeneratingProvider
 import kmark.html.ReferenceLinksGeneratingProvider
 import kmark.html.SimpleInlineTagProvider
 import kmark.html.SimpleTagProvider
+import kmark.html.SimpleTagWithLinkProvider
 import kmark.html.TransparentInlineHolderProvider
 import kmark.html.TrimmingInlineHolderProvider
 import kmark.html.entities.EntityConverter
@@ -111,16 +112,16 @@ open class CommonMarkFlavourDescriptor(
         MarkdownElementTypes.LIST_ITEM to ListItemGeneratingProvider(),
 
         MarkdownTokenTypes.SETEXT_CONTENT to TrimmingInlineHolderProvider(),
-        MarkdownElementTypes.SETEXT_1 to SimpleTagProvider("h1"),
-        MarkdownElementTypes.SETEXT_2 to SimpleTagProvider("h2"),
+        MarkdownElementTypes.SETEXT_1 to SimpleTagWithLinkProvider("h1"),
+        MarkdownElementTypes.SETEXT_2 to SimpleTagWithLinkProvider("h2"),
 
         MarkdownTokenTypes.ATX_CONTENT to TrimmingInlineHolderProvider(),
-        MarkdownElementTypes.ATX_1 to SimpleTagProvider("h1"),
-        MarkdownElementTypes.ATX_2 to SimpleTagProvider("h2"),
-        MarkdownElementTypes.ATX_3 to SimpleTagProvider("h3"),
-        MarkdownElementTypes.ATX_4 to SimpleTagProvider("h4"),
-        MarkdownElementTypes.ATX_5 to SimpleTagProvider("h5"),
-        MarkdownElementTypes.ATX_6 to SimpleTagProvider("h6"),
+        MarkdownElementTypes.ATX_1 to SimpleTagWithLinkProvider("h1"),
+        MarkdownElementTypes.ATX_2 to SimpleTagWithLinkProvider("h2"),
+        MarkdownElementTypes.ATX_3 to SimpleTagWithLinkProvider("h3"),
+        MarkdownElementTypes.ATX_4 to SimpleTagWithLinkProvider("h4"),
+        MarkdownElementTypes.ATX_5 to SimpleTagWithLinkProvider("h5"),
+        MarkdownElementTypes.ATX_6 to SimpleTagWithLinkProvider("h6"),
 
         MarkdownElementTypes.AUTOLINK to object : GeneratingProvider {
             override fun processNode(
