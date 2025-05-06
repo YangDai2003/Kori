@@ -81,7 +81,8 @@ actual fun MarkdownView(
 
                         // --- Capture scroll position BEFORE reloading for link interception ---
                         Platform.runLater { // Get scroll on FX thread
-                            val scrollYObject = engine.executeScript("window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;")
+                            val scrollYObject =
+                                engine.executeScript("window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;")
                             // Convert the result carefully (it might be Int, Double, etc.)
                             scrollPositionBeforeLoad = (scrollYObject as? Number)?.toDouble() ?: 0.0
 
@@ -156,11 +157,12 @@ actual fun MarkdownView(
     SwingPanel(
         factory = { jfxPanel },
         modifier = modifier,
-        background = Color.Transparent, // Use transparent background
+        background = Color(styles.backgroundColor),
         update = {
             Platform.runLater { // Get scroll on FX thread
                 if (webView == null) return@runLater
-                val scrollYObject = webView!!.engine.executeScript("window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;")
+                val scrollYObject =
+                    webView!!.engine.executeScript("window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;")
                 // Convert the result carefully (it might be Int, Double, etc.)
                 scrollPositionBeforeLoad = (scrollYObject as? Number)?.toDouble() ?: 0.0
 

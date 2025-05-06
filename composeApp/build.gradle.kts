@@ -107,12 +107,12 @@ kotlin {
 
 android {
     namespace = "org.yangdai.kori"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "org.yangdai.kori"
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
+        minSdk = 29
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0.1"
     }
