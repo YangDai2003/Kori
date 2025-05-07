@@ -32,8 +32,7 @@ fun SelectableColorPlatte(
     onClick: () -> Unit
 ) = Surface(
     modifier = modifier,
-    shape = MaterialTheme.shapes.large,
-    color = MaterialTheme.colorScheme.surfaceContainerHigh
+    shape = MaterialTheme.shapes.large
 ) {
     Surface(
         modifier = Modifier
@@ -67,7 +66,7 @@ fun SelectableColorPlatte(
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Check,
-                    contentDescription = "Checked",
+                    contentDescription = null,
                     modifier = Modifier
                         .padding(8.dp)
                         .size(16.dp),

@@ -22,7 +22,6 @@ import androidx.compose.material.icons.outlined.FormatSize
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
@@ -31,7 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
@@ -122,11 +120,8 @@ fun FontSizeSlider(
     Column(
         modifier = Modifier
             .padding(horizontal = 16.dp)
-            .background(
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                shape = MaterialTheme.shapes.large
-            )
             .clip(MaterialTheme.shapes.large)
+            .background(MaterialTheme.colorScheme.surface)
     ) {
         ListItem(
             headlineContent = { Text(stringResource(Res.string.font_size)) },
@@ -136,8 +131,7 @@ fun FontSizeSlider(
                     contentDescription = null
                 )
             },
-            supportingContent = { Text(stringResource(Res.string.font_size_description)) },
-            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+            supportingContent = { Text(stringResource(Res.string.font_size_description)) }
         )
 
         val hapticFeedback = LocalHapticFeedback.current
@@ -173,11 +167,8 @@ fun AppThemeColumn(
     Column(
         Modifier
             .padding(horizontal = 16.dp)
-            .background(
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                shape = MaterialTheme.shapes.large
-            )
             .clip(MaterialTheme.shapes.large)
+            .background(MaterialTheme.colorScheme.surface)
             .selectableGroup()
     ) {
         modeOptions.forEachIndexed { index, text ->
@@ -229,13 +220,12 @@ fun AppThemeColumn(
                         selected = (index == stylePaneState.theme.toInt()),
                         onClick = null
                     )
-                },
-                colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
+                }
             )
 
             if (index < modeOptions.size - 1) {
                 HorizontalDivider(
-                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
                     thickness = 4.dp
                 )
             }

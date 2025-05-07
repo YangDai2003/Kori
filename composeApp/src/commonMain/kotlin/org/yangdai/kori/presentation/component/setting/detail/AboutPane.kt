@@ -26,7 +26,6 @@ import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.TipsAndUpdates
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -155,7 +154,6 @@ fun AboutPane() {
                 .clickable {
                     uriHandler.openUri("https://github.com/YangDai2003/Kori/issues")
                 },
-            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             leadingContent = {
                 Icon(imageVector = Icons.Outlined.BugReport, contentDescription = null)
             },
@@ -170,7 +168,6 @@ fun AboutPane() {
                 .clickable {
                     uriHandler.openUri("https://github.com/YangDai2003/Kori/blob/master/Guide.md")
                 },
-            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             leadingContent = {
                 Icon(imageVector = Icons.Outlined.TipsAndUpdates, contentDescription = null)
             },
@@ -185,7 +182,6 @@ fun AboutPane() {
                 .clickable {
                     uriHandler.openUri("https://github.com/YangDai2003/Kori/blob/master/PRIVACY_POLICY.md")
                 },
-            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             leadingContent = {
                 Icon(imageVector = Icons.Outlined.PrivacyTip, contentDescription = null)
             },
@@ -198,7 +194,6 @@ fun AboutPane() {
                 .padding(bottom = 8.dp)
                 .clip(CircleShape)
                 .clickToShareText(stringResource(Res.string.shareContent)),
-            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             leadingContent = {
                 Icon(
                     imageVector = if (currentPlatform() == Platform.Android) Icons.Outlined.Share

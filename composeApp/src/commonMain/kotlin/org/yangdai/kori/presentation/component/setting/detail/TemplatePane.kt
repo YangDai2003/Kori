@@ -129,11 +129,8 @@ fun TemplatePane(viewModel: SettingsViewModel) {
 
         Column(
             modifier = Modifier
-                .background(
-                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    shape = MaterialTheme.shapes.large
-                )
                 .clip(MaterialTheme.shapes.large)
+                .background(MaterialTheme.colorScheme.surface)
         ) {
             ListItem(
                 headlineContent = { Text(text = stringResource(Res.string.date_format)) },
@@ -187,11 +184,8 @@ fun TemplatePane(viewModel: SettingsViewModel) {
 
         Column(
             modifier = Modifier
-                .background(
-                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    shape = MaterialTheme.shapes.large
-                )
                 .clip(MaterialTheme.shapes.large)
+                .background(MaterialTheme.colorScheme.surface)
         ) {
             ListItem(
                 headlineContent = { Text(text = stringResource(Res.string.time_format)) },
@@ -258,8 +252,7 @@ fun TemplatePane(viewModel: SettingsViewModel) {
                     Icons.AutoMirrored.Outlined.OpenInNew,
                     contentDescription = null
                 )
-            },
-            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
+            }
         )
 
         Spacer(Modifier.navigationBarsPadding())

@@ -77,7 +77,7 @@ fun DetailPaneItem(
     title: String,
     description: String? = null,
     icon: ImageVector? = null,
-    colors: ListItemColors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+    colors: ListItemColors = ListItemDefaults.colors(),
     trailingContent: @Composable () -> Unit = {},
 ) = ListItem(
     modifier = modifier.clip(MaterialTheme.shapes.large),

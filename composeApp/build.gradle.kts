@@ -180,6 +180,9 @@ compose.desktop {
         nativeDistributions {
             macOS {
                 appCategory = "public.app-category.productivity"
+                jvmArgs(
+                    "-Dapple.awt.application.appearance=system"
+                )
             }
             windows {
                 shortcut = true

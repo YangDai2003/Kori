@@ -18,7 +18,6 @@ import androidx.compose.material.icons.outlined.FormatListNumbered
 import androidx.compose.material.icons.outlined.Spellcheck
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -28,7 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
@@ -68,10 +67,8 @@ fun EditorPane(settingsViewModel: SettingsViewModel) {
 
         Column(
             Modifier.fillMaxWidth().padding(bottom = 8.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    shape = MaterialTheme.shapes.large
-                )
+                .clip(MaterialTheme.shapes.large)
+                .background(MaterialTheme.colorScheme.surface)
         ) {
             ListItem(
                 headlineContent = {
@@ -83,8 +80,7 @@ fun EditorPane(settingsViewModel: SettingsViewModel) {
                 },
                 supportingContent = {
                     Text(stringResource(Res.string.default_note_type_description))
-                },
-                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                }
             )
 
             val noteTypeLabels =
@@ -122,10 +118,8 @@ fun EditorPane(settingsViewModel: SettingsViewModel) {
 
         Column(
             Modifier.fillMaxWidth().padding(bottom = 8.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    shape = MaterialTheme.shapes.large
-                )
+                .clip(MaterialTheme.shapes.large)
+                .background(MaterialTheme.colorScheme.surface)
         ) {
             ListItem(
                 leadingContent = {
@@ -144,8 +138,7 @@ fun EditorPane(settingsViewModel: SettingsViewModel) {
                 },
                 supportingContent = {
                     Text(stringResource(Res.string.default_view_for_note))
-                },
-                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                }
             )
 
             val viewOptions =

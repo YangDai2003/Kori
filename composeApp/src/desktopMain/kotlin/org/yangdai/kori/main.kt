@@ -12,7 +12,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -53,12 +52,6 @@ fun main() {
             icon = painterResource(Res.drawable.compose_multiplatform)
         ) {
             window.minimumSize = Dimension(400, 600)
-            SideEffect {
-                if (currentOperatingSystem() == OS.MACOS) {
-                    window.rootPane.putClientProperty("apple.awt.application.appearance", "system")
-                    window.rootPane.putClientProperty("apple.awt.windowTitleVisible", false)
-                }
-            }
             val settingsViewModel: SettingsViewModel = koinViewModel<SettingsViewModel>()
             val stylePaneState by settingsViewModel.stylePaneState.collectAsStateWithLifecycle()
             val securityPaneState by settingsViewModel.securityPaneState.collectAsStateWithLifecycle()

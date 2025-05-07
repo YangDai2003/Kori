@@ -173,7 +173,7 @@ fun SettingsDetailPaneContent(
                 ),
             contentAlignment = Alignment.TopCenter
         ) {
-            Box(Modifier.widthIn(max = 840.dp).fillMaxSize()) {
+            Box(Modifier.widthIn(max = 600.dp).fillMaxSize()) {
                 content()
             }
         }
