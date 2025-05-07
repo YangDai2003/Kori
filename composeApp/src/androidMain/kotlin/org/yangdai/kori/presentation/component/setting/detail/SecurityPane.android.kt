@@ -7,6 +7,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -48,6 +49,8 @@ actual fun SecurityPane(settingsViewModel: SettingsViewModel) {
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
+
+        Spacer(Modifier.height(16.dp))
 
         DetailPaneItem(
             modifier = Modifier.padding(bottom = 8.dp),

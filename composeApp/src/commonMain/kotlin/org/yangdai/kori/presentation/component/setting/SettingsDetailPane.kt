@@ -1,5 +1,6 @@
 package org.yangdai.kori.presentation.component.setting
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.RowScope
@@ -9,12 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -28,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
@@ -41,6 +39,7 @@ import kori.composeapp.generated.resources.templates
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.Platform
+import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
 import org.yangdai.kori.presentation.component.setting.detail.AboutPane
 import org.yangdai.kori.presentation.component.setting.detail.CardPane
@@ -63,17 +62,8 @@ fun SettingsDetailPane(
         isExpanded = isExpanded,
         topBarTitle = topBarTitle,
         navigationIcon = {
-            if (!isExpanded) {
-                val platform = rememberCurrentPlatform()
-                val icon = if (platform is Platform.IOS) Icons.Default.ArrowBackIosNew
-                else Icons.AutoMirrored.Filled.ArrowBack
-                IconButton(onClick = navigateBackToList) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null
-                    )
-                }
-            }
+            if (!isExpanded)
+                PlatformStyleTopAppBarNavigationIcon(onClick = navigateBackToList)
         }
     ) {
         when (selectedItem) {
@@ -130,13 +120,13 @@ fun SettingsDetailPaneContent(
             platform is Platform.Desktop || isExpanded
         }
     }
+    val topBarColor = if (isExpanded) MaterialTheme.colorScheme.surfaceContainer
+    else MaterialTheme.colorScheme.surfaceContainerLow
     val scrollBehavior =
         if (showSmallTopAppBar) TopAppBarDefaults.pinnedScrollBehavior()
         else TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    val scrollModifier =
-        remember(scrollBehavior) { Modifier.nestedScroll(scrollBehavior.nestedScrollConnection) }
     Scaffold(
-        modifier = modifier.then(scrollModifier),
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             if (showSmallTopAppBar) {
                 TopAppBar(
@@ -147,7 +137,10 @@ fun SettingsDetailPaneContent(
                         WindowInsetsSides.Top + WindowInsetsSides.End
                     ),
                     colors = TopAppBarDefaults.topAppBarColors()
-                        .copy(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                        .copy(
+                            containerColor = topBarColor,
+                            scrolledContainerColor = topBarColor
+                        ),
                     scrollBehavior = scrollBehavior
                 )
             } else {
@@ -156,7 +149,10 @@ fun SettingsDetailPaneContent(
                     navigationIcon = navigationIcon,
                     actions = actions,
                     colors = TopAppBarDefaults.topAppBarColors()
-                        .copy(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                        .copy(
+                            containerColor = topBarColor,
+                            scrolledContainerColor = topBarColor
+                        ),
                     scrollBehavior = scrollBehavior
                 )
             }
@@ -170,7 +166,11 @@ fun SettingsDetailPaneContent(
                     top = innerPadding.calculateTopPadding(),
                     end = innerPadding.calculateEndPadding(layoutDirection)
                 )
-                .fillMaxSize(),
+                .fillMaxSize()
+                .background(
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                    shape = if (isExpanded) RoundedCornerShape(topStart = 8.dp) else RectangleShape
+                ),
             contentAlignment = Alignment.TopCenter
         ) {
             Box(Modifier.widthIn(max = 840.dp).fillMaxSize()) {

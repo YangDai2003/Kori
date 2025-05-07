@@ -197,7 +197,8 @@ class NoteViewModel(
             val range = IntRange(node.startOffset, node.endOffset - 1)
             // --- Skip if inside properties range ---
             if (propertiesRange == null || !propertiesRange.contains(range.first)) {
-                val title = node.getTextInNode(fullText).trim().dropWhile { it == '#' }.trim().toString()
+                val title =
+                    node.getTextInNode(fullText).trim().dropWhile { it == '#' }.trim().toString()
                 val headerNode = HeaderNode(title, headerLevel, range)
                 // --- Manage Hierarchy ---
                 // Pop stack until parent level is less than current level

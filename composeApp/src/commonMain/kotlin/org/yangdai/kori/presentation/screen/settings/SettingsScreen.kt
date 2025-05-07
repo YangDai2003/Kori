@@ -5,7 +5,6 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
@@ -65,7 +64,6 @@ fun SettingsScreen(navigateUp: () -> Unit) {
                 }
             }
         },
-        paneExpansionDragHandle = { VerticalDivider() },
         detailPane = {
             AnimatedPane(
                 enterTransition = slideInHorizontally { it },
