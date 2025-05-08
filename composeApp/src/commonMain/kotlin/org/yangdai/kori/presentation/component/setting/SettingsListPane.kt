@@ -1,7 +1,9 @@
 package org.yangdai.kori.presentation.component.setting
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -161,6 +163,7 @@ fun SettingsListPane(
                     )
                 }
             )
+            Spacer(Modifier.navigationBarsPadding())
         }
     }
 }
