@@ -6,6 +6,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import org.yangdai.kori.presentation.component.dialog.PickedFile
+import org.yangdai.kori.presentation.screen.file.FileScreen
 import org.yangdai.kori.presentation.screen.folders.FoldersScreen
 import org.yangdai.kori.presentation.screen.main.MainScreen
 import org.yangdai.kori.presentation.screen.note.NoteScreen
@@ -32,6 +34,16 @@ actual fun AppNavHost(
         NoteScreen(
             noteId = route.id,
             folderId = route.folderId,
+            navigateToScreen = { navHostController.navigate(it) }
+        ) {
+            navHostController.navigateUp()
+        }
+    }
+
+    composable<Screen.File> {
+        val route = it.toRoute<Screen.File>()
+        FileScreen(
+            file = PickedFile(),
             navigateToScreen = { navHostController.navigate(it) }
         ) {
             navHostController.navigateUp()

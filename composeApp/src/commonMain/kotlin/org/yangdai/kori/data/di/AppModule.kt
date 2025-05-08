@@ -13,6 +13,7 @@ import org.yangdai.kori.data.repository.NoteRepositoryImpl
 import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
+import org.yangdai.kori.presentation.screen.file.FileViewModel
 import org.yangdai.kori.presentation.util.AppLockManager
 import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.screen.folders.FoldersViewModel
@@ -32,6 +33,7 @@ fun appModule() = module {
     viewModelOf(::NoteViewModel)
     viewModelOf(::SettingsViewModel)
     viewModelOf(::TemplateViewModel)
+    viewModelOf(::FileViewModel)
 }
 
 object KoinInitializer {

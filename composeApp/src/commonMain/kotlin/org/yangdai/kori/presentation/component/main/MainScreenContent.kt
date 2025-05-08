@@ -613,8 +613,10 @@ fun MainScreenContent(
     }
 
     if (showFilePickerDialog)
-        FilePickerDialog {
+        FilePickerDialog { pickedFile ->
             showFilePickerDialog = false
-            // TODO
+            pickedFile?.let {
+                navigateToScreen(Screen.File)
+            }
         }
 }
