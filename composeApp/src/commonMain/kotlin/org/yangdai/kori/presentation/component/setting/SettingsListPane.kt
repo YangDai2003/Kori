@@ -141,7 +141,8 @@ fun SettingsListPane(
                 {
                     ListPaneItem(
                         title = stringResource(Res.string.cowriter),
-                        description = stringResource(Res.string.model) + "  •  " + "API ${stringResource(Res.string.key)}",
+                        description = stringResource(Res.string.model)
+                                + "  •  " + "API ${stringResource(Res.string.key)}",
                         icon = Icons.Outlined.AutoAwesome,
                         isSelected = selectedItem == 5,
                         onClick = { navigateToDetail(5) }
