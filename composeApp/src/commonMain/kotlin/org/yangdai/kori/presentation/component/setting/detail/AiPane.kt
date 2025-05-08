@@ -1,6 +1,9 @@
 package org.yangdai.kori.presentation.component.setting.detail
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -9,8 +12,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.GeneratingTokens
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -60,7 +69,43 @@ fun AiPane(settingsViewModel: SettingsViewModel) {
             }
         )
 
-        // TODO
+        AnimatedVisibility(visible = aiPaneState.isAiEnabled) {
+            // TODO
+            Column {
+                val features = listOf("纠错", "润色", "摘要", "翻译", "制作列表", "制作表格")
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    features.forEachIndexed { index, feature ->
+                        FilterChip(
+                            selected = false,
+                            onClick = {
+                                hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                            },
+                            label = { Text(feature) },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.Done,
+                                    contentDescription = null
+                                )
+                            }
+                        )
+                    }
+                }
+                val tabItems = listOf("Gemini", "OpenAI", "Ollama", "LM Studio")
+                TabRow(
+                    selectedTabIndex = 0,
+                ) {
+                    tabItems.forEachIndexed { index, title ->
+                        Tab(
+                            selected = index == 0,
+                            onClick = {
+                                hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                            },
+                            text = { Text(title) }
+                        )
+                    }
+                }
+            }
+        }
 
         Spacer(Modifier.navigationBarsPadding())
 

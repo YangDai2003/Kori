@@ -67,11 +67,11 @@ actual fun FilePickerDialog(onFilePicked: (PickedFile?) -> Unit) {
                 "public.content"
             ),
             inMode = UIDocumentPickerMode.UIDocumentPickerModeOpen
-        )
+        ).apply {
+            this.delegate = delegate
+            this.allowsMultipleSelection = false
+        }
     }
-
-    documentPicker.delegate = delegate
-    documentPicker.allowsMultipleSelection = false
 
     currentUIViewController.presentViewController(
         documentPicker,
