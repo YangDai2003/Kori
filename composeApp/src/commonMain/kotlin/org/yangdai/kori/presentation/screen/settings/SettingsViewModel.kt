@@ -76,6 +76,14 @@ class SettingsViewModel(
         )
     }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), CardPaneState())
 
+    val aiPaneState = combine(
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_AI_ENABLED)
+    ) { isAiEnabled ->
+        AiPaneState(
+            isAiEnabled = isAiEnabled[0]
+        )
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), AiPaneState())
+
     fun <T> putPreferenceValue(key: String, value: T) {
         viewModelScope.launch {
             when (value) {

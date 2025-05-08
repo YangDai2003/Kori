@@ -118,4 +118,8 @@
     <string name="compact">紧凑</string>
     <string name="text_overflow">文本溢出</string>
     <string name="card_size">卡片尺寸</string>
+
+    <string name="cowriter">写作助手</string>
+    <string name="model">模型</string>
+    <string name="key">密钥</string>
 </resources>

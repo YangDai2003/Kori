@@ -120,4 +120,8 @@
     <string name="compact">Compact</string>
     <string name="text_overflow">Text overflow</string>
     <string name="card_size">Card size</string>
+
+    <string name="cowriter">Co-writer</string>
+    <string name="model">Model</string>
+    <string name="key">Key</string>
 </resources>

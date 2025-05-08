@@ -58,6 +58,7 @@ kotlin {
             implementation(libs.androidx.biometric)
             implementation(libs.androidx.documentfile)
             implementation(libs.androidx.browser)
+            implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -89,11 +90,19 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.koin.compose.viewmodel.navigation)
 
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.ktor.client.content.negotiation)
+
             implementation(libs.colorpicker.compose)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
+            implementation(libs.ktor.client.okhttp)
             val javafxVersion = "21.0.7"
             implementation("org.openjfx:javafx-base:$javafxVersion:$platform")
             implementation("org.openjfx:javafx-graphics:$javafxVersion:$platform")

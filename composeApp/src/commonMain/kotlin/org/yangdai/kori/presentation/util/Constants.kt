@@ -29,5 +29,7 @@ object Constants {
 
         const val CARD_SIZE = "card_size"
         const val CLIP_OVERFLOW_TEXT = "clip_overflow_text"
+
+        const val IS_AI_ENABLED = "is_ai_enabled"
     }
 }

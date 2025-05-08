@@ -33,6 +33,10 @@ data class CardPaneState(
     val clipOverflow: Boolean = false
 )
 
+data class AiPaneState(
+    val isAiEnabled: Boolean = false
+)
+
 enum class CardSize(private val value: Int) {
     DEFAULT(0),
     TITLE_ONLY(1),

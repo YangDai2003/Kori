@@ -81,7 +81,7 @@ actual fun StylePane(settingsViewModel: SettingsViewModel) {
             )
         }
 
-        AnimatedVisibility(stylePaneState.color != AppColor.DYNAMIC) {
+        AnimatedVisibility(stylePaneState.color != AppColor.DYNAMIC || Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             ColorPlatteRow(stylePaneState, settingsViewModel)
         }
 

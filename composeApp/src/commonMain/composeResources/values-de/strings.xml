@@ -118,4 +118,8 @@
     <string name="compact">Klein</string>
     <string name="text_overflow">Textüberlauf</string>
     <string name="card_size">Kartengröße</string>
+
+    <string name="cowriter">Co-writer</string>
+    <string name="model">Modell</string>
+    <string name="key">Schlüssel</string>
 </resources>

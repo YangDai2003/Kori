@@ -15,11 +15,13 @@ import androidx.compose.ui.awt.SwingPanel
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextRange
 import javafx.application.Platform
-import javafx.concurrent.Worker // Import Worker for state checking
+import javafx.concurrent.Worker
 import javafx.embed.swing.JFXPanel
 import javafx.scene.Scene
 import javafx.scene.web.WebView
 import java.awt.Desktop
+import java.awt.event.MouseEvent
+import java.awt.event.MouseWheelEvent
 import java.net.URI
 
 @Suppress("SetJavaScriptEnabled")
@@ -30,9 +32,10 @@ actual fun MarkdownView(
     selection: TextRange,
     scrollState: ScrollState,
     isAppInDarkTheme: Boolean,
-    styles: MarkdownStyles
+    styles: MarkdownStyles,
+    isSheetVisible: Boolean
 ) {
-    val jfxPanel = remember { JFXPanel() }
+    val jfxPanel = remember { InteropPanel() }
     var webView by remember { mutableStateOf<WebView?>(null) }
     // Store the latest processed HTML data for link interception reload
     var latestData by remember { mutableStateOf("") }
@@ -107,6 +110,7 @@ actual fun MarkdownView(
 
             webView = wv
             jfxPanel.scene = Scene(wv)
+            jfxPanel.enableMouseEvent()
         }
 
         onDispose {
@@ -153,6 +157,14 @@ actual fun MarkdownView(
         }
     }
 
+    LaunchedEffect(isSheetVisible) {
+        if (isSheetVisible) {
+            jfxPanel.disableMouseEvent()
+        } else {
+            jfxPanel.enableMouseEvent()
+        }
+    }
+
     // Embed the JFXPanel using SwingPanel
     SwingPanel(
         factory = { jfxPanel },
@@ -172,4 +184,39 @@ actual fun MarkdownView(
             }
         }
     )
+}
+
+private class InteropPanel : JFXPanel() {
+
+    var mouseEventEnabled = true
+
+    override fun processMouseEvent(e: MouseEvent) {
+        if (mouseEventEnabled) super.processMouseEvent(e)
+        else dispatchToCompose(e)
+    }
+
+    override fun processMouseWheelEvent(e: MouseWheelEvent) {
+        if (mouseEventEnabled) super.processMouseWheelEvent(e)
+        else dispatchToCompose(e)
+    }
+
+    override fun processMouseMotionEvent(e: MouseEvent) {
+        if (mouseEventEnabled) super.processMouseMotionEvent(e)
+        else dispatchToCompose(e)
+    }
+
+    fun enableMouseEvent() {
+        mouseEventEnabled = true
+    }
+
+    fun disableMouseEvent() {
+        mouseEventEnabled = false
+    }
+
+    private fun dispatchToCompose(e: MouseEvent) {
+        when (e.id) {
+            MouseEvent.MOUSE_ENTERED, MouseEvent.MOUSE_EXITED -> return
+        }
+        parent.dispatchEvent(e)
+    }
 }

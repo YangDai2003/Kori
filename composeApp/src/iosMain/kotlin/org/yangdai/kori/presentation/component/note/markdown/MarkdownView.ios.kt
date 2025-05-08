@@ -13,6 +13,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.viewinterop.UIKitView
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.CoreGraphics.CGRectMake
+import platform.Foundation.NSBundle
 import platform.UIKit.UIApplication
 import platform.UIKit.UIColor
 import platform.WebKit.WKNavigationAction
@@ -32,7 +33,8 @@ actual fun MarkdownView(
     selection: TextRange,
     scrollState: ScrollState,
     isAppInDarkTheme: Boolean,
-    styles: MarkdownStyles
+    styles: MarkdownStyles,
+    isSheetVisible: Boolean
 ) {
     // State to hold the WKWebView instance for access in LaunchedEffect
     var webView by remember { mutableStateOf<WKWebView?>(null) }
@@ -92,7 +94,7 @@ actual fun MarkdownView(
             }.also { webView = it }
         },
         modifier = modifier, // Apply Compose modifiers
-        update = { wv -> wv.loadHTMLString(data, baseURL = null) },
+        update = { wv -> wv.loadHTMLString(data, baseURL = NSBundle.mainBundle.resourceURL) },
         onRelease = { wv ->
             wv.stopLoading()
             wv.navigationDelegate = null // Break reference cycle

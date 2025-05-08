@@ -91,7 +91,6 @@ import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.all_notes
 import kori.composeapp.generated.resources.char_count
 import kori.composeapp.generated.resources.created
-import kori.composeapp.generated.resources.delete
 import kori.composeapp.generated.resources.line_count
 import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.paragraph_count
@@ -130,10 +129,10 @@ import org.yangdai.kori.presentation.component.note.VerticalDragHandle
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownView
 import org.yangdai.kori.presentation.component.note.markdown.moveCursorLeftStateless
 import org.yangdai.kori.presentation.component.note.markdown.moveCursorRightStateless
+import org.yangdai.kori.presentation.component.note.template.TemplateProcessor
 import org.yangdai.kori.presentation.event.UiEvent
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.screen.settings.AppTheme
-import org.yangdai.kori.presentation.component.note.template.TemplateProcessor
 import org.yangdai.kori.presentation.util.clickToShareText
 import org.yangdai.kori.presentation.util.formatInstant
 import org.yangdai.kori.presentation.util.formatNumber
@@ -254,6 +253,7 @@ fun NoteScreen(
                     Key.Tab -> {
                         isSideSheetOpen = !isSideSheetOpen
                         keyboardController?.hide()
+                        focusManager.clearFocus()
                         true
                     }
 
@@ -297,6 +297,7 @@ fun NoteScreen(
                         onClick = {
                             isSideSheetOpen = true
                             keyboardController?.hide()
+                            focusManager.clearFocus()
                         }
                     )
                 }
@@ -436,7 +437,8 @@ fun NoteScreen(
                             html = html,
                             selection = viewModel.contentState.selection,
                             scrollState = scrollState,
-                            isAppInDarkTheme = isAppInDarkTheme
+                            isAppInDarkTheme = isAppInDarkTheme,
+                            isSheetVisible = isSideSheetOpen
                         )
                     }
                 } else {
@@ -473,7 +475,8 @@ fun NoteScreen(
                                     html = html,
                                     selection = viewModel.contentState.selection,
                                     scrollState = scrollState,
-                                    isAppInDarkTheme = isAppInDarkTheme
+                                    isAppInDarkTheme = isAppInDarkTheme,
+                                    isSheetVisible = isSideSheetOpen
                                 )
                             }
                         }
@@ -602,11 +605,12 @@ fun NoteScreen(
                 )
             }
 
-            TooltipIconButton(
-                tipText = stringResource(Res.string.delete),
-                icon = Icons.Outlined.Delete,
-                onClick = { viewModel.moveNoteToTrash() }
-            )
+            IconButton(onClick = { viewModel.moveNoteToTrash() }) {
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
+                    contentDescription = null
+                )
+            }
 
             Box(
                 Modifier.size(48.dp)

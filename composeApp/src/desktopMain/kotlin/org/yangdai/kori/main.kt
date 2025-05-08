@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.DarkDefaultContextMenuRepresentation
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LightDefaultContextMenuRepresentation
 import androidx.compose.foundation.LocalContextMenuRepresentation
 import androidx.compose.foundation.background
@@ -39,6 +40,7 @@ import org.yangdai.kori.presentation.util.AppLockManager
 import org.yangdai.kori.presentation.util.Constants
 import java.awt.Dimension
 
+@OptIn(ExperimentalFoundationApi::class)
 fun main() {
     System.setProperty("compose.interop.blending", "true")
     System.setProperty("compose.swing.render.on.graphics", "true")
@@ -70,7 +72,8 @@ fun main() {
                 if (darkMode) DarkDefaultContextMenuRepresentation else LightDefaultContextMenuRepresentation
 
             CompositionLocalProvider(
-                LocalContextMenuRepresentation provides contextMenuRepresentation
+                LocalContextMenuRepresentation provides contextMenuRepresentation,
+//                LocalTextContextMenu provides TextContextMenu.Default
             ) {
                 KoriTheme(
                     darkMode = darkMode,

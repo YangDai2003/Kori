@@ -30,7 +30,8 @@ actual fun MarkdownView(
     selection: TextRange,
     scrollState: ScrollState,
     isAppInDarkTheme: Boolean,
-    styles: MarkdownStyles
+    styles: MarkdownStyles,
+    isSheetVisible: Boolean
 ) {
     val customTabsIntent = rememberCustomTabsIntent()
     var webView by remember { mutableStateOf<WebView?>(null) }
