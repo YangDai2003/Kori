@@ -12,3 +12,6 @@ actual fun currentOperatingSystem(): OS {
         else -> OS.UNKNOWN
     }
 }
+
+actual fun getPlatformVersion(): String = System.getProperty("os.version") ?: "N/A"
+actual fun getDeviceModel(): String = System.getProperty("os.name") ?: "N/A"
