@@ -1,6 +1,8 @@
 package kfile
 
+import kotlinx.datetime.Instant
 import java.io.File
+import java.nio.file.Files
 
 actual class PlatformFile(
     val file: File
@@ -11,7 +13,7 @@ actual fun PlatformFile.exists(): Boolean {
 }
 
 actual suspend fun PlatformFile.readText(): String {
-    return file.readText()
+    return if (file.exists() && file.canRead() && file.isFile) file.readText() else ""
 }
 
 actual fun PlatformFile.getFileName(): String {
@@ -31,5 +33,13 @@ actual fun PlatformFile.getExtension(): String {
 }
 
 actual suspend fun PlatformFile.writeText(text: String) {
-    file.writeText(text)
+    if (file.exists() && file.canWrite() && file.isFile) file.writeText(text)
+}
+
+actual suspend fun PlatformFile.delete(): Boolean {
+    return Files.deleteIfExists(file.toPath())
+}
+
+actual fun PlatformFile.getLastModified(): Instant {
+    return Instant.fromEpochMilliseconds(file.lastModified())
 }

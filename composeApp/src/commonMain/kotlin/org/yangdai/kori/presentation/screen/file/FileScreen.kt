@@ -33,6 +33,7 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.IosShare
 import androidx.compose.material.icons.outlined.Save
@@ -91,11 +92,13 @@ import kori.composeapp.generated.resources.saveAsTemplate
 import kori.composeapp.generated.resources.templates
 import kori.composeapp.generated.resources.title
 import kori.composeapp.generated.resources.type
+import kori.composeapp.generated.resources.updated
 import kori.composeapp.generated.resources.word_count
 import kori.composeapp.generated.resources.word_count_without_punctuation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Instant
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -121,6 +124,7 @@ import org.yangdai.kori.presentation.event.UiEvent
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.screen.settings.AppTheme
 import org.yangdai.kori.presentation.util.clickToShareText
+import org.yangdai.kori.presentation.util.formatInstant
 import org.yangdai.kori.presentation.util.formatNumber
 import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
 import kotlin.math.abs
@@ -134,7 +138,7 @@ fun FileScreen(
     navigateUp: () -> Unit
 ) {
 
-    val noteEditingState by viewModel.fileEditingState.collectAsStateWithLifecycle()
+    val fileEditingState by viewModel.fileEditingState.collectAsStateWithLifecycle()
     val textState by viewModel.textState.collectAsStateWithLifecycle()
     val editorState by viewModel.editorState.collectAsStateWithLifecycle()
     val formatterState by viewModel.formatterState.collectAsStateWithLifecycle()
@@ -259,7 +263,7 @@ fun FileScreen(
                         textStyle = MaterialTheme.typography.titleMedium.copy(
                             color = MaterialTheme.colorScheme.onSurface
                         ),
-                        readOnly = isReadView,
+                        readOnly = true,
                         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                         decorator = { innerTextField ->
@@ -333,10 +337,10 @@ fun FileScreen(
             }
 
             val scrollState = rememberScrollState()
-            if (noteEditingState.noteType == NoteType.PLAIN_TEXT) {
+            if (fileEditingState.fileType == NoteType.PLAIN_TEXT) {
                 Editor(
                     modifier = Modifier.fillMaxWidth().weight(1f),
-                    type = noteEditingState.noteType,
+                    type = fileEditingState.fileType,
                     state = viewModel.contentState,
                     scrollState = scrollState,
                     readMode = isReadView,
@@ -359,7 +363,7 @@ fun FileScreen(
 
                         Editor(
                             modifier = Modifier.fillMaxHeight().weight(editorWeight),
-                            type = noteEditingState.noteType,
+                            type = fileEditingState.fileType,
                             state = viewModel.contentState,
                             scrollState = scrollState,
                             readMode = isReadView,
@@ -412,7 +416,7 @@ fun FileScreen(
                             0 -> {
                                 Editor(
                                     modifier = Modifier.fillMaxSize(),
-                                    type = noteEditingState.noteType,
+                                    type = fileEditingState.fileType,
                                     state = viewModel.contentState,
                                     scrollState = scrollState,
                                     readMode = isReadView,
@@ -445,7 +449,7 @@ fun FileScreen(
             }
             AnimatedVisibility(visible = !isReadView) {
                 EditorRow(
-                    type = noteEditingState.noteType,
+                    type = fileEditingState.fileType,
                     textFieldState = viewModel.contentState
                 ) { action ->
                     when (action) {
@@ -541,6 +545,13 @@ fun FileScreen(
                 )
             }
 
+            IconButton(onClick = { viewModel.deleteFile(file) }) {
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
+                    contentDescription = null
+                )
+            }
+
             Box(
                 Modifier.size(48.dp)
                     .padding(4.dp)
@@ -557,10 +568,19 @@ fun FileScreen(
         drawerContent = {
             NoteSideSheetItem(
                 key = stringResource(Res.string.type),
-                value = when (noteEditingState.noteType) {
+                value = when (fileEditingState.fileType) {
                     NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
                     NoteType.MARKDOWN -> stringResource(Res.string.markdown)
                 }
+            )
+
+            val formattedUpdated = remember(fileEditingState.updatedAt) {
+                if (fileEditingState.updatedAt.isBlank()) ""
+                else formatInstant(Instant.parse(fileEditingState.updatedAt))
+            }
+            NoteSideSheetItem(
+                key = stringResource(Res.string.updated),
+                value = formattedUpdated
             )
 
             NoteSideSheetItem(
@@ -588,7 +608,7 @@ fun FileScreen(
 
     if (showNoteTypeDialog) {
         NoteTypeDialog(
-            oNoteType = noteEditingState.noteType,
+            oNoteType = fileEditingState.fileType,
             onDismissRequest = { showNoteTypeDialog = false },
             onNoteTypeSelected = { noteType ->
                 showNoteTypeDialog = false

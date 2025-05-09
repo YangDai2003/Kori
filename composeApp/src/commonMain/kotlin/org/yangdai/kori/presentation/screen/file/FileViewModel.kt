@@ -6,8 +6,10 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kfile.PlatformFile
+import kfile.delete
 import kfile.getExtension
 import kfile.getFileName
+import kfile.getLastModified
 import kfile.readText
 import kfile.writeText
 import kmark.MarkdownElementTypes
@@ -238,8 +240,12 @@ class FileViewModel(
             contentState.setTextAndPlaceCursorAtEnd(content)
             // 记录初始内容
             _initialContent.value = content
+            val updatedAt = file.getLastModified().toString()
             _fileEditingState.update {
-                it.copy(noteType = noteType)
+                it.copy(
+                    updatedAt = updatedAt,
+                    fileType = noteType
+                )
             }
         }
     }
@@ -252,12 +258,19 @@ class FileViewModel(
         }
     }
 
+    fun deleteFile(file: PlatformFile) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (file.delete())
+                _uiEventFlow.emit(UiEvent.NavigateUp)
+        }
+    }
+
     private val _uiEventFlow = MutableSharedFlow<UiEvent>()
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
 
     fun updateFileType(noteType: NoteType) {
         _fileEditingState.update {
-            it.copy(noteType = noteType)
+            it.copy(fileType = noteType)
         }
     }
 
@@ -280,7 +293,7 @@ class FileViewModel(
                 isDeleted = false,
                 isTemplate = true,
                 isPinned = false,
-                noteType = _fileEditingState.value.noteType
+                noteType = _fileEditingState.value.fileType
             )
             noteRepository.insertNote(noteEntity)
         }
