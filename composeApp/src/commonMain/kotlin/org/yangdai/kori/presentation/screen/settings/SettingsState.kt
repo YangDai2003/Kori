@@ -34,8 +34,43 @@ data class CardPaneState(
 )
 
 data class AiPaneState(
-    val isAiEnabled: Boolean = false
+    val isAiEnabled: Boolean = false,
+    val aiFeatures: Set<String> = emptySet(),
+    val aiProvider: AiProvider = AiProvider.Gemini
 )
+
+data class GeminiState(
+    val apiKey: String = "",
+    val apiHost: String = "",
+    val model: String = ""
+)
+
+data class OpenAiState(
+    val apiKey: String = "",
+    val apiHost: String = "",
+    val model: String = ""
+)
+
+data class OllamaState(
+    val apiHost: String = "",
+    val model: String = ""
+)
+
+data class LmStudioState(
+    val apiHost: String = "",
+    val model: String = ""
+)
+
+enum class AiProvider(val provider: String) {
+    Gemini("Gemini"),
+    OpenAI("Open AI"),
+    Ollama("Ollama"),
+    LMStudio("LM Studio");
+
+    companion object {
+        fun fromString(value: String) = entries.firstOrNull { it.provider == value } ?: Gemini
+    }
+}
 
 enum class CardSize(private val value: Int) {
     DEFAULT(0),

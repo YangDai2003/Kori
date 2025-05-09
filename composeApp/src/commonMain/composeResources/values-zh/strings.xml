@@ -125,4 +125,5 @@
     <string name="cowriter">写作助手</string>
     <string name="model">模型</string>
     <string name="key">密钥</string>
+    <string name="host">域名</string>
 </resources>

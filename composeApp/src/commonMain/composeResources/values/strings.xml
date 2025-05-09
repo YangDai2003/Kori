@@ -127,4 +127,5 @@
     <string name="cowriter">Co-writer</string>
     <string name="model">Model</string>
     <string name="key">Key</string>
+    <string name="host">Host</string>
 </resources>

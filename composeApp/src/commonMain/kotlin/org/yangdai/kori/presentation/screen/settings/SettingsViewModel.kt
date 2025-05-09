@@ -77,12 +77,60 @@ class SettingsViewModel(
     }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), CardPaneState())
 
     val aiPaneState = combine(
-        dataStoreRepository.booleanFlow(Constants.Preferences.IS_AI_ENABLED)
-    ) { isAiEnabled ->
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_AI_ENABLED),
+        dataStoreRepository.stringSetFlow(Constants.Preferences.AI_FEATURES),
+        dataStoreRepository.stringFlow(Constants.Preferences.AI_PROVIDER)
+    ) { isAiEnabled, aiFeatures, aiProvider ->
         AiPaneState(
-            isAiEnabled = isAiEnabled[0]
+            isAiEnabled = isAiEnabled,
+            aiFeatures = aiFeatures,
+            aiProvider = AiProvider.fromString(aiProvider)
         )
     }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), AiPaneState())
+
+    val geminiState = combine(
+        dataStoreRepository.stringFlow(Constants.Preferences.GEMINI_API_KEY),
+        dataStoreRepository.stringFlow(Constants.Preferences.GEMINI_API_HOST),
+        dataStoreRepository.stringFlow(Constants.Preferences.GEMINI_MODEL)
+    ) { apiKey, apiHost, model ->
+        GeminiState(
+            apiKey = apiKey,
+            apiHost = apiHost,
+            model = model
+        )
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), GeminiState())
+
+    val openAiState = combine(
+        dataStoreRepository.stringFlow(Constants.Preferences.OPENAI_API_KEY),
+        dataStoreRepository.stringFlow(Constants.Preferences.OPENAI_API_HOST),
+        dataStoreRepository.stringFlow(Constants.Preferences.OPENAI_MODEL)
+    ) { apiKey, apiHost, model ->
+        OpenAiState(
+            apiKey = apiKey,
+            apiHost = apiHost,
+            model = model
+        )
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), OpenAiState())
+
+    val ollamaState = combine(
+        dataStoreRepository.stringFlow(Constants.Preferences.OLLAMA_API_HOST),
+        dataStoreRepository.stringFlow(Constants.Preferences.OLLAMA_MODEL)
+    ) { apiHost, model ->
+        OllamaState(
+            apiHost = apiHost,
+            model = model
+        )
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), OllamaState())
+
+    val lmStudioState = combine(
+        dataStoreRepository.stringFlow(Constants.Preferences.LMSTUDIO_API_HOST),
+        dataStoreRepository.stringFlow(Constants.Preferences.LMSTUDIO_MODEL)
+    ) { apiHost, model ->
+        LmStudioState(
+            apiHost = apiHost,
+            model = model
+        )
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), LmStudioState())
 
     fun <T> putPreferenceValue(key: String, value: T) {
         viewModelScope.launch {
