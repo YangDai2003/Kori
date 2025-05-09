@@ -165,7 +165,6 @@ fun TemplateScreen(
                                 interactionSource = remember { MutableInteractionSource() },
                                 placeholder = {
                                     Text(
-                                        modifier = Modifier.fillMaxWidth(),
                                         text = stringResource(Res.string.title),
                                         style = MaterialTheme.typography.titleMedium.copy(
                                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(

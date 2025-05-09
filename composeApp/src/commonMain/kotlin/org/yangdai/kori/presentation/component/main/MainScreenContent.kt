@@ -86,6 +86,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.ExperimentalWindowCoreApi
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
+import kfile.getPath
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.add
 import kori.composeapp.generated.resources.all_notes
@@ -694,7 +695,7 @@ fun MainScreenContent(
         FilePickerDialog { pickedFile ->
             showFilePickerDialog = false
             pickedFile?.let {
-                navigateToScreen(Screen.File)
+                navigateToScreen(Screen.File(pickedFile.getPath()))
             }
         }
 }

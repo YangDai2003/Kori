@@ -25,3 +25,7 @@ actual fun PlatformFile.getPath(): String {
 actual fun PlatformFile.isDirectory(): Boolean {
     return file.isDirectory
 }
+
+actual fun PlatformFile.getExtension(): String {
+    return file.extension
+}

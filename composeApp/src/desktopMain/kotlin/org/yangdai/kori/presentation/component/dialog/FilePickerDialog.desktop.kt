@@ -1,12 +1,13 @@
 package org.yangdai.kori.presentation.component.dialog
 
 import androidx.compose.runtime.Composable
+import kfile.PlatformFile
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_name
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-actual fun FilePickerDialog(onFilePicked: (PickedFile?) -> Unit) {
+actual fun FilePickerDialog(onFilePicked: (PlatformFile?) -> Unit) {
     val fileDialog = java.awt.FileDialog(
         null as java.awt.Frame?,
         stringResource(Res.string.app_name),
@@ -19,8 +20,7 @@ actual fun FilePickerDialog(onFilePicked: (PickedFile?) -> Unit) {
     if (fileDialog.file != null && fileDialog.directory != null) {
         val file = java.io.File(fileDialog.directory, fileDialog.file)
         if (file.exists() && (file.extension == "txt" || file.extension == "md")) {
-            val content = file.readText()
-            onFilePicked(PickedFile(name = file.name, path = file.absolutePath, content = content))
+            onFilePicked(PlatformFile(file = file))
         }
     }
     onFilePicked(null)

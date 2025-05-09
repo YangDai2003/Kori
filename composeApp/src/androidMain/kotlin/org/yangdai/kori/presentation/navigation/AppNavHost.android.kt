@@ -2,12 +2,14 @@ package org.yangdai.kori.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
-import org.yangdai.kori.presentation.component.dialog.PickedFile
+import kfile.PlatformFile
 import org.yangdai.kori.presentation.screen.file.FileScreen
 import org.yangdai.kori.presentation.screen.folders.FoldersScreen
 import org.yangdai.kori.presentation.screen.main.MainScreen
@@ -55,9 +57,10 @@ actual fun AppNavHost(
     }
 
     composable<Screen.File> {
+        val context = LocalContext.current.applicationContext
         val route = it.toRoute<Screen.File>()
         FileScreen(
-            file = PickedFile(),
+            file = PlatformFile(context = context, uri = route.path.toUri()),
             navigateToScreen = { navHostController.navigate(it) }
         ) {
             navHostController.navigateUp()

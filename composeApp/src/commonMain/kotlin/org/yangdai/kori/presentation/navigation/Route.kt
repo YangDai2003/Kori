@@ -14,7 +14,7 @@ sealed class Screen() {
     data class Template(val id: String = "") : Screen()
 
     @Serializable
-    data object File : Screen()
+    data class File(val path: String = "") : Screen()
 
     @Serializable
     data object Settings : Screen()

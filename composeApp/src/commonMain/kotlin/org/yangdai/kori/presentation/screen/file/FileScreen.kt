@@ -1,6 +1,5 @@
 package org.yangdai.kori.presentation.screen.file
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
@@ -80,6 +79,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kfile.PlatformFile
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.char_count
 import kori.composeapp.generated.resources.line_count
@@ -105,7 +105,6 @@ import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
-import org.yangdai.kori.presentation.component.dialog.PickedFile
 import org.yangdai.kori.presentation.component.note.Editor
 import org.yangdai.kori.presentation.component.note.EditorRow
 import org.yangdai.kori.presentation.component.note.EditorRowAction
@@ -130,7 +129,7 @@ import kotlin.math.abs
 @Composable
 fun FileScreen(
     viewModel: FileViewModel = koinViewModel(),
-    file: PickedFile,
+    file: PlatformFile,
     navigateToScreen: (Screen) -> Unit,
     navigateUp: () -> Unit
 ) {
@@ -155,9 +154,9 @@ fun FileScreen(
     }
 
     DisposableEffect(Unit) {
-        // 文件加载
+        viewModel.loadFile(file)
         onDispose {
-            // 关闭文件
+            viewModel.saveFile()
         }
     }
 
@@ -226,7 +225,61 @@ fun FileScreen(
         topBar = {
             TopAppBar(
                 title = {
+                    BasicTextField(
+                        modifier = Modifier.onPreviewKeyEvent { keyEvent ->
+                                if (keyEvent.type == KeyEventType.KeyDown) {
+                                    when (keyEvent.key) {
+                                        Key.DirectionLeft -> {
+                                            if (currentPlatform() == Platform.Android) {
+                                                viewModel.titleState.edit { moveCursorLeftStateless() }
+                                                true
+                                            } else false
+                                        }
 
+                                        Key.DirectionRight -> {
+                                            if (currentPlatform() == Platform.Android) {
+                                                viewModel.titleState.edit { moveCursorRightStateless() }
+                                                true
+                                            } else false
+                                        }
+
+                                        else -> false
+                                    }
+                                } else {
+                                    false
+                                }
+                            },
+                        state = viewModel.titleState,
+                        lineLimits = TextFieldLineLimits.SingleLine,
+                        textStyle = MaterialTheme.typography.titleMedium.copy(
+                            color = MaterialTheme.colorScheme.onSurface
+                        ),
+                        readOnly = isReadView,
+                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                        decorator = { innerTextField ->
+                            TextFieldDefaults.DecorationBox(
+                                value = viewModel.titleState.text.toString(),
+                                innerTextField = innerTextField,
+                                enabled = true,
+                                singleLine = true,
+                                visualTransformation = VisualTransformation.None,
+                                interactionSource = remember { MutableInteractionSource() },
+                                placeholder = {
+                                    Text(
+                                        text = stringResource(Res.string.title),
+                                        style = MaterialTheme.typography.titleMedium.copy(
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                                alpha = 0.6f
+                                            )
+                                        )
+                                    )
+                                },
+                                contentPadding = PaddingValues(0.dp),
+                                container = {}
+                            )
+                        }
+                    )
                 },
                 navigationIcon = {
                     PlatformStyleTopAppBarNavigationIcon(onClick = navigateUp)
@@ -260,70 +313,10 @@ fun FileScreen(
         }
     ) { innerPadding ->
         Column(Modifier.padding(innerPadding)) {
-            AnimatedContent(isSearching) {
-                if (it)
-                    FindAndReplaceField(
-                        state = findAndReplaceState,
-                        onStateUpdate = { findAndReplaceState = it }
-                    )
-                else BasicTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .onPreviewKeyEvent { keyEvent ->
-                            if (keyEvent.type == KeyEventType.KeyDown) {
-                                when (keyEvent.key) {
-                                    Key.DirectionLeft -> {
-                                        if (currentPlatform() == Platform.Android) {
-                                            viewModel.titleState.edit { moveCursorLeftStateless() }
-                                            true
-                                        } else false
-                                    }
-
-                                    Key.DirectionRight -> {
-                                        if (currentPlatform() == Platform.Android) {
-                                            viewModel.titleState.edit { moveCursorRightStateless() }
-                                            true
-                                        } else false
-                                    }
-
-                                    else -> false
-                                }
-                            } else {
-                                false
-                            }
-                        },
-                    state = viewModel.titleState,
-                    lineLimits = TextFieldLineLimits.SingleLine,
-                    textStyle = MaterialTheme.typography.titleLarge.copy(
-                        color = MaterialTheme.colorScheme.onSurface
-                    ),
-                    readOnly = isReadView,
-                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                    decorator = { innerTextField ->
-                        TextFieldDefaults.DecorationBox(
-                            value = viewModel.titleState.text.toString(),
-                            innerTextField = innerTextField,
-                            enabled = true,
-                            singleLine = true,
-                            visualTransformation = VisualTransformation.None,
-                            interactionSource = remember { MutableInteractionSource() },
-                            placeholder = {
-                                Text(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    text = stringResource(Res.string.title),
-                                    style = MaterialTheme.typography.titleLarge.copy(
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                            alpha = 0.6f
-                                        )
-                                    )
-                                )
-                            },
-                            contentPadding = PaddingValues(0.dp),
-                            container = {}
-                        )
-                    }
+            AnimatedVisibility(isSearching) {
+                FindAndReplaceField(
+                    state = findAndReplaceState,
+                    onStateUpdate = { findAndReplaceState = it }
                 )
             }
 

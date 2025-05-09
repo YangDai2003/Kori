@@ -34,3 +34,7 @@ actual fun PlatformFile.isDirectory(): Boolean {
     val result = url.resourceValuesForKeys(listOf(NSURLIsDirectoryKey), null)
     return result?.get(NSURLIsDirectoryKey) == true
 }
+
+actual fun PlatformFile.getExtension(): String {
+    return url.pathExtension?.toString() ?: ""
+}

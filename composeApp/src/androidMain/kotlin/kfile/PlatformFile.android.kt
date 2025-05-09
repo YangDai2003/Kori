@@ -42,3 +42,9 @@ actual fun PlatformFile.getPath(): String {
 actual fun PlatformFile.isDirectory(): Boolean {
     return documentFile?.isDirectory == true
 }
+
+actual fun PlatformFile.getExtension(): String {
+    return documentFile?.let { documentFile ->
+        documentFile.type?.substringAfterLast("/") ?: ""
+    } ?: ""
+}

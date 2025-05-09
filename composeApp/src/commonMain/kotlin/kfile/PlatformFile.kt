@@ -11,3 +11,5 @@ expect fun PlatformFile.getFileName(): String
 expect fun PlatformFile.getPath(): String
 
 expect fun PlatformFile.isDirectory(): Boolean
+
+expect fun PlatformFile.getExtension(): String

@@ -3,11 +3,9 @@ package org.yangdai.kori.presentation.component.dialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.uikit.LocalUIViewController
+import kfile.PlatformFile
 import kotlinx.cinterop.ExperimentalForeignApi
-import platform.Foundation.NSString
 import platform.Foundation.NSURL
-import platform.Foundation.NSUTF8StringEncoding
-import platform.Foundation.stringWithContentsOfFile
 import platform.UIKit.UIDocumentPickerDelegateProtocol
 import platform.UIKit.UIDocumentPickerMode
 import platform.UIKit.UIDocumentPickerViewController
@@ -15,7 +13,7 @@ import platform.darwin.NSObject
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
-actual fun FilePickerDialog(onFilePicked: (PickedFile?) -> Unit) {
+actual fun FilePickerDialog(onFilePicked: (PlatformFile?) -> Unit) {
     val currentUIViewController = LocalUIViewController.current
 
     val delegate = remember {
@@ -24,24 +22,8 @@ actual fun FilePickerDialog(onFilePicked: (PickedFile?) -> Unit) {
                 controller: UIDocumentPickerViewController,
                 didPickDocumentAtURL: NSURL
             ) {
-                val path = didPickDocumentAtURL.path ?: return onFilePicked(null)
-                val name = didPickDocumentAtURL.lastPathComponent
-                val content = NSString.stringWithContentsOfFile(
-                    path,
-                    encoding = NSUTF8StringEncoding,
-                    error = null
-                )
-                if (content != null) {
-                    onFilePicked(
-                        PickedFile(
-                            name = name.orEmpty(),
-                            path = path,
-                            content = content
-                        )
-                    )
-                } else {
-                    onFilePicked(null)
-                }
+                didPickDocumentAtURL.path ?: return onFilePicked(null)
+                onFilePicked(PlatformFile(url = didPickDocumentAtURL))
             }
 
             override fun documentPicker(

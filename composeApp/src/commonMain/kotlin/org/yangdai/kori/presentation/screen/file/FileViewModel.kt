@@ -1,9 +1,14 @@
 package org.yangdai.kori.presentation.screen.file
 
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kfile.PlatformFile
+import kfile.getExtension
+import kfile.getFileName
+import kfile.readText
 import kmark.MarkdownElementTypes
 import kmark.ast.ASTNode
 import kmark.ast.getTextInNode
@@ -202,6 +207,31 @@ class FileViewModel(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             baseHtml = Res.readBytes("files/template.html").decodeToString()
+        }
+    }
+
+    fun loadFile(file: PlatformFile) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val title = file.getFileName()
+            val content = file.readText()
+            val noteType = if (file.getExtension().contains("md")
+                || file.getExtension().contains("markdown")
+            ) {
+                NoteType.MARKDOWN
+            } else {
+                NoteType.PLAIN_TEXT
+            }
+            titleState.setTextAndPlaceCursorAtEnd(title)
+            contentState.setTextAndPlaceCursorAtEnd(content)
+            _fileEditingState.update {
+                it.copy(noteType = noteType)
+            }
+        }
+    }
+
+    fun saveFile() {
+        viewModelScope.launch(Dispatchers.IO) {
+
         }
     }
 
