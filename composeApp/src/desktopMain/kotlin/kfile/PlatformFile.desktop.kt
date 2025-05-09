@@ -29,3 +29,7 @@ actual fun PlatformFile.isDirectory(): Boolean {
 actual fun PlatformFile.getExtension(): String {
     return file.extension
 }
+
+actual suspend fun PlatformFile.writeText(text: String) {
+    file.writeText(text)
+}

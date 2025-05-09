@@ -9,6 +9,7 @@ import kfile.PlatformFile
 import kfile.getExtension
 import kfile.getFileName
 import kfile.readText
+import kfile.writeText
 import kmark.MarkdownElementTypes
 import kmark.ast.ASTNode
 import kmark.ast.getTextInNode
@@ -58,7 +59,7 @@ import kotlin.uuid.Uuid
 
 class FileViewModel(
     private val noteRepository: NoteRepository,
-    private val dataStoreRepository: DataStoreRepository
+    dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
     // 笔记状态
     val titleState = TextFieldState()
@@ -204,6 +205,18 @@ class FileViewModel(
         }
     }
 
+    private val _initialContent = MutableStateFlow("")
+    val needSave = combine(
+        _initialContent,
+        snapshotFlow { contentState.text.toString() }
+    ) { initial, current ->
+        initial != current
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000L),
+        false
+    )
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             baseHtml = Res.readBytes("files/template.html").decodeToString()
@@ -223,15 +236,19 @@ class FileViewModel(
             }
             titleState.setTextAndPlaceCursorAtEnd(title)
             contentState.setTextAndPlaceCursorAtEnd(content)
+            // 记录初始内容
+            _initialContent.value = content
             _fileEditingState.update {
                 it.copy(noteType = noteType)
             }
         }
     }
 
-    fun saveFile() {
+    fun saveFile(file: PlatformFile) {
         viewModelScope.launch(Dispatchers.IO) {
-
+            val content = contentState.text.toString()
+            file.writeText(content)
+            _initialContent.value = content
         }
     }
 

@@ -4,6 +4,7 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSString
 import platform.Foundation.NSURL
+import platform.Foundation.writeToURL
 import platform.Foundation.NSURLIsDirectoryKey
 import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.stringWithContentsOfURL
@@ -37,4 +38,10 @@ actual fun PlatformFile.isDirectory(): Boolean {
 
 actual fun PlatformFile.getExtension(): String {
     return url.pathExtension?.toString() ?: ""
+}
+
+@Suppress("CAST_NEVER_SUCCEEDS")
+@OptIn(ExperimentalForeignApi::class)
+actual suspend fun PlatformFile.writeText(text: String) {
+    (text as NSString).writeToURL(url, true, NSUTF8StringEncoding, null)
 }

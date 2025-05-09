@@ -13,3 +13,5 @@ expect fun PlatformFile.getPath(): String
 expect fun PlatformFile.isDirectory(): Boolean
 
 expect fun PlatformFile.getExtension(): String
+
+expect suspend fun PlatformFile.writeText(text: String)

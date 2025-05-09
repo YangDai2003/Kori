@@ -35,6 +35,7 @@ import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.IosShare
+import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.SwapHorizontalCircle
@@ -52,7 +53,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -152,12 +152,10 @@ fun FileScreen(
             }
         }
     }
+    val needSave by viewModel.needSave.collectAsStateWithLifecycle()
 
-    DisposableEffect(Unit) {
+    LaunchedEffect(Unit) {
         viewModel.loadFile(file)
-        onDispose {
-            viewModel.saveFile()
-        }
     }
 
     LaunchedEffect(true) {
@@ -208,6 +206,13 @@ fun FileScreen(
 
                     Key.P -> {
                         isReadView = !isReadView
+                        true
+                    }
+
+                    Key.S -> {
+                        if (needSave) {
+                            viewModel.saveFile(file)
+                        }
                         true
                     }
 
@@ -285,6 +290,13 @@ fun FileScreen(
                     PlatformStyleTopAppBarNavigationIcon(onClick = navigateUp)
                 },
                 actions = {
+                    TooltipIconButton(
+                        enabled = needSave,
+                        tipText = "Ctrl + S",
+                        icon = Icons.Outlined.Save,
+                        onClick = { viewModel.saveFile(file) }
+                    )
+
                     if (!isReadView)
                         TooltipIconButton(
                             tipText = "Ctrl + F",

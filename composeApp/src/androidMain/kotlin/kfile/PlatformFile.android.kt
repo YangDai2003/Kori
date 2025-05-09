@@ -45,6 +45,15 @@ actual fun PlatformFile.isDirectory(): Boolean {
 
 actual fun PlatformFile.getExtension(): String {
     return documentFile?.let { documentFile ->
-        documentFile.type?.substringAfterLast("/") ?: ""
+        documentFile.name?.substringAfterLast('.', "") ?: ""
     } ?: ""
+}
+
+actual suspend fun PlatformFile.writeText(text: String) {
+    documentFile?.let { documentFile ->
+        if (documentFile.canWrite() && documentFile.isFile) {
+            context.contentResolver.openOutputStream(uri)?.bufferedWriter()
+                ?.use { it.write(text) }
+        }
+    }
 }
