@@ -22,7 +22,6 @@ actual fun FilePickerDialog(onFilePicked: (PlatformFile?) -> Unit) {
                 controller: UIDocumentPickerViewController,
                 didPickDocumentAtURL: NSURL
             ) {
-                didPickDocumentAtURL.path ?: return onFilePicked(null)
                 onFilePicked(PlatformFile(url = didPickDocumentAtURL))
             }
 
@@ -30,7 +29,11 @@ actual fun FilePickerDialog(onFilePicked: (PlatformFile?) -> Unit) {
                 controller: UIDocumentPickerViewController,
                 didPickDocumentsAtURLs: List<*>
             ) {
-                // Handle multiple URLs if needed, but we only support single file selection here
+                didPickDocumentsAtURLs.firstOrNull()?.let { url ->
+                    (url as? NSURL)?.path?.let { path ->
+                        onFilePicked(PlatformFile(url = url))
+                    } ?: onFilePicked(null)
+                } ?: onFilePicked(null)
             }
 
             override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
