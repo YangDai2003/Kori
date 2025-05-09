@@ -57,6 +57,9 @@
     <string name="search">搜索</string>
     <string name="search_history">搜索历史</string>
     <string name="progress">进度</string>
+    <string name="add">添加</string>
+    <string name="sample_note">示例笔记</string>
+    <string name="learn_more">以了解更多 Markdown 语法。</string>
 
     <string name="style">样式</string>
     <string name="dark_mode">主题模式</string>

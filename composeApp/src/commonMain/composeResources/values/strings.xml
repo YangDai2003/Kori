@@ -58,6 +58,9 @@
     <string name="search">Search</string>
     <string name="search_history">Search history</string>
     <string name="progress">Progress</string>
+    <string name="add">Add</string>
+    <string name="sample_note">the Sample Note</string>
+    <string name="learn_more">to learn more about Markdown syntax.</string>
 
     <string name="style">Style</string>
     <string name="dark_mode">Theme mode</string>

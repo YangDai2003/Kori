@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.yangdai.kori.data.local.dao.FolderDao
 import org.yangdai.kori.data.local.entity.NoteEntity
+import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
@@ -28,6 +29,9 @@ import org.yangdai.kori.domain.sort.NoteSortType
 import org.yangdai.kori.presentation.screen.settings.CardPaneState
 import org.yangdai.kori.presentation.screen.settings.CardSize
 import org.yangdai.kori.presentation.util.Constants
+import org.yangdai.kori.presentation.util.SampleNote
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class MainViewModel(
     private val folderRepository: FolderRepository,
@@ -245,6 +249,23 @@ class MainViewModel(
             dataStoreRepository.putInt(Constants.Preferences.NOTE_SORT_TYPE, sortType.value)
             noteSortType = sortType
             loadNotesByFolder(_currentFolderId)
+        }
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    fun addSampleNote(folderId: String? = null) {
+        viewModelScope.launch {
+            noteRepository.insertNote(
+                NoteEntity(
+                    id = Uuid.random().toString(),
+                    title = "Sample Note",
+                    content = SampleNote,
+                    folderId = folderId,
+                    isPinned = true,
+                    isDeleted = false,
+                    noteType = NoteType.MARKDOWN
+                )
+            )
         }
     }
 }

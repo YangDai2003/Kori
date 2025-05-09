@@ -41,7 +41,7 @@ fun NoteSortOptionDialog(
     onDismissRequest: () -> Unit,
     onSortTypeSelected: (NoteSortType) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val haptic = LocalHapticFeedback.current
 
     ModalBottomSheet(
@@ -102,7 +102,7 @@ fun FolderSortOptionDialog(
     onDismissRequest: () -> Unit,
     onSortTypeSelected: (FolderSortType) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val haptic = LocalHapticFeedback.current
 
     ModalBottomSheet(
