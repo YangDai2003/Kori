@@ -1,4 +1,4 @@
-package network
+package knet
 
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.engine.darwin.Darwin

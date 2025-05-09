@@ -1,4 +1,4 @@
-package network
+package knet
 
 import kotlinx.serialization.Serializable
 

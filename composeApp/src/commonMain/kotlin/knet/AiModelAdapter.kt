@@ -1,4 +1,4 @@
-package network
+package knet
 
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.statement.HttpResponse
