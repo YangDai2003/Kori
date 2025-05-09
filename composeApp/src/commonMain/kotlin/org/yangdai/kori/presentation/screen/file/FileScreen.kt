@@ -227,28 +227,28 @@ fun FileScreen(
                 title = {
                     BasicTextField(
                         modifier = Modifier.onPreviewKeyEvent { keyEvent ->
-                                if (keyEvent.type == KeyEventType.KeyDown) {
-                                    when (keyEvent.key) {
-                                        Key.DirectionLeft -> {
-                                            if (currentPlatform() == Platform.Android) {
-                                                viewModel.titleState.edit { moveCursorLeftStateless() }
-                                                true
-                                            } else false
-                                        }
-
-                                        Key.DirectionRight -> {
-                                            if (currentPlatform() == Platform.Android) {
-                                                viewModel.titleState.edit { moveCursorRightStateless() }
-                                                true
-                                            } else false
-                                        }
-
-                                        else -> false
+                            if (keyEvent.type == KeyEventType.KeyDown) {
+                                when (keyEvent.key) {
+                                    Key.DirectionLeft -> {
+                                        if (currentPlatform() == Platform.Android) {
+                                            viewModel.titleState.edit { moveCursorLeftStateless() }
+                                            true
+                                        } else false
                                     }
-                                } else {
-                                    false
+
+                                    Key.DirectionRight -> {
+                                        if (currentPlatform() == Platform.Android) {
+                                            viewModel.titleState.edit { moveCursorRightStateless() }
+                                            true
+                                        } else false
+                                    }
+
+                                    else -> false
                                 }
-                            },
+                            } else {
+                                false
+                            }
+                        },
                         state = viewModel.titleState,
                         lineLimits = TextFieldLineLimits.SingleLine,
                         textStyle = MaterialTheme.typography.titleMedium.copy(
