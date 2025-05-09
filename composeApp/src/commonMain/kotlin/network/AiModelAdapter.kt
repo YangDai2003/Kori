@@ -17,7 +17,10 @@ interface AiModelAdapter {
     suspend fun parseStandardResponse(response: HttpResponse, json: Json): AiResponse
 
     // For stream (Flow) response
-    fun parseStreamChunk(chunkData: String, json: Json): AiStreamChunk? // Null if it's a non-data line or e.g. [DONE]
+    fun parseStreamChunk(
+        chunkData: String,
+        json: Json
+    ): AiStreamChunk? // Null if it's a non-data line or e.g. [DONE]
 
     fun isStreamEndMarker(line: String): Boolean = line.equals("data: [DONE]", ignoreCase = true)
 }
@@ -47,7 +50,11 @@ object OpenAiAdapter : AiModelAdapter {
         apiKey?.let { builder.headers.append("Authorization", "Bearer $it") }
     }
 
-    override fun createRequestBody(modelId: String, messages: List<AiMessage>, stream: Boolean): Any {
+    override fun createRequestBody(
+        modelId: String,
+        messages: List<AiMessage>,
+        stream: Boolean
+    ): Any {
         return OpenAiChatRequest(
             model = modelId,
             messages = messages,
@@ -122,7 +129,11 @@ object OllamaNativeAdapter : AiModelAdapter {
         // No API key typically for local Ollama
     }
 
-    override fun createRequestBody(modelId: String, messages: List<AiMessage>, stream: Boolean): Any {
+    override fun createRequestBody(
+        modelId: String,
+        messages: List<AiMessage>,
+        stream: Boolean
+    ): Any {
         return OllamaChatRequest(model = modelId, messages = messages, stream = stream)
     }
 
@@ -138,7 +149,8 @@ object OllamaNativeAdapter : AiModelAdapter {
             usage = AiUsage(
                 prompt_tokens = ollamaResponse.prompt_eval_count,
                 completion_tokens = ollamaResponse.eval_count,
-                total_tokens = (ollamaResponse.prompt_eval_count ?: 0) + (ollamaResponse.eval_count ?: 0)
+                total_tokens = (ollamaResponse.prompt_eval_count ?: 0) + (ollamaResponse.eval_count
+                    ?: 0)
             )
         )
     }
@@ -150,7 +162,10 @@ object OllamaNativeAdapter : AiModelAdapter {
             AiStreamChunk(
                 choices = listOf(
                     AiChoice(
-                        delta = AiMessage(role = ollamaChunk.message.role, content = ollamaChunk.message.content),
+                        delta = AiMessage(
+                            role = ollamaChunk.message.role,
+                            content = ollamaChunk.message.content
+                        ),
                         finish_reason = if (ollamaChunk.done) "stop" else null
                     )
                 ),
@@ -158,7 +173,8 @@ object OllamaNativeAdapter : AiModelAdapter {
                 usage = if (ollamaChunk.done) AiUsage(
                     prompt_tokens = ollamaChunk.prompt_eval_count,
                     completion_tokens = ollamaChunk.eval_count,
-                    total_tokens = (ollamaChunk.prompt_eval_count ?: 0) + (ollamaChunk.eval_count ?: 0)
+                    total_tokens = (ollamaChunk.prompt_eval_count ?: 0) + (ollamaChunk.eval_count
+                        ?: 0)
                 ) else null
             )
         } catch (e: Exception) {
@@ -176,13 +192,25 @@ object OllamaNativeAdapter : AiModelAdapter {
 // GeminiAdapter.kt
 object GeminiAdapter : AiModelAdapter {
     @Serializable
-    data class GeminiRequest(val contents: List<GeminiContent>, val generationConfig: GeminiGenerationConfig? = null)
+    data class GeminiRequest(
+        val contents: List<GeminiContent>,
+        val generationConfig: GeminiGenerationConfig? = null
+    )
+
     @Serializable
-    data class GeminiContent(val parts: List<GeminiPart>, val role: String? = null) // Role optional for user, required for model
+    data class GeminiContent(
+        val parts: List<GeminiPart>,
+        val role: String? = null
+    ) // Role optional for user, required for model
+
     @Serializable
     data class GeminiPart(val text: String)
+
     @Serializable
-    data class GeminiGenerationConfig(val temperature: Float? = null, val maxOutputTokens: Int? = null)
+    data class GeminiGenerationConfig(
+        val temperature: Float? = null,
+        val maxOutputTokens: Int? = null
+    )
 
     @Serializable
     data class GeminiResponse(
@@ -191,14 +219,29 @@ object GeminiAdapter : AiModelAdapter {
         // Error structure for Gemini is different, might be directly in response or via HTTP status
         val error: GeminiError? = null // Custom error field if API provides it in JSON
     )
+
     @Serializable
-    data class GeminiCandidate(val content: GeminiContent, val finishReason: String? = null, val index: Int = 0)
+    data class GeminiCandidate(
+        val content: GeminiContent,
+        val finishReason: String? = null,
+        val index: Int = 0
+    )
+
     @Serializable
-    data class GeminiPromptFeedback(val blockReason: String? = null, val safetyRatings: List<GeminiSafetyRating> = emptyList())
+    data class GeminiPromptFeedback(
+        val blockReason: String? = null,
+        val safetyRatings: List<GeminiSafetyRating> = emptyList()
+    )
+
     @Serializable
     data class GeminiSafetyRating(val category: String, val probability: String)
+
     @Serializable
-    data class GeminiError(val code: Int, val message: String, val status: String) // Example, match actual API
+    data class GeminiError(
+        val code: Int,
+        val message: String,
+        val status: String
+    ) // Example, match actual API
 
     override val clientProvidesModelInPath: Boolean = true
 
@@ -215,7 +258,11 @@ object GeminiAdapter : AiModelAdapter {
         // No specific headers here unless required.
     }
 
-    override fun createRequestBody(modelId: String, messages: List<AiMessage>, stream: Boolean): Any {
+    override fun createRequestBody(
+        modelId: String,
+        messages: List<AiMessage>,
+        stream: Boolean
+    ): Any {
         val geminiContents = messages.map {
             GeminiContent(
                 parts = listOf(GeminiPart(it.content)),
@@ -226,7 +273,10 @@ object GeminiAdapter : AiModelAdapter {
         return GeminiRequest(contents = geminiContents)
     }
 
-    private fun mapGeminiResponseToAiResponse(geminiResponse: GeminiResponse, modelId: String): AiResponse {
+    private fun mapGeminiResponseToAiResponse(
+        geminiResponse: GeminiResponse,
+        modelId: String
+    ): AiResponse {
         if (geminiResponse.error != null) {
             return AiResponse(
                 choices = emptyList(),
@@ -240,7 +290,8 @@ object GeminiAdapter : AiModelAdapter {
         val choices = geminiResponse.candidates?.map { candidate ->
             AiChoice(
                 message = AiMessage(
-                    role = candidate.content.role ?: "assistant", // Default to assistant if role not in part
+                    role = candidate.content.role
+                        ?: "assistant", // Default to assistant if role not in part
                     content = candidate.content.parts.joinToString("") { it.text }
                 ),
                 finish_reason = candidate.finishReason,
@@ -252,7 +303,10 @@ object GeminiAdapter : AiModelAdapter {
 
     override suspend fun parseStandardResponse(response: HttpResponse, json: Json): AiResponse {
         val geminiResponse = json.decodeFromString<GeminiResponse>(response.bodyAsText())
-        return mapGeminiResponseToAiResponse(geminiResponse, response.request.url.pathSegments.last { it.isNotBlank() }.substringBefore(':'))
+        return mapGeminiResponseToAiResponse(
+            geminiResponse,
+            response.request.url.pathSegments.last { it.isNotBlank() }.substringBefore(':')
+        )
     }
 
     override fun parseStreamChunk(chunkData: String, json: Json): AiStreamChunk? {
@@ -280,9 +334,14 @@ object GeminiAdapter : AiModelAdapter {
                     // id = some unique id if provided by gemini
                 )
             } else if (geminiResponse.error != null) {
-                AiStreamChunk(error = AiError(geminiResponse.error.message, code = geminiResponse.error.code.toString(), type = geminiResponse.error.status))
-            }
-            else {
+                AiStreamChunk(
+                    error = AiError(
+                        geminiResponse.error.message,
+                        code = geminiResponse.error.code.toString(),
+                        type = geminiResponse.error.status
+                    )
+                )
+            } else {
                 null
             }
         } catch (e: Exception) {

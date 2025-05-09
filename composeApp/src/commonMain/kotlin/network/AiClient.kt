@@ -84,9 +84,17 @@ class AiClient(
 
             if (response.status != HttpStatusCode.OK) {
                 val errorBody = response.bodyAsText()
-                val errorMessage = "AI API Error: ${response.status.value} ${response.status.description}. Body: $errorBody"
-                val parsedError = try { json.decodeFromString<AiError>(errorBody) } catch (e: Exception) { AiError(errorMessage) }
-                return AiResponse(choices = emptyList(), error = parsedError) // Return AiResponse with error
+                val errorMessage =
+                    "AI API Error: ${response.status.value} ${response.status.description}. Body: $errorBody"
+                val parsedError = try {
+                    json.decodeFromString<AiError>(errorBody)
+                } catch (e: Exception) {
+                    AiError(errorMessage)
+                }
+                return AiResponse(
+                    choices = emptyList(),
+                    error = parsedError
+                ) // Return AiResponse with error
             }
 
             return adapter.parseStandardResponse(response, json)
@@ -117,8 +125,13 @@ class AiClient(
             }.execute { response ->
                 if (response.status != HttpStatusCode.OK) {
                     val errorBody = response.bodyAsText()
-                    val errorMessage = "AI API Stream Error: ${response.status.value} ${response.status.description}. Body: $errorBody"
-                    val parsedError = try { json.decodeFromString<AiError>(errorBody) } catch (e: Exception) { AiError(errorMessage) }
+                    val errorMessage =
+                        "AI API Stream Error: ${response.status.value} ${response.status.description}. Body: $errorBody"
+                    val parsedError = try {
+                        json.decodeFromString<AiError>(errorBody)
+                    } catch (e: Exception) {
+                        AiError(errorMessage)
+                    }
                     send(AiStreamChunk(error = parsedError))
                     lastChunkWasTerminal = true
                     close() // Close the channel
@@ -167,13 +180,14 @@ class AiClient(
                         // Gemini sends an array `[ { ... } ]`, then `[ { ... } ]`
                         // We need to handle potentially incomplete JSON lines if they span reads,
                         // but readUTF8Line usually gives complete lines.
-                        val chunkDataToParse = if (adapter is GeminiAdapter && line.startsWith("[")) {
-                            // Gemini streams an array of responses, usually with one item.
-                            // Extract the object from the array string.
-                            line.trim().removePrefix("[").removeSuffix("]").trim()
-                        } else {
-                            line.trim()
-                        }
+                        val chunkDataToParse =
+                            if (adapter is GeminiAdapter && line.startsWith("[")) {
+                                // Gemini streams an array of responses, usually with one item.
+                                // Extract the object from the array string.
+                                line.trim().removePrefix("[").removeSuffix("]").trim()
+                            } else {
+                                line.trim()
+                            }
 
                         if (chunkDataToParse.isNotBlank()) {
                             adapter.parseStreamChunk(chunkDataToParse, json)?.let {
@@ -190,7 +204,10 @@ class AiClient(
         } catch (e: Exception) {
             send(AiStreamChunk(error = AiError("Stream processing failed: ${e.message}")))
             lastChunkWasTerminal = true
-            throw AiClientException("Failed to generate AI stream response: ${e.message}", cause = e)
+            throw AiClientException(
+                "Failed to generate AI stream response: ${e.message}",
+                cause = e
+            )
         } finally {
             if (!lastChunkWasTerminal) {
                 // Ensure a final chunk indicating completion if not already sent.
