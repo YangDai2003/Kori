@@ -267,13 +267,76 @@ fun NoteScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    FilledTonalButton(
-                        modifier = Modifier.sizeIn(maxWidth = 160.dp),
-                        onClick = { showFolderDialog = true }
-                    ) {
-                        Text(
-                            text = folderName, maxLines = 1, modifier = Modifier.basicMarquee()
-                        )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        FilledTonalButton(
+                            modifier = Modifier.sizeIn(maxWidth = 160.dp),
+                            onClick = { showFolderDialog = true }
+                        ) {
+                            Text(
+                                text = folderName, maxLines = 1, modifier = Modifier.basicMarquee()
+                            )
+                        }
+                        if (isLargeScreen) {
+                            BasicTextField(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                                    .onPreviewKeyEvent { keyEvent ->
+                                        if (keyEvent.type == KeyEventType.KeyDown) {
+                                            when (keyEvent.key) {
+                                                Key.DirectionLeft -> {
+                                                    if (currentPlatform() == Platform.Android) {
+                                                        viewModel.titleState.edit { moveCursorLeftStateless() }
+                                                        true
+                                                    } else false
+                                                }
+
+                                                Key.DirectionRight -> {
+                                                    if (currentPlatform() == Platform.Android) {
+                                                        viewModel.titleState.edit { moveCursorRightStateless() }
+                                                        true
+                                                    } else false
+                                                }
+
+                                                else -> false
+                                            }
+                                        } else {
+                                            false
+                                        }
+                                    },
+                                state = viewModel.titleState,
+                                lineLimits = TextFieldLineLimits.SingleLine,
+                                textStyle = MaterialTheme.typography.titleLarge.copy(
+                                    color = MaterialTheme.colorScheme.onSurface
+                                ),
+                                readOnly = isReadView,
+                                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                                decorator = { innerTextField ->
+                                    TextFieldDefaults.DecorationBox(
+                                        value = viewModel.titleState.text.toString(),
+                                        innerTextField = innerTextField,
+                                        enabled = true,
+                                        singleLine = true,
+                                        visualTransformation = VisualTransformation.None,
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        placeholder = {
+                                            Text(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                text = stringResource(Res.string.title),
+                                                style = MaterialTheme.typography.titleLarge.copy(
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                                        alpha = 0.6f
+                                                    )
+                                                )
+                                            )
+                                        },
+                                        contentPadding = PaddingValues(0.dp),
+                                        container = {}
+                                    )
+                                }
+                            )
+                        }
                     }
                 },
                 navigationIcon = {
@@ -314,65 +377,68 @@ fun NoteScreen(
                         state = findAndReplaceState,
                         onStateUpdate = { findAndReplaceState = it }
                     )
-                else BasicTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .onPreviewKeyEvent { keyEvent ->
-                            if (keyEvent.type == KeyEventType.KeyDown) {
-                                when (keyEvent.key) {
-                                    Key.DirectionLeft -> {
-                                        if (currentPlatform() == Platform.Android) {
-                                            viewModel.titleState.edit { moveCursorLeftStateless() }
-                                            true
-                                        } else false
-                                    }
+                else {
+                    if (!isLargeScreen)
+                        BasicTextField(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .onPreviewKeyEvent { keyEvent ->
+                                    if (keyEvent.type == KeyEventType.KeyDown) {
+                                        when (keyEvent.key) {
+                                            Key.DirectionLeft -> {
+                                                if (currentPlatform() == Platform.Android) {
+                                                    viewModel.titleState.edit { moveCursorLeftStateless() }
+                                                    true
+                                                } else false
+                                            }
 
-                                    Key.DirectionRight -> {
-                                        if (currentPlatform() == Platform.Android) {
-                                            viewModel.titleState.edit { moveCursorRightStateless() }
-                                            true
-                                        } else false
-                                    }
+                                            Key.DirectionRight -> {
+                                                if (currentPlatform() == Platform.Android) {
+                                                    viewModel.titleState.edit { moveCursorRightStateless() }
+                                                    true
+                                                } else false
+                                            }
 
-                                    else -> false
-                                }
-                            } else {
-                                false
-                            }
-                        },
-                    state = viewModel.titleState,
-                    lineLimits = TextFieldLineLimits.SingleLine,
-                    textStyle = MaterialTheme.typography.titleLarge.copy(
-                        color = MaterialTheme.colorScheme.onSurface
-                    ),
-                    readOnly = isReadView,
-                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                    decorator = { innerTextField ->
-                        TextFieldDefaults.DecorationBox(
-                            value = viewModel.titleState.text.toString(),
-                            innerTextField = innerTextField,
-                            enabled = true,
-                            singleLine = true,
-                            visualTransformation = VisualTransformation.None,
-                            interactionSource = remember { MutableInteractionSource() },
-                            placeholder = {
-                                Text(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    text = stringResource(Res.string.title),
-                                    style = MaterialTheme.typography.titleLarge.copy(
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                            alpha = 0.6f
+                                            else -> false
+                                        }
+                                    } else {
+                                        false
+                                    }
+                                },
+                            state = viewModel.titleState,
+                            lineLimits = TextFieldLineLimits.SingleLine,
+                            textStyle = MaterialTheme.typography.titleLarge.copy(
+                                color = MaterialTheme.colorScheme.onSurface
+                            ),
+                            readOnly = isReadView,
+                            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                            decorator = { innerTextField ->
+                                TextFieldDefaults.DecorationBox(
+                                    value = viewModel.titleState.text.toString(),
+                                    innerTextField = innerTextField,
+                                    enabled = true,
+                                    singleLine = true,
+                                    visualTransformation = VisualTransformation.None,
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    placeholder = {
+                                        Text(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            text = stringResource(Res.string.title),
+                                            style = MaterialTheme.typography.titleLarge.copy(
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                                    alpha = 0.6f
+                                                )
+                                            )
                                         )
-                                    )
+                                    },
+                                    contentPadding = PaddingValues(0.dp),
+                                    container = {}
                                 )
-                            },
-                            contentPadding = PaddingValues(0.dp),
-                            container = {}
+                            }
                         )
-                    }
-                )
+                }
             }
 
             val scrollState = rememberScrollState()
