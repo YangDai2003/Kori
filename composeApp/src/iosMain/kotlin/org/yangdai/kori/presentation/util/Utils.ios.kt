@@ -2,8 +2,13 @@ package org.yangdai.kori.presentation.util
 
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ClipEntry
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.datetime.Instant
+import org.yangdai.kori.data.local.entity.NoteEntity
+import org.yangdai.kori.data.local.entity.NoteType
 import platform.Foundation.NSDate
 import platform.Foundation.NSDateFormatter
 import platform.Foundation.NSDateFormatterMediumStyle
@@ -11,6 +16,11 @@ import platform.Foundation.NSDateFormatterShortStyle
 import platform.Foundation.NSNumber
 import platform.Foundation.NSNumberFormatter
 import platform.Foundation.NSNumberFormatterDecimalStyle
+import platform.Foundation.NSString
+import platform.Foundation.NSTemporaryDirectory
+import platform.Foundation.NSURL
+import platform.Foundation.NSUTF8StringEncoding
+import platform.Foundation.writeToURL
 import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
 
@@ -43,4 +53,35 @@ private val numberFormatter by lazy {
 actual fun formatNumber(int: Int): String {
     val nsNumber = NSNumber(int)
     return numberFormatter.stringFromNumber(nsNumber) ?: int.toString()
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+actual fun clipEntryOf(string: String): ClipEntry {
+    return ClipEntry.withPlainText(string)
+}
+
+@OptIn(ExperimentalForeignApi::class)
+@Suppress("CAST_NEVER_SUCCEEDS")
+@Composable
+actual fun Modifier.clickToShareFile(noteEntity: NoteEntity): Modifier {
+    val tempDir = NSTemporaryDirectory()
+    val isMarkdown = noteEntity.noteType == NoteType.MARKDOWN
+    val fileName = noteEntity.title.trim().replace(" ", "_").replace("/", "_").replace(":", "_") +
+            if (isMarkdown) ".md" else ".txt"
+    val tempDirURL = NSURL.fileURLWithPath(tempDir, isDirectory = true)
+    val fileURL = tempDirURL.URLByAppendingPathComponent(fileName) ?: return this
+    val nsString = noteEntity.content as NSString
+    val success = nsString.writeToURL(
+        url = fileURL,
+        atomically = true,
+        encoding = NSUTF8StringEncoding,
+        error = null
+    )
+    if (!success) return this
+    return clickable {
+        val activityViewController = UIActivityViewController(listOf(fileURL), null)
+        UIApplication.sharedApplication.keyWindow?.rootViewController?.presentViewController(
+            activityViewController, animated = true, completion = null
+        )
+    }
 }

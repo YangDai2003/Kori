@@ -10,7 +10,6 @@ import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -21,7 +20,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -43,6 +41,7 @@ import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.SwapHorizontalCircle
+import androidx.compose.material.icons.outlined.Upload
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -113,11 +112,14 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.Platform
 import org.yangdai.kori.currentPlatform
+import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
 import org.yangdai.kori.presentation.component.TooltipIconButton
+import org.yangdai.kori.presentation.component.dialog.ExportDialog
 import org.yangdai.kori.presentation.component.dialog.FoldersDialog
 import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
+import org.yangdai.kori.presentation.component.dialog.ShareDialog
 import org.yangdai.kori.presentation.component.note.Editor
 import org.yangdai.kori.presentation.component.note.EditorRow
 import org.yangdai.kori.presentation.component.note.EditorRowAction
@@ -133,7 +135,6 @@ import org.yangdai.kori.presentation.component.note.template.TemplateProcessor
 import org.yangdai.kori.presentation.event.UiEvent
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.screen.settings.AppTheme
-import org.yangdai.kori.presentation.util.clickToShareText
 import org.yangdai.kori.presentation.util.formatInstant
 import org.yangdai.kori.presentation.util.formatNumber
 import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
@@ -229,6 +230,8 @@ fun NoteScreen(
     val focusManager = LocalFocusManager.current
     var isSideSheetOpen by rememberSaveable { mutableStateOf(false) }
     var showNoteTypeDialog by rememberSaveable { mutableStateOf(false) }
+    var showShareDialog by rememberSaveable { mutableStateOf(false) }
+    var showExportDialog by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(isReadView) {
         keyboardController?.hide()
         focusManager.clearFocus()
@@ -612,15 +615,18 @@ fun NoteScreen(
                 )
             }
 
-            Box(
-                Modifier.size(48.dp)
-                    .padding(4.dp)
-                    .clip(CircleShape)
-                    .clickToShareText(viewModel.contentState.text.toString()),
-                contentAlignment = Alignment.Center
-            ) {
+            if (currentPlatform() != Platform.Desktop)
+                IconButton(onClick = { showShareDialog = true }) {
+                    Icon(
+                        imageVector = if (currentPlatform() == Platform.Android) Icons.Outlined.Share
+                        else Icons.Outlined.IosShare,
+                        contentDescription = null
+                    )
+                }
+
+            IconButton(onClick = { showExportDialog = true }) {
                 Icon(
-                    imageVector = if (currentPlatform() == Platform.Android) Icons.Outlined.Share else Icons.Outlined.IosShare,
+                    imageVector = Icons.Outlined.Upload,
                     contentDescription = null
                 )
             }
@@ -682,6 +688,33 @@ fun NoteScreen(
                 showNoteTypeDialog = false
                 viewModel.updateNoteType(noteType)
             }
+        )
+    }
+
+    if (showShareDialog) {
+        ShareDialog(
+            noteEntity = NoteEntity(
+                title = viewModel.titleState.text.toString(),
+                content = viewModel.contentState.text.toString(),
+                noteType = noteEditingState.noteType,
+                createdAt = noteEditingState.createdAt,
+                updatedAt = noteEditingState.updatedAt
+            ),
+            onDismissRequest = { showShareDialog = false }
+        )
+    }
+
+    if (showExportDialog) {
+        ExportDialog(
+            noteEntity = NoteEntity(
+                title = viewModel.titleState.text.toString(),
+                content = viewModel.contentState.text.toString(),
+                noteType = noteEditingState.noteType,
+                createdAt = noteEditingState.createdAt,
+                updatedAt = noteEditingState.updatedAt
+            ),
+            html = html,
+            onDismissRequest = { showExportDialog = false }
         )
     }
 }

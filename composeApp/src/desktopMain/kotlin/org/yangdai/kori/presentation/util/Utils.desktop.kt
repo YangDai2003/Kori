@@ -3,12 +3,14 @@ package org.yangdai.kori.presentation.util
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ClipEntry
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toLocalDateTime
+import org.yangdai.kori.data.local.entity.NoteEntity
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.text.DateFormat
@@ -45,4 +47,13 @@ actual fun formatNumber(int: Int): String {
     } catch (_: IllegalArgumentException) {
         int.toString()
     }
+}
+
+actual fun clipEntryOf(string: String): ClipEntry {
+    return ClipEntry(string)
+}
+
+@Composable
+actual fun Modifier.clickToShareFile(noteEntity: NoteEntity): Modifier {
+    return this
 }

@@ -6,11 +6,13 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ClipEntry
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import kotlinx.datetime.Instant
 import org.yangdai.kori.Platform
 import org.yangdai.kori.currentPlatform
+import org.yangdai.kori.data.local.entity.NoteEntity
 
 @Composable
 fun rememberIsScreenSizeLarge(): Boolean {
@@ -48,6 +50,11 @@ fun Int.toHexColor(): String {
 @Composable
 expect fun Modifier.clickToShareText(text: String): Modifier
 
+@Composable
+expect fun Modifier.clickToShareFile(noteEntity: NoteEntity): Modifier
+
 expect fun formatInstant(instant: Instant): String
 
 expect fun formatNumber(int: Int): String
+
+expect fun clipEntryOf(string: String): ClipEntry

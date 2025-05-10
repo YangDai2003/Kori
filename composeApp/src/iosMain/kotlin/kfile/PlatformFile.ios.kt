@@ -57,6 +57,10 @@ actual suspend fun PlatformFile.delete(): Boolean {
 
 @OptIn(ExperimentalForeignApi::class)
 actual fun PlatformFile.getLastModified(): Instant {
-    val attributes = NSFileManager.defaultManager.attributesOfItemAtPath(url.path ?: return Clock.System.now(), null)
-    return (attributes?.get("NSFileModificationDate") as? NSDate)?.toKotlinInstant() ?: Clock.System.now()
+    val attributes = NSFileManager.defaultManager.attributesOfItemAtPath(
+        url.path ?: return Clock.System.now(),
+        null
+    )
+    return (attributes?.get("NSFileModificationDate") as? NSDate)?.toKotlinInstant()
+        ?: Clock.System.now()
 }

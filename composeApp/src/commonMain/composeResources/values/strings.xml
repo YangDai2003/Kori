@@ -128,4 +128,9 @@
     <string name="model">Model</string>
     <string name="key">Key</string>
     <string name="host">Host</string>
+
+    <string name="share_note_as">Share note as</string>
+    <string name="file">File</string>
+    <string name="text">Text</string>
+    <string name="export_as">Export note as</string>
 </resources>

@@ -5,7 +5,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.uikit.LocalUIViewController
 import kfile.PlatformFile
 import kotlinx.cinterop.ExperimentalForeignApi
+import org.yangdai.kori.data.local.entity.NoteEntity
+import platform.Foundation.NSFileManager
+import platform.Foundation.NSString
+import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSURL
+import platform.Foundation.NSUTF8StringEncoding
+import platform.Foundation.writeToURL
 import platform.UIKit.UIDocumentPickerDelegateProtocol
 import platform.UIKit.UIDocumentPickerMode
 import platform.UIKit.UIDocumentPickerViewController
@@ -25,17 +31,6 @@ actual fun FilePickerDialog(onFilePicked: (PlatformFile?) -> Unit) {
                 onFilePicked(PlatformFile(url = didPickDocumentAtURL))
             }
 
-            override fun documentPicker(
-                controller: UIDocumentPickerViewController,
-                didPickDocumentsAtURLs: List<*>
-            ) {
-                didPickDocumentsAtURLs.firstOrNull()?.let { url ->
-                    (url as? NSURL)?.path?.let { path ->
-                        onFilePicked(PlatformFile(url = url))
-                    } ?: onFilePicked(null)
-                } ?: onFilePicked(null)
-            }
-
             override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
                 onFilePicked(null)
             }
@@ -52,6 +47,69 @@ actual fun FilePickerDialog(onFilePicked: (PlatformFile?) -> Unit) {
                 "public.content"
             ),
             inMode = UIDocumentPickerMode.UIDocumentPickerModeOpen
+        ).apply {
+            this.delegate = delegate
+            this.allowsMultipleSelection = false
+        }
+    }
+
+    currentUIViewController.presentViewController(
+        documentPicker,
+        animated = true,
+        completion = null
+    )
+}
+
+@OptIn(ExperimentalForeignApi::class)
+@Suppress("CAST_NEVER_SUCCEEDS")
+@Composable
+actual fun SaveFileDialog(
+    exportType: ExportType,
+    noteEntity: NoteEntity,
+    html: String,
+    onFileSaved: (Boolean) -> Unit
+) {
+    val extension = when (exportType) {
+        ExportType.TXT -> ".txt"
+        ExportType.MARKDOWN -> ".md"
+        ExportType.HTML -> ".html"
+    }
+    val fileName =
+        noteEntity.title.trim().replace(" ", "_").replace("/", "_").replace(":", "_") + extension
+    val fileContent = if (exportType == ExportType.HTML) html else noteEntity.content
+
+    val currentUIViewController = LocalUIViewController.current
+    val tempDir = NSTemporaryDirectory()
+    val tempDirURL = NSURL.fileURLWithPath(tempDir, isDirectory = true)
+    val fileURL = tempDirURL.URLByAppendingPathComponent(fileName) ?: return
+    val nsString = fileContent as NSString
+    val success = nsString.writeToURL(
+        url = fileURL,
+        atomically = true,
+        encoding = NSUTF8StringEncoding,
+        error = null
+    )
+    if (!success) return
+    val delegate = remember {
+        object : NSObject(), UIDocumentPickerDelegateProtocol {
+            override fun documentPicker(
+                controller: UIDocumentPickerViewController,
+                didPickDocumentAtURL: NSURL
+            ) {
+                onFileSaved(true)
+                NSFileManager.defaultManager.removeItemAtURL(fileURL, null)
+            }
+
+            override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
+                onFileSaved(false)
+                NSFileManager.defaultManager.removeItemAtURL(fileURL, null)
+            }
+        }
+    }
+    val documentPicker = remember {
+        UIDocumentPickerViewController(
+            forExportingURLs = listOf(fileURL),
+            asCopy = true
         ).apply {
             this.delegate = delegate
             this.allowsMultipleSelection = false

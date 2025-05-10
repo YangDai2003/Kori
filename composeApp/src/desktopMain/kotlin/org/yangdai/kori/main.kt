@@ -72,8 +72,7 @@ fun main() {
                 if (darkMode) DarkDefaultContextMenuRepresentation else LightDefaultContextMenuRepresentation
 
             CompositionLocalProvider(
-                LocalContextMenuRepresentation provides contextMenuRepresentation,
-//                LocalTextContextMenu provides TextContextMenu.Default
+                LocalContextMenuRepresentation provides contextMenuRepresentation
             ) {
                 KoriTheme(
                     darkMode = darkMode,

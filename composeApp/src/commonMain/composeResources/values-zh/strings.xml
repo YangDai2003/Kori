@@ -126,4 +126,9 @@
     <string name="model">模型</string>
     <string name="key">密钥</string>
     <string name="host">域名</string>
+
+    <string name="share_note_as">分享笔记为</string>
+    <string name="file">文件</string>
+    <string name="text">文本</string>
+    <string name="export_as">导出笔记为</string>
 </resources>

@@ -126,4 +126,9 @@
     <string name="model">Modell</string>
     <string name="key">Schlüssel</string>
     <string name="host">Host</string>
+
+    <string name="share_note_as">Notiz teilen als</string>
+    <string name="file">Datei</string>
+    <string name="text">Text</string>
+    <string name="export_as">Notiz exportieren als</string>
 </resources>

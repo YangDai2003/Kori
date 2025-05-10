@@ -188,7 +188,7 @@ actual fun MarkdownView(
 
 private class InteropPanel : JFXPanel() {
 
-    var mouseEventEnabled = true
+    private var mouseEventEnabled = true
 
     override fun processMouseEvent(e: MouseEvent) {
         if (mouseEventEnabled) super.processMouseEvent(e)
