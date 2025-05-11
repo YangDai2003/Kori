@@ -23,6 +23,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import javafx.embed.swing.JFXPanel
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_name
 import kori.composeapp.generated.resources.compose_multiplatform
@@ -40,6 +41,8 @@ import org.yangdai.kori.presentation.util.AppLockManager
 import org.yangdai.kori.presentation.util.Constants
 import java.awt.Dimension
 
+@Suppress("unused")
+val fakeJFXPanel = JFXPanel()
 @OptIn(ExperimentalFoundationApi::class)
 fun main() {
     System.setProperty("compose.interop.blending", "true")
