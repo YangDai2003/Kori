@@ -184,8 +184,9 @@ compose.desktop {
     application {
         mainClass = "org.yangdai.kori.MainKt"
         buildTypes.release.proguard {
-//            configurationFiles.from(rootProject.file("proguard-rules.pro"))
-            isEnabled = false
+            configurationFiles.from(rootProject.file("compose-desktop.pro"))
+            joinOutputJars.set(true)
+            obfuscate.set(true)
         }
         nativeDistributions {
             macOS {
@@ -193,14 +194,17 @@ compose.desktop {
                 jvmArgs(
                     "-Dapple.awt.application.appearance=system"
                 )
+//                iconFile.set(project.file("icon.icns"))
             }
             windows {
                 shortcut = true
                 dirChooser = true
+//                iconFile.set(project.file("icon.ico"))
             }
             linux {
                 debMaintainer = "https://github.com/YangDai2003"
                 appCategory = "Utility"
+//                iconFile.set(project.file("icon.png"))
             }
             targetFormats(
                 TargetFormat.Dmg,
