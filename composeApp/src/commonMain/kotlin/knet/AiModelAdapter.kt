@@ -305,7 +305,7 @@ object GeminiAdapter : AiModelAdapter {
         val geminiResponse = json.decodeFromString<GeminiResponse>(response.bodyAsText())
         return mapGeminiResponseToAiResponse(
             geminiResponse,
-            response.request.url.pathSegments.last { it.isNotBlank() }.substringBefore(':')
+            response.request.url.rawSegments.last { it.isNotBlank() }.substringBefore(':')
         )
     }
 

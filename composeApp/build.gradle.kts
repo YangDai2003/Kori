@@ -25,6 +25,13 @@ val platform =
     } + if (isAarch64) "-aarch64" else ""
 
 kotlin {
+    targets.configureEach {
+        compilations.configureEach {
+            compileTaskProvider.get().compilerOptions {
+                freeCompilerArgs.add("-Xexpect-actual-classes")
+            }
+        }
+    }
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
@@ -148,7 +155,7 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                rootProject.file("proguard-rules.pro")
             )
         }
 
@@ -169,7 +176,6 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
-    add("kspCommonMainMetadata", libs.androidx.room.compiler)
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspDesktop", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
@@ -184,9 +190,8 @@ compose.desktop {
     application {
         mainClass = "org.yangdai.kori.MainKt"
         buildTypes.release.proguard {
-            configurationFiles.from(rootProject.file("compose-desktop.pro"))
-            joinOutputJars.set(true)
-            obfuscate.set(true)
+//            configurationFiles.from(rootProject.file("compose-desktop.pro"))
+            isEnabled = false
         }
         nativeDistributions {
             macOS {
@@ -194,6 +199,10 @@ compose.desktop {
                 jvmArgs(
                     "-Dapple.awt.application.appearance=system"
                 )
+//                infoPlist {
+//                    extraKeysRawXml = """
+//                    """.trimIndent()
+//                }
 //                iconFile.set(project.file("icon.icns"))
             }
             windows {
