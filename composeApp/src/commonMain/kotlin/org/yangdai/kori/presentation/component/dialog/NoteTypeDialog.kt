@@ -1,17 +1,20 @@
 package org.yangdai.kori.presentation.component.dialog
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,10 +22,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
-import kori.composeapp.generated.resources.cancel
 import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.plain_text
 import kori.composeapp.generated.resources.type
@@ -38,6 +41,7 @@ fun NoteTypeDialog(
 ) {
     var selectedNoteType by remember { mutableStateOf(oNoteType) }
     AlertDialog(
+        modifier = Modifier.widthIn(max = 360.dp),
         onDismissRequest = onDismissRequest,
         title = { Text(stringResource(Res.string.type)) },
         text = {
@@ -45,8 +49,10 @@ fun NoteTypeDialog(
                 NoteType.entries.forEach { noteType ->
                     Row(
                         modifier = Modifier
+                            .padding(top = 8.dp)
                             .fillMaxWidth()
-                            .height(48.dp)
+                            .clip(MaterialTheme.shapes.medium)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                             .selectable(
                                 selected = (selectedNoteType == noteType),
                                 role = Role.RadioButton,
@@ -56,26 +62,29 @@ fun NoteTypeDialog(
                                     onDismissRequest()
                                 }
                             ),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
+                        val typeName = when (noteType) {
+                            NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
+                            NoteType.MARKDOWN -> stringResource(Res.string.markdown)
+                        }
+                        Text(
+                            typeName,
+                            modifier = Modifier.minimumInteractiveComponentSize()
+                                .padding(horizontal = 16.dp)
+                                .padding(vertical = 4.dp),
+                            style = MaterialTheme.typography.titleMedium
+                        )
                         RadioButton(
                             modifier = Modifier.padding(end = 16.dp),
                             selected = (selectedNoteType == noteType),
                             onClick = null
                         )
-                        val typeName = when (noteType) {
-                            NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
-                            NoteType.MARKDOWN -> stringResource(Res.string.markdown)
-                        }
-                        Text(typeName)
                     }
                 }
             }
         },
-        confirmButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text(stringResource(Res.string.cancel))
-            }
-        }
+        confirmButton = {}
     )
 }

@@ -2,17 +2,18 @@ package org.yangdai.kori.presentation.component.dialog
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -22,13 +23,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.all_notes
 import kori.composeapp.generated.resources.cancel
@@ -55,60 +54,56 @@ fun FoldersDialog(
             Column {
                 HorizontalDivider(Modifier.fillMaxWidth())
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
-
                     item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().clickable {
-                                selectedFolderId = null
-                            }, verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            RadioButton(
-                                modifier = Modifier.padding(start = 0.dp, end = 16.dp)
-                                    .padding(vertical = 16.dp),
-                                selected = null == selectedFolderId,
-                                onClick = null
-                            )
-
-                            Icon(
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                imageVector = Icons.Outlined.FolderOpen,
-                                contentDescription = null
-                            )
-
-                            Text(
-                                text = stringResource(Res.string.all_notes),
-                                modifier = Modifier.padding(start = 16.dp)
-                            )
-                        }
+                        val isSelected = selectedFolderId == null
+                        ListItem(
+                            modifier = Modifier.clickable { selectedFolderId = null },
+                            leadingContent = {
+                                Icon(
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                    imageVector = if (isSelected) Icons.Outlined.FolderOpen
+                                    else Icons.Outlined.Folder,
+                                    contentDescription = null
+                                )
+                            },
+                            headlineContent = {
+                                Text(stringResource(Res.string.all_notes))
+                            },
+                            trailingContent = {
+                                RadioButton(
+                                    selected = isSelected,
+                                    onClick = null
+                                )
+                            },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                        )
                     }
                     items(foldersWithNoteCounts) { group ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth().clickable {
-                                selectedFolderId = group.folder.id
-                            }, verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            RadioButton(
-                                modifier = Modifier.padding(start = 0.dp, end = 16.dp)
-                                    .padding(vertical = 16.dp),
-                                selected = group.folder.id == selectedFolderId,
-                                onClick = null
-                            )
-
-                            Icon(
-                                imageVector = Icons.Outlined.FolderOpen,
-                                tint = if (group.folder.colorValue != FolderEntity.defaultColorValue) Color(
-                                    group.folder.colorValue
-                                ) else MaterialTheme.colorScheme.onSurface,
-                                contentDescription = null
-                            )
-
-                            Text(
-                                text = group.folder.name,
-                                modifier = Modifier.padding(start = 16.dp),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
+                        val folder = group.folder
+                        val isSelected = selectedFolderId == folder.id
+                        ListItem(
+                            modifier = Modifier.clickable { selectedFolderId = folder.id },
+                            leadingContent = {
+                                Icon(
+                                    imageVector = if (isSelected) Icons.Outlined.FolderOpen
+                                    else Icons.Outlined.Folder,
+                                    tint = if (folder.colorValue != FolderEntity.defaultColorValue)
+                                        Color(folder.colorValue)
+                                    else MaterialTheme.colorScheme.onSurface,
+                                    contentDescription = null
+                                )
+                            },
+                            headlineContent = {
+                                Text(folder.name, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            },
+                            trailingContent = {
+                                RadioButton(
+                                    selected = isSelected,
+                                    onClick = null
+                                )
+                            },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                        )
                     }
                 }
                 HorizontalDivider(Modifier.fillMaxWidth())
