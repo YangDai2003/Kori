@@ -47,11 +47,10 @@ class MainViewModel(
     private var _currentFolderId by mutableStateOf<String>("")
     private val _currentFolderNotesMap =
         MutableStateFlow<Map<Boolean, List<NoteEntity>>>(emptyMap())
-    val currentFolderNotesMap: StateFlow<Map<Boolean, List<NoteEntity>>> =
-        _currentFolderNotesMap.asStateFlow()
+    val currentFolderNotesMap = _currentFolderNotesMap.asStateFlow()
 
     private val _searchResults = MutableStateFlow<List<NoteEntity>>(emptyList())
-    val searchResults: StateFlow<List<NoteEntity>> = _searchResults.asStateFlow()
+    val searchResults = _searchResults.asStateFlow()
 
     val searchHistorySet: StateFlow<Set<String>> = dataStoreRepository
         .stringSetFlow(Constants.Preferences.SEARCH_HISTORY)

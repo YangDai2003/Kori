@@ -210,15 +210,14 @@ fun LazyStaggeredGridItemScope.NoteItem(
                             contentDescription = null,
                         )
 
-                    if (!note.isTemplate)
-                        Text(
-                            text = when (note.noteType) {
-                                NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
-                                NoteType.MARKDOWN -> stringResource(Res.string.markdown)
-                            },
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                        )
+                    Text(
+                        text = when (note.noteType) {
+                            NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
+                            NoteType.MARKDOWN -> stringResource(Res.string.markdown)
+                        },
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    )
 
                     Spacer(modifier = Modifier.weight(1f))
 

@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -74,6 +76,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.input.ImeAction
@@ -120,8 +123,8 @@ import org.yangdai.kori.presentation.component.note.markdown.MarkdownView
 import org.yangdai.kori.presentation.component.note.markdown.moveCursorLeftStateless
 import org.yangdai.kori.presentation.component.note.markdown.moveCursorRightStateless
 import org.yangdai.kori.presentation.component.note.template.TemplateProcessor
-import org.yangdai.kori.presentation.event.UiEvent
 import org.yangdai.kori.presentation.navigation.Screen
+import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.screen.settings.AppTheme
 import org.yangdai.kori.presentation.util.clickToShareText
 import org.yangdai.kori.presentation.util.formatInstant
@@ -328,7 +331,14 @@ fun FileScreen(
             )
         }
     ) { innerPadding ->
-        Column(Modifier.padding(innerPadding)) {
+        val layoutDirection = LocalLayoutDirection.current
+        Column(
+            Modifier.padding(
+                top = innerPadding.calculateTopPadding(),
+                start = innerPadding.calculateStartPadding(layoutDirection),
+                end = innerPadding.calculateEndPadding(layoutDirection)
+            )
+        ) {
             AnimatedVisibility(isSearching) {
                 FindAndReplaceField(
                     state = findAndReplaceState,
@@ -429,11 +439,6 @@ fun FileScreen(
                             }
 
                             1 -> {
-//                                        Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-//                                            Text(
-//                                                text = html
-//                                            )
-//                                        }
                                 MarkdownView(
                                     modifier = Modifier.fillMaxSize(),
                                     html = html,
@@ -447,15 +452,15 @@ fun FileScreen(
                     }
                 }
             }
-            AnimatedVisibility(visible = !isReadView) {
-                EditorRow(
-                    type = fileEditingState.fileType,
-                    textFieldState = viewModel.contentState
-                ) { action ->
-                    when (action) {
-                        EditorRowAction.Templates -> {
-                            showTemplatesBottomSheet = true
-                        }
+            EditorRow(
+                visible = !isReadView,
+                type = fileEditingState.fileType,
+                scrollState = scrollState,
+                textFieldState = viewModel.contentState
+            ) { action ->
+                when (action) {
+                    EditorRowAction.Templates -> {
+                        showTemplatesBottomSheet = true
                     }
                 }
             }
@@ -535,6 +540,7 @@ fun FileScreen(
         isDrawerOpen = isSideSheetOpen,
         onDismiss = { isSideSheetOpen = false },
         outline = outline,
+        showOutline = fileEditingState.fileType == NoteType.MARKDOWN,
         onHeaderClick = { selectedHeader = it },
         navigateTo = { navigateToScreen(it) },
         actionContent = {

@@ -1,9 +1,13 @@
 package org.yangdai.kori.presentation.util
 
 import android.content.ClipData
+import android.content.Context
 import android.content.Intent
 import android.icu.text.DateFormat
 import android.icu.text.NumberFormat
+import android.net.Uri
+import android.os.Build
+import android.os.Parcelable
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
@@ -12,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
+import androidx.documentfile.provider.DocumentFile
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -97,4 +102,125 @@ actual fun Modifier.clickToShareFile(noteEntity: NoteEntity): Modifier {
         chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(chooserIntent)
     }
+}
+
+data class SharedContent(val title: String = "", val text: String = "", val uri: Uri? = null)
+
+private fun Uri.getMimeType(context: Context): String? = context.contentResolver.getType(this)
+private fun String?.isTextMimeType(): Boolean = this?.startsWith("text/") == true
+
+private fun getFileName(context: Context, uri: Uri): String? {
+    if ("content" == uri.scheme) {
+        val docFile = DocumentFile.fromSingleUri(context, uri)
+        return docFile?.name
+    }
+    if ("file" == uri.scheme) {
+        return uri.lastPathSegment
+    }
+    return null
+}
+
+private fun Uri.getWritableUri(context: Context): Uri? {
+    return try {
+        val docFile = DocumentFile.fromSingleUri(context, this)
+        if (docFile != null && docFile.exists() && docFile.isFile
+            && docFile.canWrite() && docFile.canRead()
+        ) {
+            this
+        } else {
+            null
+        }
+    } catch (_: Exception) {
+        null
+    }
+}
+
+private fun readTextFromUri(context: Context, uri: Uri): String? {
+    if (uri.scheme == "content" || uri.scheme == "file") {
+        return try {
+            context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                inputStream.bufferedReader().use { reader ->
+                    reader.readText()
+                }
+            }
+        } catch (e: SecurityException) {
+            System.err.println("SecurityException reading URI: $uri - $e")
+            null // Insufficient permissions
+        } catch (e: Exception) {
+            System.err.println("Exception reading URI: $uri - $e")
+            null // Other read errors
+        }
+    }
+    return null
+}
+
+internal inline fun <reified T : Parcelable> Intent.getParcelableExtraCompat(name: String): T? =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        getParcelableExtra(name, T::class.java)
+    } else {
+        @Suppress("DEPRECATION")
+        getParcelableExtra(name) as? T
+    }
+
+fun Intent.parseSharedContent(context: Context): SharedContent {
+    return when (action) {
+        Intent.ACTION_SEND -> parseActionSend(context)
+        Intent.ACTION_VIEW, Intent.ACTION_EDIT -> parseActionViewEdit(context)
+        else -> SharedContent() // Default for unhandled or unknown actions
+    }
+}
+
+private fun Intent.parseActionSend(context: Context): SharedContent {
+    var title = getStringExtra(Intent.EXTRA_SUBJECT).orEmpty()
+    var text = getStringExtra(Intent.EXTRA_TEXT).orEmpty()
+
+    // Check for a single shared stream (e.g., sharing a file)
+    val streamUri = getParcelableExtraCompat<Uri>(Intent.EXTRA_STREAM)
+    if (streamUri != null) {
+        val streamFileName = getFileName(context, streamUri).orEmpty()
+        if (title.isEmpty()) title = streamFileName
+
+        // If EXTRA_TEXT is empty, try to get text from the stream if it's a text type
+        if (text.isEmpty()) {
+            val mimeType =
+                type ?: streamUri.getMimeType(context) // Prefer intent type, fallback to URI type
+            if (mimeType.isTextMimeType()) {
+                text = readTextFromUri(context, streamUri).orEmpty()
+            }
+
+            // If text is still empty (e.g., non-text file or read failed), use a placeholder
+            if (text.isEmpty()) {
+                text = "Shared file: ${streamFileName.ifEmpty { streamUri.toString() }}"
+            }
+        } else {
+            val streamText = readTextFromUri(context, streamUri)
+            text += if (streamText != null) "\n\n--- Attached File: $streamFileName ---\n$streamText"
+            else "\n\n(Attached file: $streamFileName)"
+        }
+    }
+    return SharedContent(title, text)
+}
+
+private fun Intent.parseActionViewEdit(context: Context): SharedContent {
+    var title = ""
+    var text = ""
+    var writableUri: Uri? = null
+
+    data?.let { uri ->
+        title = getFileName(context, uri).orEmpty()
+
+        val effectiveMimeType = this.type ?: uri.getMimeType(context)
+
+        if (effectiveMimeType.isTextMimeType()) {
+            text = readTextFromUri(context, uri).orEmpty()
+        }
+
+        // If text is still empty (e.g., non-text file or read failed), use a placeholder
+        if (text.isEmpty()) {
+            text = "Viewing content: ${title.ifEmpty { uri.toString() }}"
+        }
+
+        writableUri = uri.getWritableUri(context)
+    }
+    return SharedContent(title, text, writableUri)
 }

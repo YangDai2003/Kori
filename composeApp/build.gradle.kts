@@ -134,6 +134,7 @@ android {
         }
     }
     androidResources {
+        @Suppress("UnstableApiUsage")
         generateLocaleConfig = true
     }
     packaging {

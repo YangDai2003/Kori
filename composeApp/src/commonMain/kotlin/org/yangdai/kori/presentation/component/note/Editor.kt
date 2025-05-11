@@ -7,10 +7,12 @@ import androidx.compose.ui.Modifier
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownEditor
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditor
+import org.yangdai.kori.presentation.component.note.template.TemplateEditor
 
 @Composable
 fun Editor(
     modifier: Modifier = Modifier,
+    isTemplate: Boolean = false,
     type: NoteType,
     state: TextFieldState,
     scrollState: ScrollState,
@@ -20,30 +22,40 @@ fun Editor(
     headerRange: IntRange?,
     findAndReplaceState: FindAndReplaceState,
     onFindAndReplaceUpdate: (FindAndReplaceState) -> Unit
-) = when (type) {
-    NoteType.MARKDOWN -> {
-        MarkdownEditor(
-            modifier = modifier,
-            state = state,
-            scrollState = scrollState,
-            readMode = readMode,
-            showLineNumbers = showLineNumbers,
-            isLintActive = isLintActive,
-            headerRange = headerRange,
-            findAndReplaceState = findAndReplaceState,
-            onFindAndReplaceUpdate = onFindAndReplaceUpdate
-        )
-    }
+) {
+    if (isTemplate) TemplateEditor(
+        modifier = modifier,
+        state = state,
+        scrollState = scrollState,
+        readMode = readMode,
+        showLineNumbers = showLineNumbers,
+        findAndReplaceState = findAndReplaceState,
+        onFindAndReplaceUpdate = onFindAndReplaceUpdate
+    ) else when (type) {
+        NoteType.MARKDOWN -> {
+            MarkdownEditor(
+                modifier = modifier,
+                state = state,
+                scrollState = scrollState,
+                readMode = readMode,
+                showLineNumbers = showLineNumbers,
+                isLintActive = isLintActive,
+                headerRange = headerRange,
+                findAndReplaceState = findAndReplaceState,
+                onFindAndReplaceUpdate = onFindAndReplaceUpdate
+            )
+        }
 
-    NoteType.PLAIN_TEXT -> {
-        PlainTextEditor(
-            modifier = modifier,
-            state = state,
-            scrollState = scrollState,
-            readMode = readMode,
-            showLineNumbers = showLineNumbers,
-            findAndReplaceState = findAndReplaceState,
-            onFindAndReplaceUpdate = onFindAndReplaceUpdate
-        )
+        NoteType.PLAIN_TEXT -> {
+            PlainTextEditor(
+                modifier = modifier,
+                state = state,
+                scrollState = scrollState,
+                readMode = readMode,
+                showLineNumbers = showLineNumbers,
+                findAndReplaceState = findAndReplaceState,
+                onFindAndReplaceUpdate = onFindAndReplaceUpdate
+            )
+        }
     }
 }

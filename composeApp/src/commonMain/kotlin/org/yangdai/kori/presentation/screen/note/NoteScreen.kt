@@ -1,7 +1,6 @@
 package org.yangdai.kori.presentation.screen.note
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -14,6 +13,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -80,6 +81,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.input.ImeAction
@@ -132,8 +134,8 @@ import org.yangdai.kori.presentation.component.note.markdown.MarkdownView
 import org.yangdai.kori.presentation.component.note.markdown.moveCursorLeftStateless
 import org.yangdai.kori.presentation.component.note.markdown.moveCursorRightStateless
 import org.yangdai.kori.presentation.component.note.template.TemplateProcessor
-import org.yangdai.kori.presentation.event.UiEvent
 import org.yangdai.kori.presentation.navigation.Screen
+import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.screen.settings.AppTheme
 import org.yangdai.kori.presentation.util.formatInstant
 import org.yangdai.kori.presentation.util.formatNumber
@@ -144,8 +146,6 @@ import kotlin.math.abs
 @Composable
 fun NoteScreen(
     viewModel: NoteViewModel = koinViewModel(),
-    noteId: String,
-    folderId: String?,
     navigateToScreen: (Screen) -> Unit,
     navigateUp: () -> Unit
 ) {
@@ -169,18 +169,12 @@ fun NoteScreen(
         }
     }
 
-    // 确保屏幕旋转等配置变更时，不会重复加载笔记
-    var lastLoadedNoteId by rememberSaveable { mutableStateOf<String?>(null) }
-
     DisposableEffect(Unit) {
-        if (noteId != lastLoadedNoteId) {
-            lastLoadedNoteId = noteId
-            viewModel.loadNoteById(noteId, folderId)
-        }
         onDispose {
             viewModel.saveOrUpdateNote()
         }
     }
+
     LaunchedEffect(true) {
         viewModel.uiEventFlow.collect { event ->
             if (event is UiEvent.NavigateUp) navigateUp()
@@ -189,7 +183,7 @@ fun NoteScreen(
 
     var isReadView by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(editorState.isDefaultReadingView) {
-        if (editorState.isDefaultReadingView && noteId.isNotEmpty()) {
+        if (editorState.isDefaultReadingView && noteEditingState.id.isNotEmpty()) {
             isReadView = true
         }
     }
@@ -370,7 +364,14 @@ fun NoteScreen(
             )
         }
     ) { innerPadding ->
-        Column(Modifier.padding(innerPadding)) {
+        val layoutDirection = LocalLayoutDirection.current
+        Column(
+            Modifier.padding(
+                top = innerPadding.calculateTopPadding(),
+                start = innerPadding.calculateStartPadding(layoutDirection),
+                end = innerPadding.calculateEndPadding(layoutDirection)
+            )
+        ) {
             AnimatedContent(isSearching) {
                 if (it)
                     FindAndReplaceField(
@@ -534,11 +535,6 @@ fun NoteScreen(
                             }
 
                             1 -> {
-//                                        Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-//                                            Text(
-//                                                text = html
-//                                            )
-//                                        }
                                 MarkdownView(
                                     modifier = Modifier.fillMaxSize(),
                                     html = html,
@@ -552,15 +548,15 @@ fun NoteScreen(
                     }
                 }
             }
-            AnimatedVisibility(visible = !isReadView) {
-                EditorRow(
-                    type = noteEditingState.noteType,
-                    textFieldState = viewModel.contentState
-                ) { action ->
-                    when (action) {
-                        EditorRowAction.Templates -> {
-                            showTemplatesBottomSheet = true
-                        }
+            EditorRow(
+                visible = !isReadView,
+                type = noteEditingState.noteType,
+                scrollState = scrollState,
+                textFieldState = viewModel.contentState
+            ) { action ->
+                when (action) {
+                    EditorRowAction.Templates -> {
+                        showTemplatesBottomSheet = true
                     }
                 }
             }
@@ -652,6 +648,7 @@ fun NoteScreen(
         isDrawerOpen = isSideSheetOpen,
         onDismiss = { isSideSheetOpen = false },
         outline = outline,
+        showOutline = noteEditingState.noteType == NoteType.MARKDOWN,
         onHeaderClick = { selectedHeader = it },
         navigateTo = { navigateToScreen(it) },
         actionContent = {

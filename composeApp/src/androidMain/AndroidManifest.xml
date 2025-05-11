@@ -26,6 +26,41 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- 笔记创建 -->
+            <intent-filter>
+                <action android:name="android.intent.action.CREATE_NOTE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.google.android.gms.actions.CREATE_NOTE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <!-- 接收文本, 文件, 链接, 网页分享 -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:mimeType="text/*" />
+            </intent-filter>
+
+            <!-- 文件查看和编辑 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:mimeType="text/*"
+                    android:scheme="file" />
+                <data
+                    android:mimeType="text/*"
+                    android:scheme="content" />
+            </intent-filter>
+
             <!-- 应用深度链接 -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />

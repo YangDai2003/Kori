@@ -90,6 +90,7 @@ private val ActionWidth = 48.dp
 fun NoteSideSheet(
     isDrawerOpen: Boolean,
     onDismiss: () -> Unit,
+    showOutline: Boolean,
     outline: HeaderNode,
     onHeaderClick: (IntRange) -> Unit,
     navigateTo: (Screen) -> Unit,
@@ -268,9 +269,8 @@ fun NoteSideSheet(
                         }
                     }
 
-                    // 大纲标题
-                    item {
-                        if (outline.children.isNotEmpty()) {
+                    if (outline.children.isNotEmpty() && showOutline)
+                        item {
                             HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
                             Row(
                                 modifier = Modifier
@@ -298,17 +298,16 @@ fun NoteSideSheet(
                                 }
                             }
                         }
-                    }
 
-                    // 大纲内容
-                    items(outline.children) { header ->
-                        HeaderItem(
-                            header = header,
-                            depth = 0,
-                            onHeaderClick = onHeaderClick,
-                            parentExpanded = isAllExpanded
-                        )
-                    }
+                    if (outline.children.isNotEmpty() && showOutline)
+                        items(outline.children) { header ->
+                            HeaderItem(
+                                header = header,
+                                depth = 0,
+                                onHeaderClick = onHeaderClick,
+                                parentExpanded = isAllExpanded
+                            )
+                        }
                 }
             }
         }

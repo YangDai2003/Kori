@@ -48,69 +48,56 @@ fun PlainTextEditorRow(
 
     Spacer(Modifier.width(4.dp))
 
-    EditorRowSection(
-        {
-            EditorRowButton(
-                tipText = "$platformKeyboardShortCut + Z",
-                icon = Icons.AutoMirrored.Outlined.Undo,
-                enabled = textFieldState.undoState.canUndo,
-                onClick = { textFieldState.undoState.undo() }
-            )
-        },
-        {
-            EditorRowButton(
-                tipText = "$platformKeyboardShortCut + Y",
-                icon = Icons.AutoMirrored.Outlined.Redo,
-                enabled = textFieldState.undoState.canRedo,
-                onClick = { textFieldState.undoState.redo() }
-            )
-        }
-    )
+    EditorRowSection {
+        EditorRowButton(
+            tipText = "$platformKeyboardShortCut + Z",
+            icon = Icons.AutoMirrored.Outlined.Undo,
+            enabled = textFieldState.undoState.canUndo,
+            onClick = { textFieldState.undoState.undo() }
+        )
 
-    EditorRowSection(
-        {
-            EditorRowButton(
-                icon = Icons.AutoMirrored.Outlined.FormatIndentIncrease,
-                onClick = { textFieldState.edit { tab() } }
-            )
-        },
-        {
-            EditorRowButton(
-                icon = Icons.AutoMirrored.Outlined.FormatIndentDecrease,
-                onClick = { textFieldState.edit { unTab() } }
-            )
-        }
-    )
+        EditorRowButton(
+            tipText = "$platformKeyboardShortCut + Y",
+            icon = Icons.AutoMirrored.Outlined.Redo,
+            enabled = textFieldState.undoState.canRedo,
+            onClick = { textFieldState.undoState.redo() }
+        )
+    }
 
-    EditorRowSection(
-        {
-            EditorRowButton(
-                icon = painterResource(Res.drawable.parentheses),
-                onClick = { textFieldState.edit { parentheses() } }
-            )
-        },
-        {
-            EditorRowButton(
-                icon = Icons.Outlined.DataArray,
-                onClick = { textFieldState.edit { brackets() } }
-            )
-        },
-        {
-            EditorRowButton(
-                icon = Icons.Outlined.DataObject,
-                onClick = { textFieldState.edit { braces() } }
-            )
-        }
-    )
+    EditorRowSection {
+        EditorRowButton(
+            icon = Icons.AutoMirrored.Outlined.FormatIndentIncrease,
+            onClick = { textFieldState.edit { tab() } }
+        )
+        EditorRowButton(
+            icon = Icons.AutoMirrored.Outlined.FormatIndentDecrease,
+            onClick = { textFieldState.edit { unTab() } }
+        )
+    }
 
-    EditorRowSection(
-        {
-            EditorRowButton(
-                icon = Icons.AutoMirrored.Outlined.TextSnippet,
-                onClick = { onEditorRowAction(EditorRowAction.Templates) }
-            )
-        }
-    )
+    EditorRowSection {
+        EditorRowButton(
+            icon = painterResource(Res.drawable.parentheses),
+            onClick = { textFieldState.edit { parentheses() } }
+        )
+
+        EditorRowButton(
+            icon = Icons.Outlined.DataArray,
+            onClick = { textFieldState.edit { brackets() } }
+        )
+
+        EditorRowButton(
+            icon = Icons.Outlined.DataObject,
+            onClick = { textFieldState.edit { braces() } }
+        )
+    }
+
+    EditorRowSection {
+        EditorRowButton(
+            icon = Icons.AutoMirrored.Outlined.TextSnippet,
+            onClick = { onEditorRowAction(EditorRowAction.Templates) }
+        )
+    }
 
     Spacer(Modifier.width(4.dp))
 }

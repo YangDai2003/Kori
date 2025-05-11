@@ -3,8 +3,10 @@ package org.yangdai.kori.presentation.screen.note
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.snapshotFlow
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import kmark.MarkdownElementTypes
 import kmark.ast.ASTNode
 import kmark.ast.getTextInNode
@@ -18,7 +20,6 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -46,7 +47,8 @@ import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.domain.sort.FolderSortType
 import org.yangdai.kori.presentation.component.note.HeaderNode
-import org.yangdai.kori.presentation.event.UiEvent
+import org.yangdai.kori.presentation.navigation.Screen
+import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.screen.settings.AppTheme
 import org.yangdai.kori.presentation.screen.settings.EditorPaneState
 import org.yangdai.kori.presentation.screen.settings.TemplatePaneState
@@ -56,14 +58,70 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class NoteViewModel(
+    savedStateHandle: SavedStateHandle,
     private val folderRepository: FolderRepository,
     private val noteRepository: NoteRepository,
     private val dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
+    private val route = savedStateHandle.toRoute<Screen.Note>()
+
     // 笔记状态
     val titleState = TextFieldState()
     val contentState = TextFieldState()
     private val contentSnapshotFlow = snapshotFlow { contentState.text }
+
+    private val _uiEventFlow = MutableSharedFlow<UiEvent>()
+    val uiEventFlow = _uiEventFlow.asSharedFlow()
+
+    private val _noteEditingState = MutableStateFlow(NoteEditingState())
+    val noteEditingState = _noteEditingState.asStateFlow()
+
+    var baseHtml: String? = null
+    val flavor = GFMFlavourDescriptor()
+    val parser = MarkdownParser(flavor)
+    var oNote = NoteEntity()
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            baseHtml = Res.readBytes("files/template.html").decodeToString()
+        }
+        viewModelScope.launch {
+            if (route.id.isEmpty()) {
+                titleState.setTextAndPlaceCursorAtEnd(route.sharedContentTitle)
+                contentState.setTextAndPlaceCursorAtEnd(route.sharedContentText)
+                val currentTime = Clock.System.now().toString()
+                _noteEditingState.update {
+                    it.copy(
+                        id = route.id,
+                        folderId = route.folderId,
+                        createdAt = currentTime,
+                        updatedAt = currentTime,
+                        noteType = NoteType.entries[dataStoreRepository.getInt(
+                            Constants.Preferences.DEFAULT_NOTE_TYPE,
+                            0
+                        )]
+                    )
+                }
+            } else
+                noteRepository.getNoteById(route.id)?.let { note ->
+                    titleState.setTextAndPlaceCursorAtEnd(note.title)
+                    contentState.setTextAndPlaceCursorAtEnd(note.content)
+                    _noteEditingState.update {
+                        it.copy(
+                            id = note.id,
+                            createdAt = note.createdAt,
+                            updatedAt = note.updatedAt,
+                            isPinned = note.isPinned,
+                            isDeleted = note.isDeleted,
+                            folderId = note.folderId,
+                            noteType = note.noteType,
+                            isTemplate = note.isTemplate
+                        )
+                    }
+                    oNote = note
+                }
+        }
+    }
 
     val appTheme = dataStoreRepository.intFlow(Constants.Preferences.APP_THEME)
         .map { AppTheme.fromInt(it) }
@@ -108,9 +166,6 @@ class NoteViewModel(
             initialValue = TextState()
         )
 
-    private val _noteEditingState = MutableStateFlow<NoteEditingState>(NoteEditingState())
-    val noteEditingState: StateFlow<NoteEditingState> = _noteEditingState.asStateFlow()
-
     @OptIn(ExperimentalCoroutinesApi::class)
     val foldersWithNoteCounts: StateFlow<List<FolderDao.FolderWithNoteCount>> = dataStoreRepository
         .intFlow(Constants.Preferences.FOLDER_SORT_TYPE)
@@ -125,10 +180,6 @@ class NoteViewModel(
             initialValue = emptyList()
         )
 
-    var baseHtml: String? = null
-    val flavor = GFMFlavourDescriptor()
-    val parser = MarkdownParser(flavor)
-
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     private val contentAndTreeFlow = contentSnapshotFlow.debounce(100).distinctUntilChanged()
         .mapLatest { content ->
@@ -137,7 +188,6 @@ class NoteViewModel(
             text to tree
         }
         .flowOn(Dispatchers.Default)
-
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val html = contentAndTreeFlow
@@ -151,7 +201,6 @@ class NoteViewModel(
             started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = ""
         )
-
 
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     val outline = contentAndTreeFlow.debounce(1000)
@@ -218,55 +267,6 @@ class NoteViewModel(
         }
     }
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            baseHtml = Res.readBytes("files/template.html").decodeToString()
-        }
-    }
-
-    private val _uiEventFlow = MutableSharedFlow<UiEvent>()
-    val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
-
-    var oNote = NoteEntity()
-
-    fun loadNoteById(id: String, folderId: String?) {
-        viewModelScope.launch {
-            if (id.isEmpty()) {
-                val currentTime = Clock.System.now().toString()
-                _noteEditingState.update {
-                    it.copy(
-                        id = id,
-                        folderId = folderId,
-                        createdAt = currentTime,
-                        updatedAt = currentTime,
-                        noteType = NoteType.entries[dataStoreRepository.getInt(
-                            Constants.Preferences.DEFAULT_NOTE_TYPE,
-                            0
-                        )]
-                    )
-                }
-                oNote = NoteEntity()
-            } else
-                noteRepository.getNoteById(id)?.let { note ->
-                    titleState.setTextAndPlaceCursorAtEnd(note.title)
-                    contentState.setTextAndPlaceCursorAtEnd(note.content)
-                    _noteEditingState.update {
-                        it.copy(
-                            id = note.id,
-                            createdAt = note.createdAt,
-                            updatedAt = note.updatedAt,
-                            isPinned = note.isPinned,
-                            isDeleted = note.isDeleted,
-                            folderId = note.folderId,
-                            noteType = note.noteType,
-                            isTemplate = note.isTemplate
-                        )
-                    }
-                    oNote = note
-                }
-        }
-    }
-
     @OptIn(ExperimentalUuidApi::class)
     fun saveOrUpdateNote() {
         if (_noteEditingState.value.isDeleted) return
@@ -284,13 +284,14 @@ class NoteViewModel(
                 noteType = _noteEditingState.value.noteType
             )
             if (noteEntity.id.isEmpty() && (noteEntity.title.isNotBlank() || noteEntity.content.isNotBlank())) {
-                noteRepository.insertNote(noteEntity.copy(id = Uuid.random().toString()))
+                val id = Uuid.random().toString()
+                noteRepository.insertNote(noteEntity.copy(id = id))
+                _noteEditingState.update { it.copy(id = id) }
             } else {
                 if (oNote.title != noteEntity.title || oNote.content != noteEntity.content ||
-                    oNote.folderId != noteEntity.folderId || oNote.isTemplate != noteEntity.isTemplate ||
-                    oNote.isPinned != noteEntity.isPinned || oNote.noteType != noteEntity.noteType
-                )
-                    noteRepository.updateNote(noteEntity)
+                    oNote.folderId != noteEntity.folderId || oNote.noteType != noteEntity.noteType ||
+                    oNote.isPinned != noteEntity.isPinned
+                ) noteRepository.updateNote(noteEntity)
             }
         }
     }

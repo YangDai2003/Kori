@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -49,7 +48,7 @@ import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.presentation.component.note.HeaderNode
-import org.yangdai.kori.presentation.event.UiEvent
+import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.screen.note.TextState
 import org.yangdai.kori.presentation.screen.settings.AppTheme
 import org.yangdai.kori.presentation.screen.settings.EditorPaneState
@@ -111,8 +110,8 @@ class FileViewModel(
             initialValue = TextState()
         )
 
-    private val _fileEditingState = MutableStateFlow<FileEditingState>(FileEditingState())
-    val fileEditingState: StateFlow<FileEditingState> = _fileEditingState.asStateFlow()
+    private val _fileEditingState = MutableStateFlow(FileEditingState())
+    val fileEditingState = _fileEditingState.asStateFlow()
 
     var baseHtml: String? = null
     val flavor = GFMFlavourDescriptor()

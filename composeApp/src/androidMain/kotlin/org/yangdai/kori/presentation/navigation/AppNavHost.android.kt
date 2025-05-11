@@ -1,6 +1,9 @@
 package org.yangdai.kori.presentation.navigation
 
+import android.content.Intent
+import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
@@ -17,6 +20,7 @@ import org.yangdai.kori.presentation.screen.note.NoteScreen
 import org.yangdai.kori.presentation.screen.settings.SettingsScreen
 import org.yangdai.kori.presentation.screen.template.TemplateScreen
 import org.yangdai.kori.presentation.util.Constants
+import org.yangdai.kori.presentation.util.parseSharedContent
 
 @Composable
 actual fun AppNavHost(
@@ -43,15 +47,38 @@ actual fun AppNavHost(
         MainScreen { screen ->
             navHostController.navigate(screen)
         }
+        val activity = LocalActivity.current
+        val context = LocalContext.current.applicationContext
+        SideEffect {
+            activity?.intent?.apply {
+                when (action) {
+                    Intent.ACTION_SEND, Intent.ACTION_VIEW, Intent.ACTION_EDIT -> {
+                        val sharedContent = parseSharedContent(context)
+                        if (sharedContent.uri != null) {
+                            navHostController.navigate(Screen.File(path = sharedContent.uri.toString()))
+                        } else if (sharedContent.title.isNotEmpty() || sharedContent.text.isNotEmpty()) {
+                            navHostController.navigate(
+                                Screen.Note(
+                                    sharedContentTitle = sharedContent.title,
+                                    sharedContentText = sharedContent.text
+                                )
+                            )
+                        }
+                    }
+
+                    Intent.ACTION_CREATE_NOTE, "com.google.android.gms.actions.CREATE_NOTE" -> {
+                        navHostController.navigate(Screen.Note())
+                    }
+
+                    else -> {}
+                }
+            }
+            activity?.intent?.action = null
+        }
     }
 
     composable<Screen.Note>(deepLinks = listOf(navDeepLink<Screen.Note>(basePath = "${Constants.DEEP_LINK}/note"))) {
-        val route = it.toRoute<Screen.Note>()
-        NoteScreen(
-            noteId = route.id,
-            folderId = route.folderId,
-            navigateToScreen = { navHostController.navigate(it) }
-        ) {
+        NoteScreen(navigateToScreen = { navHostController.navigate(it) }) {
             navHostController.navigateUp()
         }
     }
@@ -68,8 +95,7 @@ actual fun AppNavHost(
     }
 
     composable<Screen.Template> {
-        val route = it.toRoute<Screen.Template>()
-        TemplateScreen(noteId = route.id) {
+        TemplateScreen(navigateToScreen = { navHostController.navigate(it) }) {
             navHostController.navigateUp()
         }
     }

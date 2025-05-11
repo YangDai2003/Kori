@@ -8,7 +8,12 @@ sealed class Screen() {
     data object Main : Screen()
 
     @Serializable
-    data class Note(val id: String = "", val folderId: String? = null) : Screen()
+    data class Note(
+        val id: String = "",
+        val folderId: String? = null,
+        val sharedContentTitle: String = "",
+        val sharedContentText: String = ""
+    ) : Screen()
 
     @Serializable
     data class Template(val id: String = "") : Screen()

@@ -31,12 +31,7 @@ actual fun AppNavHost(
     }
 
     composable<Screen.Note> {
-        val route = it.toRoute<Screen.Note>()
-        NoteScreen(
-            noteId = route.id,
-            folderId = route.folderId,
-            navigateToScreen = { navHostController.navigate(it) }
-        ) {
+        NoteScreen(navigateToScreen = { navHostController.navigate(it) }) {
             navHostController.navigateUp()
         }
     }
@@ -52,8 +47,7 @@ actual fun AppNavHost(
     }
 
     composable<Screen.Template> {
-        val route = it.toRoute<Screen.Template>()
-        TemplateScreen(noteId = route.id) {
+        TemplateScreen(navigateToScreen = { navHostController.navigate(it) }) {
             navHostController.navigateUp()
         }
     }
