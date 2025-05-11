@@ -196,13 +196,85 @@ compose.desktop {
         nativeDistributions {
             macOS {
                 appCategory = "public.app-category.productivity"
+                bundleID = "org.yangdai.kori"
                 jvmArgs(
                     "-Dapple.awt.application.appearance=system"
                 )
-//                infoPlist {
-//                    extraKeysRawXml = """
-//                    """.trimIndent()
-//                }
+                infoPlist {
+                    extraKeysRawXml = """
+                    <key>CFBundleDocumentTypes</key>
+                    <array>
+                        <dict>
+                            <key>CFBundleTypeName</key>
+                            <string>Plain Text Document</string>
+                            <key>LSItemContentTypes</key>
+                            <array>
+                                <string>public.plain-text</string>
+                            </array>
+                            <key>CFBundleTypeExtensions</key>
+                            <array>
+                                <string>txt</string>
+                            </array>
+                            <key>CFBundleTypeRole</key>
+                            <string>Editor</string>
+                            <key>LSHandlerRank</key>
+                            <string>Alternate</string>
+                        </dict>
+                        <dict>
+                            <key>CFBundleTypeName</key>
+                            <string>Markdown Document</string>
+                            <key>LSItemContentTypes</key>
+                            <array>
+                                <!-- UTI for Markdown -->
+                                <string>net.daringfireball.markdown</string>
+                                <!-- Fallback for generic text, if needed, but net.daringfireball.markdown is standard -->
+                                <!-- <string>public.text</string> -->
+                            </array>
+                            <key>CFBundleTypeExtensions</key>
+                            <array>
+                                <string>md</string>
+                                <string>markdown</string>
+                            </array>
+                            <key>CFBundleTypeRole</key>
+                            <string>Editor</string>
+                            <key>LSHandlerRank</key>
+                            <string>Alternate</string>
+                        </dict>
+                    </array>
+                    <key>NSServices</key>
+                    <array>
+                        <dict>
+                            <key>NSMenuItem</key>
+                            <dict>
+                                <key>default</key>
+                                <string>Send to Kori</string> <!-- 显示在菜单中的名称 -->
+                            </dict>
+                            <key>NSMessage</key>
+                            <string>handleServiceAction</string>
+                            <key>NSPortName</key>
+                            <string>${bundleID}</string>
+                            
+                            <!-- 处理选中的文本 -->
+                            <key>NSSendTypes</key>
+                            <array>
+                                <string>public.plain-text</string> <!-- 接收纯文本 -->
+                            </array>
+                            
+                            <!-- 处理文件 (使其也出现在文件的 "共享" 菜单中) -->
+                            <key>NSSendFileTypes</key>
+                            <array>
+                                <string>public.plain-text</string> <!-- .txt files -->
+                                <string>net.daringfireball.markdown</string> <!-- .md files -->
+                            </array>
+
+                            <key>NSRequiredContext</key>
+                            <dict>
+                                <key>NSTextContent</key> <string>YES</string>
+                            </dict>
+                        </dict>
+                    </array>
+                    """.trimIndent()
+                }
 //                iconFile.set(project.file("icon.icns"))
             }
             windows {

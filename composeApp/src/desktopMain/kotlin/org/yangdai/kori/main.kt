@@ -43,6 +43,7 @@ import java.awt.Dimension
 
 @Suppress("unused")
 val fakeJFXPanel = JFXPanel()
+
 @OptIn(ExperimentalFoundationApi::class)
 fun main() {
     System.setProperty("compose.interop.blending", "true")
