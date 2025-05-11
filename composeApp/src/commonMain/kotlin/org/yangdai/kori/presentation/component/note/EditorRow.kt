@@ -8,12 +8,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.BottomAppBarDefaults
@@ -36,6 +33,7 @@ import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.yangdai.kori.OS
 import org.yangdai.kori.currentOperatingSystem
@@ -49,6 +47,7 @@ fun EditorRow(
     type: NoteType,
     scrollState: ScrollState,
     textFieldState: TextFieldState,
+    bottomPadding: Dp,
     onEditorRowAction: (EditorRowAction) -> Unit
 ) {
     val showElevation by remember(scrollState, visible) {
@@ -65,8 +64,7 @@ fun EditorRow(
         modifier = Modifier.fillMaxWidth(),
         color = color
     ) {
-        val navigationBarPadding = WindowInsets.navigationBars.asPaddingValues()
-        Column(Modifier.padding(bottom = navigationBarPadding.calculateBottomPadding())) {
+        Column(Modifier.padding(bottom = bottomPadding)) {
             AnimatedVisibility(visible) {
                 when (type) {
                     NoteType.PLAIN_TEXT -> {

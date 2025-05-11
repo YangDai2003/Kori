@@ -456,6 +456,7 @@ fun FileScreen(
                 visible = !isReadView,
                 type = fileEditingState.fileType,
                 scrollState = scrollState,
+                bottomPadding = innerPadding.calculateBottomPadding(),
                 textFieldState = viewModel.contentState
             ) { action ->
                 when (action) {

@@ -552,6 +552,7 @@ fun NoteScreen(
                 visible = !isReadView,
                 type = noteEditingState.noteType,
                 scrollState = scrollState,
+                bottomPadding = innerPadding.calculateBottomPadding(),
                 textFieldState = viewModel.contentState
             ) { action ->
                 when (action) {
