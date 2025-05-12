@@ -166,7 +166,7 @@ android {
             .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
             .forEach { output ->
                 val abi = output.getFilter(com.android.build.OutputFile.ABI) ?: "universal"
-                val outputFileName = "Kori-${variant.baseName}-$abi.apk"
+                val outputFileName = "Kori-android-$abi-${variant.versionName}-${variant.baseName}.apk"
                 output.outputFileName = outputFileName
             }
     }
