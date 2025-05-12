@@ -160,13 +160,15 @@ android {
         }
 
     }
-    android.applicationVariants.all {
-        outputs.all {
-            if (this is com.android.build.gradle.internal.api.ApkVariantOutputImpl) {
-                val abi = this.getFilter(com.android.build.OutputFile.ABI) ?: "universal"
-                outputFileName = "Kori-android-$abi.apk"
+    applicationVariants.all {
+        val variant = this
+        variant.outputs
+            .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
+            .forEach { output ->
+                val abi = output.getFilter(com.android.build.OutputFile.ABI) ?: "universal"
+                val outputFileName = "Kori-${variant.baseName}-$abi.apk"
+                output.outputFileName = outputFileName
             }
-        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
