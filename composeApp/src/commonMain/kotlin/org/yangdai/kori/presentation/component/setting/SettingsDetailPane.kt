@@ -33,6 +33,7 @@ import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_info
 import kori.composeapp.generated.resources.card
 import kori.composeapp.generated.resources.cowriter
+import kori.composeapp.generated.resources.data
 import kori.composeapp.generated.resources.editor
 import kori.composeapp.generated.resources.security
 import kori.composeapp.generated.resources.style
@@ -45,6 +46,7 @@ import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
 import org.yangdai.kori.presentation.component.setting.detail.AboutPane
 import org.yangdai.kori.presentation.component.setting.detail.AiPane
 import org.yangdai.kori.presentation.component.setting.detail.CardPane
+import org.yangdai.kori.presentation.component.setting.detail.DataPane
 import org.yangdai.kori.presentation.component.setting.detail.EditorPane
 import org.yangdai.kori.presentation.component.setting.detail.SecurityPane
 import org.yangdai.kori.presentation.component.setting.detail.StylePane
@@ -91,16 +93,21 @@ fun SettingsDetailPane(
             }
 
             4 -> {
+                topBarTitle = stringResource(Res.string.data)
+                DataPane()
+            }
+
+            5 -> {
                 topBarTitle = stringResource(Res.string.security)
                 SecurityPane(viewModel)
             }
 
-            5 -> {
+            6 -> {
                 topBarTitle = stringResource(Res.string.cowriter)
                 AiPane(viewModel)
             }
 
-            6 -> {
+            7 -> {
                 topBarTitle = stringResource(Res.string.app_info)
                 AboutPane()
             }

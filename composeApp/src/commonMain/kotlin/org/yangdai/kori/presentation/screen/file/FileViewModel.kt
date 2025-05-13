@@ -18,7 +18,6 @@ import kmark.ast.getTextInNode
 import kmark.flavours.gfm.GFMFlavourDescriptor
 import kmark.html.HtmlGenerator
 import kmark.parser.MarkdownParser
-import kori.composeapp.generated.resources.Res
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -113,7 +112,6 @@ class FileViewModel(
     private val _fileEditingState = MutableStateFlow(FileEditingState())
     val fileEditingState = _fileEditingState.asStateFlow()
 
-    var baseHtml: String? = null
     val flavor = GFMFlavourDescriptor()
     val parser = MarkdownParser(flavor)
 
@@ -130,8 +128,7 @@ class FileViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val html = contentAndTreeFlow
         .mapLatest { (content, tree) ->
-            val main = HtmlGenerator(content, tree, flavor, true).generateHtml()
-            baseHtml?.replace("{{CONTENT}}", main) ?: ""
+            HtmlGenerator(content, tree, flavor, true).generateHtml()
         }
         .flowOn(Dispatchers.Default)
         .stateIn(
@@ -217,12 +214,6 @@ class FileViewModel(
         SharingStarted.WhileSubscribed(5_000L),
         false
     )
-
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            baseHtml = Res.readBytes("files/template.html").decodeToString()
-        }
-    }
 
     fun loadFile(file: PlatformFile) {
         viewModelScope.launch(Dispatchers.IO) {

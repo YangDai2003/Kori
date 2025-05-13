@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
+import kotlinx.coroutines.runBlocking
 import org.yangdai.kori.presentation.theme.linkColor
 import org.yangdai.kori.presentation.util.toHexColor
 
@@ -35,12 +36,28 @@ data class MarkdownStyles(
     }
 }
 
+private val markdownHtmlTemplate: String by lazy {
+    runBlocking {
+        Res.readBytes("files/template.html").decodeToString()
+    }
+}
+
+private object StaticUris {
+    val MERMAID by lazy { Res.getUri("files/mermaid.min.js") }
+    val KATEX by lazy { Res.getUri("files/katex/katex.min.js") }
+    val KATEX_CSS by lazy { Res.getUri("files/katex/katex.min.css") }
+    val KATEX_RENDER by lazy { Res.getUri("files/katex/auto-render.min.js") }
+    val PRISM by lazy { Res.getUri("files/prism/prism.js") }
+    val PRISM_LIGHT_CSS by lazy { Res.getUri("files/prism/prism-theme-light.css") }
+    val PRISM_DARK_CSS by lazy { Res.getUri("files/prism/prism-theme-dark.css") }
+}
+
 fun processHtml(
     html: String,
     markdownStyles: MarkdownStyles,
     isAppInDarkMode: Boolean
 ): String {
-    return html
+    return markdownHtmlTemplate
         .replace("{{TEXT_COLOR}}", markdownStyles.hexTextColor)
         .replace("{{BACKGROUND_COLOR}}", markdownStyles.backgroundColor.toHexColor())
         .replace("{{CODE_BACKGROUND}}", markdownStyles.hexCodeBackgroundColor)
@@ -49,13 +66,14 @@ fun processHtml(
         .replace("{{LINK_COLOR}}", markdownStyles.hexLinkColor)
         .replace("{{BORDER_COLOR}}", markdownStyles.hexBorderColor)
         .replace("{{COLOR_SCHEME}}", if (isAppInDarkMode) "dark" else "light")
-        .replace("{{MERMAID}}", Res.getUri("files/mermaid.min.js"))
-        .replace("{{KATEX}}", Res.getUri("files/katex/katex.min.js"))
-        .replace("{{KATEX-CSS}}", Res.getUri("files/katex/katex.min.css"))
-        .replace("{{KATEX-RENDER}}", Res.getUri("files/katex/auto-render.min.js"))
-        .replace("{{PRISM}}", Res.getUri("files/prism/prism.js"))
-        .replace("{{PRISM-LIGHT-CSS}}", Res.getUri("files/prism/prism-theme-light.css"))
-        .replace("{{PRISM-DARK-CSS}}", Res.getUri("files/prism/prism-theme-dark.css"))
+        .replace("{{MERMAID}}", StaticUris.MERMAID)
+        .replace("{{KATEX}}", StaticUris.KATEX)
+        .replace("{{KATEX-CSS}}", StaticUris.KATEX_CSS)
+        .replace("{{KATEX-RENDER}}", StaticUris.KATEX_RENDER)
+        .replace("{{PRISM}}", StaticUris.PRISM)
+        .replace("{{PRISM-LIGHT-CSS}}", StaticUris.PRISM_LIGHT_CSS)
+        .replace("{{PRISM-DARK-CSS}}", StaticUris.PRISM_DARK_CSS)
+        .replace("{{CONTENT}}", html)
 }
 
 @Composable

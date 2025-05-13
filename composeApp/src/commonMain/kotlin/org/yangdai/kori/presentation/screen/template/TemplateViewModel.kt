@@ -10,11 +10,9 @@ import androidx.navigation.toRoute
 import kmark.flavours.gfm.GFMFlavourDescriptor
 import kmark.html.HtmlGenerator
 import kmark.parser.MarkdownParser
-import kori.composeapp.generated.resources.Res
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -61,15 +59,11 @@ class TemplateViewModel(
     val titleState = TextFieldState()
     val contentState = TextFieldState()
     val contentSnapshotFlow = snapshotFlow { contentState.text }
-    var baseHtml: String? = null
     val flavor = GFMFlavourDescriptor()
     val parser = MarkdownParser(flavor)
     var oNote = NoteEntity(isTemplate = true)
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
-            baseHtml = Res.readBytes("files/template.html").decodeToString()
-        }
         viewModelScope.launch {
             if (route.id.isEmpty()) {
                 val currentTime = Clock.System.now().toString()
@@ -138,8 +132,7 @@ class TemplateViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val html = contentAndTreeFlow
         .mapLatest { (content, tree) ->
-            val main = HtmlGenerator(content, tree, flavor, true).generateHtml()
-            baseHtml?.replace("{{CONTENT}}", main) ?: ""
+            HtmlGenerator(content, tree, flavor, true).generateHtml()
         }
         .flowOn(Dispatchers.Default)
         .stateIn(
