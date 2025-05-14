@@ -8,6 +8,9 @@ import org.yangdai.kori.data.local.entity.NoteEntity
 expect fun FilePickerDialog(onFilePicked: (PlatformFile?) -> Unit)
 
 @Composable
+expect fun FilesImportDialog(onFilePicked: (List<PlatformFile>) -> Unit)
+
+@Composable
 expect fun SaveFileDialog(
     exportType: ExportType,
     noteEntity: NoteEntity,

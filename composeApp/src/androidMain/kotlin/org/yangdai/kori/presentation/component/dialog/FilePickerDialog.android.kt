@@ -59,3 +59,18 @@ actual fun SaveFileDialog(
         saveDocumentLauncher.launch(fileName)
     }
 }
+
+@Composable
+actual fun FilesImportDialog(onFilePicked: (List<PlatformFile>) -> Unit) {
+    val context = LocalContext.current.applicationContext
+    val openDocumentLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenMultipleDocuments()
+    ) { uris ->
+        val files = uris.map { uri -> PlatformFile(context, uri) }
+        onFilePicked(files)
+    }
+
+    LaunchedEffect(Unit) {
+        openDocumentLauncher.launch(arrayOf("text/*"))
+    }
+}

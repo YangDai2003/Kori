@@ -122,3 +122,48 @@ actual fun SaveFileDialog(
         completion = null
     )
 }
+
+@Composable
+actual fun FilesImportDialog(onFilePicked: (List<PlatformFile>) -> Unit) {
+    val currentUIViewController = LocalUIViewController.current
+
+    val delegate = remember {
+        object : NSObject(), UIDocumentPickerDelegateProtocol {
+            override fun documentPicker(
+                controller: UIDocumentPickerViewController,
+                didPickDocumentsAtURLs: List<*>
+            ) {
+                val files = didPickDocumentsAtURLs.mapNotNull { url ->
+                    (url as? NSURL)?.let { PlatformFile(url = it) }
+                }
+                onFilePicked(files)
+            }
+
+            override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
+                onFilePicked(emptyList())
+            }
+        }
+    }
+
+    val documentPicker = remember {
+        UIDocumentPickerViewController(
+            documentTypes = listOf(
+                "public.text",
+                "public.plain-text",
+                "public.text-file",
+                "public.data",
+                "public.content"
+            ),
+            inMode = UIDocumentPickerMode.UIDocumentPickerModeImport
+        ).apply {
+            this.delegate = delegate
+            this.allowsMultipleSelection = true
+        }
+    }
+
+    currentUIViewController.presentViewController(
+        documentPicker,
+        animated = true,
+        completion = null
+    )
+}

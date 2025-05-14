@@ -21,7 +21,7 @@ actual fun FilePickerDialog(onFilePicked: (PlatformFile?) -> Unit) {
 
     if (fileDialog.file != null && fileDialog.directory != null) {
         val file = File(fileDialog.directory, fileDialog.file)
-        if (file.exists() && (file.extension == "txt" || file.extension == "md")) {
+        if (file.exists() && (file.extension == "txt" || file.extension == "md" || file.extension == "markdown")) {
             onFilePicked(PlatformFile(file = file))
         }
     }
@@ -57,4 +57,28 @@ actual fun SaveFileDialog(
         file.writeText(fileContent)
         onFileSaved(file.exists())
     } else onFileSaved(false)
+}
+
+@Composable
+actual fun FilesImportDialog(onFilePicked: (List<PlatformFile>) -> Unit) {
+    val fileDialog = java.awt.FileDialog(
+        null as java.awt.Frame?,
+        stringResource(Res.string.app_name),
+        java.awt.FileDialog.LOAD
+    ).apply {
+        file = "*.txt;*.md"
+        isVisible = true
+    }
+
+    fileDialog.isMultipleMode = true
+
+    val selectedFiles = mutableListOf<PlatformFile>()
+    if (fileDialog.files != null) {
+        for (file in fileDialog.files) {
+            if (file.extension == "txt" || file.extension == "md" || file.extension == "markdown") {
+                selectedFiles.add(PlatformFile(file = file))
+            }
+        }
+    }
+    onFilePicked(selectedFiles)
 }

@@ -133,4 +133,12 @@
     <string name="file">File</string>
     <string name="text">Text</string>
     <string name="export_as">Export note as</string>
+    <string name="data">Data</string>
+    <string name="import_files">Import text files</string>
+    <string name="import_files_description">Import text files as notes. The file name will be used as the title and the MARKDOWN type will be automatically determined.</string>
+    <string name="backup_description">Back up all folders and notes in them as a JSON file.</string>
+    <string name="restore_description">Restore the data in the selected JSON type backup file to the database. If there is a data conflict, the backup file will overwrite the notes in the database.</string>
+    <string name="reset_database_description">Clear all data in the database (including all notes and folders).</string>
+    <string name="backup">Backup</string>
+    <string name="restore_from_backup">Restore</string>
 </resources>
