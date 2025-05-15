@@ -56,7 +56,6 @@ actual fun StylePane(settingsViewModel: SettingsViewModel) {
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 8.dp),
                 title = stringResource(R.string.dynamic_only_android_12),
-                description = "",
                 icon = Icons.Default.Colorize,
                 trailingContent = {
                     Switch(
