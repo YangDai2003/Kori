@@ -236,6 +236,31 @@ private fun KeyOutlinedTextField(
     )
 }
 
+@Composable
+private fun LinkText(text: String, url: String) {
+    val annotatedString = buildAnnotatedString {
+        append("* ")
+        withLink(
+            LinkAnnotation.Url(
+                url,
+                TextLinkStyles(
+                    style = SpanStyle(
+                        color = linkColor,
+                        textDecoration = TextDecoration.Underline
+                    )
+                )
+            )
+        ) {
+            append(text)
+        }
+    }
+    Text(
+        text = annotatedString,
+        style = MaterialTheme.typography.labelSmall,
+        modifier = Modifier.padding(top = 8.dp)
+    )
+}
+
 // Gemini 设置项
 @Composable
 private fun GeminiSettings(settingsViewModel: SettingsViewModel) {
@@ -274,26 +299,9 @@ private fun GeminiSettings(settingsViewModel: SettingsViewModel) {
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
-        val annotatedString = buildAnnotatedString {
-            append("* ")
-            withLink(
-                LinkAnnotation.Url(
-                    "https://aistudio.google.com/prompts/new_chat",
-                    TextLinkStyles(
-                        style = SpanStyle(
-                            color = linkColor,
-                            textDecoration = TextDecoration.Underline
-                        )
-                    )
-                )
-            ) {
-                append("Google AI Studio")
-            }
-        }
-        Text(
-            text = annotatedString,
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(top = 8.dp)
+        LinkText(
+            text = "Google AI Studio",
+            url = "https://aistudio.google.com/prompts/new_chat"
         )
     }
 }
@@ -336,26 +344,9 @@ private fun OpenAISettings(settingsViewModel: SettingsViewModel) {
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
-        val annotatedString = buildAnnotatedString {
-            append("* ")
-            withLink(
-                LinkAnnotation.Url(
-                    "https://platform.openai.com/docs/overview",
-                    TextLinkStyles(
-                        style = SpanStyle(
-                            color = linkColor,
-                            textDecoration = TextDecoration.Underline
-                        )
-                    )
-                )
-            ) {
-                append("OpenAI Platform")
-            }
-        }
-        Text(
-            text = annotatedString,
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(top = 8.dp)
+        LinkText(
+            text = "OpenAI Platform",
+            url = "https://platform.openai.com/docs/overview"
         )
     }
 }
@@ -389,26 +380,9 @@ private fun OllamaSettings(settingsViewModel: SettingsViewModel) {
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
-        val annotatedString = buildAnnotatedString {
-            append("* ")
-            withLink(
-                LinkAnnotation.Url(
-                    "https://github.com/ollama/ollama/blob/main/docs/api.md",
-                    TextLinkStyles(
-                        style = SpanStyle(
-                            color = linkColor,
-                            textDecoration = TextDecoration.Underline
-                        )
-                    )
-                )
-            ) {
-                append("Ollama API")
-            }
-        }
-        Text(
-            text = annotatedString,
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(top = 8.dp)
+        LinkText(
+            text = "Ollama API",
+            url = "https://github.com/ollama/ollama/blob/main/docs/api.md"
         )
     }
 }
@@ -442,26 +416,9 @@ private fun LMStudioSettings(settingsViewModel: SettingsViewModel) {
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
-        val annotatedString = buildAnnotatedString {
-            append("* ")
-            withLink(
-                LinkAnnotation.Url(
-                    "https://lmstudio.ai/docs/app/api",
-                    TextLinkStyles(
-                        style = SpanStyle(
-                            color = linkColor,
-                            textDecoration = TextDecoration.Underline
-                        )
-                    )
-                )
-            ) {
-                append("LM Studio API")
-            }
-        }
-        Text(
-            text = annotatedString,
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(top = 8.dp)
+        LinkText(
+            text = "LM Studio API",
+            url = "https://lmstudio.ai/docs/app/api"
         )
     }
 }
