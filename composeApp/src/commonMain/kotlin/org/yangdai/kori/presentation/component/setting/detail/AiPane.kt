@@ -264,10 +264,11 @@ private fun LinkText(text: String, url: String) {
 // Gemini 设置项
 @Composable
 private fun GeminiSettings(settingsViewModel: SettingsViewModel) {
-    val geminiState by settingsViewModel.geminiState.collectAsStateWithLifecycle()
-    var apiKey by remember { mutableStateOf(geminiState.apiKey) }
-    var apiHost by remember { mutableStateOf(geminiState.apiHost) }
-    var model by remember { mutableStateOf(geminiState.model) }
+
+    var apiKey by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.GEMINI_API_KEY)) }
+    var apiHost by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.GEMINI_API_HOST)) }
+    var model by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.GEMINI_MODEL)) }
+
     Column(Modifier.padding(top = 16.dp)) {
         KeyOutlinedTextField(
             value = apiKey,
@@ -309,10 +310,11 @@ private fun GeminiSettings(settingsViewModel: SettingsViewModel) {
 // OpenAI 设置项
 @Composable
 private fun OpenAISettings(settingsViewModel: SettingsViewModel) {
-    val openAiState by settingsViewModel.openAiState.collectAsStateWithLifecycle()
-    var apiKey by remember { mutableStateOf(openAiState.apiKey) }
-    var apiHost by remember { mutableStateOf(openAiState.apiHost) }
-    var model by remember { mutableStateOf(openAiState.model) }
+
+    var apiKey by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.OPENAI_API_KEY)) }
+    var apiHost by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.OPENAI_API_HOST)) }
+    var model by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.OPENAI_MODEL)) }
+
     Column(Modifier.padding(top = 16.dp)) {
         KeyOutlinedTextField(
             value = apiKey,
@@ -354,9 +356,10 @@ private fun OpenAISettings(settingsViewModel: SettingsViewModel) {
 // Ollama 设置项
 @Composable
 private fun OllamaSettings(settingsViewModel: SettingsViewModel) {
-    val ollamaState by settingsViewModel.ollamaState.collectAsStateWithLifecycle()
-    var baseUrl by remember { mutableStateOf(ollamaState.apiHost) }
-    var model by remember { mutableStateOf(ollamaState.model) }
+
+    var baseUrl by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.OLLAMA_API_HOST)) }
+    var model by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.OLLAMA_MODEL)) }
+
     Column(Modifier.padding(top = 16.dp)) {
         OutlinedTextField(
             value = baseUrl,
@@ -390,9 +393,10 @@ private fun OllamaSettings(settingsViewModel: SettingsViewModel) {
 // LM Studio 设置项
 @Composable
 private fun LMStudioSettings(settingsViewModel: SettingsViewModel) {
-    val lmStudioState by settingsViewModel.lmStudioState.collectAsStateWithLifecycle()
-    var baseUrl by remember { mutableStateOf(lmStudioState.apiHost) }
-    var model by remember { mutableStateOf(lmStudioState.model) }
+
+    var baseUrl by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.LMSTUDIO_API_HOST)) }
+    var model by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.LMSTUDIO_MODEL)) }
+
     Column(Modifier.padding(top = 16.dp)) {
         OutlinedTextField(
             value = baseUrl,
