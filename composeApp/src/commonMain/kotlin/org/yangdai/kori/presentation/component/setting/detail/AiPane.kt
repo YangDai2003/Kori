@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -18,9 +19,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.GeneratingTokens
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -42,6 +47,8 @@ import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
@@ -198,6 +205,37 @@ fun AiPane(settingsViewModel: SettingsViewModel) {
     }
 }
 
+@Composable
+private fun KeyOutlinedTextField(
+    value: String,
+    onValueChange: (String) -> Unit
+) {
+    var showKey by remember { mutableStateOf(false) }
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text("API " + stringResource(Res.string.key)) },
+        singleLine = true,
+        visualTransformation = if (showKey) VisualTransformation.None else PasswordVisualTransformation(),
+        trailingIcon = {
+            IconToggleButton(
+                checked = showKey,
+                onCheckedChange = { showKey = it },
+                colors = IconButtonDefaults.iconToggleButtonColors().copy(
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                    checkedContentColor = MaterialTheme.colorScheme.onSurface
+                )
+            ) {
+                Icon(
+                    imageVector = if (showKey) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
+                    contentDescription = null
+                )
+            }
+        },
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
 // Gemini 设置项
 @Composable
 private fun GeminiSettings(settingsViewModel: SettingsViewModel) {
@@ -206,15 +244,12 @@ private fun GeminiSettings(settingsViewModel: SettingsViewModel) {
     var apiHost by remember { mutableStateOf(geminiState.apiHost) }
     var model by remember { mutableStateOf(geminiState.model) }
     Column(Modifier.padding(top = 16.dp)) {
-        OutlinedTextField(
+        KeyOutlinedTextField(
             value = apiKey,
             onValueChange = {
                 apiKey = it
                 settingsViewModel.putPreferenceValue(Constants.Preferences.GEMINI_API_KEY, it)
-            },
-            label = { Text("API " + stringResource(Res.string.key)) },
-            singleLine = true,
-            modifier = Modifier.fillMaxSize()
+            }
         )
         Spacer(Modifier.height(8.dp))
         OutlinedTextField(
@@ -226,7 +261,7 @@ private fun GeminiSettings(settingsViewModel: SettingsViewModel) {
             label = { Text("API " + stringResource(Res.string.host)) },
             placeholder = { Text("https://generativelanguage.googleapis.com", maxLines = 1) },
             singleLine = true,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(8.dp))
         OutlinedTextField(
@@ -237,7 +272,7 @@ private fun GeminiSettings(settingsViewModel: SettingsViewModel) {
             },
             label = { Text(stringResource(Res.string.model)) },
             singleLine = true,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxWidth()
         )
         val annotatedString = buildAnnotatedString {
             append("* ")
@@ -271,15 +306,12 @@ private fun OpenAISettings(settingsViewModel: SettingsViewModel) {
     var apiHost by remember { mutableStateOf(openAiState.apiHost) }
     var model by remember { mutableStateOf(openAiState.model) }
     Column(Modifier.padding(top = 16.dp)) {
-        OutlinedTextField(
+        KeyOutlinedTextField(
             value = apiKey,
             onValueChange = {
                 apiKey = it
                 settingsViewModel.putPreferenceValue(Constants.Preferences.OPENAI_API_KEY, it)
-            },
-            label = { Text("API " + stringResource(Res.string.key)) },
-            singleLine = true,
-            modifier = Modifier.fillMaxSize()
+            }
         )
         Spacer(Modifier.height(8.dp))
         OutlinedTextField(
@@ -291,7 +323,7 @@ private fun OpenAISettings(settingsViewModel: SettingsViewModel) {
             label = { Text("API " + stringResource(Res.string.host)) },
             placeholder = { Text("https://api.openai.com", maxLines = 1) },
             singleLine = true,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(8.dp))
         OutlinedTextField(
@@ -302,7 +334,7 @@ private fun OpenAISettings(settingsViewModel: SettingsViewModel) {
             },
             label = { Text(stringResource(Res.string.model)) },
             singleLine = true,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxWidth()
         )
         val annotatedString = buildAnnotatedString {
             append("* ")
@@ -344,7 +376,7 @@ private fun OllamaSettings(settingsViewModel: SettingsViewModel) {
             label = { Text("API " + stringResource(Res.string.host)) },
             placeholder = { Text("http://localhost:11434", maxLines = 1) },
             singleLine = true,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(8.dp))
         OutlinedTextField(
@@ -355,7 +387,7 @@ private fun OllamaSettings(settingsViewModel: SettingsViewModel) {
             },
             label = { Text(stringResource(Res.string.model)) },
             singleLine = true,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxWidth()
         )
         val annotatedString = buildAnnotatedString {
             append("* ")
@@ -397,7 +429,7 @@ private fun LMStudioSettings(settingsViewModel: SettingsViewModel) {
             label = { Text("API " + stringResource(Res.string.host)) },
             placeholder = { Text("http://127.0.0.1:1234/v1", maxLines = 1) },
             singleLine = true,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(8.dp))
         OutlinedTextField(
@@ -408,7 +440,7 @@ private fun LMStudioSettings(settingsViewModel: SettingsViewModel) {
             },
             label = { Text(stringResource(Res.string.model)) },
             singleLine = true,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxWidth()
         )
         val annotatedString = buildAnnotatedString {
             append("* ")
