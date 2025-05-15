@@ -31,11 +31,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.all_notes
 import kori.composeapp.generated.resources.cancel
+import kori.composeapp.generated.resources.confirm
 import kori.composeapp.generated.resources.destination_folder
-import kori.composeapp.generated.resources.move
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.dao.FolderDao
-import org.yangdai.kori.data.local.entity.FolderEntity
+import org.yangdai.kori.data.local.entity.defaultFolderColor
 
 @Composable
 fun FoldersDialog(
@@ -49,7 +49,7 @@ fun FoldersDialog(
     var selectedFolderId by remember { mutableStateOf(oFolderId) }
 
     AlertDialog(
-        title = { Text(text = hint) },
+        title = { Text(hint) },
         text = {
             Column {
                 HorizontalDivider(Modifier.fillMaxWidth())
@@ -87,7 +87,7 @@ fun FoldersDialog(
                                 Icon(
                                     imageVector = if (isSelected) Icons.Outlined.FolderOpen
                                     else Icons.Outlined.Folder,
-                                    tint = if (folder.colorValue != FolderEntity.defaultColorValue)
+                                    tint = if (folder.colorValue != defaultFolderColor)
                                         Color(folder.colorValue)
                                     else MaterialTheme.colorScheme.onSurface,
                                     contentDescription = null
@@ -111,8 +111,8 @@ fun FoldersDialog(
         },
         onDismissRequest = onDismissRequest,
         dismissButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text(text = stringResource(Res.string.cancel))
+            TextButton(onDismissRequest) {
+                Text(stringResource(Res.string.cancel))
             }
         },
         confirmButton = {
@@ -124,7 +124,7 @@ fun FoldersDialog(
                     onDismissRequest()
                 }
             ) {
-                Text(text = stringResource(Res.string.move))
+                Text(stringResource(Res.string.confirm))
             }
         })
 }

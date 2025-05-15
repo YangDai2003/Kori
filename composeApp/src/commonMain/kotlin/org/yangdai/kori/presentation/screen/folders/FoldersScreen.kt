@@ -76,6 +76,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.Platform
 import org.yangdai.kori.data.local.entity.FolderEntity
+import org.yangdai.kori.data.local.entity.defaultFolderColor
 import org.yangdai.kori.presentation.component.LazyGridScrollbar
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBar
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
@@ -259,7 +260,7 @@ fun LazyGridItemScope.FolderItem(
 ) {
     val folderColor by remember(folder.colorValue, colorScheme) {
         derivedStateOf {
-            if (folder.colorValue != FolderEntity.defaultColorValue)
+            if (folder.colorValue != defaultFolderColor)
                 Color(folder.colorValue)
             else
                 colorScheme.primary

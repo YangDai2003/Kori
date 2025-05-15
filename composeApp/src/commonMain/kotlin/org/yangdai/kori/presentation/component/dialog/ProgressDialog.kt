@@ -1,19 +1,25 @@
 package org.yangdai.kori.presentation.component.dialog
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Done
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,46 +28,55 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.cancel
-import kori.composeapp.generated.resources.confirm
-import kori.composeapp.generated.resources.progress
 import org.jetbrains.compose.resources.stringResource
+import org.yangdai.kori.presentation.screen.settings.DataActionState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProgressDialog(
-    isLoading: Boolean,
-    progress: Float,
-    infinite: Boolean = false,
-    message: String = "",
+    dataActionState: DataActionState,
     onDismissRequest: () -> Unit
 ) {
 
-    if (!isLoading) return
+    val progress = dataActionState.progress
+    val infinite = dataActionState.infinite
+    val message = dataActionState.message
 
-    AlertDialog(
-        title = { Text(text = stringResource(Res.string.progress)) },
-        text = {
+    if (progress < 0f || progress > 1f) return
+
+    BasicAlertDialog(
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+    ) {
+        Box(contentAlignment = Alignment.Center) {
             Column(
-                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .width(IntrinsicSize.Min)
+                    .background(AlertDialogDefaults.containerColor, AlertDialogDefaults.shape)
+                    .clip(AlertDialogDefaults.shape),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
                 Box(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .padding(32.dp)
+                        .size(72.dp)
+                        .aspectRatio(1f),
                     contentAlignment = Alignment.Center
                 ) {
 
                     if (infinite && progress < 1f)
                         CircularProgressIndicator(
-                            modifier = Modifier.size(72.dp),
+                            modifier = Modifier.fillMaxSize(),
                             strokeWidth = 6.dp
                         )
                     else
                         CircularProgressIndicator(
-                            modifier = Modifier.size(72.dp),
+                            modifier = Modifier.fillMaxSize(),
                             strokeWidth = 6.dp,
                             progress = { progress }
                         )
@@ -90,18 +105,18 @@ fun ProgressDialog(
                                 }
                     }
                 }
-                if (message.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = message)
+                if (message.isNotEmpty()) Text(message)
+                AnimatedVisibility(visible = progress < 1f) {
+                    HorizontalDivider()
+                    TextButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RectangleShape,
+                        onClick = onDismissRequest
+                    ) {
+                        Text(stringResource(Res.string.cancel))
+                    }
                 }
             }
-        },
-        onDismissRequest = onDismissRequest,
-        confirmButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text(text = stringResource(if (progress == 1f) Res.string.confirm else Res.string.cancel))
-            }
-        },
-        properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
-    )
+        }
+    }
 }

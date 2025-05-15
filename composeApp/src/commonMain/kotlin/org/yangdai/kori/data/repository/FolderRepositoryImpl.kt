@@ -12,21 +12,15 @@ class FolderRepositoryImpl(private val dao: FolderDao) : FolderRepository {
         return dao.insertFolder(folder)
     }
 
-    override suspend fun insertFolders(folders: List<FolderEntity>) {
-        dao.insertFolders(folders)
-    }
+    override suspend fun insertFolders(folders: List<FolderEntity>) = dao.insertFolders(folders)
 
-    override suspend fun updateFolder(folder: FolderEntity) {
-        dao.updateFolder(folder)
-    }
+    override suspend fun updateFolder(folder: FolderEntity) = dao.updateFolder(folder)
 
-    override suspend fun deleteFolder(folder: FolderEntity) {
-        dao.deleteFolder(folder)
-    }
+    override suspend fun deleteFolder(folder: FolderEntity) = dao.deleteFolder(folder)
 
-    override suspend fun deleteFolderById(id: String) {
-        dao.deleteFolderById(id)
-    }
+    override suspend fun deleteFolderById(id: String) = dao.deleteFolderById(id)
+
+    override suspend fun deleteAllFolders() = dao.deleteAllFolders()
 
     override fun getFoldersWithNoteCounts(sortType: FolderSortType): Flow<List<FolderWithNoteCount>> =
         when (sortType) {

@@ -11,6 +11,7 @@ interface NoteRepository {
     suspend fun deleteNote(note: NoteEntity)
     suspend fun deleteNoteById(id: String)
     suspend fun deleteNoteByIds(ids: List<String>)
+    suspend fun deleteAllNotes()
     suspend fun emptyTrash()
     suspend fun restoreAllFromTrash()
     fun getTrashNotesCount(): Flow<Int>

@@ -37,12 +37,12 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.EditNote
+import androidx.compose.material.icons.outlined.FileUpload
 import androidx.compose.material.icons.outlined.IosShare
 import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.SwapHorizontalCircle
-import androidx.compose.material.icons.outlined.Upload
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -502,6 +502,10 @@ fun NoteScreen(
                             interactionSource = interactionSource
                         )
 
+//                        Text(
+//                            modifier = Modifier.fillMaxHeight().weight(1f - editorWeight).verticalScroll(rememberScrollState()),
+//                            text = html
+//                        )
                         MarkdownView(
                             modifier = Modifier.fillMaxHeight().weight(1f - editorWeight),
                             html = html,
@@ -690,7 +694,7 @@ fun NoteScreen(
 
             IconButton(onClick = { showExportDialog = true }) {
                 Icon(
-                    imageVector = Icons.Outlined.Upload,
+                    imageVector = Icons.Outlined.FileUpload,
                     contentDescription = null
                 )
             }

@@ -18,6 +18,7 @@ import org.yangdai.kori.presentation.util.AppLockManager
 import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.screen.folders.FoldersViewModel
 import org.yangdai.kori.presentation.screen.note.NoteViewModel
+import org.yangdai.kori.presentation.screen.settings.DataViewModel
 import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import org.yangdai.kori.presentation.screen.template.TemplateViewModel
 
@@ -34,6 +35,7 @@ fun appModule() = module {
     viewModelOf(::SettingsViewModel)
     viewModelOf(::TemplateViewModel)
     viewModelOf(::FileViewModel)
+    viewModelOf(::DataViewModel)
 }
 
 object KoinInitializer {

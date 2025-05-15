@@ -47,6 +47,8 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kori.composeapp.generated.resources.Res
+import kori.composeapp.generated.resources.cowriter
+import kori.composeapp.generated.resources.cowriter_description
 import kori.composeapp.generated.resources.host
 import kori.composeapp.generated.resources.key
 import kori.composeapp.generated.resources.model
@@ -76,8 +78,8 @@ fun AiPane(settingsViewModel: SettingsViewModel) {
         Spacer(Modifier.height(16.dp))
 
         DetailPaneItem(
-            title = "启用写作助手",
-            description = "接入第三方人工智能模型",
+            title = stringResource(Res.string.cowriter),
+            description = stringResource(Res.string.cowriter_description),
             icon = Icons.Outlined.GeneratingTokens,
             colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.primaryContainer),
             trailingContent = {

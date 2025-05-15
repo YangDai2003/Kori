@@ -13,6 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
+import androidx.compose.material.icons.automirrored.outlined.Note
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.FormatListNumbered
 import androidx.compose.material.icons.outlined.Spellcheck
@@ -76,6 +77,12 @@ fun EditorPane(settingsViewModel: SettingsViewModel) {
                         modifier = Modifier.basicMarquee(),
                         text = stringResource(Res.string.default_note_type),
                         maxLines = 1
+                    )
+                },
+                leadingContent = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.Note,
+                        contentDescription = null
                     )
                 },
                 supportingContent = {

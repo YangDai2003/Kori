@@ -60,6 +60,8 @@ import kori.composeapp.generated.resources.name
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.FolderEntity
+import org.yangdai.kori.data.local.entity.folderColorOptions
+import org.yangdai.kori.data.local.entity.defaultFolderColor
 import org.yangdai.kori.presentation.component.HorizontalScrollbar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,11 +79,11 @@ fun ModifyFolderDialog(
         isError = false
     }
 
-    val custom = !FolderEntity.colors.contains(Color(color))
+    val custom = !folderColorOptions.contains(Color(color))
     val initValue =
-        if (oFolder.colorValue == FolderEntity.defaultColorValue) 0
-        else if (custom) FolderEntity.colors.size + 1
-        else FolderEntity.colors.indexOf(Color(oFolder.colorValue)) + 1
+        if (oFolder.colorValue == defaultFolderColor) 0
+        else if (custom) folderColorOptions.size + 1
+        else folderColorOptions.indexOf(Color(oFolder.colorValue)) + 1
     var selectedIndex by remember { mutableIntStateOf(initValue) }
 
     var showColorPicker by remember { mutableStateOf(false) }
@@ -142,7 +144,7 @@ fun ModifyFolderDialog(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
 
-                        items(FolderEntity.colors.size + 2) {
+                        items(folderColorOptions.size + 2) {
                             when (it) {
                                 0 -> {
                                     ColoredCircle2(selected = 0 == selectedIndex) {
@@ -150,19 +152,19 @@ fun ModifyFolderDialog(
                                     }
                                 }
 
-                                FolderEntity.colors.size + 1 -> {
+                                folderColorOptions.size + 1 -> {
                                     ColoredCircle3(
                                         background = if (custom) Color(color) else Color.Black,
-                                        selected = FolderEntity.colors.size + 1 == selectedIndex
+                                        selected = folderColorOptions.size + 1 == selectedIndex
                                     ) {
-                                        selectedIndex = FolderEntity.colors.size + 1
+                                        selectedIndex = folderColorOptions.size + 1
                                         showColorPicker = true
                                     }
                                 }
 
                                 else -> {
                                     ColoredCircle(
-                                        color = FolderEntity.colors[it - 1],
+                                        color = folderColorOptions[it - 1],
                                         selected = it == selectedIndex,
                                         onClick = { selectedIndex = it }
                                     )
@@ -190,9 +192,9 @@ fun ModifyFolderDialog(
                     haptic.performHapticFeedback(HapticFeedbackType.Confirm)
 
                     color = when (selectedIndex) {
-                        0 -> FolderEntity.defaultColorValue
-                        FolderEntity.colors.size + 1 -> color
-                        else -> FolderEntity.colors[selectedIndex - 1].toArgb().toLong()
+                        0 -> defaultFolderColor
+                        folderColorOptions.size + 1 -> color
+                        else -> folderColorOptions[selectedIndex - 1].toArgb().toLong()
                     }
 
                     onModify(

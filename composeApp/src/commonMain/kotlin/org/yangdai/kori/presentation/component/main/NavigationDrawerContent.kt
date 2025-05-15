@@ -57,6 +57,7 @@ import kori.composeapp.generated.resources.trash
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.dao.FolderDao.FolderWithNoteCount
 import org.yangdai.kori.data.local.entity.FolderEntity
+import org.yangdai.kori.data.local.entity.defaultFolderColor
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.navigation.Screen
 
@@ -280,7 +281,7 @@ fun NavigationDrawerContent(
                 drawerState.foldersWithNoteCounts.forEach { folderWithNoteCount ->
                     key(folderWithNoteCount.folder.id) {
                         FolderDrawerItem(
-                            iconTint = if (folderWithNoteCount.folder.colorValue == FolderEntity.defaultColorValue) MaterialTheme.colorScheme.primary
+                            iconTint = if (folderWithNoteCount.folder.colorValue == defaultFolderColor) MaterialTheme.colorScheme.primary
                             else Color(folderWithNoteCount.folder.colorValue),
                             label = folderWithNoteCount.folder.name,
                             badge = folderWithNoteCount.noteCount.toString(),

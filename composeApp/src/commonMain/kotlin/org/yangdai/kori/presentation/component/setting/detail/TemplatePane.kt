@@ -1,8 +1,6 @@
 package org.yangdai.kori.presentation.component.setting.detail
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.basicMarquee
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -61,6 +59,7 @@ import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.note.CustomTextField
+import org.yangdai.kori.presentation.component.setting.DetailPaneItem
 import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import org.yangdai.kori.presentation.util.Constants
 
@@ -236,22 +235,16 @@ fun TemplatePane(viewModel: SettingsViewModel) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        ListItem(
-            modifier = Modifier.clip(MaterialTheme.shapes.large).clickable {
-                uriHandler.openUri("https://github.com/YangDai2003/OpenNote-Compose/discussions/categories/community-templates")
-            },
-            headlineContent = {
-                Text(
-                    modifier = Modifier.basicMarquee(),
-                    text = stringResource(Res.string.explore_and_share_community_note_templates),
-                    maxLines = 1
-                )
-            },
+        DetailPaneItem(
+            title = stringResource(Res.string.explore_and_share_community_note_templates),
             trailingContent = {
                 Icon(
                     Icons.AutoMirrored.Outlined.OpenInNew,
                     contentDescription = null
                 )
+            },
+            onClick = {
+                uriHandler.openUri("https://github.com/YangDai2003/OpenNote-Compose/discussions/categories/community-templates")
             }
         )
 

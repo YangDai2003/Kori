@@ -11,6 +11,12 @@ expect fun FilePickerDialog(onFilePicked: (PlatformFile?) -> Unit)
 expect fun FilesImportDialog(onFilePicked: (List<PlatformFile>) -> Unit)
 
 @Composable
+expect fun BackupJsonDialog(json: String, onJsonSaved: (Boolean) -> Unit)
+
+@Composable
+expect fun PickJsonDialog(onJsonPicked: (String?) -> Unit)
+
+@Composable
 expect fun SaveFileDialog(
     exportType: ExportType,
     noteEntity: NoteEntity,

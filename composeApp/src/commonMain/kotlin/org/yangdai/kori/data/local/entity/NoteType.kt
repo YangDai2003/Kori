@@ -1,5 +1,8 @@
 package org.yangdai.kori.data.local.entity
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class NoteType {
     PLAIN_TEXT,
     MARKDOWN,

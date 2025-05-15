@@ -24,11 +24,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.EditNote
+import androidx.compose.material.icons.outlined.FileUpload
 import androidx.compose.material.icons.outlined.IosShare
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.SwapHorizontalCircle
-import androidx.compose.material.icons.outlined.Upload
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -461,7 +461,7 @@ fun TemplateScreen(
 
             IconButton(onClick = { showExportDialog = true }) {
                 Icon(
-                    imageVector = Icons.Outlined.Upload,
+                    imageVector = Icons.Outlined.FileUpload,
                     contentDescription = null
                 )
             }

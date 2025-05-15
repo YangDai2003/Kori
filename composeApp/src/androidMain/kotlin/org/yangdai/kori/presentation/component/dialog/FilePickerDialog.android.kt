@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import kfile.PlatformFile
+import kotlinx.datetime.Clock
 import org.yangdai.kori.data.local.entity.NoteEntity
 
 @Composable
@@ -72,5 +73,44 @@ actual fun FilesImportDialog(onFilePicked: (List<PlatformFile>) -> Unit) {
 
     LaunchedEffect(Unit) {
         openDocumentLauncher.launch(arrayOf("text/*"))
+    }
+}
+
+@Composable
+actual fun BackupJsonDialog(json: String, onJsonSaved: (Boolean) -> Unit) {
+    val context = LocalContext.current.applicationContext
+    val mimeType = "application/json"
+    val fileName = "kori_backup_${Clock.System.now().toEpochMilliseconds()}.json"
+
+    val saveDocumentLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument(mimeType)
+    ) { uri ->
+        uri?.let { documentUri ->
+            context.contentResolver.openOutputStream(documentUri)?.bufferedWriter()
+                ?.use { it.write(json) }
+            onJsonSaved(true)
+        } ?: onJsonSaved(false)
+    }
+
+    LaunchedEffect(Unit) {
+        saveDocumentLauncher.launch(fileName)
+    }
+}
+
+@Composable
+actual fun PickJsonDialog(onJsonPicked: (String?) -> Unit) {
+    val context = LocalContext.current.applicationContext
+    val openDocumentLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri?.let { documentUri ->
+            val json = context.contentResolver.openInputStream(documentUri)?.bufferedReader()
+                ?.use { it.readText() }
+            onJsonPicked(json)
+        } ?: onJsonPicked(null)
+    }
+
+    LaunchedEffect(Unit) {
+        openDocumentLauncher.launch(arrayOf("application/json"))
     }
 }

@@ -21,6 +21,8 @@ class NoteRepositoryImpl(private val dao: NoteDao) : NoteRepository {
 
     override suspend fun deleteNoteByIds(ids: List<String>) = dao.deleteNotesByIds(ids)
 
+    override suspend fun deleteAllNotes() = dao.deleteAllNotes()
+
     override suspend fun emptyTrash() = dao.emptyTrash()
 
     override suspend fun restoreAllFromTrash() = dao.restoreAllFromTrash()

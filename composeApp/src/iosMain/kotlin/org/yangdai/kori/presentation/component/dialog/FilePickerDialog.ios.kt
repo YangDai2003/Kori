@@ -5,12 +5,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.uikit.LocalUIViewController
 import kfile.PlatformFile
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.datetime.Clock
 import org.yangdai.kori.data.local.entity.NoteEntity
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSString
 import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSURL
 import platform.Foundation.NSUTF8StringEncoding
+import platform.Foundation.stringWithContentsOfURL
 import platform.Foundation.writeToURL
 import platform.UIKit.UIDocumentPickerDelegateProtocol
 import platform.UIKit.UIDocumentPickerMode
@@ -158,6 +160,97 @@ actual fun FilesImportDialog(onFilePicked: (List<PlatformFile>) -> Unit) {
         ).apply {
             this.delegate = delegate
             this.allowsMultipleSelection = true
+        }
+    }
+
+    currentUIViewController.presentViewController(
+        documentPicker,
+        animated = true,
+        completion = null
+    )
+}
+
+@Suppress("CAST_NEVER_SUCCEEDS")
+@OptIn(ExperimentalForeignApi::class)
+@Composable
+actual fun BackupJsonDialog(json: String, onJsonSaved: (Boolean) -> Unit) {
+    val currentUIViewController = LocalUIViewController.current
+    val tempDir = NSTemporaryDirectory()
+    val tempDirURL = NSURL.fileURLWithPath(tempDir, isDirectory = true)
+    val fileName = "kori_backup_${Clock.System.now().toEpochMilliseconds()}.json"
+    val fileURL = tempDirURL.URLByAppendingPathComponent(fileName) ?: return
+    val nsString = json as NSString
+    val success = nsString.writeToURL(
+        url = fileURL,
+        atomically = true,
+        encoding = NSUTF8StringEncoding,
+        error = null
+    )
+    if (!success) return
+    val delegate = remember {
+        object : NSObject(), UIDocumentPickerDelegateProtocol {
+            override fun documentPicker(
+                controller: UIDocumentPickerViewController,
+                didPickDocumentAtURL: NSURL
+            ) {
+                onJsonSaved(true)
+                NSFileManager.defaultManager.removeItemAtURL(fileURL, null)
+            }
+
+            override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
+                onJsonSaved(false)
+                NSFileManager.defaultManager.removeItemAtURL(fileURL, null)
+            }
+        }
+    }
+    val documentPicker = remember {
+        UIDocumentPickerViewController(
+            forExportingURLs = listOf(fileURL),
+            asCopy = true
+        ).apply {
+            this.delegate = delegate
+            this.allowsMultipleSelection = false
+        }
+    }
+    currentUIViewController.presentViewController(
+        documentPicker,
+        animated = true,
+        completion = null
+    )
+}
+
+@OptIn(ExperimentalForeignApi::class)
+@Composable
+actual fun PickJsonDialog(onJsonPicked: (String?) -> Unit) {
+    val currentUIViewController = LocalUIViewController.current
+
+    val delegate = remember {
+        object : NSObject(), UIDocumentPickerDelegateProtocol {
+            override fun documentPicker(
+                controller: UIDocumentPickerViewController,
+                didPickDocumentAtURL: NSURL
+            ) {
+                val json = NSString.stringWithContentsOfURL(
+                    didPickDocumentAtURL,
+                    NSUTF8StringEncoding,
+                    null
+                )
+                onJsonPicked(json)
+            }
+
+            override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
+                onJsonPicked(null)
+            }
+        }
+    }
+
+    val documentPicker = remember {
+        UIDocumentPickerViewController(
+            documentTypes = listOf("public.json"),
+            inMode = UIDocumentPickerMode.UIDocumentPickerModeImport
+        ).apply {
+            this.delegate = delegate
+            this.allowsMultipleSelection = false
         }
     }
 

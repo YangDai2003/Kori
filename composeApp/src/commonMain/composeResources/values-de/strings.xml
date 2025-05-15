@@ -3,12 +3,8 @@
     <string name="content">Inhalt</string>
     <string name="delete">Löschen</string>
     <string name="back">Zurück</string>
-    <string name="minimize">Minimieren</string>
-    <string name="maximize">Maximieren</string>
-    <string name="close">Schließen</string>
     <string name="cancel">Abbrechen</string>
     <string name="confirm">Bestätigen</string>
-    <string name="always_on_top">Immer im Vordergrund</string>
     <string name="open_navigation_drawer">Navigationsleiste öffnen</string>
 
     <string name="sort_by">Sortieren nach</string>
@@ -56,7 +52,6 @@
     <string name="name">Name</string>
     <string name="search">Suchen</string>
     <string name="search_history">Suchverlauf</string>
-    <string name="progress">Fortschritt</string>
     <string name="add">Fügen Sie</string>
     <string name="sample_note">die Beispielnotiz</string>
     <string name="learn_more">hinzu, um mehr über die Markdown-Syntax zu erfahren.</string>
@@ -123,6 +118,7 @@
     <string name="card_size">Kartengröße</string>
 
     <string name="cowriter">Co-writer</string>
+    <string name="cowriter_description">Zugriff auf KI-Modelle von Drittanbietern</string>
     <string name="model">Modell</string>
     <string name="key">Schlüssel</string>
     <string name="host">Host</string>
@@ -134,8 +130,11 @@
     <string name="data">Daten</string>
     <string name="import_files">Textdateien importieren</string>
     <string name="import_files_description">Importieren Sie Textdateien als Notizen. Der Dateiname wird als Titel verwendet und der MARKDOWN-Typ wird automatisch bestimmt.</string>
-    <string name="backup_description">Sichern Sie alle Ordner und darin enthaltenen Notizen als JSON-Datei.</string>
-    <string name="restore_description">Stellen Sie die Daten in der ausgewählten Sicherungsdatei vom Typ JSON in der Datenbank wieder her. Bei einem Datenkonflikt überschreibt die Sicherungsdatei die Notizen in der Datenbank.</string>
+    <string name="backup_description">Sichern Sie alle Ordner und Notizen als JSON-Datei.</string>
+    <string name="restore_description">Stellen Sie die Daten in der ausgewählten Sicherungsdatei vom Typ JSON in der Datenbank wieder her.</string>
+    <string name="reset">Zurücksetzen</string>
+    <string name="reset_database">Datenbank zurücksetzen</string>
+    <string name="reset_database_warning">Durch das Zurücksetzen der Datenbank werden alle Notizen und Ordner vollständig gelöscht und können nicht wiederhergestellt werden. Bitte entscheiden Sie, ob Sie fortfahren möchten.</string>
     <string name="reset_database_description">Löschen Sie alle Daten in der Datenbank (einschließlich aller Notizen und Ordner).</string>
     <string name="backup">Sichern</string>
     <string name="restore_from_backup">Wiederherstellung</string>

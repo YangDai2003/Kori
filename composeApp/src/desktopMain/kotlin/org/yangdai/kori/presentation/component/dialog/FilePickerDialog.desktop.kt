@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import kfile.PlatformFile
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_name
+import kotlinx.datetime.Clock
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.NoteEntity
 import java.io.File
@@ -23,6 +24,7 @@ actual fun FilePickerDialog(onFilePicked: (PlatformFile?) -> Unit) {
         val file = File(fileDialog.directory, fileDialog.file)
         if (file.exists() && (file.extension == "txt" || file.extension == "md" || file.extension == "markdown")) {
             onFilePicked(PlatformFile(file = file))
+            return
         }
     }
     onFilePicked(null)
@@ -81,4 +83,43 @@ actual fun FilesImportDialog(onFilePicked: (List<PlatformFile>) -> Unit) {
         }
     }
     onFilePicked(selectedFiles)
+}
+
+@Composable
+actual fun BackupJsonDialog(json: String, onJsonSaved: (Boolean) -> Unit) {
+    val fileDialog = java.awt.FileDialog(
+        null as java.awt.Frame?,
+        stringResource(Res.string.app_name),
+        java.awt.FileDialog.SAVE
+    ).apply {
+        file = "kori_backup_${Clock.System.now().toEpochMilliseconds()}.json"
+        isVisible = true
+    }
+
+    if (fileDialog.file != null && fileDialog.directory != null) {
+        val file = File(fileDialog.directory, fileDialog.file)
+        file.writeText(json)
+        onJsonSaved(file.exists())
+    } else onJsonSaved(false)
+}
+
+@Composable
+actual fun PickJsonDialog(onJsonPicked: (String?) -> Unit) {
+    val fileDialog = java.awt.FileDialog(
+        null as java.awt.Frame?,
+        stringResource(Res.string.app_name),
+        java.awt.FileDialog.LOAD
+    ).apply {
+        file = "*.json"
+        isVisible = true
+    }
+
+    if (fileDialog.file != null && fileDialog.directory != null) {
+        val file = File(fileDialog.directory, fileDialog.file)
+        if (file.exists() && file.extension == "json") {
+            onJsonPicked(file.readText())
+            return
+        }
+    }
+    onJsonPicked(null)
 }

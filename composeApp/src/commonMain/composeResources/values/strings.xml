@@ -4,12 +4,8 @@
     <string name="content">Content</string>
     <string name="delete">Delete</string>
     <string name="back">Back</string>
-    <string name="minimize">Minimize</string>
-    <string name="maximize">Maximize</string>
-    <string name="close">Close</string>
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
-    <string name="always_on_top">Always on top</string>
     <string name="open_navigation_drawer">Open navigation drawer</string>
 
     <string name="sort_by">Sort by</string>
@@ -57,7 +53,6 @@
     <string name="name">Name</string>
     <string name="search">Search</string>
     <string name="search_history">Search history</string>
-    <string name="progress">Progress</string>
     <string name="add">Add</string>
     <string name="sample_note">the Sample Note</string>
     <string name="learn_more">to learn more about Markdown syntax.</string>
@@ -125,6 +120,7 @@
     <string name="card_size">Card size</string>
 
     <string name="cowriter">Co-writer</string>
+    <string name="cowriter_description">Access to third-party AI models</string>
     <string name="model">Model</string>
     <string name="key">Key</string>
     <string name="host">Host</string>
@@ -136,9 +132,12 @@
     <string name="data">Data</string>
     <string name="import_files">Import text files</string>
     <string name="import_files_description">Import text files as notes. The file name will be used as the title and the MARKDOWN type will be automatically determined.</string>
-    <string name="backup_description">Back up all folders and notes in them as a JSON file.</string>
-    <string name="restore_description">Restore the data in the selected JSON type backup file to the database. If there is a data conflict, the backup file will overwrite the notes in the database.</string>
+    <string name="backup_description">Back up all folders and notes as a JSON file.</string>
+    <string name="restore_description">Restore the data in the selected JSON type backup file to the database.</string>
     <string name="reset_database_description">Clear all data in the database (including all notes and folders).</string>
+    <string name="reset">Reset</string>
+    <string name="reset_database">Reset database</string>
+    <string name="reset_database_warning">Resetting the database will cause all notes and folders to be completely deleted and irrecoverable. Please decide whether to continue?</string>
     <string name="backup">Backup</string>
     <string name="restore_from_backup">Restore</string>
 </resources>

@@ -3,12 +3,8 @@
     <string name="content">正文</string>
     <string name="delete">删除</string>
     <string name="back">返回</string>
-    <string name="minimize">最小化</string>
-    <string name="maximize">最大化</string>
-    <string name="close">关闭</string>
     <string name="cancel">取消</string>
     <string name="confirm">确定</string>
-    <string name="always_on_top">置顶</string>
     <string name="open_navigation_drawer">打开导航抽屉</string>
 
     <string name="sort_by">排序依据</string>
@@ -56,7 +52,6 @@
     <string name="name">名称</string>
     <string name="search">搜索</string>
     <string name="search_history">搜索历史</string>
-    <string name="progress">进度</string>
     <string name="add">添加</string>
     <string name="sample_note">示例笔记</string>
     <string name="learn_more">以了解更多 Markdown 语法。</string>
@@ -123,6 +118,7 @@
     <string name="card_size">卡片尺寸</string>
 
     <string name="cowriter">写作助手</string>
+    <string name="cowriter_description">接入第三方人工智能模型</string>
     <string name="model">模型</string>
     <string name="key">密钥</string>
     <string name="host">域名</string>
@@ -134,9 +130,12 @@
     <string name="data">数据</string>
     <string name="import_files">导入文本文件</string>
     <string name="import_files_description">批量导入文本类型的文件。文件名会作为标题，并自动判断是否为 MARKDOWN 类型。</string>
-    <string name="backup_description">将所有文件夹和其所包含的笔记备份为一个JSON文件。</string>
-    <string name="restore_description">将所选的 JSON 备份文件中的数据写入到数据库中。如果数据冲突，备份文件将覆盖数据库中的笔记。</string>
+    <string name="backup_description">将所有文件夹和笔记备份为一个 JSON 文件。</string>
+    <string name="restore_description">将所选的 JSON 备份文件中的数据写入到数据库中。</string>
     <string name="reset_database_description">清空数据库中的所有内容（包括所有笔记和文件夹）。</string>
+    <string name="reset">重置</string>
+    <string name="reset_database">重置数据库</string>
+    <string name="reset_database_warning">重置数据库会导致所有笔记和文件夹被彻底删除且不可恢复，请决定是否继续操作?</string>
     <string name="backup">备份</string>
     <string name="restore_from_backup">还原</string>
 </resources>

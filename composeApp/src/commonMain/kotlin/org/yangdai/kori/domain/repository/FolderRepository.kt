@@ -11,6 +11,7 @@ interface FolderRepository {
     suspend fun updateFolder(folder: FolderEntity)
     suspend fun deleteFolder(folder: FolderEntity)
     suspend fun deleteFolderById(id: String)
+    suspend fun deleteAllFolders()
 
     /**
      * 获取所有文件夹及其笔记数量

@@ -79,8 +79,10 @@ fun DetailPaneItem(
     icon: ImageVector? = null,
     colors: ListItemColors = ListItemDefaults.colors(),
     trailingContent: @Composable () -> Unit = {},
+    onClick: (() -> Unit)? = null
 ) = ListItem(
-    modifier = modifier.clip(MaterialTheme.shapes.large),
+    modifier = modifier.clip(MaterialTheme.shapes.large)
+        .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier),
     headlineContent = {
         Text(
             modifier = Modifier.basicMarquee(),
@@ -88,13 +90,14 @@ fun DetailPaneItem(
             maxLines = 1
         )
     },
-    supportingContent = { if (!description.isNullOrEmpty()) Text(description) },
-    leadingContent = {
-        if (icon != null)
+    supportingContent = description?.let { { Text(description) } },
+    leadingContent = icon?.let {
+        {
             Icon(
                 imageVector = icon,
                 contentDescription = null
             )
+        }
     },
     trailingContent = trailingContent,
     colors = colors

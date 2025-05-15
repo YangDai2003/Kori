@@ -221,11 +221,7 @@ class FileViewModel(
             val content = file.readText()
             val noteType = if (file.getExtension().contains("md")
                 || file.getExtension().contains("markdown")
-            ) {
-                NoteType.MARKDOWN
-            } else {
-                NoteType.PLAIN_TEXT
-            }
+            ) NoteType.MARKDOWN else NoteType.PLAIN_TEXT
             titleState.setTextAndPlaceCursorAtEnd(title)
             contentState.setTextAndPlaceCursorAtEnd(content)
             // 记录初始内容
