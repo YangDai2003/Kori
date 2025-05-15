@@ -34,11 +34,9 @@ fun ExportDialog(
     var exportType by remember { mutableStateOf(ExportType.TXT) }
     AlertDialog(
         modifier = Modifier.widthIn(max = 360.dp),
-        title = {
-            Text(text = stringResource(Res.string.export_as))
-        },
+        title = { Text(stringResource(Res.string.export_as)) },
         text = {
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Column(Modifier.fillMaxWidth()) {
                 TextOptionButton(buttonText = "TXT") {
                     exportType = ExportType.TXT
                     showSaveFileDialog = true

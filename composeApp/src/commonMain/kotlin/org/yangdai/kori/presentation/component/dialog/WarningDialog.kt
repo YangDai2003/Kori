@@ -21,8 +21,8 @@ fun WarningDialog(
     onDismissRequest: () -> Unit,
     onConfirm: () -> Unit
 ) = AlertDialog(
-    title = { Text(text = stringResource(Res.string.warning)) },
-    text = { Text(text = message) },
+    title = { Text(stringResource(Res.string.warning)) },
+    text = { Text(message) },
     onDismissRequest = onDismissRequest,
     confirmButton = {
         val haptic = LocalHapticFeedback.current
@@ -37,12 +37,12 @@ fun WarningDialog(
                 contentColor = MaterialTheme.colorScheme.onErrorContainer
             )
         ) {
-            Text(text = stringResource(Res.string.confirm))
+            Text(stringResource(Res.string.confirm))
         }
     },
     dismissButton = {
-        TextButton(onClick = onDismissRequest) {
-            Text(text = stringResource(Res.string.cancel))
+        TextButton(onDismissRequest) {
+            Text(stringResource(Res.string.cancel))
         }
     }
 )

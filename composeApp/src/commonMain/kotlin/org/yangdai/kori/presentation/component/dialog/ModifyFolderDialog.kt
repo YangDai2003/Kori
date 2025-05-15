@@ -60,8 +60,8 @@ import kori.composeapp.generated.resources.name
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.FolderEntity
-import org.yangdai.kori.data.local.entity.folderColorOptions
 import org.yangdai.kori.data.local.entity.defaultFolderColor
+import org.yangdai.kori.data.local.entity.folderColorOptions
 import org.yangdai.kori.presentation.component.HorizontalScrollbar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -105,7 +105,7 @@ fun ModifyFolderDialog(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = stringResource(Res.string.modify))
+                Text(stringResource(Res.string.modify))
                 IconToggleButton(
                     checked = isStarred,
                     onCheckedChange = { isStarred = it },
@@ -134,7 +134,7 @@ fun ModifyFolderDialog(
                         errorBorderColor = MaterialTheme.colorScheme.error,
                         placeholderColor = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
-                    placeholder = { Text(text = stringResource(Res.string.name)) }
+                    placeholder = { Text(stringResource(Res.string.name)) }
                 )
                 Box {
                     val state = rememberLazyListState()
@@ -214,7 +214,7 @@ fun ModifyFolderDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismissRequest) {
+            TextButton(onDismissRequest) {
                 Text(stringResource(Res.string.cancel))
             }
         }

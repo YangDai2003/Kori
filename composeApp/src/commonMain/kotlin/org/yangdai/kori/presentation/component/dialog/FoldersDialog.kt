@@ -53,7 +53,7 @@ fun FoldersDialog(
         text = {
             Column {
                 HorizontalDivider(Modifier.fillMaxWidth())
-                LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                LazyColumn(Modifier.fillMaxWidth()) {
                     item {
                         val isSelected = selectedFolderId == null
                         ListItem(
@@ -78,7 +78,7 @@ fun FoldersDialog(
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                         )
                     }
-                    items(foldersWithNoteCounts) { group ->
+                    items(foldersWithNoteCounts, key = { it.folder.id }) { group ->
                         val folder = group.folder
                         val isSelected = selectedFolderId == folder.id
                         ListItem(

@@ -75,7 +75,7 @@ fun ColorPickerBottomSheet(
                     color = color ?: Color.White,
                     style = MaterialTheme.typography.headlineSmall
                 )
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(Modifier.weight(1f))
                 val haptic = LocalHapticFeedback.current
                 FilledIconButton(
                     onClick = {
@@ -110,7 +110,7 @@ fun ColorPickerBottomSheet(
                 initialColor = oColor
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(Modifier.height(8.dp))
         }
     }
 }

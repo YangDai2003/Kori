@@ -44,7 +44,7 @@ fun ShareDialog(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = stringResource(Res.string.share_note_as))
+            Text(stringResource(Res.string.share_note_as))
             IconButton(
                 onClick = {
                     scope.launch {
@@ -60,7 +60,7 @@ fun ShareDialog(
         }
     },
     text = {
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.fillMaxWidth()) {
             TextOptionButton(
                 modifier = Modifier.clickToShareText(noteEntity.content),
                 buttonText = stringResource(Res.string.text)
