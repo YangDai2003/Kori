@@ -122,6 +122,11 @@
     <string name="model">Modell</string>
     <string name="key">Schlüssel</string>
     <string name="host">Host</string>
+    <string name="rewrite">Umschreiben</string>
+    <string name="summarize">Zusammenfassen</string>
+    <string name="translate">Übersetzen</string>
+    <string name="make_list">Liste aufstellen</string>
+    <string name="make_table">Tabelle aufstellen</string>
 
     <string name="share_note_as">Notiz teilen als</string>
     <string name="file">Datei</string>

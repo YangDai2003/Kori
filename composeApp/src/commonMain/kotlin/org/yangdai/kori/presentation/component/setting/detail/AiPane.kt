@@ -59,8 +59,13 @@ import kori.composeapp.generated.resources.cowriter
 import kori.composeapp.generated.resources.cowriter_description
 import kori.composeapp.generated.resources.host
 import kori.composeapp.generated.resources.key
+import kori.composeapp.generated.resources.make_list
+import kori.composeapp.generated.resources.make_table
 import kori.composeapp.generated.resources.model
 import kori.composeapp.generated.resources.reset
+import kori.composeapp.generated.resources.rewrite
+import kori.composeapp.generated.resources.summarize
+import kori.composeapp.generated.resources.translate
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.setting.DetailPaneItem
 import org.yangdai.kori.presentation.screen.settings.AiProvider
@@ -111,12 +116,11 @@ fun AiPane(settingsViewModel: SettingsViewModel) {
         AnimatedVisibility(visible = aiPaneState.isAiEnabled) {
             Column {
                 val features = listOf(
-                    "correction" to "纠错",
-                    "refining" to "润色",
-                    "summary" to "摘要",
-                    "translation" to "翻译",
-                    "list" to "制作列表",
-                    "table" to "制作表格"
+                    "rewrite" to stringResource(Res.string.rewrite),
+                    "summarize" to stringResource(Res.string.summarize),
+                    "translate" to stringResource(Res.string.translate),
+                    "list" to stringResource(Res.string.make_list),
+                    "table" to stringResource(Res.string.make_table),
                 )
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     features.forEach { feature ->
