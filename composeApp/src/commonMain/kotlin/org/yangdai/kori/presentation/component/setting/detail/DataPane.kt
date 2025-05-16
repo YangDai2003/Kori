@@ -13,10 +13,8 @@ import androidx.compose.material.icons.outlined.Backup
 import androidx.compose.material.icons.outlined.CleaningServices
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.Restore
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,7 +29,6 @@ import kori.composeapp.generated.resources.backup
 import kori.composeapp.generated.resources.backup_description
 import kori.composeapp.generated.resources.import_files
 import kori.composeapp.generated.resources.import_files_description
-import kori.composeapp.generated.resources.reset
 import kori.composeapp.generated.resources.reset_database
 import kori.composeapp.generated.resources.reset_database_description
 import kori.composeapp.generated.resources.reset_database_warning
@@ -106,17 +103,12 @@ fun DataPane(viewModel: DataViewModel = koinViewModel()) {
             title = stringResource(Res.string.reset_database),
             description = stringResource(Res.string.reset_database_description),
             icon = Icons.Outlined.CleaningServices,
-            trailingContent = {
-                TextButton(
-                    onClick = { showWarningDialog = true },
-                    colors = ButtonDefaults.textButtonColors().copy(
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.onErrorContainer
-                    )
-                ) {
-                    Text(stringResource(Res.string.reset))
-                }
-            }
+            colors = ListItemDefaults.colors(
+                containerColor = MaterialTheme.colorScheme.errorContainer.copy(
+                    alpha = 0.6f
+                )
+            ),
+            onClick = { showWarningDialog = true }
         )
 
         Spacer(Modifier.navigationBarsPadding())

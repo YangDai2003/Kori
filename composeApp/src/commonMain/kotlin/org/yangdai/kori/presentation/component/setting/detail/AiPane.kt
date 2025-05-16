@@ -33,6 +33,7 @@ import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -59,6 +60,7 @@ import kori.composeapp.generated.resources.cowriter_description
 import kori.composeapp.generated.resources.host
 import kori.composeapp.generated.resources.key
 import kori.composeapp.generated.resources.model
+import kori.composeapp.generated.resources.reset
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.setting.DetailPaneItem
 import org.yangdai.kori.presentation.screen.settings.AiProvider
@@ -206,10 +208,7 @@ fun AiPane(settingsViewModel: SettingsViewModel) {
 }
 
 @Composable
-private fun KeyOutlinedTextField(
-    value: String,
-    onValueChange: (String) -> Unit
-) {
+private fun KeyTextField(value: String, onValueChange: (String) -> Unit) {
     var showKey by remember { mutableStateOf(false) }
     OutlinedTextField(
         value = value,
@@ -232,13 +231,13 @@ private fun KeyOutlinedTextField(
                 )
             }
         },
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
     )
 }
 
 @Composable
-private fun LinkText(text: String, url: String) {
-    val annotatedString = buildAnnotatedString {
+private fun LinkText(text: String, url: String) = Text(
+    text = buildAnnotatedString {
         append("* ")
         withLink(
             LinkAnnotation.Url(
@@ -253,13 +252,30 @@ private fun LinkText(text: String, url: String) {
         ) {
             append(text)
         }
-    }
-    Text(
-        text = annotatedString,
-        style = MaterialTheme.typography.labelSmall,
-        modifier = Modifier.padding(top = 8.dp)
-    )
-}
+    },
+    style = MaterialTheme.typography.labelSmall,
+    modifier = Modifier.padding(top = 8.dp)
+)
+
+@Composable
+private fun UrlTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    defaultValue: String
+) = OutlinedTextField(
+    value = value,
+    onValueChange = onValueChange,
+    label = { Text("API " + stringResource(Res.string.host)) },
+    placeholder = { Text(defaultValue, maxLines = 1) },
+    trailingIcon = {
+        if (value != defaultValue)
+            TextButton(onClick = { onValueChange(defaultValue) }) {
+                Text(stringResource(Res.string.reset))
+            }
+    },
+    singleLine = true,
+    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+)
 
 // Gemini 设置项
 @Composable
@@ -270,26 +286,21 @@ private fun GeminiSettings(settingsViewModel: SettingsViewModel) {
     var model by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.GEMINI_MODEL)) }
 
     Column(Modifier.padding(top = 16.dp)) {
-        KeyOutlinedTextField(
+        KeyTextField(
             value = apiKey,
             onValueChange = {
                 apiKey = it
                 settingsViewModel.putPreferenceValue(Constants.Preferences.GEMINI_API_KEY, it)
             }
         )
-        Spacer(Modifier.height(8.dp))
-        OutlinedTextField(
+        UrlTextField(
             value = apiHost,
             onValueChange = {
                 apiHost = it
                 settingsViewModel.putPreferenceValue(Constants.Preferences.GEMINI_API_HOST, it)
             },
-            label = { Text("API " + stringResource(Res.string.host)) },
-            placeholder = { Text("https://generativelanguage.googleapis.com", maxLines = 1) },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
+            defaultValue = "https://generativelanguage.googleapis.com"
         )
-        Spacer(Modifier.height(8.dp))
         OutlinedTextField(
             value = model,
             onValueChange = {
@@ -316,26 +327,21 @@ private fun OpenAISettings(settingsViewModel: SettingsViewModel) {
     var model by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.OPENAI_MODEL)) }
 
     Column(Modifier.padding(top = 16.dp)) {
-        KeyOutlinedTextField(
+        KeyTextField(
             value = apiKey,
             onValueChange = {
                 apiKey = it
                 settingsViewModel.putPreferenceValue(Constants.Preferences.OPENAI_API_KEY, it)
             }
         )
-        Spacer(Modifier.height(8.dp))
-        OutlinedTextField(
+        UrlTextField(
             value = apiHost,
             onValueChange = {
                 apiHost = it
                 settingsViewModel.putPreferenceValue(Constants.Preferences.OPENAI_API_HOST, it)
             },
-            label = { Text("API " + stringResource(Res.string.host)) },
-            placeholder = { Text("https://api.openai.com", maxLines = 1) },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
+            defaultValue = "https://api.openai.com"
         )
-        Spacer(Modifier.height(8.dp))
         OutlinedTextField(
             value = model,
             onValueChange = {
@@ -361,18 +367,14 @@ private fun OllamaSettings(settingsViewModel: SettingsViewModel) {
     var model by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.OLLAMA_MODEL)) }
 
     Column(Modifier.padding(top = 16.dp)) {
-        OutlinedTextField(
+        UrlTextField(
             value = baseUrl,
             onValueChange = {
                 baseUrl = it
                 settingsViewModel.putPreferenceValue(Constants.Preferences.OLLAMA_API_HOST, it)
             },
-            label = { Text("API " + stringResource(Res.string.host)) },
-            placeholder = { Text("http://localhost:11434", maxLines = 1) },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
+            defaultValue = "http://localhost:11434"
         )
-        Spacer(Modifier.height(8.dp))
         OutlinedTextField(
             value = model,
             onValueChange = {
@@ -398,18 +400,14 @@ private fun LMStudioSettings(settingsViewModel: SettingsViewModel) {
     var model by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.LMSTUDIO_MODEL)) }
 
     Column(Modifier.padding(top = 16.dp)) {
-        OutlinedTextField(
+        UrlTextField(
             value = baseUrl,
             onValueChange = {
                 baseUrl = it
                 settingsViewModel.putPreferenceValue(Constants.Preferences.LMSTUDIO_API_HOST, it)
             },
-            label = { Text("API " + stringResource(Res.string.host)) },
-            placeholder = { Text("http://127.0.0.1:1234/v1", maxLines = 1) },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
+            defaultValue = "http://127.0.0.1:1234/v1"
         )
-        Spacer(Modifier.height(8.dp))
         OutlinedTextField(
             value = model,
             onValueChange = {
