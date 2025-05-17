@@ -58,7 +58,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlurEffect
@@ -100,9 +102,8 @@ import org.yangdai.kori.presentation.util.rememberCurrentPlatform
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalUuidApi::class,
-    ExperimentalSharedTransitionApi::class
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class,
+    ExperimentalComposeUiApi::class, ExperimentalUuidApi::class
 )
 @Composable
 fun FoldersScreen(
@@ -238,6 +239,10 @@ fun FoldersScreen(
                     state = state
                 )
             }
+        }
+
+        BackHandler(selectedFolder != null) {
+            selectedFolder = null
         }
 
         ModifyFolderDialog(
