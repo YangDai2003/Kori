@@ -1,5 +1,14 @@
 package org.yangdai.kori.presentation.screen.folders
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +26,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -25,16 +33,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.outlined.CreateNewFolder
-import androidx.compose.material.icons.outlined.DriveFileRenameOutline
 import androidx.compose.material.icons.outlined.FolderDelete
 import androidx.compose.material.icons.outlined.SortByAlpha
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -54,7 +60,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.graphics.layer.GraphicsLayer
+import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
@@ -63,10 +75,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kori.composeapp.generated.resources.Res
-import kori.composeapp.generated.resources.delete
 import kori.composeapp.generated.resources.deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue
 import kori.composeapp.generated.resources.folders
-import kori.composeapp.generated.resources.modify
 import kori.composeapp.generated.resources.note_count
 import kori.composeapp.generated.resources.others
 import kori.composeapp.generated.resources.sort_by
@@ -75,6 +85,7 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.Platform
+import org.yangdai.kori.data.local.dao.FolderDao
 import org.yangdai.kori.data.local.entity.FolderEntity
 import org.yangdai.kori.data.local.entity.defaultFolderColor
 import org.yangdai.kori.presentation.component.LazyGridScrollbar
@@ -89,206 +100,221 @@ import org.yangdai.kori.presentation.util.rememberCurrentPlatform
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalUuidApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalUuidApi::class,
+    ExperimentalSharedTransitionApi::class
+)
 @Composable
 fun FoldersScreen(
     viewModel: FoldersViewModel = koinViewModel(),
     navigateUp: () -> Unit
 ) {
     val groupedFolders by viewModel.foldersMap.collectAsStateWithLifecycle()
-    var showAddFolderDialog by rememberSaveable { mutableStateOf(false) }
     var showSortDialog by rememberSaveable { mutableStateOf(false) }
     val platform = rememberCurrentPlatform()
     val scrollBehavior = if (platform is Platform.Desktop) TopAppBarDefaults.pinnedScrollBehavior()
     else TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     var selectedFolder by remember { mutableStateOf<FolderEntity?>(null) }
-    var showModifyDialog by remember { mutableStateOf(false) }
-    var showWarningDialog by remember { mutableStateOf(false) }
+    var deletingFolder by remember { mutableStateOf<FolderEntity?>(null) }
 
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            PlatformStyleTopAppBar(
-                title = { PlatformStyleTopAppBarTitle(stringResource(Res.string.folders)) },
-                navigationIcon = { PlatformStyleTopAppBarNavigationIcon(onClick = navigateUp) },
-                actions = {
-                    TooltipIconButton(
-                        tipText = stringResource(Res.string.sort_by),
-                        icon = Icons.Outlined.SortByAlpha,
-                        onClick = { showSortDialog = true },
-                    )
-                },
-                scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.topAppBarColors()
-                    .copy(scrolledContainerColor = MaterialTheme.colorScheme.surface)
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { showAddFolderDialog = true }) {
-                Icon(
-                    imageVector = Icons.Outlined.CreateNewFolder,
-                    contentDescription = null
+    val graphicsLayer = rememberGraphicsLayer()
+    val animateBlurRadius = animateFloatAsState(
+        targetValue = if (selectedFolder != null) 20f else 0f,
+        label = "blur radius"
+    )
+
+    SharedTransitionLayout(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            modifier = Modifier
+                .blurLayer(graphicsLayer, animateBlurRadius.value)
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+            topBar = {
+                PlatformStyleTopAppBar(
+                    title = { PlatformStyleTopAppBarTitle(stringResource(Res.string.folders)) },
+                    navigationIcon = { PlatformStyleTopAppBarNavigationIcon(onClick = navigateUp) },
+                    actions = {
+                        TooltipIconButton(
+                            tipText = stringResource(Res.string.sort_by),
+                            icon = Icons.Outlined.SortByAlpha,
+                            onClick = { showSortDialog = true },
+                        )
+                    },
+                    scrollBehavior = scrollBehavior,
+                    colors = TopAppBarDefaults.topAppBarColors()
+                        .copy(scrolledContainerColor = MaterialTheme.colorScheme.surface)
                 )
+            },
+            floatingActionButton = {
+                AnimatedVisibility(
+                    selectedFolder == null,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    FloatingActionButton(
+                        modifier = Modifier.sharedBounds(
+                            sharedContentState = rememberSharedContentState(key = "-bounds"),
+                            animatedVisibilityScope = this,
+                            clipInOverlayDuringTransition = OverlayClip(FloatingActionButtonDefaults.shape)
+                        ),
+                        onClick = { selectedFolder = FolderEntity() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.CreateNewFolder,
+                            contentDescription = null
+                        )
+                    }
+                }
             }
-        }
-    ) { innerPadding ->
-        val state = rememberLazyGridState()
-        val layoutDirection = LocalLayoutDirection.current
-        Box(
-            Modifier
-                .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    start = innerPadding.calculateStartPadding(layoutDirection),
-                    end = innerPadding.calculateEndPadding(layoutDirection)
-                )
-                .fillMaxSize()
-        ) {
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(380.dp),
-                state = state,
-                contentPadding = PaddingValues(
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = innerPadding.calculateBottomPadding()
-                ),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) { innerPadding ->
+
+            val state = rememberLazyGridState()
+            val layoutDirection = LocalLayoutDirection.current
+
+            Box(
+                Modifier
+                    .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        start = innerPadding.calculateStartPadding(layoutDirection),
+                        end = innerPadding.calculateEndPadding(layoutDirection)
+                    )
+                    .fillMaxSize()
             ) {
-                if (!groupedFolders[true].isNullOrEmpty())
-                    stickyHeader(key = "starred") {
-                        Surface {
-                            Text(
-                                modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
-                                text = stringResource(Res.string.starred),
-                                style = MaterialTheme.typography.labelMedium
-                            )
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(380.dp),
+                    state = state,
+                    contentPadding = PaddingValues(
+                        start = 16.dp,
+                        end = 16.dp,
+                        bottom = innerPadding.calculateBottomPadding()
+                    ),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    if (!groupedFolders[true].isNullOrEmpty())
+                        stickyHeader(key = "starred") {
+                            Surface {
+                                Text(
+                                    modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
+                                    text = stringResource(Res.string.starred),
+                                    style = MaterialTheme.typography.labelMedium
+                                )
+                            }
                         }
+
+                    items(groupedFolders[true] ?: emptyList(), key = { it.folder.id }) {
+                        FolderItem(
+                            modifier = Modifier.animateItem(),
+                            folderWithNoteCount = it,
+                            visible = selectedFolder != it.folder,
+                            onClick = { selectedFolder = it.folder },
+                            onDeleteRequest = { deletingFolder = it.folder }
+                        )
                     }
 
-                items(groupedFolders[true] ?: emptyList(), key = { it.folder.id }) {
-                    FolderItem(
-                        folder = it.folder,
-                        notesCountInFolder = it.noteCount,
-                        onModifyRequest = { folder ->
-                            selectedFolder = folder
-                            showModifyDialog = true
-                        },
-                        onDeleteRequest = { folder ->
-                            selectedFolder = folder
-                            showWarningDialog = true
+                    if (groupedFolders.size == 2)
+                        stickyHeader(key = "others") {
+                            Surface {
+                                Text(
+                                    modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
+                                    text = stringResource(Res.string.others),
+                                    style = MaterialTheme.typography.labelMedium
+                                )
+                            }
                         }
-                    )
-                }
 
-                if (groupedFolders.size == 2)
-                    stickyHeader(key = "others") {
-                        Surface {
-                            Text(
-                                modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
-                                text = stringResource(Res.string.others),
-                                style = MaterialTheme.typography.labelMedium
-                            )
-                        }
+                    items(groupedFolders[false] ?: emptyList(), key = { it.folder.id }) {
+                        FolderItem(
+                            modifier = Modifier.animateItem(),
+                            folderWithNoteCount = it,
+                            visible = selectedFolder != it.folder,
+                            onClick = { selectedFolder = it.folder },
+                            onDeleteRequest = { deletingFolder = it.folder }
+                        )
                     }
-
-                items(groupedFolders[false] ?: emptyList(), key = { it.folder.id }) {
-                    FolderItem(
-                        folder = it.folder,
-                        notesCountInFolder = it.noteCount,
-                        onModifyRequest = { folder ->
-                            selectedFolder = folder
-                            showModifyDialog = true
-                        },
-                        onDeleteRequest = { folder ->
-                            selectedFolder = folder
-                            showWarningDialog = true
-                        }
-                    )
                 }
-            }
 
-            LazyGridScrollbar(
-                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-                state = state
-            )
+                LazyGridScrollbar(
+                    modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+                    state = state
+                )
+            }
         }
 
-        if (showAddFolderDialog) {
-            ModifyFolderDialog(
-                oFolder = FolderEntity(Uuid.random().toString()),
-                onDismissRequest = { showAddFolderDialog = false }
-            ) { viewModel.createFolder(it) }
-        }
-    }
-
-    if (showWarningDialog && selectedFolder != null) {
-        WarningDialog(
-            message = stringResource(Res.string.deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue),
-            onDismissRequest = { showWarningDialog = false },
-            onConfirm = {
-                viewModel.deleteFolder(selectedFolder!!)
-                showWarningDialog = false
-            }
-        )
-    }
-
-    if (showModifyDialog && selectedFolder != null) {
         ModifyFolderDialog(
-            oFolder = selectedFolder!!,
-            onDismissRequest = { showModifyDialog = false }
-        ) {
-            viewModel.updateFolder(it)
-            showModifyDialog = false
-        }
-    }
-
-    if (showSortDialog)
-        FolderSortOptionDialog(
-            oFolderSortType = viewModel.folderSortType,
-            onDismissRequest = { showSortDialog = false },
-            onSortTypeSelected = { viewModel.setFolderSorting(it) }
+            folder = selectedFolder,
+            onDismissRequest = { selectedFolder = null },
+            onConfirm = {
+                if (it.id.isEmpty()) viewModel.createFolder(it.copy(id = Uuid.random().toString()))
+                else viewModel.updateFolder(it)
+                selectedFolder = null
+            }
         )
+
+        if (deletingFolder != null)
+            WarningDialog(
+                message = stringResource(Res.string.deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue),
+                onDismissRequest = { deletingFolder = null },
+                onConfirm = { viewModel.deleteFolder(deletingFolder!!) }
+            )
+
+        if (showSortDialog)
+            FolderSortOptionDialog(
+                oFolderSortType = viewModel.folderSortType,
+                onDismissRequest = { showSortDialog = false },
+                onSortTypeSelected = { viewModel.setFolderSorting(it) }
+            )
+    }
 }
 
+private fun Modifier.blurLayer(layer: GraphicsLayer, radius: Float): Modifier {
+    return if (radius == 0f) this else this.drawWithContent {
+        layer.apply {
+            record {
+                this@drawWithContent.drawContent()
+            }
+            this.renderEffect = BlurEffect(radius, radius, TileMode.Decal)
+        }
+        drawLayer(layer)
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun LazyGridItemScope.FolderItem(
-    folder: FolderEntity,
-    notesCountInFolder: Int,
-    onModifyRequest: (FolderEntity) -> Unit,
-    onDeleteRequest: (FolderEntity) -> Unit,
+fun SharedTransitionScope.FolderItem(
+    modifier: Modifier = Modifier,
+    folderWithNoteCount: FolderDao.FolderWithNoteCount,
+    visible: Boolean,
+    onClick: () -> Unit,
+    onDeleteRequest: () -> Unit,
     colorScheme: ColorScheme = MaterialTheme.colorScheme
+) = AnimatedVisibility(
+    modifier = modifier,
+    visible = visible,
+    enter = fadeIn() + scaleIn(),
+    exit = fadeOut() + scaleOut()
 ) {
+    val folder = folderWithNoteCount.folder
+    val notesCountInFolder = folderWithNoteCount.noteCount
     val folderColor by remember(folder.colorValue, colorScheme) {
         derivedStateOf {
             if (folder.colorValue != defaultFolderColor)
                 Color(folder.colorValue)
-            else
-                colorScheme.primary
-        }
-    }
-
-    val onConfirmValueChange = remember(folder) {
-        { value: SwipeToDismissBoxValue ->
-            when (value) {
-                SwipeToDismissBoxValue.StartToEnd -> {
-                    onModifyRequest(folder)
-                    false
-                }
-
-                SwipeToDismissBoxValue.EndToStart -> {
-                    onDeleteRequest(folder)
-                    false
-                }
-
-                SwipeToDismissBoxValue.Settled -> true
-            }
+            else colorScheme.primary
         }
     }
 
     val dismissState = rememberSwipeToDismissBoxState(
-        confirmValueChange = onConfirmValueChange
+        confirmValueChange = { value: SwipeToDismissBoxValue ->
+            when (value) {
+                SwipeToDismissBoxValue.EndToStart -> {
+                    onDeleteRequest()
+                    false
+                }
+
+                else -> false
+            }
+        }
     )
-    var showContextMenu by remember { mutableStateOf(false) }
 
     SwipeToDismissBox(
         state = dismissState,
@@ -297,9 +323,8 @@ fun LazyGridItemScope.FolderItem(
             val progress = dismissState.progress
             val iconOffset = 30.dp * (progress * 1.5f)
             val backgroundColor = when (direction) {
-                SwipeToDismissBoxValue.StartToEnd -> folderColor.copy(alpha = 0.1f)
                 SwipeToDismissBoxValue.EndToStart -> colorScheme.errorContainer
-                SwipeToDismissBoxValue.Settled -> Color.Transparent
+                else -> Color.Transparent
             }
 
             val cornerLeftRadius =
@@ -320,16 +345,6 @@ fun LazyGridItemScope.FolderItem(
                     .background(backgroundColor)
                     .padding(horizontal = 20.dp)
             ) {
-                if (direction == SwipeToDismissBoxValue.StartToEnd)
-                    Icon(
-                        imageVector = Icons.Outlined.DriveFileRenameOutline,
-                        contentDescription = null,
-                        tint = folderColor,
-                        modifier = Modifier
-                            .align(Alignment.CenterStart)
-                            .size(30.dp)
-                            .offset { IntOffset(x = iconOffset.roundToPx(), y = 0) }
-                    )
                 if (direction == SwipeToDismissBoxValue.EndToStart)
                     Icon(
                         imageVector = Icons.Outlined.FolderDelete,
@@ -342,12 +357,15 @@ fun LazyGridItemScope.FolderItem(
                     )
             }
         },
-        modifier = Modifier
-            .padding(bottom = 8.dp)
+        modifier = Modifier.padding(bottom = 8.dp)
+            .sharedBounds(
+                sharedContentState = rememberSharedContentState(key = "${folder.id}-bounds"),
+                animatedVisibilityScope = this,
+                clipInOverlayDuringTransition = OverlayClip(CardDefaults.elevatedShape)
+            )
             .clip(CardDefaults.elevatedShape)
-            .animateItem()
     ) {
-        ElevatedCard(onClick = { showContextMenu = true }) {
+        ElevatedCard(onClick = onClick) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -384,41 +402,6 @@ fun LazyGridItemScope.FolderItem(
                     )
                 }
             }
-        }
-
-        DropdownMenu(
-            expanded = showContextMenu,
-            onDismissRequest = { showContextMenu = false }
-        ) {
-            DropdownMenuItem(
-                text = { Text(stringResource(Res.string.modify)) },
-                leadingIcon = {
-                    Icon(Icons.Outlined.DriveFileRenameOutline, contentDescription = null)
-                },
-                onClick = {
-                    onModifyRequest(folder)
-                    showContextMenu = false
-                }
-            )
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = stringResource(Res.string.delete),
-                        color = MaterialTheme.colorScheme.onErrorContainer
-                    )
-                },
-                leadingIcon = {
-                    Icon(
-                        Icons.Outlined.FolderDelete,
-                        tint = MaterialTheme.colorScheme.error,
-                        contentDescription = null
-                    )
-                },
-                onClick = {
-                    onDeleteRequest(folder)
-                    showContextMenu = false
-                }
-            )
         }
     }
 }

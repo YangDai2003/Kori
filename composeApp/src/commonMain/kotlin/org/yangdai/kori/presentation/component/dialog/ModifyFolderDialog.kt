@@ -1,15 +1,26 @@
 package org.yangdai.kori.presentation.component.dialog
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -21,7 +32,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Colorize
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.StarOutline
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -34,7 +45,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,12 +54,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
@@ -64,65 +71,90 @@ import org.yangdai.kori.data.local.entity.defaultFolderColor
 import org.yangdai.kori.data.local.entity.folderColorOptions
 import org.yangdai.kori.presentation.component.HorizontalLazyListScrollbar
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun ModifyFolderDialog(
-    oFolder: FolderEntity,
+fun SharedTransitionScope.ModifyFolderDialog(
+    folder: FolderEntity?,
+    modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit,
-    onModify: (FolderEntity) -> Unit
-) {
-    var isStarred by remember { mutableStateOf(oFolder.isStarred) }
-    val textFieldState = rememberTextFieldState(initialText = oFolder.name)
-    var color by remember { mutableLongStateOf(oFolder.colorValue) }
-    var isError by remember { mutableStateOf(false) }
-    LaunchedEffect(textFieldState.text) {
-        isError = false
+    onConfirm: (FolderEntity) -> Unit
+) = AnimatedContent(
+    modifier = modifier,
+    targetState = folder,
+    transitionSpec = {
+        fadeIn() togetherWith fadeOut()
     }
+) { targetState ->
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        if (targetState != null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }) { onDismissRequest() }
+                    .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.5f))
+            )
 
-    val custom = !folderColorOptions.contains(Color(color))
-    val initValue =
-        if (oFolder.colorValue == defaultFolderColor) 0
-        else if (custom) folderColorOptions.size + 1
-        else folderColorOptions.indexOf(Color(oFolder.colorValue)) + 1
-    var selectedIndex by remember { mutableIntStateOf(initValue) }
-
-    var showColorPicker by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-    val bottomSheetState =
-        rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
-    val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
-
-    AlertDialog(
-        modifier = Modifier.clickable(
-            indication = null,
-            interactionSource = null
-        ) { focusManager.clearFocus() },
-        title = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(stringResource(Res.string.modify))
-                IconToggleButton(
-                    checked = isStarred,
-                    onCheckedChange = { isStarred = it },
-                    colors = IconButtonDefaults.iconToggleButtonColors()
-                        .copy(checkedContentColor = MaterialTheme.colorScheme.tertiary)
-                ) {
-                    Icon(
-                        imageVector = if (isStarred) Icons.Outlined.Star else Icons.Outlined.StarOutline,
-                        contentDescription = null
-                    )
-                }
+            var isStarred by remember { mutableStateOf(targetState.isStarred) }
+            val textFieldState = rememberTextFieldState(initialText = targetState.name)
+            var color by remember { mutableLongStateOf(targetState.colorValue) }
+            var isError by remember { mutableStateOf(false) }
+            LaunchedEffect(textFieldState.text) {
+                isError = false
             }
-        },
-        text = {
-            Column {
+            val custom = !folderColorOptions.contains(Color(color))
+
+            var showColorPicker by remember { mutableStateOf(false) }
+            val scope = rememberCoroutineScope()
+            val bottomSheetState =
+                rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+            Column(
+                modifier = Modifier
+                    .imePadding()
+                    .padding(16.dp)
+                    .sizeIn(minWidth = 280.dp, maxWidth = 560.dp)
+                    .sharedBounds(
+                        sharedContentState = rememberSharedContentState(key = "${targetState.id}-bounds"),
+                        animatedVisibilityScope = this@AnimatedContent,
+                        clipInOverlayDuringTransition = OverlayClip(AlertDialogDefaults.shape)
+                    )
+                    .background(
+                        color = AlertDialogDefaults.containerColor,
+                        shape = AlertDialogDefaults.shape
+                    )
+                    .clip(AlertDialogDefaults.shape)
+                    .padding(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        stringResource(Res.string.modify),
+                        style = MaterialTheme.typography.titleLarge
+                            .copy(color = AlertDialogDefaults.titleContentColor)
+                    )
+                    IconToggleButton(
+                        checked = isStarred,
+                        onCheckedChange = { isStarred = it },
+                        colors = IconButtonDefaults.iconToggleButtonColors()
+                            .copy(checkedContentColor = MaterialTheme.colorScheme.tertiary)
+                    ) {
+                        Icon(
+                            imageVector = if (isStarred) Icons.Outlined.Star else Icons.Outlined.StarOutline,
+                            contentDescription = null
+                        )
+                    }
+                }
+
                 OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
+                    modifier = Modifier.fillMaxWidth(),
                     state = textFieldState,
                     lineLimits = TextFieldLineLimits.SingleLine,
                     isError = isError,
@@ -143,21 +175,19 @@ fun ModifyFolderDialog(
                         modifier = Modifier.padding(vertical = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-
                         items(folderColorOptions.size + 2) {
                             when (it) {
                                 0 -> {
-                                    ColoredCircle2(selected = 0 == selectedIndex) {
-                                        selectedIndex = 0
+                                    ColoredCircle2(selected = color == defaultFolderColor) {
+                                        color = defaultFolderColor
                                     }
                                 }
 
                                 folderColorOptions.size + 1 -> {
                                     ColoredCircle3(
                                         background = if (custom) Color(color) else Color.Black,
-                                        selected = folderColorOptions.size + 1 == selectedIndex
+                                        selected = custom
                                     ) {
-                                        selectedIndex = folderColorOptions.size + 1
                                         showColorPicker = true
                                     }
                                 }
@@ -165,8 +195,10 @@ fun ModifyFolderDialog(
                                 else -> {
                                     ColoredCircle(
                                         color = folderColorOptions[it - 1],
-                                        selected = it == selectedIndex,
-                                        onClick = { selectedIndex = it }
+                                        selected = Color(color) == folderColorOptions[it - 1],
+                                        onClick = {
+                                            color = folderColorOptions[it - 1].toArgb().toLong()
+                                        }
                                     )
                                 }
                             }
@@ -177,122 +209,110 @@ fun ModifyFolderDialog(
                         modifier = Modifier.align(Alignment.BottomStart).fillMaxWidth()
                     )
                 }
-            }
-        },
-        onDismissRequest = onDismissRequest,
-        confirmButton = {
-            val haptic = LocalHapticFeedback.current
-            Button(
-                onClick = {
-                    if (textFieldState.text.isBlank()) {
-                        isError = true
-                        return@Button
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(onDismissRequest) {
+                        Text(stringResource(Res.string.cancel))
                     }
+                    Spacer(Modifier.width(8.dp))
+                    val haptic = LocalHapticFeedback.current
+                    Button(
+                        onClick = {
+                            if (textFieldState.text.isBlank()) {
+                                isError = true
+                                return@Button
+                            }
 
-                    haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                            haptic.performHapticFeedback(HapticFeedbackType.Confirm)
 
-                    color = when (selectedIndex) {
-                        0 -> defaultFolderColor
-                        folderColorOptions.size + 1 -> color
-                        else -> folderColorOptions[selectedIndex - 1].toArgb().toLong()
+                            onConfirm(
+                                FolderEntity(
+                                    id = targetState.id,
+                                    name = textFieldState.text.toString(),
+                                    colorValue = color,
+                                    isStarred = isStarred,
+                                    createdAt = targetState.createdAt
+                                )
+                            )
+                        }
+                    ) {
+                        Text(stringResource(Res.string.confirm))
                     }
-
-                    onModify(
-                        FolderEntity(
-                            id = oFolder.id,
-                            name = textFieldState.text.toString(),
-                            colorValue = color,
-                            isStarred = isStarred,
-                            createdAt = oFolder.createdAt
-                        )
-                    )
-
-                    onDismissRequest()
                 }
-            ) {
-                Text(stringResource(Res.string.confirm))
             }
-        },
-        dismissButton = {
-            TextButton(onDismissRequest) {
-                Text(stringResource(Res.string.cancel))
+
+            if (showColorPicker) {
+                ColorPickerBottomSheet(
+                    oColor = if (custom) Color(color) else Color.White,
+                    sheetState = bottomSheetState,
+                    onDismissRequest = { showColorPicker = false }
+                ) {
+                    color = it.toLong()
+                    scope.launch { bottomSheetState.hide() }.invokeOnCompletion {
+                        if (!bottomSheetState.isVisible) {
+                            showColorPicker = false
+                        }
+                    }
+                }
             }
         }
+    }
+}
+
+@Composable
+private fun ColoredCircle(
+    background: Color = MaterialTheme.colorScheme.onSurface,
+    color: Color,
+    selected: Boolean,
+    onClick: () -> Unit
+) = Box(
+    modifier = Modifier
+        .size(50.dp)
+        .drawBehind {
+            if (selected)
+                drawCircle(
+                    color = background
+                )
+        }
+        .clip(shape = CircleShape)
+        .clickable(onClick = onClick)
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(4.dp)
+            .clip(shape = CircleShape)
+            .background(color = color)
     )
+}
 
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-    }
-
-    if (showColorPicker) {
-        ColorPickerBottomSheet(
-            oColor = if (custom) Color(color) else Color.White,
-            sheetState = bottomSheetState,
-            onDismissRequest = { showColorPicker = false }
-        ) {
-            color = it.toLong()
-            scope.launch { bottomSheetState.hide() }.invokeOnCompletion {
-                if (!bottomSheetState.isVisible) {
-                    showColorPicker = false
-                }
-            }
+@Composable
+private fun ColoredCircle2(
+    background: Color = MaterialTheme.colorScheme.onSurface,
+    selected: Boolean,
+    onClick: () -> Unit
+) = Box(
+    modifier = Modifier
+        .size(50.dp)
+        .drawBehind {
+            if (selected)
+                drawCircle(
+                    color = background
+                )
         }
-    }
+        .clip(shape = CircleShape)
+        .clickable(onClick = onClick),
+    contentAlignment = Alignment.Center
+) {
+    Text("A")
 }
 
 @Composable
-fun ColoredCircle(color: Color, selected: Boolean, onClick: () -> Unit) {
-
-    val background = MaterialTheme.colorScheme.onSurface
-
-    Box(
-        modifier = Modifier
-            .size(50.dp)
-            .drawBehind {
-                if (selected)
-                    drawCircle(
-                        color = background
-                    )
-            }
-            .clip(shape = CircleShape)
-            .clickable(onClick = onClick)
-    ) {
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(4.dp)
-                .clip(shape = CircleShape)
-                .background(color = color)
-        )
-    }
-}
-
-@Composable
-fun ColoredCircle2(selected: Boolean, onClick: () -> Unit) {
-
-    val background = MaterialTheme.colorScheme.onSurface
-
-    Box(
-        modifier = Modifier
-            .size(50.dp)
-            .drawBehind {
-                if (selected)
-                    drawCircle(
-                        color = background
-                    )
-            }
-            .clip(shape = CircleShape)
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "A")
-    }
-}
-
-@Composable
-fun ColoredCircle3(background: Color, selected: Boolean, onClick: () -> Unit) {
-
+private fun ColoredCircle3(background: Color, selected: Boolean, onClick: () -> Unit) =
     Box(
         modifier = Modifier
             .size(50.dp)
@@ -308,4 +328,3 @@ fun ColoredCircle3(background: Color, selected: Boolean, onClick: () -> Unit) {
     ) {
         Icon(imageVector = Icons.Outlined.Colorize, contentDescription = null)
     }
-}
