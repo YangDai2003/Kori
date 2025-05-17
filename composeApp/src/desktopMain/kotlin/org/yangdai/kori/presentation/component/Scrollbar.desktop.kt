@@ -28,7 +28,7 @@ actual fun LazyGridScrollbar(
 }
 
 @Composable
-actual fun HorizontalScrollbar(
+actual fun HorizontalLazyListScrollbar(
     modifier: Modifier,
     state: LazyListState
 ) {
@@ -44,7 +44,23 @@ actual fun HorizontalScrollbar(
 }
 
 @Composable
-actual fun EditorScrollbar(
+actual fun VerticalLazyListScrollbar(
+    modifier: Modifier,
+    state: LazyListState
+) {
+    VerticalScrollbar(
+        modifier = modifier,
+        adapter = rememberScrollbarAdapter(state),
+        style = LocalScrollbarStyle.current
+            .copy(
+                unhoverColor = MaterialTheme.colorScheme.outlineVariant,
+                hoverColor = MaterialTheme.colorScheme.outline
+            )
+    )
+}
+
+@Composable
+actual fun VerticalColumnScrollbar(
     modifier: Modifier,
     state: ScrollState
 ) {

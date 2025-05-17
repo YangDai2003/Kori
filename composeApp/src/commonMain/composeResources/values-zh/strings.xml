@@ -52,9 +52,7 @@
     <string name="name">名称</string>
     <string name="search">搜索</string>
     <string name="search_history">搜索历史</string>
-    <string name="add">添加</string>
-    <string name="sample_note">示例笔记</string>
-    <string name="learn_more">以了解更多 Markdown 语法。</string>
+    <string name="add_sample_note">添加示例笔记</string>
 
     <string name="style">样式</string>
     <string name="dark_mode">主题模式</string>
@@ -143,4 +141,10 @@
     <string name="reset_database_warning">重置数据库会导致所有笔记和文件夹被彻底删除且不可恢复，请决定是否继续操作?</string>
     <string name="backup">备份</string>
     <string name="restore_from_backup">还原</string>
+
+    <string name="toolbox">工具箱</string>
+    <string name="edit_local_file">编辑本机文件</string>
+    <string name="fetch_file_from_url">从 URL 获取文件内容</string>
+    <string name="language">语言</string>
+    <string name="language_description">选择应用语言</string>
 </resources>

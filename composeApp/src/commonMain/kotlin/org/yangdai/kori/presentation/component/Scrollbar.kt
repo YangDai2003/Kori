@@ -13,13 +13,19 @@ expect fun LazyGridScrollbar(
 )
 
 @Composable
-expect fun HorizontalScrollbar(
+expect fun HorizontalLazyListScrollbar(
     modifier: Modifier,
     state: LazyListState,
 )
 
 @Composable
-expect fun EditorScrollbar(
+expect fun VerticalLazyListScrollbar(
+    modifier: Modifier,
+    state: LazyListState,
+)
+
+@Composable
+expect fun VerticalColumnScrollbar(
     modifier: Modifier,
     state: ScrollState,
 )

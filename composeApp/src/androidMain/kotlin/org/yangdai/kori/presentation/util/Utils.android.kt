@@ -1,5 +1,6 @@
 package org.yangdai.kori.presentation.util
 
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.Context
 import android.content.Intent
@@ -8,6 +9,7 @@ import android.icu.text.NumberFormat
 import android.net.Uri
 import android.os.Build
 import android.os.Parcelable
+import android.provider.Settings
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
@@ -223,4 +225,39 @@ private fun Intent.parseActionViewEdit(context: Context): SharedContent {
         writableUri = uri.getWritableUri(context)
     }
     return SharedContent(title, text, writableUri)
+}
+
+actual fun shouldShowLanguageSetting(): Boolean {
+    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+}
+
+@SuppressLint("InlinedApi")
+@Composable
+actual fun Modifier.clickToLanguageSetting(): Modifier {
+    val context = LocalContext.current.applicationContext
+    return clickable {
+        try {
+            val intent = Intent(Settings.ACTION_APP_LOCALE_SETTINGS)
+            intent.setData(
+                Uri.fromParts(
+                    "package",
+                    context.packageName,
+                    null
+                )
+            )
+            context.startActivity(intent)
+        } catch (_: Exception) {
+            try {
+                val intent =
+                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                intent.setData(
+                    Uri.fromParts(
+                        "package", context.packageName, null
+                    )
+                )
+                context.startActivity(intent)
+            } catch (_: Exception) {
+            }
+        }
+    }
 }

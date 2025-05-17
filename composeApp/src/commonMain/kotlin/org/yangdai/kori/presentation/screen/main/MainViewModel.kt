@@ -252,19 +252,20 @@ class MainViewModel(
     }
 
     @OptIn(ExperimentalUuidApi::class)
-    fun addSampleNote(folderId: String? = null) {
-        viewModelScope.launch {
-            noteRepository.insertNote(
-                NoteEntity(
-                    id = Uuid.random().toString(),
-                    title = "Sample Note",
-                    content = SampleNote,
-                    folderId = folderId,
-                    isPinned = true,
-                    isDeleted = false,
-                    noteType = NoteType.MARKDOWN
-                )
+    suspend fun addSampleNote(folderId: String? = null): String {
+        val noteId = Uuid.random().toString()
+        noteRepository.insertNote(
+            NoteEntity(
+                id = noteId,
+                title = "Sample Note",
+                content = SampleNote,
+                folderId = folderId,
+                isPinned = true,
+                isDeleted = false,
+                noteType = NoteType.MARKDOWN
             )
-        }
+        )
+        return noteId
     }
+
 }

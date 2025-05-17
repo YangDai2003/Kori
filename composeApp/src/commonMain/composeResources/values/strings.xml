@@ -53,9 +53,7 @@
     <string name="name">Name</string>
     <string name="search">Search</string>
     <string name="search_history">Search history</string>
-    <string name="add">Add</string>
-    <string name="sample_note">the Sample Note</string>
-    <string name="learn_more">to learn more about Markdown syntax.</string>
+    <string name="add_sample_note">Add Sample Note</string>
 
     <string name="style">Style</string>
     <string name="dark_mode">Theme mode</string>
@@ -145,4 +143,10 @@
     <string name="reset_database_warning">Resetting the database will cause all notes and folders to be completely deleted and irrecoverable. Please decide whether to continue?</string>
     <string name="backup">Backup</string>
     <string name="restore_from_backup">Restore</string>
+
+    <string name="toolbox">Toolbox</string>
+    <string name="edit_local_file">Edit local file</string>
+    <string name="fetch_file_from_url">Fetch file from URL</string>
+    <string name="language">Language</string>
+    <string name="language_description">Choose the app language</string>
 </resources>

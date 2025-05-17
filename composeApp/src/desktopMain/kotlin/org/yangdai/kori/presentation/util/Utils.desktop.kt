@@ -57,3 +57,10 @@ actual fun clipEntryOf(string: String): ClipEntry {
 actual fun Modifier.clickToShareFile(noteEntity: NoteEntity): Modifier {
     return this
 }
+
+actual fun shouldShowLanguageSetting(): Boolean = false
+
+@Composable
+actual fun Modifier.clickToLanguageSetting(): Modifier {
+    return this
+}

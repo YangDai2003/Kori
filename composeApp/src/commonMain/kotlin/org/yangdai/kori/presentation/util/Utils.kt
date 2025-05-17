@@ -58,3 +58,8 @@ expect fun formatInstant(instant: Instant): String
 expect fun formatNumber(int: Int): String
 
 expect fun clipEntryOf(string: String): ClipEntry
+
+expect fun shouldShowLanguageSetting(): Boolean
+
+@Composable
+expect fun Modifier.clickToLanguageSetting(): Modifier

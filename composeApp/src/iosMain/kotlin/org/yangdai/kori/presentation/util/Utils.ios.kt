@@ -23,6 +23,7 @@ import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.writeToURL
 import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
+import platform.UIKit.UIApplicationOpenSettingsURLString
 
 @Composable
 actual fun Modifier.clickToShareText(text: String): Modifier = clickable {
@@ -83,5 +84,18 @@ actual fun Modifier.clickToShareFile(noteEntity: NoteEntity): Modifier {
         UIApplication.sharedApplication.keyWindow?.rootViewController?.presentViewController(
             activityViewController, animated = true, completion = null
         )
+    }
+}
+
+actual fun shouldShowLanguageSetting() = true
+
+@Composable
+actual fun Modifier.clickToLanguageSetting(): Modifier {
+    return clickable {
+        val settingsUrl = NSURL.URLWithString(UIApplicationOpenSettingsURLString)
+
+        if (settingsUrl != null && UIApplication.sharedApplication.canOpenURL(settingsUrl)) {
+            UIApplication.sharedApplication.openURL(settingsUrl)
+        }
     }
 }

@@ -52,9 +52,7 @@
     <string name="name">Name</string>
     <string name="search">Suchen</string>
     <string name="search_history">Suchverlauf</string>
-    <string name="add">Fügen Sie</string>
-    <string name="sample_note">die Beispielnotiz</string>
-    <string name="learn_more">hinzu, um mehr über die Markdown-Syntax zu erfahren.</string>
+    <string name="add_sample_note">Beispielnotiz hinzufügen</string>
 
     <string name="style">Stil</string>
     <string name="dark_mode">Themenmodus</string>
@@ -143,4 +141,10 @@
     <string name="reset_database_description">Löschen Sie alle Daten in der Datenbank (einschließlich aller Notizen und Ordner).</string>
     <string name="backup">Sichern</string>
     <string name="restore_from_backup">Wiederherstellung</string>
+
+    <string name="toolbox">Werkzeugkasten</string>
+    <string name="edit_local_file">Lokale Datei bearbeiten</string>
+    <string name="fetch_file_from_url">Datei von URL abrufen</string>
+    <string name="language">Sprache</string>
+    <string name="language_description">Wählen Sie die App-Sprache</string>
 </resources>

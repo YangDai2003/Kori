@@ -13,15 +13,22 @@ actual fun LazyGridScrollbar(
 }
 
 @Composable
-actual fun HorizontalScrollbar(
+actual fun HorizontalLazyListScrollbar(
     modifier: Modifier,
     state: LazyListState
 ) {
 }
 
 @Composable
-actual fun EditorScrollbar(
+actual fun VerticalColumnScrollbar(
     modifier: Modifier,
     state: ScrollState
+) {
+}
+
+@Composable
+actual fun VerticalLazyListScrollbar(
+    modifier: Modifier,
+    state: LazyListState
 ) {
 }

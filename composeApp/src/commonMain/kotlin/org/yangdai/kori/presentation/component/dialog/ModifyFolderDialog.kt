@@ -62,7 +62,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.FolderEntity
 import org.yangdai.kori.data.local.entity.defaultFolderColor
 import org.yangdai.kori.data.local.entity.folderColorOptions
-import org.yangdai.kori.presentation.component.HorizontalScrollbar
+import org.yangdai.kori.presentation.component.HorizontalLazyListScrollbar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -172,7 +172,7 @@ fun ModifyFolderDialog(
                             }
                         }
                     }
-                    HorizontalScrollbar(
+                    HorizontalLazyListScrollbar(
                         state = state,
                         modifier = Modifier.align(Alignment.BottomStart).fillMaxWidth()
                     )

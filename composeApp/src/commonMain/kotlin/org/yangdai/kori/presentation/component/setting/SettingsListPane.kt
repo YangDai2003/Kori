@@ -12,6 +12,7 @@ import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.GridView
+import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.PermDeviceInformation
 import androidx.compose.material.icons.outlined.SdStorage
@@ -38,6 +39,8 @@ import kori.composeapp.generated.resources.default_view
 import kori.composeapp.generated.resources.editor
 import kori.composeapp.generated.resources.guide
 import kori.composeapp.generated.resources.key
+import kori.composeapp.generated.resources.language
+import kori.composeapp.generated.resources.language_description
 import kori.composeapp.generated.resources.line_numbers
 import kori.composeapp.generated.resources.model
 import kori.composeapp.generated.resources.password
@@ -54,7 +57,9 @@ import org.yangdai.kori.Platform
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBar
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
+import org.yangdai.kori.presentation.util.clickToLanguageSetting
 import org.yangdai.kori.presentation.util.rememberCurrentPlatform
+import org.yangdai.kori.presentation.util.shouldShowLanguageSetting
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -124,6 +129,18 @@ fun SettingsListPane(
                     )
                 }
             )
+            if (shouldShowLanguageSetting())
+                ListPaneSection(
+                    {
+                        ListPaneItem(
+                            modifier = Modifier.clickToLanguageSetting(),
+                            title = stringResource(Res.string.language),
+                            description = stringResource(Res.string.language_description),
+                            icon = Icons.Outlined.Language,
+                            isSelected = false
+                        )
+                    }
+                )
             ListPaneSection(
                 {
                     ListPaneItem(

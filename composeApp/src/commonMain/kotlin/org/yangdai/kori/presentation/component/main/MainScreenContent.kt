@@ -10,7 +10,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -60,6 +59,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -72,14 +72,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.LinkAnnotation
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLinkStyles
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -88,23 +82,22 @@ import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import kfile.getPath
 import kori.composeapp.generated.resources.Res
-import kori.composeapp.generated.resources.add
 import kori.composeapp.generated.resources.all_notes
 import kori.composeapp.generated.resources.checked
 import kori.composeapp.generated.resources.delete
 import kori.composeapp.generated.resources.delete_all
-import kori.composeapp.generated.resources.learn_more
 import kori.composeapp.generated.resources.move
 import kori.composeapp.generated.resources.pin
 import kori.composeapp.generated.resources.pinboard
 import kori.composeapp.generated.resources.restore
 import kori.composeapp.generated.resources.restore_all
-import kori.composeapp.generated.resources.sample_note
 import kori.composeapp.generated.resources.search
 import kori.composeapp.generated.resources.search_history
 import kori.composeapp.generated.resources.sort_by
 import kori.composeapp.generated.resources.templates
+import kori.composeapp.generated.resources.toolbox
 import kori.composeapp.generated.resources.trash
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.domain.sort.NoteSortType
@@ -115,7 +108,6 @@ import org.yangdai.kori.presentation.component.dialog.FoldersDialog
 import org.yangdai.kori.presentation.component.dialog.NoteSortOptionDialog
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.screen.main.MainViewModel
-import org.yangdai.kori.presentation.theme.linkColor
 import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
 
 @OptIn(
@@ -216,14 +208,18 @@ fun MainScreenContent(
 
                                     is DrawerItem.Folder ->
                                         PlatformStyleTopAppBarTitle(currentDrawerItem.folder.name)
+
+                                    DrawerItem.Toolbox ->
+                                        PlatformStyleTopAppBarTitle(stringResource(Res.string.toolbox))
                                 }
                             },
                             actions = {
-                                TooltipIconButton(
-                                    tipText = stringResource(Res.string.sort_by),
-                                    icon = Icons.Outlined.SortByAlpha,
-                                    onClick = { showSortDialog = true }
-                                )
+                                if (currentDrawerItem !is DrawerItem.Toolbox)
+                                    TooltipIconButton(
+                                        tipText = stringResource(Res.string.sort_by),
+                                        icon = Icons.Outlined.SortByAlpha,
+                                        onClick = { showSortDialog = true }
+                                    )
 
                                 if (currentDrawerItem is DrawerItem.Trash) {
                                     var showMenu by remember { mutableStateOf(false) }
@@ -274,7 +270,7 @@ fun MainScreenContent(
             }
         },
         floatingActionButton = {
-            if (currentDrawerItem !is DrawerItem.Trash && !isSelectionMode) {
+            if (currentDrawerItem !is DrawerItem.Trash && currentDrawerItem !is DrawerItem.Toolbox && !isSelectionMode) {
                 val interactionSource = remember { MutableInteractionSource() }
                 val isPressed by interactionSource.collectIsPressedAsState()
                 val scale by animateFloatAsState(
@@ -327,8 +323,9 @@ fun MainScreenContent(
             DrawerItem.Templates -> 1
             DrawerItem.Trash -> 2
             is DrawerItem.Folder -> 3
+            DrawerItem.Toolbox -> 4
         }
-        val pagerState = rememberPagerState { 4 }
+        val pagerState = rememberPagerState { 5 }
         LaunchedEffect(page) {
             selectedNotes.clear()
             pagerState.scrollToPage(page)
@@ -523,64 +520,28 @@ fun MainScreenContent(
                             )
                         }
 
-                        if (allNotes.isEmpty()) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(paddingValue),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                val annotatedString = buildAnnotatedString {
-                                    append(stringResource(Res.string.add) + " ")
-                                    withLink(
-                                        LinkAnnotation.Url(
-                                            "",
-                                            TextLinkStyles(
-                                                style = SpanStyle(
-                                                    color = linkColor,
-                                                    textDecoration = TextDecoration.Underline
-                                                )
-                                            )
-                                        ) {
-                                            viewModel.addSampleNote()
-                                        }
-                                    ) {
-                                        append(stringResource(Res.string.sample_note))
-                                    }
-                                    append(" " + stringResource(Res.string.learn_more))
-                                }
-                                Text(
-                                    text = annotatedString,
-                                    textAlign = TextAlign.Center,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                        AnimatedContent(inputText.isNotBlank() && !expanded) { showSearchRes ->
+                            if (showSearchRes)
+                                SearchResultsPage(
+                                    keyword = inputText,
+                                    notes = searchResults,
+                                    contentPadding = paddingValue,
+                                    navigateToScreen = navigateToScreen,
+                                    selectedNotes = selectedNotes,
+                                    columns = columns,
+                                    noteItemProperties = noteItemProperties,
+                                    isSelectionMode = isSelectionMode
                                 )
-                            }
-                        } else {
-                            AnimatedContent(inputText.isNotBlank() && !expanded) { showSearchRes ->
-                                if (showSearchRes)
-                                    SearchResultsPage(
-                                        keyword = inputText,
-                                        notes = searchResults,
-                                        contentPadding = paddingValue,
-                                        navigateToScreen = navigateToScreen,
-                                        selectedNotes = selectedNotes,
-                                        columns = columns,
-                                        noteItemProperties = noteItemProperties,
-                                        isSelectionMode = isSelectionMode
-                                    )
-                                else
-                                    Page(
-                                        notes = allNotes,
-                                        contentPadding = paddingValue,
-                                        navigateToScreen = navigateToScreen,
-                                        selectedNotes = selectedNotes,
-                                        columns = columns,
-                                        noteItemProperties = noteItemProperties,
-                                        isSelectionMode = isSelectionMode
-                                    )
-                            }
+                            else
+                                Page(
+                                    notes = allNotes,
+                                    contentPadding = paddingValue,
+                                    navigateToScreen = navigateToScreen,
+                                    selectedNotes = selectedNotes,
+                                    columns = columns,
+                                    noteItemProperties = noteItemProperties,
+                                    isSelectionMode = isSelectionMode
+                                )
                         }
                     }
                 }
@@ -618,50 +579,25 @@ fun MainScreenContent(
                         LaunchedEffect(folderId) {
                             viewModel.loadNotesByFolder(folderId)
                         }
-                        if (folderNotesMap.isEmpty()) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(contentPadding),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                val annotatedString = buildAnnotatedString {
-                                    append(stringResource(Res.string.add) + " ")
-                                    withLink(
-                                        LinkAnnotation.Url(
-                                            "",
-                                            TextLinkStyles(
-                                                style = SpanStyle(
-                                                    color = linkColor,
-                                                    textDecoration = TextDecoration.Underline
-                                                )
-                                            )
-                                        ) {
-                                            viewModel.addSampleNote(folderId)
-                                        }
-                                    ) {
-                                        append(stringResource(Res.string.sample_note))
-                                    }
-                                    append(" " + stringResource(Res.string.learn_more))
-                                }
-                                Text(
-                                    text = annotatedString,
-                                    textAlign = TextAlign.Center,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        } else
-                            GroupedPage(
-                                notesMap = folderNotesMap,
-                                contentPadding = contentPadding,
-                                navigateToScreen = navigateToScreen,
-                                selectedNotes = selectedNotes,
-                                columns = columns,
-                                noteItemProperties = noteItemProperties,
-                                isSelectionMode = isSelectionMode
-                            )
+                        GroupedPage(
+                            notesMap = folderNotesMap,
+                            contentPadding = contentPadding,
+                            navigateToScreen = navigateToScreen,
+                            selectedNotes = selectedNotes,
+                            columns = columns,
+                            noteItemProperties = noteItemProperties,
+                            isSelectionMode = isSelectionMode
+                        )
+                    }
+                }
+
+                4 -> {
+                    val scope = rememberCoroutineScope()
+                    ToolboxPage(navigateToScreen) {
+                        scope.launch {
+                            val id = viewModel.addSampleNote()
+                            navigateToScreen(Screen.Note(id))
+                        }
                     }
                 }
             }

@@ -31,9 +31,9 @@ fun ListPaneItem(
     description: String,
     icon: ImageVector,
     colors: ListItemColors = ListItemDefaults.colors(containerColor = Color.Transparent),
-    onClick: () -> Unit
+    onClick: (() -> Unit)? = null
 ) = ListItem(
-    modifier = modifier.clickable { onClick() },
+    modifier = modifier.then(if (onClick != null) Modifier.clickable { onClick() } else Modifier),
     headlineContent = {
         Text(
             text = title,
