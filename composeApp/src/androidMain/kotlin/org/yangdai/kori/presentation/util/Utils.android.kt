@@ -237,23 +237,21 @@ actual fun Modifier.clickToLanguageSetting(): Modifier {
     val context = LocalContext.current.applicationContext
     return clickable {
         try {
-            val intent = Intent(Settings.ACTION_APP_LOCALE_SETTINGS)
+            val intent = Intent(Settings.ACTION_APP_LOCALE_SETTINGS).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
             intent.setData(
-                Uri.fromParts(
-                    "package",
-                    context.packageName,
-                    null
-                )
+                Uri.fromParts("package", context.packageName, null)
             )
             context.startActivity(intent)
         } catch (_: Exception) {
             try {
                 val intent =
-                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
                 intent.setData(
-                    Uri.fromParts(
-                        "package", context.packageName, null
-                    )
+                    Uri.fromParts("package", context.packageName, null)
                 )
                 context.startActivity(intent)
             } catch (_: Exception) {
