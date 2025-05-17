@@ -102,7 +102,8 @@ import org.yangdai.kori.presentation.util.rememberCurrentPlatform
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class,
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class,
     ExperimentalComposeUiApi::class, ExperimentalUuidApi::class
 )
 @Composable
