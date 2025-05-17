@@ -19,12 +19,6 @@ expect fun HorizontalLazyListScrollbar(
 )
 
 @Composable
-expect fun VerticalLazyListScrollbar(
-    modifier: Modifier,
-    state: LazyListState,
-)
-
-@Composable
 expect fun VerticalColumnScrollbar(
     modifier: Modifier,
     state: ScrollState,

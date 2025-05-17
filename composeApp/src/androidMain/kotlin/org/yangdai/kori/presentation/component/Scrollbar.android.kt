@@ -25,10 +25,3 @@ actual fun VerticalColumnScrollbar(
     state: ScrollState
 ) {
 }
-
-@Composable
-actual fun VerticalLazyListScrollbar(
-    modifier: Modifier,
-    state: LazyListState
-) {
-}
