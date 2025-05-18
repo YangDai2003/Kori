@@ -5,9 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,14 +39,6 @@ actual fun MarkdownView(
     var webView by remember { mutableStateOf<WebView?>(null) }
     // Store the latest processed HTML data for link interception reload
     var latestData by remember { mutableStateOf("") }
-    // Store the scroll position before loading new content
-    var scrollPositionBeforeLoad by remember { mutableDoubleStateOf(0.0) } // Use Double for JS number
-
-    val data by remember(html, styles, isAppInDarkTheme) {
-        derivedStateOf {
-            processHtml(html, styles, isAppInDarkTheme)
-        }
-    }
 
     // Effect to initialize JavaFX environment and WebView
     DisposableEffect(Unit) {
@@ -57,25 +47,6 @@ actual fun MarkdownView(
             val wv = WebView()
             val engine = wv.engine
             engine.isJavaScriptEnabled = true
-
-            // --- Listener for Load Completion ---
-            // This listener will restore the scroll position after any load finishes
-            engine.loadWorker.stateProperty().addListener { _, _, newState ->
-                if (newState == Worker.State.SUCCEEDED) {
-                    // Restore scroll position AFTER load is complete
-                    val scrollY = scrollPositionBeforeLoad
-                    Platform.runLater { // Ensure execution on FX thread
-                        // Use 'auto' behavior for instant jump, not smooth scroll
-                        engine.executeScript("window.scrollTo({ top: $scrollY, behavior: 'auto' });")
-                    }
-                }
-                // Optionally handle FAILED state
-                else if (newState == Worker.State.FAILED) {
-                    // Handle error, maybe log engine.loadWorker.exception
-                    println("WebView load failed: ${engine.loadWorker.exception}")
-                }
-            }
-
 
             // --- Link Click Handling ---
             engine.locationProperty().addListener { _, oldLocation, newLocation ->
@@ -86,25 +57,6 @@ actual fun MarkdownView(
 
                         // --- Capture scroll position BEFORE reloading for link interception ---
                         Platform.runLater { // Get scroll on FX thread
-                            val scrollYObject = engine.executeScript(
-                                """
-                                (function() {
-                                     var scrollY = 0;
-                                     if (typeof window.scrollY !== 'undefined') {
-                                         scrollY = window.scrollY;
-                                     } else if (document.documentElement && typeof document.documentElement.scrollTop !== 'undefined') {
-                                         scrollY = document.documentElement.scrollTop;
-                                     } else if (document.body && typeof document.body.scrollTop !== 'undefined') {
-                                         scrollY = document.body.scrollTop;
-                                     }
-                                     return scrollY;
-                                })();
-                                """.trimIndent()
-                            )
-
-                            // Convert the result carefully (it might be Int, Double, etc.)
-                            scrollPositionBeforeLoad = (scrollYObject as? Number)?.toDouble() ?: 0.0
-
                             try {
                                 // Try to open the link in the default system browser
                                 if (Desktop.isDesktopSupported()
@@ -139,41 +91,25 @@ actual fun MarkdownView(
         }
     }
 
+    val data =
+        remember(html, styles, isAppInDarkTheme) { processHtml(html, styles, isAppInDarkTheme) }
+
     // Embed the JFXPanel using SwingPanel
     SwingPanel(
         factory = { jfxPanel },
         modifier = modifier,
         background = Color(styles.backgroundColor),
         update = {
-            Platform.runLater { // Get scroll on FX thread
-                if (webView == null) return@runLater
-                val scrollYObject = webView!!.engine.executeScript(
-                    """
-                    (function() {
-                         var scrollY = 0;
-                         if (typeof window.scrollY !== 'undefined') {
-                             scrollY = window.scrollY;
-                         } else if (document.documentElement && typeof document.documentElement.scrollTop !== 'undefined') {
-                             scrollY = document.documentElement.scrollTop;
-                         } else if (document.body && typeof document.body.scrollTop !== 'undefined') {
-                             scrollY = document.body.scrollTop;
-                         }
-                         return scrollY;
-                    })();
-                    """.trimIndent()
-                )
-
-                // Convert the result carefully (it might be Int, Double, etc.)
-                scrollPositionBeforeLoad = (scrollYObject as? Number)?.toDouble() ?: 0.0
-
-                // Now trigger the load. The loadWorker listener will handle restoring scroll.
-                latestData = data // Update data used for link interception too
-                webView!!.engine.loadContent(latestData, "text/html")
+            webView?.let {
+                Platform.runLater {
+                    latestData = data // Update data used for link interception too
+                    it.engine.loadContent(latestData, "text/html")
+                }
             }
         }
     )
 
-    LaunchedEffect(scrollState.value, scrollState.maxValue, webView) {
+    LaunchedEffect(scrollState.value, scrollState.maxValue) {
         val webViewInstance = webView ?: return@LaunchedEffect
         val totalHeight = scrollState.maxValue
         val currentScroll = scrollState.value

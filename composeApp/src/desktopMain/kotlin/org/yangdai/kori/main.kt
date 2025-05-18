@@ -65,11 +65,9 @@ fun main() {
             val isUnlocked by appLockManager.isUnlocked.collectAsStateWithLifecycle()
             val isSystemInDarkTheme = isSystemInDarkTheme()
 
-            val darkMode by remember(isSystemInDarkTheme, stylePaneState.theme) {
-                derivedStateOf {
-                    if (stylePaneState.theme == AppTheme.SYSTEM) isSystemInDarkTheme
-                    else stylePaneState.theme == AppTheme.DARK
-                }
+            val darkMode = remember(isSystemInDarkTheme, stylePaneState.theme) {
+                if (stylePaneState.theme == AppTheme.SYSTEM) isSystemInDarkTheme
+                else stylePaneState.theme == AppTheme.DARK
             }
 
             val contextMenuRepresentation =

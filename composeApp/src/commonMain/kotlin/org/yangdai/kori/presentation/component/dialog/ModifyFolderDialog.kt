@@ -47,6 +47,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -110,7 +111,11 @@ fun SharedTransitionScope.ModifyFolderDialog(
             LaunchedEffect(textFieldState.text) {
                 isError = false
             }
-            val custom = !folderColorOptions.contains(Color(color))
+            val custom by remember {
+                derivedStateOf {
+                    !folderColorOptions.contains(Color(color))
+                }
+            }
 
             var showColorPicker by remember { mutableStateOf(false) }
             val scope = rememberCoroutineScope()

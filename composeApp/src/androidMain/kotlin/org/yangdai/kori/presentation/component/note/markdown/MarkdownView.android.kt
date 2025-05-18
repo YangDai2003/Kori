@@ -15,7 +15,6 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,11 +42,8 @@ actual fun MarkdownView(
     val activity = LocalActivity.current
     var webView by remember { mutableStateOf<WebView?>(null) }
 
-    val data by remember(html, styles, isAppInDarkTheme) {
-        derivedStateOf {
-            processHtml(html, styles, isAppInDarkTheme)
-        }
-    }
+    val data =
+        remember(html, styles, isAppInDarkTheme) { processHtml(html, styles, isAppInDarkTheme) }
 
     val webViewClient = remember {
         object : WebViewClient() {
@@ -111,7 +107,7 @@ actual fun MarkdownView(
         }
     )
 
-    LaunchedEffect(scrollState.value, scrollState.maxValue, webView) {
+    LaunchedEffect(scrollState.value, scrollState.maxValue) {
         val webViewInstance = webView ?: return@LaunchedEffect
         val totalHeight = scrollState.maxValue
         val currentScroll = scrollState.value

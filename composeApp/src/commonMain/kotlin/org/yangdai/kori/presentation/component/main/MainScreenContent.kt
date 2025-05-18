@@ -125,9 +125,7 @@ fun MainScreenContent(
     var showFoldersDialog by rememberSaveable { mutableStateOf(false) }
     var showFilePickerDialog by rememberSaveable { mutableStateOf(false) }
     val selectedNotes = remember { mutableStateSetOf<String>() }
-    val isSelectionMode by remember(selectedNotes) {
-        derivedStateOf { selectedNotes.isNotEmpty() }
-    }
+    val isSelectionMode by remember { derivedStateOf { selectedNotes.isNotEmpty() } }
     val isLargeScreen = rememberIsScreenSizeLarge()
     BackHandler(enabled = isSelectionMode) { selectedNotes.clear() }
 
@@ -330,15 +328,13 @@ fun MainScreenContent(
             selectedNotes.clear()
             pagerState.scrollToPage(page)
         }
-        val contentPadding by remember(innerPadding, isLargeScreen) {
-            derivedStateOf {
-                PaddingValues(
-                    top = if (isLargeScreen) 16.dp else 0.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = innerPadding.calculateBottomPadding()
-                )
-            }
+        val contentPadding = remember(innerPadding, isLargeScreen) {
+            PaddingValues(
+                top = if (isLargeScreen) 16.dp else 0.dp,
+                start = 16.dp,
+                end = 16.dp,
+                bottom = innerPadding.calculateBottomPadding()
+            )
         }
         var size by remember { mutableStateOf(IntSize.Zero) }
         val density = LocalDensity.current

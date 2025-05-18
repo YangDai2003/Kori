@@ -18,7 +18,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -129,9 +128,7 @@ fun SettingsDetailPaneContent(
     content: @Composable BoxScope.() -> Unit
 ) {
     val isDesktop = currentPlatformInfo.platform == Platform.Desktop
-    val showSmallTopAppBar by remember(isDesktop, isExpanded) {
-        derivedStateOf { isDesktop || isExpanded }
-    }
+    val showSmallTopAppBar = remember(isDesktop, isExpanded) { isDesktop || isExpanded }
     val topBarColor = if (isExpanded) MaterialTheme.colorScheme.surfaceContainer
     else MaterialTheme.colorScheme.surfaceContainerLow
     val scrollBehavior =

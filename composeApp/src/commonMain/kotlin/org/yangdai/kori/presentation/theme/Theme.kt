@@ -9,7 +9,6 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
@@ -122,18 +121,14 @@ fun processAmoledMode(
     // 仅在深色模式下处理AMOLED选项
     if (!darkMode) return colorScheme
 
-    val contentTargetFactor by remember(amoledMode) {
-        derivedStateOf { if (amoledMode) 0.1f else 0f }
-    }
+    val contentTargetFactor = remember(amoledMode) { if (amoledMode) 0.1f else 0f }
     val contentDimmingFactor by animateFloatAsState(
         targetValue = contentTargetFactor,
         animationSpec = tween(durationMillis = 1000),
         label = "ContentDimming"
     )
 
-    val backgroundTargetFactor by remember(amoledMode) {
-        derivedStateOf { if (amoledMode) 1f else 0f }
-    }
+    val backgroundTargetFactor = remember(amoledMode) { if (amoledMode) 1f else 0f }
     val backgroundDimmingFactor by animateFloatAsState(
         targetValue = backgroundTargetFactor,
         animationSpec = tween(durationMillis = 1000),

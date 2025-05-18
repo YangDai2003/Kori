@@ -56,7 +56,6 @@ import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -151,14 +150,9 @@ fun FileScreen(
     val html by viewModel.html.collectAsStateWithLifecycle()
     val appTheme by viewModel.appTheme.collectAsStateWithLifecycle()
     val isSystemInDarkTheme = isSystemInDarkTheme()
-    val isAppInDarkTheme by remember(appTheme, isSystemInDarkTheme) {
-        derivedStateOf {
-            when (appTheme) {
-                AppTheme.SYSTEM -> isSystemInDarkTheme
-                AppTheme.DARK -> true
-                AppTheme.LIGHT -> false
-            }
-        }
+    val isAppInDarkTheme = remember(appTheme, isSystemInDarkTheme) {
+        if (appTheme == AppTheme.SYSTEM) isSystemInDarkTheme
+        else appTheme == AppTheme.DARK
     }
     val needSave by viewModel.needSave.collectAsStateWithLifecycle()
 

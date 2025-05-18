@@ -50,7 +50,7 @@ fun EditorRow(
     bottomPadding: Dp,
     onEditorRowAction: (EditorRowAction) -> Unit
 ) {
-    val showElevation by remember(scrollState, visible) {
+    val showElevation by remember(visible) {
         derivedStateOf {
             scrollState.canScrollForward && visible
         }

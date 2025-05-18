@@ -52,7 +52,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -157,7 +156,6 @@ fun FoldersScreen(
             }
         ) { innerPadding ->
 
-            val state = rememberLazyGridState()
             val layoutDirection = LocalLayoutDirection.current
 
             Box(
@@ -169,6 +167,7 @@ fun FoldersScreen(
                     )
                     .fillMaxSize()
             ) {
+                val state = rememberLazyGridState()
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(380.dp),
                     state = state,
@@ -221,7 +220,6 @@ fun FoldersScreen(
                         )
                     }
                 }
-
                 LazyGridScrollbar(
                     modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
                     state = state
@@ -276,13 +274,8 @@ fun SharedTransitionScope.FolderItem(
 ) {
     val folder = folderWithNoteCount.folder
     val notesCountInFolder = folderWithNoteCount.noteCount
-    val folderColor by remember(folder.colorValue, colorScheme) {
-        derivedStateOf {
-            if (folder.colorValue != defaultFolderColor)
-                Color(folder.colorValue)
-            else colorScheme.primary
-        }
-    }
+    val folderColor = if (folder.colorValue != defaultFolderColor) Color(folder.colorValue)
+    else colorScheme.primary
 
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = { value: SwipeToDismissBoxValue ->
