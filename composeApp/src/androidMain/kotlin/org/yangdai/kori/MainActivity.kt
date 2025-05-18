@@ -27,10 +27,10 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.presentation.navigation.AppNavHost
 import org.yangdai.kori.presentation.screen.LoginOverlayScreen
 import org.yangdai.kori.presentation.screen.settings.AppTheme
+import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import org.yangdai.kori.presentation.theme.KoriTheme
 import org.yangdai.kori.presentation.util.AppLockManager
 import org.yangdai.kori.presentation.util.Constants
-import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

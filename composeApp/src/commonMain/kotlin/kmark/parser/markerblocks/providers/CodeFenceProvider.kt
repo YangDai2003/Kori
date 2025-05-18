@@ -9,7 +9,6 @@ import kmark.parser.markerblocks.MarkerBlock
 import kmark.parser.markerblocks.MarkerBlockProvider
 import kmark.parser.markerblocks.impl.CodeFenceMarkerBlock
 import kmark.parser.sequentialparsers.SequentialParser
-import kotlin.text.Regex
 
 open class CodeFenceProvider : MarkerBlockProvider<MarkerProcessor.StateInfo> {
     override fun createMarkerBlocks(

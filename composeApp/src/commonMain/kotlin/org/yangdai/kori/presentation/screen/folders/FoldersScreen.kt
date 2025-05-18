@@ -82,6 +82,7 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.Platform
+import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.data.local.dao.FolderDao
 import org.yangdai.kori.data.local.entity.FolderEntity
 import org.yangdai.kori.data.local.entity.defaultFolderColor
@@ -93,7 +94,6 @@ import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.FolderSortOptionDialog
 import org.yangdai.kori.presentation.component.dialog.ModifyFolderDialog
 import org.yangdai.kori.presentation.component.dialog.WarningDialog
-import org.yangdai.kori.presentation.util.rememberCurrentPlatform
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -108,9 +108,9 @@ fun FoldersScreen(
 ) {
     val groupedFolders by viewModel.foldersMap.collectAsStateWithLifecycle()
     var showSortDialog by rememberSaveable { mutableStateOf(false) }
-    val platform = rememberCurrentPlatform()
-    val scrollBehavior = if (platform is Platform.Desktop) TopAppBarDefaults.pinnedScrollBehavior()
-    else TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val scrollBehavior =
+        if (currentPlatformInfo.platform == Platform.Desktop) TopAppBarDefaults.pinnedScrollBehavior()
+        else TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     var selectedFolder by remember { mutableStateOf<FolderEntity?>(null) }
     var deletingFolder by remember { mutableStateOf<FolderEntity?>(null) }

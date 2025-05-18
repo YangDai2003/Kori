@@ -21,7 +21,6 @@ import kori.composeapp.generated.resources.cancel
 import org.yangdai.kori.R
 import org.yangdai.kori.presentation.component.login.NumberLockScreen
 import org.yangdai.kori.presentation.util.BiometricPromptManager
-import kotlin.let
 
 @Composable
 fun LoginOverlayScreen(

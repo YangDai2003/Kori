@@ -8,7 +8,6 @@ import kmark.parser.constraints.eatItselfFromString
 import kmark.parser.constraints.extendsPrev
 import kmark.parser.constraints.getCharsEaten
 import kmark.parser.constraints.upstreamWith
-import kotlin.text.iterator
 
 object MarkdownParserUtil {
 

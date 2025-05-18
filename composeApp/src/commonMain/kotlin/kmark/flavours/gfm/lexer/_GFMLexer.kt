@@ -4,9 +4,9 @@ package kmark.flavours.gfm.lexer
 
 import kmark.IElementType
 import kmark.MarkdownTokenTypes
+import kmark.flavours.gfm.GFMTokenTypes
 import kmark.html.BitSet
 import kmark.html.clear
-import kmark.flavours.gfm.GFMTokenTypes
 import kmark.lexer.Compat
 import kmark.lexer.GeneratedLexer
 import kmark.lexer.Stack

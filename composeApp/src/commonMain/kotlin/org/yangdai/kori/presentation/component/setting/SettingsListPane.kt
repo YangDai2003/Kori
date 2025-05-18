@@ -54,11 +54,11 @@ import kori.composeapp.generated.resources.text_overflow
 import kori.composeapp.generated.resources.time_format
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.Platform
+import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBar
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
 import org.yangdai.kori.presentation.util.clickToLanguageSetting
-import org.yangdai.kori.presentation.util.rememberCurrentPlatform
 import org.yangdai.kori.presentation.util.shouldShowLanguageSetting
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,9 +68,9 @@ fun SettingsListPane(
     navigateUp: () -> Unit,
     navigateToDetail: (Int) -> Unit
 ) {
-    val platform = rememberCurrentPlatform()
-    val scrollBehavior = if (platform is Platform.Desktop) TopAppBarDefaults.pinnedScrollBehavior()
-    else TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val scrollBehavior =
+        if (currentPlatformInfo.platform == Platform.Desktop) TopAppBarDefaults.pinnedScrollBehavior()
+        else TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

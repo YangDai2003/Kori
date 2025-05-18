@@ -36,7 +36,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.yangdai.kori.OS
-import org.yangdai.kori.currentOperatingSystem
+import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownEditorRow
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditorRow
@@ -85,7 +85,7 @@ sealed class EditorRowAction {
 }
 
 val platformKeyboardShortCut =
-    if (currentOperatingSystem() == OS.MACOS || currentOperatingSystem() == OS.IOS)
+    if (currentPlatformInfo.operatingSystem == OS.MACOS || currentPlatformInfo.operatingSystem == OS.IOS)
         "Cmd"
     else "Ctrl"
 

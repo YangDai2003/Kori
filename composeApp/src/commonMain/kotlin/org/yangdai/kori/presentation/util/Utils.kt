@@ -10,8 +10,6 @@ import androidx.compose.ui.platform.ClipEntry
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import kotlinx.datetime.Instant
-import org.yangdai.kori.Platform
-import org.yangdai.kori.currentPlatform
 import org.yangdai.kori.data.local.entity.NoteEntity
 
 @Composable
@@ -24,9 +22,6 @@ fun rememberIsScreenSizeLarge(): Boolean {
     }
     return isLargeScreen
 }
-
-@Composable
-fun rememberCurrentPlatform(): Platform = remember { currentPlatform() }
 
 fun Int.toHexColor(): String {
     // 1. 使用 0xFFFFFF 进行位与操作，保留低 24 位 (RGB)

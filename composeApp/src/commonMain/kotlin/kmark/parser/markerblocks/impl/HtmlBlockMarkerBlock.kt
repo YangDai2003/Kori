@@ -12,7 +12,6 @@ import kmark.parser.markerblocks.MarkdownParserUtil
 import kmark.parser.markerblocks.MarkerBlock
 import kmark.parser.markerblocks.MarkerBlockImpl
 import kmark.parser.sequentialparsers.SequentialParser
-import kotlin.text.Regex
 
 class HtmlBlockMarkerBlock(
     myConstraints: MarkdownConstraints,

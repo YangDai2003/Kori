@@ -9,7 +9,6 @@ import kmark.html.entities.EntityConverter
 import kmark.html.urlEncode
 import kmark.lexer.Compat.codePointToString
 import kmark.lexer.Compat.forEachCodePoint
-import kotlin.text.Regex
 
 class LinkMap(private val map: Map<CharSequence, LinkInfo>) {
     fun getLinkInfo(label: CharSequence): LinkInfo? {

@@ -14,13 +14,13 @@ import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.presentation.screen.file.FileViewModel
-import org.yangdai.kori.presentation.util.AppLockManager
-import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.screen.folders.FoldersViewModel
+import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.screen.note.NoteViewModel
 import org.yangdai.kori.presentation.screen.settings.DataViewModel
 import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import org.yangdai.kori.presentation.screen.template.TemplateViewModel
+import org.yangdai.kori.presentation.util.AppLockManager
 
 expect fun databaseModule(): Module
 

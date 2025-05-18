@@ -95,7 +95,7 @@ actual fun Modifier.clickToLanguageSetting(): Modifier {
         val settingsUrl = NSURL.URLWithString(UIApplicationOpenSettingsURLString)
 
         if (settingsUrl != null && UIApplication.sharedApplication.canOpenURL(settingsUrl)) {
-            UIApplication.sharedApplication.openURL(settingsUrl)
+            UIApplication.sharedApplication.openURL(settingsUrl, mapOf<Any?, Any?>(), null)
         }
     }
 }

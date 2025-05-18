@@ -114,8 +114,9 @@ import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import org.yangdai.kori.OS
 import org.yangdai.kori.Platform
-import org.yangdai.kori.currentPlatform
+import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
@@ -282,14 +283,14 @@ fun NoteScreen(
                                         if (keyEvent.type == KeyEventType.KeyDown) {
                                             when (keyEvent.key) {
                                                 Key.DirectionLeft -> {
-                                                    if (currentPlatform() == Platform.Android) {
+                                                    if (currentPlatformInfo.platform == Platform.Android) {
                                                         viewModel.titleState.edit { moveCursorLeftStateless() }
                                                         true
                                                     } else false
                                                 }
 
                                                 Key.DirectionRight -> {
-                                                    if (currentPlatform() == Platform.Android) {
+                                                    if (currentPlatformInfo.platform == Platform.Android) {
                                                         viewModel.titleState.edit { moveCursorRightStateless() }
                                                         true
                                                     } else false
@@ -391,14 +392,14 @@ fun NoteScreen(
                                     if (keyEvent.type == KeyEventType.KeyDown) {
                                         when (keyEvent.key) {
                                             Key.DirectionLeft -> {
-                                                if (currentPlatform() == Platform.Android) {
+                                                if (currentPlatformInfo.platform == Platform.Android) {
                                                     viewModel.titleState.edit { moveCursorLeftStateless() }
                                                     true
                                                 } else false
                                             }
 
                                             Key.DirectionRight -> {
-                                                if (currentPlatform() == Platform.Android) {
+                                                if (currentPlatformInfo.platform == Platform.Android) {
                                                     viewModel.titleState.edit { moveCursorRightStateless() }
                                                     true
                                                 } else false
@@ -688,10 +689,10 @@ fun NoteScreen(
                 )
             }
 
-            if (currentPlatform() != Platform.Desktop)
+            if (currentPlatformInfo.platform != Platform.Desktop)
                 IconButton(onClick = { showShareDialog = true }) {
                     Icon(
-                        imageVector = if (currentPlatform() == Platform.Android) Icons.Outlined.Share
+                        imageVector = if (currentPlatformInfo.platform == Platform.Android) Icons.Outlined.Share
                         else Icons.Outlined.IosShare,
                         contentDescription = null
                     )
@@ -705,12 +706,16 @@ fun NoteScreen(
                             contentDescription = null
                         )
                     }
-                    IconButton(onClick = { printTrigger.value = true }) {
-                        Icon(
-                            imageVector = Icons.Outlined.Print,
-                            contentDescription = null
-                        )
-                    }
+                    if (
+                        currentPlatformInfo.operatingSystem == OS.IOS || currentPlatformInfo.operatingSystem == OS.ANDROID
+                        || currentPlatformInfo.operatingSystem == OS.WINDOWS
+                    )
+                        IconButton(onClick = { printTrigger.value = true }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Print,
+                                contentDescription = null
+                            )
+                        }
                 }
             }
         },

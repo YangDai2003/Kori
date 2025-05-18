@@ -18,8 +18,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.back
 import org.jetbrains.compose.resources.stringResource
+import org.yangdai.kori.OS
 import org.yangdai.kori.Platform
-import org.yangdai.kori.presentation.util.rememberCurrentPlatform
+import org.yangdai.kori.currentPlatformInfo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,48 +32,41 @@ fun PlatformStyleTopAppBar(
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     colors: TopAppBarColors? = null,
     scrollBehavior: TopAppBarScrollBehavior? = null
-) {
-    val platform = rememberCurrentPlatform()
-    if (platform is Platform.Desktop) {
-        TopAppBar(
-            title = title,
-            modifier = modifier,
-            navigationIcon = navigationIcon,
-            actions = actions,
-            windowInsets = windowInsets,
-            colors = colors ?: TopAppBarDefaults.topAppBarColors(),
-            scrollBehavior = scrollBehavior
-        )
-    } else {
-        LargeTopAppBar(
-            title = title,
-            modifier = modifier,
-            navigationIcon = navigationIcon,
-            actions = actions,
-            windowInsets = windowInsets,
-            colors = colors ?: TopAppBarDefaults.largeTopAppBarColors(),
-            scrollBehavior = scrollBehavior
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun PlatformStyleTopAppBarNavigationIcon(onClick: () -> Unit) {
-    val platform = rememberCurrentPlatform()
-    TooltipIconButton(
-        tipText = stringResource(Res.string.back),
-        icon = if (platform is Platform.IOS) Icons.Default.ArrowBackIosNew
-        else Icons.AutoMirrored.Filled.ArrowBack,
-        onClick = onClick
+) = if (currentPlatformInfo.platform == Platform.Desktop) {
+    TopAppBar(
+        title = title,
+        modifier = modifier,
+        navigationIcon = navigationIcon,
+        actions = actions,
+        windowInsets = windowInsets,
+        colors = colors ?: TopAppBarDefaults.topAppBarColors(),
+        scrollBehavior = scrollBehavior
+    )
+} else {
+    LargeTopAppBar(
+        title = title,
+        modifier = modifier,
+        navigationIcon = navigationIcon,
+        actions = actions,
+        windowInsets = windowInsets,
+        colors = colors ?: TopAppBarDefaults.largeTopAppBarColors(),
+        scrollBehavior = scrollBehavior
     )
 }
 
 @Composable
-fun PlatformStyleTopAppBarTitle(title: String) {
+fun PlatformStyleTopAppBarNavigationIcon(onClick: () -> Unit) =
+    TooltipIconButton(
+        tipText = stringResource(Res.string.back),
+        icon = if (currentPlatformInfo.operatingSystem == OS.IOS || currentPlatformInfo.operatingSystem == OS.MACOS) Icons.Default.ArrowBackIosNew
+        else Icons.AutoMirrored.Filled.ArrowBack,
+        onClick = onClick
+    )
+
+@Composable
+fun PlatformStyleTopAppBarTitle(title: String) =
     Text(
         text = title,
         overflow = TextOverflow.Ellipsis,
         maxLines = 1
     )
-}

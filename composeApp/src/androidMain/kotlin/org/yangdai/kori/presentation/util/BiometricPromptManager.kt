@@ -11,7 +11,6 @@ import androidx.biometric.BiometricPrompt
 import androidx.biometric.registerForAuthenticationResult
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlin.apply
 
 class BiometricPromptManager(activity: AppCompatActivity) {
     private val resultChannel = Channel<BiometricPromptResult>()

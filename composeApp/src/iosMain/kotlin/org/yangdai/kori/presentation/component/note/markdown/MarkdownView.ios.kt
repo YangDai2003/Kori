@@ -148,11 +148,7 @@ private class NavigationDelegate : NSObject(), WKNavigationDelegateProtocol {
                 // Check if UIApplication can open the URL and open it externally
                 val application = UIApplication.sharedApplication
                 if (application.canOpenURL(url)) {
-                    application.openURL(
-                        url,
-                        options = emptyMap<Any?, Any>(),
-                        completionHandler = null
-                    )
+                    application.openURL(url, emptyMap<Any?, Any>(), null)
                     // Cancel the navigation within the WebView
                     decisionHandler(WKNavigationActionPolicy.WKNavigationActionPolicyCancel) // Use WKNavigationActionPolicyCancel constant
                     return

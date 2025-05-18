@@ -15,7 +15,6 @@ import kmark.parser.markerblocks.MarkerBlock
 import kmark.parser.markerblocks.MarkerBlockImpl
 import kmark.parser.sequentialparsers.SequentialParser
 import kotlin.math.min
-import kotlin.text.Regex
 
 class CodeFenceMarkerBlock(
     myConstraints: MarkdownConstraints,

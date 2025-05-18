@@ -10,7 +10,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import org.yangdai.kori.Platform
-import org.yangdai.kori.currentPlatform
+import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.presentation.component.note.markdown.moveCursorLeftStateless
 import org.yangdai.kori.presentation.component.note.markdown.moveCursorRightStateless
 
@@ -24,14 +24,14 @@ fun Modifier.plainTextKeyEvents(textFieldState: TextFieldState): Modifier =
                 when (keyEvent.key) {
 
                     Key.DirectionLeft -> {
-                        if (currentPlatform() == Platform.Android) {
+                        if (currentPlatformInfo.platform == Platform.Android) {
                             textFieldState.edit { moveCursorLeftStateless() }
                             true
                         } else false
                     }
 
                     Key.DirectionRight -> {
-                        if (currentPlatform() == Platform.Android) {
+                        if (currentPlatformInfo.platform == Platform.Android) {
                             textFieldState.edit { moveCursorRightStateless() }
                             true
                         } else false

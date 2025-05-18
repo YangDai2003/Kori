@@ -1,7 +1,5 @@
 package kmark.html.entities
 
-import kotlin.text.Regex
-
 object EntityConverter {
     private const val escapeAllowedString = """!"#\$%&'\(\)\*\+,\-.\/:;<=>\?@\[\\\]\^_`{\|}~"""
     private val replacements: Map<Char, String> = mapOf(

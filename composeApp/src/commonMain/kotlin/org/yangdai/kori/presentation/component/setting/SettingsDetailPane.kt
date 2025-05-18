@@ -41,6 +41,7 @@ import kori.composeapp.generated.resources.templates
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.Platform
+import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
 import org.yangdai.kori.presentation.component.setting.detail.AboutPane
@@ -52,7 +53,6 @@ import org.yangdai.kori.presentation.component.setting.detail.SecurityPane
 import org.yangdai.kori.presentation.component.setting.detail.StylePane
 import org.yangdai.kori.presentation.component.setting.detail.TemplatePane
 import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
-import org.yangdai.kori.presentation.util.rememberCurrentPlatform
 
 @Composable
 fun SettingsDetailPane(
@@ -128,11 +128,9 @@ fun SettingsDetailPaneContent(
     actions: @Composable RowScope.() -> Unit = {},
     content: @Composable BoxScope.() -> Unit
 ) {
-    val platform = rememberCurrentPlatform()
-    val showSmallTopAppBar by remember(platform, isExpanded) {
-        derivedStateOf {
-            platform is Platform.Desktop || isExpanded
-        }
+    val isDesktop = currentPlatformInfo.platform == Platform.Desktop
+    val showSmallTopAppBar by remember(isDesktop, isExpanded) {
+        derivedStateOf { isDesktop || isExpanded }
     }
     val topBarColor = if (isExpanded) MaterialTheme.colorScheme.surfaceContainer
     else MaterialTheme.colorScheme.surfaceContainerLow
@@ -162,7 +160,7 @@ fun SettingsDetailPaneContent(
                     title = { PlatformStyleTopAppBarTitle(topBarTitle) },
                     navigationIcon = navigationIcon,
                     actions = actions,
-                    colors = TopAppBarDefaults.topAppBarColors()
+                    colors = TopAppBarDefaults.largeTopAppBarColors()
                         .copy(
                             containerColor = topBarColor,
                             scrolledContainerColor = topBarColor

@@ -86,15 +86,29 @@ actual fun MarkdownView(
 
                         // --- Capture scroll position BEFORE reloading for link interception ---
                         Platform.runLater { // Get scroll on FX thread
-                            val scrollYObject =
-                                engine.executeScript("window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;")
+                            val scrollYObject = engine.executeScript(
+                                """
+                                (function() {
+                                     var scrollY = 0;
+                                     if (typeof window.scrollY !== 'undefined') {
+                                         scrollY = window.scrollY;
+                                     } else if (document.documentElement && typeof document.documentElement.scrollTop !== 'undefined') {
+                                         scrollY = document.documentElement.scrollTop;
+                                     } else if (document.body && typeof document.body.scrollTop !== 'undefined') {
+                                         scrollY = document.body.scrollTop;
+                                     }
+                                     return scrollY;
+                                })();
+                                """.trimIndent()
+                            )
+
                             // Convert the result carefully (it might be Int, Double, etc.)
                             scrollPositionBeforeLoad = (scrollYObject as? Number)?.toDouble() ?: 0.0
 
                             try {
                                 // Try to open the link in the default system browser
-                                if (Desktop.isDesktopSupported() && Desktop.getDesktop()
-                                        .isSupported(Desktop.Action.BROWSE)
+                                if (Desktop.isDesktopSupported()
+                                    && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)
                                 ) {
                                     Desktop.getDesktop().browse(URI(newLocation))
                                 }
@@ -133,8 +147,22 @@ actual fun MarkdownView(
         update = {
             Platform.runLater { // Get scroll on FX thread
                 if (webView == null) return@runLater
-                val scrollYObject =
-                    webView!!.engine.executeScript("window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;")
+                val scrollYObject = webView!!.engine.executeScript(
+                    """
+                    (function() {
+                         var scrollY = 0;
+                         if (typeof window.scrollY !== 'undefined') {
+                             scrollY = window.scrollY;
+                         } else if (document.documentElement && typeof document.documentElement.scrollTop !== 'undefined') {
+                             scrollY = document.documentElement.scrollTop;
+                         } else if (document.body && typeof document.body.scrollTop !== 'undefined') {
+                             scrollY = document.body.scrollTop;
+                         }
+                         return scrollY;
+                    })();
+                    """.trimIndent()
+                )
+
                 // Convert the result carefully (it might be Int, Double, etc.)
                 scrollPositionBeforeLoad = (scrollYObject as? Number)?.toDouble() ?: 0.0
 
@@ -193,7 +221,7 @@ actual fun MarkdownView(
             Platform.runLater {
                 try {
                     val printerJob = javafx.print.PrinterJob.createPrinterJob()
-                    if (printerJob != null && printerJob.showPrintDialog(null)) {
+                    if (printerJob != null && printerJob.showPrintDialog(it.scene.window)) {
                         it.engine.print(printerJob)
                         printerJob.endJob()
                     }

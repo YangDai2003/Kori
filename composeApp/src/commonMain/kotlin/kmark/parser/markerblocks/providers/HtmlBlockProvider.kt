@@ -8,7 +8,6 @@ import kmark.parser.constraints.MarkdownConstraints
 import kmark.parser.markerblocks.MarkerBlock
 import kmark.parser.markerblocks.MarkerBlockProvider
 import kmark.parser.markerblocks.impl.HtmlBlockMarkerBlock
-import kotlin.text.Regex
 
 class HtmlBlockProvider : MarkerBlockProvider<MarkerProcessor.StateInfo> {
     override fun createMarkerBlocks(

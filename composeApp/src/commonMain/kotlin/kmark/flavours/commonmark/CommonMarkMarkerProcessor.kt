@@ -1,10 +1,6 @@
 package kmark.flavours.commonmark
 
 import kmark.MarkdownTokenTypes
-import kmark.parser.markerblocks.providers.AtxHeaderProvider
-import kmark.parser.markerblocks.providers.BlockQuoteProvider
-import kmark.parser.markerblocks.providers.CodeBlockProvider
-import kmark.parser.markerblocks.providers.CodeFenceProvider
 import kmark.parser.LookaheadText
 import kmark.parser.MarkerProcessor
 import kmark.parser.MarkerProcessorFactory
@@ -14,6 +10,10 @@ import kmark.parser.constraints.MarkdownConstraints
 import kmark.parser.constraints.getCharsEaten
 import kmark.parser.markerblocks.MarkerBlock
 import kmark.parser.markerblocks.MarkerBlockProvider
+import kmark.parser.markerblocks.providers.AtxHeaderProvider
+import kmark.parser.markerblocks.providers.BlockQuoteProvider
+import kmark.parser.markerblocks.providers.CodeBlockProvider
+import kmark.parser.markerblocks.providers.CodeFenceProvider
 import kmark.parser.markerblocks.providers.HorizontalRuleProvider
 import kmark.parser.markerblocks.providers.HtmlBlockProvider
 import kmark.parser.markerblocks.providers.LinkReferenceDefinitionProvider
