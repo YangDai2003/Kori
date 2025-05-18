@@ -171,16 +171,16 @@ fun SettingsListPane(
                         onClick = { navigateToDetail(5) }
                     )
                 },
-                {
-                    ListPaneItem(
-                        title = stringResource(Res.string.cowriter),
-                        description = stringResource(Res.string.model)
-                                + "  •  " + "API ${stringResource(Res.string.key)}",
-                        icon = Icons.Outlined.AutoAwesome,
-                        isSelected = selectedItem == 6,
-                        onClick = { navigateToDetail(6) }
-                    )
-                }
+//                {
+//                    ListPaneItem(
+//                        title = stringResource(Res.string.cowriter),
+//                        description = stringResource(Res.string.model)
+//                                + "  •  " + "API ${stringResource(Res.string.key)}",
+//                        icon = Icons.Outlined.AutoAwesome,
+//                        isSelected = selectedItem == 6,
+//                        onClick = { navigateToDetail(6) }
+//                    )
+//                }
             )
             ListPaneSection(
                 {
