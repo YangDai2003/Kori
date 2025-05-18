@@ -15,8 +15,13 @@ import androidx.compose.ui.viewinterop.UIKitView
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.CoreGraphics.CGRectMake
 import platform.Foundation.NSBundle
+import platform.Foundation.NSError
 import platform.UIKit.UIApplication
 import platform.UIKit.UIColor
+import platform.UIKit.UIPrintInfo
+import platform.UIKit.UIPrintInfoOutputType
+import platform.UIKit.UIPrintInteractionController
+import platform.UIKit.viewPrintFormatter
 import platform.WebKit.WKNavigationAction
 import platform.WebKit.WKNavigationActionPolicy
 import platform.WebKit.WKNavigationDelegateProtocol
@@ -106,7 +111,20 @@ actual fun MarkdownView(
 
     LaunchedEffect(printTrigger.value) {
         if (!printTrigger.value) return@LaunchedEffect
-
+        webView?.let {
+            val printController = UIPrintInteractionController.sharedPrintController()
+            val printInfo = UIPrintInfo.printInfo()
+            printInfo.setOutputType(UIPrintInfoOutputType.UIPrintInfoOutputGeneral) // General output type, allows saving as PDF
+            printInfo.setJobName("Markdown PDF")
+            printController.setPrintInfo(printInfo)
+            printController.setPrintFormatter(it.viewPrintFormatter())
+            printController.presentAnimated(
+                true,
+                completionHandler = { _, completed, error: NSError? ->
+                    // Reset the trigger regardless of the outcome
+                    printTrigger.value = false
+                })
+        }
     }
 }
 

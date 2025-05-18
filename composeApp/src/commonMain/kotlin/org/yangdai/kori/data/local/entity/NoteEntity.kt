@@ -37,12 +37,6 @@ import kotlinx.serialization.Serializable
             value = ["is_deleted", "is_template", "is_pinned", "title"],
             name = "idx_notes_active_pin_title"
         ),
-
-        // --- Index for Foreign Key (often implicitly useful, but good practice) ---
-        // While Room manages FK constraints, explicitly indexing the FK column
-        // used in joins or frequent lookups (like getNotesByFolderId*) is beneficial.
-        // The composite index idx_notes_folder_active_pin_updated already covers this,
-        // but a simpler index might be useful if you query *only* by folder_id sometimes.
         Index(value = ["folder_id"], name = "idx_notes_folder_id")
     ]
 )

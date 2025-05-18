@@ -13,10 +13,8 @@ import org.yangdai.kori.presentation.util.Constants
 class KoriApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        // Initialize your app here
         KoinInitializer.init {
             androidContext(this@KoriApp)
-            // Add other Koin modules here
         }
 
         val shortcut = ShortcutInfoCompat.Builder(applicationContext, "id1")

@@ -1,6 +1,7 @@
 package org.yangdai.kori.presentation.component.note.markdown
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.print.PrintManager
 import android.view.View
@@ -9,6 +10,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebView.enableSlowWholeDocumentDraw
 import android.webkit.WebViewClient
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.ScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,7 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
@@ -39,7 +40,7 @@ actual fun MarkdownView(
     printTrigger: MutableState<Boolean>
 ) {
     val customTabsIntent = rememberCustomTabsIntent()
-    val context = LocalContext.current.applicationContext
+    val activity = LocalActivity.current
     var webView by remember { mutableStateOf<WebView?>(null) }
 
     val data by remember(html, styles, isAppInDarkTheme) {
@@ -141,22 +142,14 @@ actual fun MarkdownView(
 
     LaunchedEffect(printTrigger.value) {
         if (!printTrigger.value) return@LaunchedEffect
-        webView?.let {
-            createWebPrintJob(it, context)
-        }
+        webView?.let { createWebPrintJob(it, activity) }
         printTrigger.value = false
     }
 }
 
-private fun createWebPrintJob(webView: WebView, context: Context) {
-    (context.getSystemService(Context.PRINT_SERVICE) as? PrintManager)?.let { printManager ->
-
+private fun createWebPrintJob(webView: WebView, activity: Activity?) {
+    (activity?.getSystemService(Context.PRINT_SERVICE) as? PrintManager)?.let { printManager ->
         val printAdapter = webView.createPrintDocumentAdapter("markdown_export")
-
-        printManager.print(
-            "Markdown PDF",
-            printAdapter,
-            null
-        )
+        printManager.print("Markdown PDF", printAdapter, null)
     }
 }
