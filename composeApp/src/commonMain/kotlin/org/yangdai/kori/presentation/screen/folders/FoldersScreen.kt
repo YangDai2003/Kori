@@ -1,10 +1,11 @@
 package org.yangdai.kori.presentation.screen.folders
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -62,13 +63,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TileMode
-import androidx.compose.ui.graphics.layer.GraphicsLayer
-import androidx.compose.ui.graphics.layer.drawLayer
-import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
@@ -120,17 +115,9 @@ fun FoldersScreen(
     var selectedFolder by remember { mutableStateOf<FolderEntity?>(null) }
     var deletingFolder by remember { mutableStateOf<FolderEntity?>(null) }
 
-    val graphicsLayer = rememberGraphicsLayer()
-    val animateBlurRadius = animateFloatAsState(
-        targetValue = if (selectedFolder != null) 20f else 0f,
-        label = "blur radius"
-    )
-
-    SharedTransitionLayout(modifier = Modifier.fillMaxSize()) {
+    SharedTransitionLayout(Modifier.fillMaxSize()) {
         Scaffold(
-            modifier = Modifier
-                .blurLayer(graphicsLayer, animateBlurRadius.value)
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 PlatformStyleTopAppBar(
                     title = { PlatformStyleTopAppBarTitle(stringResource(Res.string.folders)) },
@@ -150,8 +137,8 @@ fun FoldersScreen(
             floatingActionButton = {
                 AnimatedVisibility(
                     selectedFolder == null,
-                    enter = fadeIn(),
-                    exit = fadeOut()
+                    enter = EnterTransition.None,
+                    exit = ExitTransition.None
                 ) {
                     FloatingActionButton(
                         modifier = Modifier.sharedBounds(
@@ -269,18 +256,6 @@ fun FoldersScreen(
                 onDismissRequest = { showSortDialog = false },
                 onSortTypeSelected = { viewModel.setFolderSorting(it) }
             )
-    }
-}
-
-private fun Modifier.blurLayer(layer: GraphicsLayer, radius: Float): Modifier {
-    return if (radius == 0f) this else this.drawWithContent {
-        layer.apply {
-            record {
-                this@drawWithContent.drawContent()
-            }
-            this.renderEffect = BlurEffect(radius, radius, TileMode.Decal)
-        }
-        drawLayer(layer)
     }
 }
 

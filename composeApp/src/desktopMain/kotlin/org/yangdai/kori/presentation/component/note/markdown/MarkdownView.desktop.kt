@@ -4,6 +4,7 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
@@ -33,7 +34,8 @@ actual fun MarkdownView(
     scrollState: ScrollState,
     isAppInDarkTheme: Boolean,
     styles: MarkdownStyles,
-    isSheetVisible: Boolean
+    isSheetVisible: Boolean,
+    printTrigger: MutableState<Boolean>
 ) {
     val jfxPanel = remember { InteropPanel() }
     var webView by remember { mutableStateOf<WebView?>(null) }
@@ -123,6 +125,26 @@ actual fun MarkdownView(
         }
     }
 
+    // Embed the JFXPanel using SwingPanel
+    SwingPanel(
+        factory = { jfxPanel },
+        modifier = modifier,
+        background = Color(styles.backgroundColor),
+        update = {
+            Platform.runLater { // Get scroll on FX thread
+                if (webView == null) return@runLater
+                val scrollYObject =
+                    webView!!.engine.executeScript("window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;")
+                // Convert the result carefully (it might be Int, Double, etc.)
+                scrollPositionBeforeLoad = (scrollYObject as? Number)?.toDouble() ?: 0.0
+
+                // Now trigger the load. The loadWorker listener will handle restoring scroll.
+                latestData = data // Update data used for link interception too
+                webView!!.engine.loadContent(latestData, "text/html")
+            }
+        }
+    )
+
     LaunchedEffect(scrollState.value, scrollState.maxValue, webView) {
         val webViewInstance = webView ?: return@LaunchedEffect
         val totalHeight = scrollState.maxValue
@@ -165,25 +187,24 @@ actual fun MarkdownView(
         }
     }
 
-    // Embed the JFXPanel using SwingPanel
-    SwingPanel(
-        factory = { jfxPanel },
-        modifier = modifier,
-        background = Color(styles.backgroundColor),
-        update = {
-            Platform.runLater { // Get scroll on FX thread
-                if (webView == null) return@runLater
-                val scrollYObject =
-                    webView!!.engine.executeScript("window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;")
-                // Convert the result carefully (it might be Int, Double, etc.)
-                scrollPositionBeforeLoad = (scrollYObject as? Number)?.toDouble() ?: 0.0
-
-                // Now trigger the load. The loadWorker listener will handle restoring scroll.
-                latestData = data // Update data used for link interception too
-                webView!!.engine.loadContent(latestData, "text/html")
+    LaunchedEffect(printTrigger.value) {
+        if (!printTrigger.value) return@LaunchedEffect
+        webView?.let {
+            Platform.runLater {
+                try {
+                    val printerJob = javafx.print.PrinterJob.createPrinterJob()
+                    if (printerJob != null && printerJob.showPrintDialog(null)) {
+                        it.engine.print(printerJob)
+                        printerJob.endJob()
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
+                    printTrigger.value = false
+                }
             }
         }
-    )
+    }
 }
 
 private class InteropPanel : JFXPanel() {

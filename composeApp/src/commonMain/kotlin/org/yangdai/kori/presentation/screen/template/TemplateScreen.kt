@@ -26,6 +26,7 @@ import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.FileUpload
 import androidx.compose.material.icons.outlined.IosShare
+import androidx.compose.material.icons.outlined.Print
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.SwapHorizontalCircle
@@ -177,6 +178,7 @@ fun TemplateScreen(
     var showNoteTypeDialog by rememberSaveable { mutableStateOf(false) }
     var showShareDialog by rememberSaveable { mutableStateOf(false) }
     var showExportDialog by rememberSaveable { mutableStateOf(false) }
+    val printTrigger = remember { mutableStateOf(false) }
     LaunchedEffect(isReadView) {
         keyboardController?.hide()
         focusManager.clearFocus()
@@ -379,7 +381,8 @@ fun TemplateScreen(
                             selection = viewModel.contentState.selection,
                             scrollState = scrollState,
                             isAppInDarkTheme = isAppInDarkTheme,
-                            isSheetVisible = isSideSheetOpen
+                            isSheetVisible = isSideSheetOpen,
+                            printTrigger = printTrigger
                         )
                     }
                 } else {
@@ -413,7 +416,8 @@ fun TemplateScreen(
                                     selection = viewModel.contentState.selection,
                                     scrollState = scrollState,
                                     isAppInDarkTheme = isAppInDarkTheme,
-                                    isSheetVisible = isSideSheetOpen
+                                    isSheetVisible = isSideSheetOpen,
+                                    printTrigger = printTrigger
                                 )
                             }
                         }
@@ -459,11 +463,21 @@ fun TemplateScreen(
                     )
                 }
 
-            IconButton(onClick = { showExportDialog = true }) {
-                Icon(
-                    imageVector = Icons.Outlined.FileUpload,
-                    contentDescription = null
-                )
+            AnimatedVisibility(noteEditingState.noteType == NoteType.MARKDOWN) {
+                Column {
+                    IconButton(onClick = { showExportDialog = true }) {
+                        Icon(
+                            imageVector = Icons.Outlined.FileUpload,
+                            contentDescription = null
+                        )
+                    }
+                    IconButton(onClick = { printTrigger.value = true }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Print,
+                            contentDescription = null
+                        )
+                    }
+                }
             }
         },
         drawerContent = {

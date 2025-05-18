@@ -1,6 +1,7 @@
 package org.yangdai.kori.presentation.screen.note
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -39,6 +40,7 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.FileUpload
 import androidx.compose.material.icons.outlined.IosShare
+import androidx.compose.material.icons.outlined.Print
 import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Share
@@ -226,6 +228,7 @@ fun NoteScreen(
     var showNoteTypeDialog by rememberSaveable { mutableStateOf(false) }
     var showShareDialog by rememberSaveable { mutableStateOf(false) }
     var showExportDialog by rememberSaveable { mutableStateOf(false) }
+    val printTrigger = remember { mutableStateOf(false) }
     LaunchedEffect(isReadView) {
         keyboardController?.hide()
         focusManager.clearFocus()
@@ -512,7 +515,8 @@ fun NoteScreen(
                             selection = viewModel.contentState.selection,
                             scrollState = scrollState,
                             isAppInDarkTheme = isAppInDarkTheme,
-                            isSheetVisible = isSideSheetOpen
+                            isSheetVisible = isSideSheetOpen,
+                            printTrigger = printTrigger
                         )
                     }
                 } else {
@@ -545,7 +549,8 @@ fun NoteScreen(
                                     selection = viewModel.contentState.selection,
                                     scrollState = scrollState,
                                     isAppInDarkTheme = isAppInDarkTheme,
-                                    isSheetVisible = isSideSheetOpen
+                                    isSheetVisible = isSideSheetOpen,
+                                    printTrigger = printTrigger
                                 )
                             }
                         }
@@ -692,11 +697,21 @@ fun NoteScreen(
                     )
                 }
 
-            IconButton(onClick = { showExportDialog = true }) {
-                Icon(
-                    imageVector = Icons.Outlined.FileUpload,
-                    contentDescription = null
-                )
+            AnimatedVisibility(noteEditingState.noteType == NoteType.MARKDOWN) {
+                Column {
+                    IconButton(onClick = { showExportDialog = true }) {
+                        Icon(
+                            imageVector = Icons.Outlined.FileUpload,
+                            contentDescription = null
+                        )
+                    }
+                    IconButton(onClick = { printTrigger.value = true }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Print,
+                            contentDescription = null
+                        )
+                    }
+                }
             }
         },
         drawerContent = {

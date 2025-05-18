@@ -5,6 +5,7 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.TextRange
@@ -84,5 +85,6 @@ expect fun MarkdownView(
     scrollState: ScrollState,
     isAppInDarkTheme: Boolean,
     styles: MarkdownStyles = MarkdownStyles.fromColorScheme(MaterialTheme.colorScheme),
-    isSheetVisible: Boolean
+    isSheetVisible: Boolean,
+    printTrigger: MutableState<Boolean>
 )

@@ -3,6 +3,7 @@ package org.yangdai.kori.presentation.component.note.markdown
 import androidx.compose.foundation.ScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,7 +35,8 @@ actual fun MarkdownView(
     scrollState: ScrollState,
     isAppInDarkTheme: Boolean,
     styles: MarkdownStyles,
-    isSheetVisible: Boolean
+    isSheetVisible: Boolean,
+    printTrigger: MutableState<Boolean>
 ) {
     // State to hold the WKWebView instance for access in LaunchedEffect
     var webView by remember { mutableStateOf<WKWebView?>(null) }
@@ -46,6 +48,33 @@ actual fun MarkdownView(
             processHtml(html, styles, isAppInDarkTheme)
         }
     }
+
+    UIKitView(
+        factory = {
+            val config = WKWebViewConfiguration()
+            config.preferences().javaScriptEnabled = true
+
+            WKWebView(frame = CGRectMake(0.0, 0.0, 0.0, 0.0), configuration = config).apply {
+                this.opaque = false // To stop 'white flash'
+                this.scrollView.backgroundColor =
+                    UIColor.clearColor // Ensure scroll view is also transparent
+
+                // --- Configuration similar to Android ---
+                this.navigationDelegate = navigationDelegate // Handle link clicks
+
+                this.scrollView.showsVerticalScrollIndicator = true
+                this.scrollView.showsHorizontalScrollIndicator = false
+                this.scrollView.bounces = false // Disable bounce effect
+            }.also { webView = it }
+        },
+        modifier = modifier, // Apply Compose modifiers
+        update = { wv -> wv.loadHTMLString(data, baseURL = NSBundle.mainBundle.resourceURL) },
+        onRelease = { wv ->
+            wv.stopLoading()
+            wv.navigationDelegate = null // Break reference cycle
+            webView = null // Clear the state variable
+        }
+    )
 
     LaunchedEffect(scrollState.value, scrollState.maxValue, webView) {
         val webViewInstance = webView ?: return@LaunchedEffect
@@ -75,32 +104,10 @@ actual fun MarkdownView(
         webViewInstance.evaluateJavaScript(script, null)
     }
 
-    UIKitView(
-        factory = {
-            val config = WKWebViewConfiguration()
-            config.preferences().javaScriptEnabled = true
+    LaunchedEffect(printTrigger.value) {
+        if (!printTrigger.value) return@LaunchedEffect
 
-            WKWebView(frame = CGRectMake(0.0, 0.0, 0.0, 0.0), configuration = config).apply {
-                this.opaque = false // To stop 'white flash'
-                this.scrollView.backgroundColor =
-                    UIColor.clearColor // Ensure scroll view is also transparent
-
-                // --- Configuration similar to Android ---
-                this.navigationDelegate = navigationDelegate // Handle link clicks
-
-                this.scrollView.showsVerticalScrollIndicator = true
-                this.scrollView.showsHorizontalScrollIndicator = false
-                this.scrollView.bounces = false // Disable bounce effect
-            }.also { webView = it }
-        },
-        modifier = modifier, // Apply Compose modifiers
-        update = { wv -> wv.loadHTMLString(data, baseURL = NSBundle.mainBundle.resourceURL) },
-        onRelease = { wv ->
-            wv.stopLoading()
-            wv.navigationDelegate = null // Break reference cycle
-            webView = null // Clear the state variable
-        }
-    )
+    }
 }
 
 private class NavigationDelegate : NSObject(), WKNavigationDelegateProtocol {

@@ -23,9 +23,11 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
@@ -57,6 +59,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
@@ -96,7 +99,7 @@ fun SharedTransitionScope.ModifyFolderDialog(
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }) { onDismissRequest() }
-                    .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.5f))
+                    .background(Color.Black.copy(alpha = 0.6f))
             )
 
             var isStarred by remember { mutableStateOf(targetState.isStarred) }
@@ -112,9 +115,11 @@ fun SharedTransitionScope.ModifyFolderDialog(
             val scope = rememberCoroutineScope()
             val bottomSheetState =
                 rememberModalBottomSheetState(skipPartiallyExpanded = true)
+            val focusManager = LocalFocusManager.current
 
             Column(
                 modifier = Modifier
+                    .verticalScroll(rememberScrollState())
                     .imePadding()
                     .padding(16.dp)
                     .sizeIn(minWidth = 280.dp, maxWidth = 560.dp)
@@ -128,7 +133,7 @@ fun SharedTransitionScope.ModifyFolderDialog(
                         shape = AlertDialogDefaults.shape
                     )
                     .clip(AlertDialogDefaults.shape)
-                    .padding(16.dp)
+                    .padding(24.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
@@ -166,6 +171,7 @@ fun SharedTransitionScope.ModifyFolderDialog(
                         errorBorderColor = MaterialTheme.colorScheme.error,
                         placeholderColor = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
+                    onKeyboardAction = { focusManager.clearFocus() },
                     placeholder = { Text(stringResource(Res.string.name)) }
                 )
                 Box {

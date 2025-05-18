@@ -1,6 +1,8 @@
 package org.yangdai.kori.presentation.component.note.markdown
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.print.PrintManager
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebResourceRequest
@@ -10,6 +12,7 @@ import android.webkit.WebViewClient
 import androidx.compose.foundation.ScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
@@ -31,9 +35,11 @@ actual fun MarkdownView(
     scrollState: ScrollState,
     isAppInDarkTheme: Boolean,
     styles: MarkdownStyles,
-    isSheetVisible: Boolean
+    isSheetVisible: Boolean,
+    printTrigger: MutableState<Boolean>
 ) {
     val customTabsIntent = rememberCustomTabsIntent()
+    val context = LocalContext.current.applicationContext
     var webView by remember { mutableStateOf<WebView?>(null) }
 
     val data by remember(html, styles, isAppInDarkTheme) {
@@ -57,35 +63,6 @@ actual fun MarkdownView(
                 return true
             }
         }
-    }
-
-    LaunchedEffect(scrollState.value, scrollState.maxValue, webView) {
-        val webViewInstance = webView ?: return@LaunchedEffect
-        val totalHeight = scrollState.maxValue
-        val currentScroll = scrollState.value
-        if (totalHeight <= 0) return@LaunchedEffect
-
-        // Calculate scroll percentage (0.0 to 1.0)
-        val currentScrollPercent = (currentScroll.toFloat() / totalHeight).coerceIn(0f, 1f)
-        val script = """
-        (function() {
-            // Only scroll if not currently loading to avoid conflicts
-             if (document.readyState === 'complete' || document.readyState === 'interactive') { // Basic check
-                const d = document.documentElement;
-                const b = document.body;
-                const maxHeight = Math.max(
-                    d.scrollHeight, d.offsetHeight, d.clientHeight,
-                    b.scrollHeight, b.offsetHeight
-                );
-                window.scrollTo({
-                    top: maxHeight * $currentScrollPercent,
-                    behavior: 'auto' // Use 'auto' for immediate jump syncing with ScrollState
-                });
-             }
-        })();
-        """.trimIndent()
-
-        webViewInstance.evaluateJavascript(script, null)
     }
 
     AndroidView(
@@ -130,5 +107,56 @@ actual fun MarkdownView(
             it.stopLoading()
             it.destroy()
             webView = null
-        })
+        }
+    )
+
+    LaunchedEffect(scrollState.value, scrollState.maxValue, webView) {
+        val webViewInstance = webView ?: return@LaunchedEffect
+        val totalHeight = scrollState.maxValue
+        val currentScroll = scrollState.value
+        if (totalHeight <= 0) return@LaunchedEffect
+
+        // Calculate scroll percentage (0.0 to 1.0)
+        val currentScrollPercent = (currentScroll.toFloat() / totalHeight).coerceIn(0f, 1f)
+        val script = """
+        (function() {
+            // Only scroll if not currently loading to avoid conflicts
+             if (document.readyState === 'complete' || document.readyState === 'interactive') { // Basic check
+                const d = document.documentElement;
+                const b = document.body;
+                const maxHeight = Math.max(
+                    d.scrollHeight, d.offsetHeight, d.clientHeight,
+                    b.scrollHeight, b.offsetHeight
+                );
+                window.scrollTo({
+                    top: maxHeight * $currentScrollPercent,
+                    behavior: 'auto' // Use 'auto' for immediate jump syncing with ScrollState
+                });
+             }
+        })();
+        """.trimIndent()
+
+        webViewInstance.evaluateJavascript(script, null)
+    }
+
+    LaunchedEffect(printTrigger.value) {
+        if (!printTrigger.value) return@LaunchedEffect
+        webView?.let {
+            createWebPrintJob(it, context)
+        }
+        printTrigger.value = false
+    }
+}
+
+private fun createWebPrintJob(webView: WebView, context: Context) {
+    (context.getSystemService(Context.PRINT_SERVICE) as? PrintManager)?.let { printManager ->
+
+        val printAdapter = webView.createPrintDocumentAdapter("markdown_export")
+
+        printManager.print(
+            "Markdown PDF",
+            printAdapter,
+            null
+        )
+    }
 }

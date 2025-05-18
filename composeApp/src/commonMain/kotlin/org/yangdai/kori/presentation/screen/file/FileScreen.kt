@@ -9,7 +9,6 @@ import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -22,7 +21,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -38,6 +36,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.IosShare
+import androidx.compose.material.icons.outlined.Print
 import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Share
@@ -107,10 +106,12 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.Platform
 import org.yangdai.kori.currentPlatform
+import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
+import org.yangdai.kori.presentation.component.dialog.ShareDialog
 import org.yangdai.kori.presentation.component.note.Editor
 import org.yangdai.kori.presentation.component.note.EditorRow
 import org.yangdai.kori.presentation.component.note.EditorRowAction
@@ -126,7 +127,6 @@ import org.yangdai.kori.presentation.component.note.template.TemplateProcessor
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.screen.settings.AppTheme
-import org.yangdai.kori.presentation.util.clickToShareText
 import org.yangdai.kori.presentation.util.formatInstant
 import org.yangdai.kori.presentation.util.formatNumber
 import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
@@ -195,6 +195,8 @@ fun FileScreen(
     val focusManager = LocalFocusManager.current
     var isSideSheetOpen by rememberSaveable { mutableStateOf(false) }
     var showNoteTypeDialog by rememberSaveable { mutableStateOf(false) }
+    var showShareDialog by rememberSaveable { mutableStateOf(false) }
+    val printTrigger = remember { mutableStateOf(false) }
     LaunchedEffect(isReadView) {
         keyboardController?.hide()
         focusManager.clearFocus()
@@ -412,7 +414,8 @@ fun FileScreen(
                             selection = viewModel.contentState.selection,
                             scrollState = scrollState,
                             isAppInDarkTheme = isAppInDarkTheme,
-                            isSheetVisible = isSideSheetOpen
+                            isSheetVisible = isSideSheetOpen,
+                            printTrigger = printTrigger
                         )
                     }
                 } else {
@@ -445,7 +448,8 @@ fun FileScreen(
                                     selection = viewModel.contentState.selection,
                                     scrollState = scrollState,
                                     isAppInDarkTheme = isAppInDarkTheme,
-                                    isSheetVisible = isSideSheetOpen
+                                    isSheetVisible = isSideSheetOpen,
+                                    printTrigger = printTrigger
                                 )
                             }
                         }
@@ -559,17 +563,22 @@ fun FileScreen(
                 )
             }
 
-            Box(
-                Modifier.size(48.dp)
-                    .padding(4.dp)
-                    .clip(CircleShape)
-                    .clickToShareText(viewModel.contentState.text.toString()),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = if (currentPlatform() == Platform.Android) Icons.Outlined.Share else Icons.Outlined.IosShare,
-                    contentDescription = null
-                )
+            if (currentPlatform() != Platform.Desktop)
+                IconButton(onClick = { showShareDialog = true }) {
+                    Icon(
+                        imageVector = if (currentPlatform() == Platform.Android) Icons.Outlined.Share
+                        else Icons.Outlined.IosShare,
+                        contentDescription = null
+                    )
+                }
+
+            AnimatedVisibility(fileEditingState.fileType == NoteType.MARKDOWN) {
+                IconButton(onClick = { printTrigger.value = true }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Print,
+                        contentDescription = null
+                    )
+                }
             }
         },
         drawerContent = {
@@ -621,6 +630,19 @@ fun FileScreen(
                 showNoteTypeDialog = false
                 viewModel.updateFileType(noteType)
             }
+        )
+    }
+
+    if (showShareDialog) {
+        ShareDialog(
+            noteEntity = NoteEntity(
+                title = viewModel.titleState.text.toString(),
+                content = viewModel.contentState.text.toString(),
+                noteType = fileEditingState.fileType,
+                createdAt = fileEditingState.updatedAt,
+                updatedAt = fileEditingState.updatedAt
+            ),
+            onDismissRequest = { showShareDialog = false }
         )
     }
 }
