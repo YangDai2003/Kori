@@ -67,86 +67,84 @@ fun LazyGridItemScope.NoteItem(
     isSelectionMode: Boolean = false,
     onClick: () -> Unit,
     onLongClick: () -> Unit
+) = NoteItemCard(
+    modifier = Modifier
+        .fillMaxWidth()
+        .padding(bottom = 8.dp)
+        .animateItem(),
+    isSelected = isSelected
 ) {
-    NoteItemCard(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 8.dp)
-            .animateItem(),
-        isSelected = isSelected
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .combinedClickable(
-                    onClick = onClick,
-                    onLongClick = onLongClick
+        Column(modifier = Modifier.padding(16.dp)) {
+            // 标题
+            if (note.title.isNotBlank()) {
+                Text(
+                    text = note.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    modifier = Modifier.basicMarquee()
                 )
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                // 标题
-                if (note.title.isNotBlank()) {
-                    Text(
-                        text = note.title,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1,
-                        modifier = Modifier.basicMarquee()
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-
-                if (noteItemProperties.cardSize != CardSize.TITLE_ONLY) {
-                    val lines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 5 else 2
-                    Text(
-                        text = note.content,
-                        style = MaterialTheme.typography.bodyMedium,
-                        minLines = lines,
-                        maxLines = lines,
-                        overflow = if (noteItemProperties.clipOverflow) TextOverflow.Clip else TextOverflow.Ellipsis
-                    )
-                }
-
-                // 底部行：笔记类型和更新时间信息
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(top = 12.dp)
-                        .alpha(0.7f)
-                ) {
-
-                    Text(
-                        text = when (note.noteType) {
-                            NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
-                            NoteType.MARKDOWN -> stringResource(Res.string.markdown)
-                        },
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    val instant =
-                        if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
-                        else Instant.parse(note.updatedAt)
-                    Text(
-                        text = formatInstant(instant),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // 选择框
-            if (isSelectionMode) {
-                Checkbox(
-                    checked = isSelected,
-                    onCheckedChange = null,
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .align(Alignment.TopEnd)
+            if (noteItemProperties.cardSize != CardSize.TITLE_ONLY) {
+                val lines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 5 else 2
+                Text(
+                    text = note.content,
+                    style = MaterialTheme.typography.bodyMedium,
+                    minLines = lines,
+                    maxLines = lines,
+                    overflow = if (noteItemProperties.clipOverflow) TextOverflow.Clip else TextOverflow.Ellipsis
                 )
             }
+
+            // 底部行：笔记类型和更新时间信息
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(top = 12.dp)
+                    .alpha(0.7f)
+            ) {
+
+                Text(
+                    text = when (note.noteType) {
+                        NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
+                        NoteType.MARKDOWN -> stringResource(Res.string.markdown)
+                    },
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                val instant =
+                    if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
+                    else Instant.parse(note.updatedAt)
+                Text(
+                    text = formatInstant(instant),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+
+        // 选择框
+        if (isSelectionMode) {
+            Checkbox(
+                checked = isSelected,
+                onCheckedChange = null,
+                modifier = Modifier
+                    .padding(12.dp)
+                    .align(Alignment.TopEnd)
+            )
         }
     }
 }
@@ -159,89 +157,87 @@ fun LazyStaggeredGridItemScope.NoteItem(
     isSelectionMode: Boolean = false,
     onClick: () -> Unit,
     onLongClick: () -> Unit
+) = NoteItemCard(
+    modifier = Modifier.fillMaxWidth().animateItem(),
+    isSelected = isSelected
 ) {
-    NoteItemCard(
-        modifier = Modifier.fillMaxWidth().animateItem(),
-        isSelected = isSelected
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .combinedClickable(
-                    onClick = onClick,
-                    onLongClick = onLongClick
+        Column(modifier = Modifier.padding(16.dp)) {
+            // 标题
+            if (note.title.isNotBlank()) {
+                Text(
+                    text = note.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    modifier = Modifier.basicMarquee()
                 )
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                // 标题
-                if (note.title.isNotBlank()) {
-                    Text(
-                        text = note.title,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1,
-                        modifier = Modifier.basicMarquee()
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-
-                // 内容预览
-                if (noteItemProperties.cardSize != CardSize.TITLE_ONLY) {
-                    val lines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 5 else 2
-                    Text(
-                        text = note.content,
-                        style = MaterialTheme.typography.bodyMedium,
-                        maxLines = lines,
-                        overflow = if (noteItemProperties.clipOverflow) TextOverflow.Clip else TextOverflow.Ellipsis
-                    )
-                }
-
-                // 底部行：笔记类型和更新时间信息
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(top = 12.dp)
-                ) {
-
-                    if (note.isPinned)
-                        Icon(
-                            modifier = Modifier.padding(end = 8.dp).size(16.dp),
-                            imageVector = Icons.Default.PushPin,
-                            tint = MaterialTheme.colorScheme.primary,
-                            contentDescription = null,
-                        )
-
-                    Text(
-                        text = when (note.noteType) {
-                            NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
-                            NoteType.MARKDOWN -> stringResource(Res.string.markdown)
-                        },
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    val instant =
-                        if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
-                        else Instant.parse(note.updatedAt)
-                    Text(
-                        text = formatInstant(instant),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                    )
-                }
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // 选择框
-            if (isSelectionMode) {
-                Checkbox(
-                    checked = isSelected,
-                    onCheckedChange = null,
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .align(Alignment.TopEnd)
+            // 内容预览
+            if (noteItemProperties.cardSize != CardSize.TITLE_ONLY) {
+                val lines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 5 else 2
+                Text(
+                    text = note.content,
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = lines,
+                    overflow = if (noteItemProperties.clipOverflow) TextOverflow.Clip else TextOverflow.Ellipsis
                 )
             }
+
+            // 底部行：笔记类型和更新时间信息
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(top = 12.dp)
+            ) {
+
+                if (note.isPinned)
+                    Icon(
+                        modifier = Modifier.padding(end = 8.dp).size(16.dp),
+                        imageVector = Icons.Default.PushPin,
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = null,
+                    )
+
+                Text(
+                    text = when (note.noteType) {
+                        NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
+                        NoteType.MARKDOWN -> stringResource(Res.string.markdown)
+                    },
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                val instant =
+                    if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
+                    else Instant.parse(note.updatedAt)
+                Text(
+                    text = formatInstant(instant),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                )
+            }
+        }
+
+        // 选择框
+        if (isSelectionMode) {
+            Checkbox(
+                checked = isSelected,
+                onCheckedChange = null,
+                modifier = Modifier
+                    .padding(12.dp)
+                    .align(Alignment.TopEnd)
+            )
         }
     }
 }
@@ -255,109 +251,107 @@ fun LazyStaggeredGridItemScope.SearchResultNoteItem(
     isSelectionMode: Boolean = false,
     onClick: () -> Unit,
     onLongClick: () -> Unit
+) = NoteItemCard(
+    modifier = Modifier.fillMaxWidth().animateItem(),
+    isSelected = isSelected
 ) {
-    NoteItemCard(
-        modifier = Modifier.fillMaxWidth().animateItem(),
-        isSelected = isSelected
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .combinedClickable(
-                    onClick = onClick,
-                    onLongClick = onLongClick
-                )
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                // 标题
-                if (note.title.isNotBlank()) {
-                    val annotatedString = buildAnnotatedString {
-                        val title = note.title
-                        val index = title.indexOf(keyword, ignoreCase = true)
-                        if (index != -1) {
-                            append(title.substring(0, index))
-                            withStyle(
-                                style = SpanStyle(
-                                    background = Color.Cyan.copy(alpha = 0.5f),
-                                )
-                            ) {
-                                append(title.substring(index, index + keyword.length))
-                            }
-                            append(title.substring(index + keyword.length))
-                        } else {
-                            append(title)
+        Column(modifier = Modifier.padding(16.dp)) {
+            // 标题
+            if (note.title.isNotBlank()) {
+                val annotatedString = buildAnnotatedString {
+                    val title = note.title
+                    val index = title.indexOf(keyword, ignoreCase = true)
+                    if (index != -1) {
+                        append(title.substring(0, index))
+                        withStyle(
+                            style = SpanStyle(
+                                background = Color.Cyan.copy(alpha = 0.5f),
+                            )
+                        ) {
+                            append(title.substring(index, index + keyword.length))
                         }
+                        append(title.substring(index + keyword.length))
+                    } else {
+                        append(title)
                     }
-
-                    Text(
-                        text = annotatedString,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1,
-                        modifier = Modifier.basicMarquee()
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
-
-                // 内容预览
-                if (noteItemProperties.cardSize != CardSize.TITLE_ONLY) {
-                    val lines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 5 else 2
-                    Text(
-                        text = note.content,
-                        style = MaterialTheme.typography.bodyMedium,
-                        maxLines = lines,
-                        overflow = if (noteItemProperties.clipOverflow) TextOverflow.Clip else TextOverflow.Ellipsis
-                    )
-                }
-
-
-                // 底部行：笔记类型和更新时间信息
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(top = 12.dp)
-                ) {
-
-                    if (note.isPinned)
-                        Icon(
-                            modifier = Modifier.padding(end = 8.dp).size(16.dp),
-                            imageVector = Icons.Default.PushPin,
-                            tint = MaterialTheme.colorScheme.primary,
-                            contentDescription = null,
-                        )
-
-                    Text(
-                        text = when (note.noteType) {
-                            NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
-                            NoteType.MARKDOWN -> stringResource(Res.string.markdown)
-                        },
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    val instant =
-                        if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
-                        else Instant.parse(note.updatedAt)
-                    Text(
-                        text = formatInstant(instant),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                    )
-                }
+                Text(
+                    text = annotatedString,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    modifier = Modifier.basicMarquee()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // 选择框
-            if (isSelectionMode) {
-                Checkbox(
-                    checked = isSelected,
-                    onCheckedChange = null,
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .align(Alignment.TopEnd)
+
+            // 内容预览
+            if (noteItemProperties.cardSize != CardSize.TITLE_ONLY) {
+                val lines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 5 else 2
+                Text(
+                    text = note.content,
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = lines,
+                    overflow = if (noteItemProperties.clipOverflow) TextOverflow.Clip else TextOverflow.Ellipsis
                 )
             }
+
+
+            // 底部行：笔记类型和更新时间信息
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(top = 12.dp)
+            ) {
+
+                if (note.isPinned)
+                    Icon(
+                        modifier = Modifier.padding(end = 8.dp).size(16.dp),
+                        imageVector = Icons.Default.PushPin,
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = null,
+                    )
+
+                Text(
+                    text = when (note.noteType) {
+                        NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
+                        NoteType.MARKDOWN -> stringResource(Res.string.markdown)
+                    },
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                val instant =
+                    if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
+                    else Instant.parse(note.updatedAt)
+                Text(
+                    text = formatInstant(instant),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                )
+            }
+        }
+
+        // 选择框
+        if (isSelectionMode) {
+            Checkbox(
+                checked = isSelected,
+                onCheckedChange = null,
+                modifier = Modifier
+                    .padding(12.dp)
+                    .align(Alignment.TopEnd)
+            )
         }
     }
 }

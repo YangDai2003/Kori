@@ -38,101 +38,98 @@ fun GroupedPage(
     navigateToScreen: (Screen) -> Unit,
     selectedNotes: MutableSet<String>,
     isSelectionMode: Boolean
-) {
-    // 显示笔记列表
-    Box {
-        val state = rememberLazyGridState()
-        LazyVerticalGrid(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = contentPadding,
-            columns = GridCells.Fixed(columns),
-            state = state,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            if (!notesMap[true].isNullOrEmpty())
-                stickyHeader(key = "pinned") {
-                    Surface(
-                        color = MaterialTheme.colorScheme.surfaceContainerLow
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
-                            text = stringResource(Res.string.pinned),
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                    }
+) = Box {
+    val state = rememberLazyGridState()
+    LazyVerticalGrid(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = contentPadding,
+        columns = GridCells.Fixed(columns),
+        state = state,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        if (!notesMap[true].isNullOrEmpty())
+            stickyHeader(key = "pinned") {
+                Surface(
+                    color = MaterialTheme.colorScheme.surfaceContainerLow
+                ) {
+                    Text(
+                        modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
+                        text = stringResource(Res.string.pinned),
+                        style = MaterialTheme.typography.labelMedium
+                    )
                 }
-
-            items(notesMap[true] ?: emptyList(), key = { it.id }) { note ->
-                NoteItem(
-                    note = note,
-                    noteItemProperties = noteItemProperties,
-                    isSelected = selectedNotes.contains(note.id),
-                    isSelectionMode = isSelectionMode,
-                    onClick = {
-                        if (isSelectionMode) {
-                            // 在多选模式下，点击切换选中状态
-                            if (selectedNotes.contains(note.id)) {
-                                selectedNotes.remove(note.id)
-                            } else {
-                                selectedNotes.add(note.id)
-                            }
-                        } else {
-                            // 正常导航到笔记详情
-                            navigateToScreen(Screen.Note(note.id))
-                        }
-                    },
-                    onLongClick = {
-                        // 长按进入多选模式
-                        if (!isSelectionMode) {
-                            selectedNotes.add(note.id)
-                        }
-                    }
-                )
             }
 
-            if (notesMap.size == 2)
-                stickyHeader(key = "others") {
-                    Surface(
-                        color = MaterialTheme.colorScheme.surfaceContainerLow
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
-                            text = stringResource(Res.string.others),
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                    }
-                }
-
-            items(notesMap[false] ?: emptyList(), key = { it.id }) { note ->
-                NoteItem(
-                    note = note,
-                    noteItemProperties = noteItemProperties,
-                    isSelected = selectedNotes.contains(note.id),
-                    isSelectionMode = isSelectionMode,
-                    onClick = {
-                        if (isSelectionMode) {
-                            if (selectedNotes.contains(note.id)) {
-                                selectedNotes.remove(note.id)
-                            } else {
-                                selectedNotes.add(note.id)
-                            }
+        items(notesMap[true] ?: emptyList(), key = { it.id }) { note ->
+            NoteItem(
+                note = note,
+                noteItemProperties = noteItemProperties,
+                isSelected = selectedNotes.contains(note.id),
+                isSelectionMode = isSelectionMode,
+                onClick = {
+                    if (isSelectionMode) {
+                        // 在多选模式下，点击切换选中状态
+                        if (selectedNotes.contains(note.id)) {
+                            selectedNotes.remove(note.id)
                         } else {
-                            navigateToScreen(Screen.Note(note.id))
-                        }
-                    },
-                    onLongClick = {
-                        if (!isSelectionMode) {
                             selectedNotes.add(note.id)
                         }
+                    } else {
+                        // 正常导航到笔记详情
+                        navigateToScreen(Screen.Note(note.id))
                     }
-                )
-            }
+                },
+                onLongClick = {
+                    // 长按进入多选模式
+                    if (!isSelectionMode) {
+                        selectedNotes.add(note.id)
+                    }
+                }
+            )
         }
-        LazyGridScrollbar(
-            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-            state = state
-        )
+
+        if (notesMap.size == 2)
+            stickyHeader(key = "others") {
+                Surface(
+                    color = MaterialTheme.colorScheme.surfaceContainerLow
+                ) {
+                    Text(
+                        modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
+                        text = stringResource(Res.string.others),
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
+            }
+
+        items(notesMap[false] ?: emptyList(), key = { it.id }) { note ->
+            NoteItem(
+                note = note,
+                noteItemProperties = noteItemProperties,
+                isSelected = selectedNotes.contains(note.id),
+                isSelectionMode = isSelectionMode,
+                onClick = {
+                    if (isSelectionMode) {
+                        if (selectedNotes.contains(note.id)) {
+                            selectedNotes.remove(note.id)
+                        } else {
+                            selectedNotes.add(note.id)
+                        }
+                    } else {
+                        navigateToScreen(Screen.Note(note.id))
+                    }
+                },
+                onLongClick = {
+                    if (!isSelectionMode) {
+                        selectedNotes.add(note.id)
+                    }
+                }
+            )
+        }
     }
+    LazyGridScrollbar(
+        modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+        state = state
+    )
 }
 
 @Composable

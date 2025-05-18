@@ -6,9 +6,10 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -59,6 +60,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
@@ -93,14 +95,13 @@ fun SharedTransitionScope.ModifyFolderDialog(
         contentAlignment = Alignment.Center
     ) {
         if (targetState != null) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }) { onDismissRequest() }
-                    .background(Color.Black.copy(alpha = 0.6f))
-            )
+
+            Canvas(
+                Modifier.fillMaxSize()
+                    .pointerInput(Unit) { detectTapGestures(onTap = { onDismissRequest() }) }
+            ) {
+                drawRect(Color.Black, alpha = 0.6f)
+            }
 
             var isStarred by remember { mutableStateOf(targetState.isStarred) }
             val textFieldState = rememberTextFieldState(initialText = targetState.name)

@@ -152,7 +152,7 @@ fun NoteSideSheet(
                 detectTapGestures(onTap = { onDismiss() })
             } else Modifier
 
-            Canvas(modifier = Modifier.fillMaxSize().then(scrimModifier)) {
+            Canvas(Modifier.fillMaxSize().then(scrimModifier)) {
                 drawRect(scrimColor, alpha = maskAlpha.value)
             }
 
