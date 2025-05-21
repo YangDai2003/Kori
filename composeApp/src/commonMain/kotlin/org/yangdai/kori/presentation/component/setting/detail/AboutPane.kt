@@ -109,7 +109,7 @@ fun AboutPane() {
                 modifier = Modifier
                     .padding(bottom = 36.dp)
                     .align(Alignment.BottomCenter),
-                text = if (currentPlatformInfo.platform != Platform.Desktop) currentPlatformInfo.operatingSystem.name + " " else ""
+                text = (if (currentPlatformInfo.platform != Platform.Desktop) currentPlatformInfo.operatingSystem.name + " " else "")
                         + currentPlatformInfo.version
                         + "\n" + currentPlatformInfo.deviceModel,
                 textAlign = TextAlign.Center,
