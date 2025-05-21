@@ -3,7 +3,7 @@ package org.yangdai.kori
 actual val currentPlatformInfo: PlatformInfo = PlatformInfo(
     platform = Platform.Desktop,
     version = System.getProperty("os.version").orEmpty(),
-    deviceModel = System.getProperty("os.name").orEmpty(),
+    deviceModel = System.getProperty("os.arch").orEmpty(),
     operatingSystem = currentOperatingSystem()
 )
 

@@ -54,6 +54,16 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
+            LaunchedEffect(securityPaneState.keepScreenOn) {
+                window.let { window ->
+                    if (securityPaneState.keepScreenOn) {
+                        window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                    } else {
+                        window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                    }
+                }
+            }
+
             val isSystemInDarkTheme = isSystemInDarkTheme()
             val darkMode = remember(isSystemInDarkTheme, stylePaneState.theme) {
                 if (stylePaneState.theme == AppTheme.SYSTEM) isSystemInDarkTheme

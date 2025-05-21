@@ -9,6 +9,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.ExperimentalComposeApi
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -41,6 +42,12 @@ fun MainViewController() = ComposeUIViewController(
     val securityPaneState by settingsViewModel.securityPaneState.collectAsStateWithLifecycle()
     val appLockManager = koinInject<AppLockManager>()
     val isUnlocked by appLockManager.isUnlocked.collectAsStateWithLifecycle()
+
+    LaunchedEffect(securityPaneState.keepScreenOn) {
+        // iOS 屏幕常亮设置
+        val uiApp = platform.UIKit.UIApplication.sharedApplication
+        uiApp.setIdleTimerDisabled(securityPaneState.keepScreenOn)
+    }
 
     val isSystemInDarkTheme = isSystemInDarkTheme()
     val darkMode = remember(isSystemInDarkTheme, stylePaneState.theme) {

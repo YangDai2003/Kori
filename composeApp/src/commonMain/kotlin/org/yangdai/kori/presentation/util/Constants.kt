@@ -18,6 +18,7 @@ object Constants {
         const val PASSWORD = "password"
         const val IS_CREATING_PASSWORD = "is_creating_password"
         const val IS_BIOMETRIC_ENABLED = "is_biometric_enabled"
+        const val KEEP_SCREEN_ON = "keep_screen_on"
 
         const val SHOW_LINE_NUMBER = "show_line_number"
         const val IS_MARKDOWN_LINT_ENABLED = "is_markdown_lint_enabled"

@@ -32,13 +32,15 @@ class SettingsViewModel(
         dataStoreRepository.booleanFlow(Constants.Preferences.IS_SCREEN_PROTECTED),
         dataStoreRepository.stringFlow(Constants.Preferences.PASSWORD),
         dataStoreRepository.booleanFlow(Constants.Preferences.IS_CREATING_PASSWORD),
-        dataStoreRepository.booleanFlow(Constants.Preferences.IS_BIOMETRIC_ENABLED)
-    ) { isScreenProtected, password, isCreatingPass, isBiometricEnabled ->
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_BIOMETRIC_ENABLED),
+        dataStoreRepository.booleanFlow(Constants.Preferences.KEEP_SCREEN_ON)
+    ) { isScreenProtected, password, isCreatingPass, isBiometricEnabled, keepScreenOn ->
         SecurityPaneState(
             isScreenProtected = isScreenProtected,
             password = password,
             isCreatingPass = isCreatingPass,
-            isBiometricEnabled = isBiometricEnabled
+            isBiometricEnabled = isBiometricEnabled,
+            keepScreenOn = keepScreenOn
         )
     }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), SecurityPaneState())
 

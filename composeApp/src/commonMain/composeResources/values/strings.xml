@@ -64,6 +64,7 @@
     <string name="password">Password</string>
     <string name="password_description">When the app is cold started, the user needs to enter a six-digit password to unlock it.</string>
     <string name="security">Security</string>
+    <string name="keep_screen_on">Keep the screen on</string>
     <string name="report_a_bug_or_request_a_feature">Report a bug or request a feature</string>
     <string name="system_default">System default</string>
     <string name="light">Light mode</string>

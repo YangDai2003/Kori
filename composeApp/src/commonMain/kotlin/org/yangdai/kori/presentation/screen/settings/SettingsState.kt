@@ -13,7 +13,8 @@ data class SecurityPaneState(
     val isScreenProtected: Boolean = false,
     val password: String = "",
     val isCreatingPass: Boolean = false,
-    val isBiometricEnabled: Boolean = false
+    val isBiometricEnabled: Boolean = false,
+    val keepScreenOn: Boolean = false
 )
 
 data class EditorPaneState(
@@ -37,28 +38,6 @@ data class AiPaneState(
     val isAiEnabled: Boolean = false,
     val aiFeatures: Set<String> = emptySet(),
     val aiProvider: AiProvider = AiProvider.Gemini
-)
-
-data class GeminiState(
-    val apiKey: String = "",
-    val apiHost: String = "",
-    val model: String = ""
-)
-
-data class OpenAiState(
-    val apiKey: String = "",
-    val apiHost: String = "",
-    val model: String = ""
-)
-
-data class OllamaState(
-    val apiHost: String = "",
-    val model: String = ""
-)
-
-data class LmStudioState(
-    val apiHost: String = "",
-    val model: String = ""
 )
 
 enum class AiProvider(val provider: String) {

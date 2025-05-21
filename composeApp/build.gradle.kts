@@ -129,8 +129,8 @@ android {
         applicationId = "org.yangdai.kori"
         minSdk = 29
         targetSdk = 35
-        versionCode = 4
-        versionName = "1.0.4"
+        versionCode = 5
+        versionName = "1.0.5"
     }
     splits {
         abi {
@@ -298,7 +298,7 @@ compose.desktop {
                 TargetFormat.Rpm
             )
             packageName = "Kori"
-            packageVersion = "1.0.4"
+            packageVersion = "1.0.5"
             description = "Compose Multiplatform App"
             licenseFile.set(rootProject.file("LICENSE.txt"))
         }

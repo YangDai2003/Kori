@@ -63,6 +63,7 @@
     <string name="password">Passwort</string>
     <string name="password_description">Beim Kaltstart der App muss der Nutzer zum Entsperren ein sechstelliges Passwort eingeben.</string>
     <string name="security">Datensicherheit</string>
+    <string name="keep_screen_on">Bildschirm eingeschaltet lassen</string>
     <string name="report_a_bug_or_request_a_feature">Einen Fehler melden oder eine Funktion anfordern</string>
     <string name="system_default">Systemvorgabe</string>
     <string name="light">Lichtmodus</string>
