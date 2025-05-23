@@ -123,12 +123,12 @@ kotlin {
 
 android {
     namespace = "org.yangdai.kori"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "org.yangdai.kori"
         minSdk = 29
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 5
         versionName = "1.0.5"
     }
@@ -142,6 +142,7 @@ android {
     }
     androidResources {
         @Suppress("UnstableApiUsage")
+        //noinspection MissingResourcesProperties
         generateLocaleConfig = true
     }
     packaging {
