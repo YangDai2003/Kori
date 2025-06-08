@@ -59,7 +59,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.VerticalDragHandle
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -131,7 +131,6 @@ import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.FindAndReplaceState
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
-import org.yangdai.kori.presentation.component.note.VerticalDragHandle
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownView
 import org.yangdai.kori.presentation.component.note.markdown.moveCursorLeftStateless
 import org.yangdai.kori.presentation.component.note.markdown.moveCursorRightStateless
@@ -144,7 +143,7 @@ import org.yangdai.kori.presentation.util.formatNumber
 import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
 import kotlin.math.abs
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteScreen(
     viewModel: NoteViewModel = koinViewModel(),
@@ -479,24 +478,26 @@ fun NoteScreen(
                         )
 
                         VerticalDragHandle(
-                            modifier = Modifier.draggable(
-                                interactionSource = interactionSource,
-                                state = rememberDraggableState { delta ->
-                                    editorWeight =
-                                        (editorWeight + delta / windowWidth).coerceIn(
-                                            0.3f, 0.7f
-                                        )
-                                },
-                                orientation = Orientation.Horizontal,
-                                onDragStopped = {
-                                    val positions = listOf(1f / 3f, 0.5f, 2f / 3f)
-                                    val closest =
-                                        positions.minByOrNull { abs(it - editorWeight) }
-                                    if (closest != null) {
-                                        editorWeight = closest
+                            modifier = Modifier
+                                .sizeIn(maxWidth = 12.dp, minWidth = 4.dp)
+                                .draggable(
+                                    interactionSource = interactionSource,
+                                    state = rememberDraggableState { delta ->
+                                        editorWeight =
+                                            (editorWeight + delta / windowWidth).coerceIn(
+                                                0.3f, 0.7f
+                                            )
+                                    },
+                                    orientation = Orientation.Horizontal,
+                                    onDragStopped = {
+                                        val positions = listOf(1f / 3f, 0.5f, 2f / 3f)
+                                        val closest =
+                                            positions.minByOrNull { abs(it - editorWeight) }
+                                        if (closest != null) {
+                                            editorWeight = closest
+                                        }
                                     }
-                                }
-                            ),
+                                ),
                             interactionSource = interactionSource
                         )
 

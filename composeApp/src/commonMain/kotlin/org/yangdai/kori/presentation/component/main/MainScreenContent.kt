@@ -69,17 +69,11 @@ import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.core.ExperimentalWindowCoreApi
-import androidx.window.core.layout.WindowSizeClass
-import androidx.window.core.layout.WindowWidthSizeClass
 import kfile.getPath
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.all_notes
@@ -110,10 +104,7 @@ import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
 
-@OptIn(
-    ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class,
-    ExperimentalWindowCoreApi::class
-)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreenContent(
     viewModel: MainViewModel,
@@ -336,20 +327,6 @@ fun MainScreenContent(
                 bottom = innerPadding.calculateBottomPadding()
             )
         }
-        var size by remember { mutableStateOf(IntSize.Zero) }
-        val density = LocalDensity.current
-        val columns by remember(size) {
-            derivedStateOf {
-                val windowSizeClass: WindowSizeClass =
-                    WindowSizeClass.compute(size.width, size.height, density.density)
-                when (windowSizeClass.windowWidthSizeClass) {
-                    WindowWidthSizeClass.COMPACT -> 1
-                    WindowWidthSizeClass.MEDIUM -> 2
-                    WindowWidthSizeClass.EXPANDED -> 3
-                    else -> 1
-                }
-            }
-        }
 
         val cardPaneState by viewModel.cardPaneState.collectAsStateWithLifecycle()
         val noteItemProperties by remember(cardPaneState, viewModel.noteSortType) {
@@ -375,8 +352,7 @@ fun MainScreenContent(
                         else RectangleShape
                     clip = true
                 }
-                .background(MaterialTheme.colorScheme.surfaceContainerLow)
-                .onSizeChanged { size = it },
+                .background(MaterialTheme.colorScheme.surfaceContainerLow),
             state = pagerState,
             beyondViewportPageCount = 1,
             key = { it },
@@ -524,7 +500,6 @@ fun MainScreenContent(
                                     contentPadding = paddingValue,
                                     navigateToScreen = navigateToScreen,
                                     selectedNotes = selectedNotes,
-                                    columns = columns,
                                     noteItemProperties = noteItemProperties,
                                     isSelectionMode = isSelectionMode
                                 )
@@ -534,7 +509,6 @@ fun MainScreenContent(
                                     contentPadding = paddingValue,
                                     navigateToScreen = navigateToScreen,
                                     selectedNotes = selectedNotes,
-                                    columns = columns,
                                     noteItemProperties = noteItemProperties,
                                     isSelectionMode = isSelectionMode
                                 )
@@ -549,7 +523,6 @@ fun MainScreenContent(
                         contentPadding = contentPadding,
                         navigateToScreen = navigateToScreen,
                         selectedNotes = selectedNotes,
-                        columns = columns,
                         noteItemProperties = noteItemProperties,
                         isSelectionMode = isSelectionMode
                     )
@@ -562,7 +535,6 @@ fun MainScreenContent(
                         contentPadding = contentPadding,
                         navigateToScreen = { },
                         selectedNotes = selectedNotes,
-                        columns = columns,
                         noteItemProperties = noteItemProperties,
                         isSelectionMode = isSelectionMode
                     )
@@ -580,7 +552,6 @@ fun MainScreenContent(
                             contentPadding = contentPadding,
                             navigateToScreen = navigateToScreen,
                             selectedNotes = selectedNotes,
-                            columns = columns,
                             noteItemProperties = noteItemProperties,
                             isSelectionMode = isSelectionMode
                         )

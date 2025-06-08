@@ -157,7 +157,7 @@ fun SettingsDetailPaneContent(
                     title = { PlatformStyleTopAppBarTitle(topBarTitle) },
                     navigationIcon = navigationIcon,
                     actions = actions,
-                    colors = TopAppBarDefaults.largeTopAppBarColors()
+                    colors = TopAppBarDefaults.topAppBarColors()
                         .copy(
                             containerColor = topBarColor,
                             scrolledContainerColor = topBarColor

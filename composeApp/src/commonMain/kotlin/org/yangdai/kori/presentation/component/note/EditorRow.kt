@@ -113,7 +113,7 @@ fun EditorRowButton(
     enabled: Boolean = true,
     onClick: () -> Unit
 ) = TooltipBox(
-    positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
     tooltip = {
         if (tipText == null) return@TooltipBox
         PlainTooltip(
@@ -146,7 +146,7 @@ fun EditorRowButton(
     enabled: Boolean = true,
     onClick: () -> Unit
 ) = TooltipBox(
-    positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
     tooltip = {
         if (tipText == null) return@TooltipBox
         PlainTooltip(

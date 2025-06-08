@@ -31,10 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.LinkAnnotation
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -134,20 +131,12 @@ fun TemplatePane(viewModel: SettingsViewModel) {
             ListItem(
                 headlineContent = { Text(text = stringResource(Res.string.date_format)) },
                 supportingContent = {
-                    val linkColor = MaterialTheme.colorScheme.primary
                     val annotatedString = buildAnnotatedString {
                         append(stringResource(Res.string.date_in_the_template_file_will_be_replaced_with_this_value))
                         append(stringResource(Res.string.you_can_also_use_date_yyyy_mm_dd_to_override_the_format_once))
                         append(stringResource(Res.string.for_more_syntax_refer_to))
                         withLink(
-                            LinkAnnotation.Url(
-                                "https://developer.android.com/reference/java/time/format/DateTimeFormatter#patterns",
-                                TextLinkStyles(
-                                    style = SpanStyle(
-                                        color = linkColor, textDecoration = TextDecoration.Underline
-                                    )
-                                )
-                            )
+                            LinkAnnotation.Url("https://developer.android.com/reference/java/time/format/DateTimeFormatter#patterns")
                         ) {
                             append(stringResource(Res.string.format_reference))
                         }
@@ -189,20 +178,12 @@ fun TemplatePane(viewModel: SettingsViewModel) {
             ListItem(
                 headlineContent = { Text(text = stringResource(Res.string.time_format)) },
                 supportingContent = {
-                    val linkColor = MaterialTheme.colorScheme.primary
                     val annotatedString = buildAnnotatedString {
                         append(stringResource(Res.string.time_in_the_template_file_will_be_replaced_with_this_value))
                         append(stringResource(Res.string.you_can_also_use_time_hh_mm_to_override_the_format_once))
                         append(stringResource(Res.string.for_more_syntax_refer_to))
                         withLink(
-                            LinkAnnotation.Url(
-                                "https://developer.android.com/reference/java/time/format/DateTimeFormatter#patterns",
-                                TextLinkStyles(
-                                    style = SpanStyle(
-                                        color = linkColor, textDecoration = TextDecoration.Underline
-                                    )
-                                )
-                            )
+                            LinkAnnotation.Url("https://developer.android.com/reference/java/time/format/DateTimeFormatter#patterns")
                         ) {
                             append(stringResource(Res.string.format_reference))
                         }

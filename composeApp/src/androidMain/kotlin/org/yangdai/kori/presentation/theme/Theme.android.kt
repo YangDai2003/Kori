@@ -2,9 +2,12 @@ package org.yangdai.kori.presentation.theme
 
 import android.app.Activity
 import android.os.Build
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialExpressiveTheme
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.expressiveLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.platform.LocalContext
@@ -12,6 +15,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import org.yangdai.kori.presentation.screen.settings.AppColor
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 actual fun KoriTheme(
     darkMode: Boolean,
@@ -32,7 +36,7 @@ actual fun KoriTheme(
             val context = LocalContext.current
             if (darkMode) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         } else {
-            if (darkMode) DarkPurpleColors else LightPurpleColors
+            if (darkMode) darkColorScheme() else expressiveLightColorScheme()
         }
     }
 
@@ -53,7 +57,9 @@ actual fun KoriTheme(
         }
     }
 
-    MaterialTheme(
-        colorScheme = finalColorScheme, typography = koriTypography, content = content
+    MaterialExpressiveTheme(
+        colorScheme = finalColorScheme,
+        typography = koriTypography,
+        content = content
     )
 }

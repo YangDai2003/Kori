@@ -33,7 +33,6 @@ import org.yangdai.kori.presentation.navigation.Screen
 fun GroupedPage(
     notesMap: Map<Boolean, List<NoteEntity>>,
     contentPadding: PaddingValues,
-    columns: Int,
     noteItemProperties: NoteItemProperties,
     navigateToScreen: (Screen) -> Unit,
     selectedNotes: MutableSet<String>,
@@ -43,7 +42,7 @@ fun GroupedPage(
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
         contentPadding = contentPadding,
-        columns = GridCells.Fixed(columns),
+        columns = GridCells.Adaptive(minSize = 360.dp),
         state = state,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
@@ -136,7 +135,6 @@ fun GroupedPage(
 fun Page(
     notes: List<NoteEntity>,
     contentPadding: PaddingValues,
-    columns: Int,
     noteItemProperties: NoteItemProperties,
     navigateToScreen: (Screen) -> Unit,
     selectedNotes: MutableSet<String>,
@@ -144,7 +142,7 @@ fun Page(
 ) {
     val state = rememberLazyStaggeredGridState()
     LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Fixed(columns),
+        columns = StaggeredGridCells.Adaptive(minSize = 360.dp),
         modifier = Modifier.fillMaxSize(),
         state = state,
         contentPadding = contentPadding,
@@ -185,7 +183,6 @@ fun Page(
 fun TemplatesPage(
     notes: List<NoteEntity>,
     contentPadding: PaddingValues,
-    columns: Int,
     noteItemProperties: NoteItemProperties,
     navigateToScreen: (Screen) -> Unit,
     selectedNotes: MutableSet<String>,
@@ -193,7 +190,7 @@ fun TemplatesPage(
 ) {
     val state = rememberLazyStaggeredGridState()
     LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Fixed(columns),
+        columns = StaggeredGridCells.Adaptive(minSize = 360.dp),
         modifier = Modifier.fillMaxSize(),
         state = state,
         contentPadding = contentPadding,
@@ -235,7 +232,6 @@ fun SearchResultsPage(
     keyword: String,
     notes: List<NoteEntity>,
     contentPadding: PaddingValues,
-    columns: Int,
     noteItemProperties: NoteItemProperties,
     navigateToScreen: (Screen) -> Unit,
     selectedNotes: MutableSet<String>,
@@ -243,7 +239,7 @@ fun SearchResultsPage(
 ) {
     val state = rememberLazyStaggeredGridState()
     LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Fixed(columns),
+        columns = StaggeredGridCells.Adaptive(minSize = 360.dp),
         modifier = Modifier.fillMaxSize(),
         state = state,
         contentPadding = contentPadding,

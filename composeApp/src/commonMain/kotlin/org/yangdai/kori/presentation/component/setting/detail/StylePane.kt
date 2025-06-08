@@ -2,6 +2,7 @@ package org.yangdai.kori.presentation.component.setting.detail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,14 +20,19 @@ import androidx.compose.material.icons.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.outlined.FormatSize
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -112,11 +118,9 @@ fun ColorPlatteRow(
     Spacer(modifier = Modifier.width(16.dp))
 }
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun FontSizeSlider(
-    stylePaneState: StylePaneState,
-    settingsViewModel: SettingsViewModel
-) {
+fun FontSizeSlider(settingsViewModel: SettingsViewModel) {
     Column(
         modifier = Modifier
             .padding(horizontal = 16.dp)
@@ -135,18 +139,32 @@ fun FontSizeSlider(
         )
 
         val hapticFeedback = LocalHapticFeedback.current
-        Slider(
-            value = stylePaneState.fontSize,
-            onValueChange = {
+        val sliderState =
+            rememberSliderState(
+                value = settingsViewModel.getFloatValue(Constants.Preferences.FONT_SIZE),
+                valueRange = 0.75f..1.25f,
+                steps = 9
+            )
+        sliderState.onValueChange = {
+            if (sliderState.isDragging) {
                 hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
                 settingsViewModel.putPreferenceValue(
                     Constants.Preferences.FONT_SIZE,
                     it
                 )
-            },
-            valueRange = 0.75f..1.25f,
-            steps = 9,
-            modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 4.dp)
+                sliderState.value = it
+            }
+        }
+        val interactionSource = remember { MutableInteractionSource() }
+        Slider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 8.dp),
+            state = sliderState,
+            interactionSource = interactionSource,
+            thumb = { SliderDefaults.Thumb(interactionSource = interactionSource) },
+            track = { SliderDefaults.CenteredTrack(sliderState = sliderState) }
         )
     }
 }

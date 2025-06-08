@@ -93,6 +93,9 @@ class SettingsViewModel(
     fun getStringValue(key: String): String =
         dataStoreRepository.getString(key, "")
 
+    fun getFloatValue(key: String): Float =
+        dataStoreRepository.getFloat(key, 0f)
+
     fun <T> putPreferenceValue(key: String, value: T) {
         viewModelScope.launch {
             when (value) {

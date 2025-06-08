@@ -111,4 +111,13 @@ class DataStoreRepositoryImpl(private val dataStore: DataStore<Preferences>) : D
             }.first()
         }
     }
+
+    override fun getFloat(key: String, defaultValue: Float): Float {
+        val preferencesKey = floatPreferencesKey(key)
+        return runBlocking {
+            dataStore.data.map { preferences ->
+                preferences[preferencesKey] ?: defaultValue
+            }.first()
+        }
+    }
 }

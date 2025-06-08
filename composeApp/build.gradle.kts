@@ -74,18 +74,23 @@ kotlin {
             implementation(compose.material)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
-            implementation(compose.material3AdaptiveNavigationSuite)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.androidx.navigation.compose)
-            implementation(libs.androidx.window.core)
             implementation(libs.compose.backhandler)
-            implementation(libs.compose.adaptive)
-            implementation(libs.compose.adaptive.layout)
-            implementation(libs.compose.adaptive.navigation)
+            val adaptiveVersion = "1.2.0-alpha02"
+            implementation("org.jetbrains.compose.material3.adaptive:adaptive:$adaptiveVersion") {
+                exclude(group = "org.jetbrains.androidx.window")
+            }
+            implementation("org.jetbrains.compose.material3.adaptive:adaptive-layout:$adaptiveVersion") {
+                exclude(group = "org.jetbrains.androidx.window")
+            }
+            implementation("org.jetbrains.compose.material3.adaptive:adaptive-navigation:$adaptiveVersion") {
+                exclude(group = "org.jetbrains.androidx.window")
+            }
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.room.paging)
             implementation(libs.androidx.dataStore)
@@ -112,6 +117,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.okhttp)
+            implementation("androidx.window:window-core-jvm:1.4.0")
             val javafxVersion = "21.0.7"
             implementation("org.openjfx:javafx-base:$javafxVersion:$platform")
             implementation("org.openjfx:javafx-graphics:$javafxVersion:$platform")
@@ -169,7 +175,8 @@ android {
             .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
             .forEach { output ->
                 val abi = output.getFilter(com.android.build.OutputFile.ABI) ?: "universal"
-                val outputFileName = "Kori-android-$abi-${variant.versionName}-${variant.baseName}.apk"
+                val outputFileName =
+                    "Kori-android-$abi-${variant.versionName}-${variant.baseName}.apk"
                 output.outputFileName = outputFileName
             }
     }

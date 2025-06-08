@@ -113,7 +113,7 @@ actual fun StylePane(settingsViewModel: SettingsViewModel) {
 
         SettingsHeader(org.jetbrains.compose.resources.stringResource(Res.string.font))
 
-        FontSizeSlider(stylePaneState, settingsViewModel)
+        FontSizeSlider(settingsViewModel)
 
         SettingsHeader(org.jetbrains.compose.resources.stringResource(Res.string.dark_mode))
 

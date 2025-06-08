@@ -26,7 +26,7 @@ fun TooltipIconButton(
     enabled: Boolean = true,
     onClick: () -> Unit
 ) = TooltipBox(
-    positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
     tooltip = {
         PlainTooltip(
             content = { Text(tipText) }
@@ -61,7 +61,7 @@ fun TooltipIconButton(
     enabled: Boolean = true,
     onClick: () -> Unit
 ) = TooltipBox(
-    positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
     tooltip = {
         PlainTooltip(
             content = { Text(tipText) }

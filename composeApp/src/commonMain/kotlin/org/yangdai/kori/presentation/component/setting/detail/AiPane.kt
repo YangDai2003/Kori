@@ -45,12 +45,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.LinkAnnotation
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -70,7 +67,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.setting.DetailPaneItem
 import org.yangdai.kori.presentation.screen.settings.AiProvider
 import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
-import org.yangdai.kori.presentation.theme.linkColor
 import org.yangdai.kori.presentation.util.Constants
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -243,17 +239,7 @@ private fun KeyTextField(value: String, onValueChange: (String) -> Unit) {
 private fun LinkText(text: String, url: String) = Text(
     text = buildAnnotatedString {
         append("* ")
-        withLink(
-            LinkAnnotation.Url(
-                url,
-                TextLinkStyles(
-                    style = SpanStyle(
-                        color = linkColor,
-                        textDecoration = TextDecoration.Underline
-                    )
-                )
-            )
-        ) {
+        withLink(LinkAnnotation.Url(url)) {
             append(text)
         }
     },

@@ -1,9 +1,13 @@
 package org.yangdai.kori.presentation.theme
 
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialExpressiveTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.expressiveLightColorScheme
 import androidx.compose.runtime.Composable
 import org.yangdai.kori.presentation.screen.settings.AppColor
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 actual fun KoriTheme(
     darkMode: Boolean,
@@ -19,7 +23,7 @@ actual fun KoriTheme(
         AppColor.ORANGE -> if (darkMode) DarkOrangeColors else LightOrangeColors
         AppColor.RED -> if (darkMode) DarkRedColors else LightRedColors
         AppColor.CYAN -> if (darkMode) DarkCyanColors else LightCyanColors
-        else -> if (darkMode) DarkPurpleColors else LightPurpleColors
+        else -> if (darkMode) darkColorScheme() else expressiveLightColorScheme()
     }
 
     // 获取带动画的颜色方案（首次启动时无动画）
@@ -31,7 +35,9 @@ actual fun KoriTheme(
     // 获取缩放后的排版
     val koriTypography = getScaledTypography(fontScale)
 
-    MaterialTheme(
-        colorScheme = finalColorScheme, typography = koriTypography, content = content
+    MaterialExpressiveTheme(
+        colorScheme = finalColorScheme,
+        typography = koriTypography,
+        content = content
     )
 }

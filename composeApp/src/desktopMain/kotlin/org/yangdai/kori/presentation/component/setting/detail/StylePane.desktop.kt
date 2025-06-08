@@ -65,7 +65,7 @@ actual fun StylePane(settingsViewModel: SettingsViewModel) {
 
         SettingsHeader(stringResource(Res.string.font))
 
-        FontSizeSlider(stylePaneState, settingsViewModel)
+        FontSizeSlider(settingsViewModel)
 
         SettingsHeader(stringResource(Res.string.dark_mode))
 

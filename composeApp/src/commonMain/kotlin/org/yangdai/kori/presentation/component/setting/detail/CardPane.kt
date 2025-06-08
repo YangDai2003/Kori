@@ -18,11 +18,8 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,8 +27,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.core.layout.WindowSizeClass
-import androidx.window.core.layout.WindowWidthSizeClass
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.card_size
 import kori.composeapp.generated.resources.clip
@@ -57,24 +52,10 @@ fun CardPane(settingsViewModel: SettingsViewModel) {
     val cardPaneState by settingsViewModel.cardPaneState.collectAsStateWithLifecycle()
     val hapticFeedback = LocalHapticFeedback.current
 
-    val windowSizeClass: WindowSizeClass =
-        currentWindowAdaptiveInfo().windowSizeClass
-    val columns by remember(windowSizeClass) {
-        derivedStateOf {
-            when (windowSizeClass.windowWidthSizeClass) {
-                WindowWidthSizeClass.COMPACT -> 1
-                WindowWidthSizeClass.MEDIUM -> 2
-                WindowWidthSizeClass.EXPANDED -> 3
-                else -> 1
-            }
-        }
-    }
-
     Box(Modifier.fillMaxSize()) {
         Page(
             notes = sampleNotes,
             contentPadding = PaddingValues(16.dp),
-            columns = columns,
             noteItemProperties = NoteItemProperties(
                 showCreatedTime = true,
                 cardSize = cardPaneState.cardSize,
