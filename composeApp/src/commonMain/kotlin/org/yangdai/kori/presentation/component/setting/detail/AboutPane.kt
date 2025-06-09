@@ -1,9 +1,6 @@
 package org.yangdai.kori.presentation.component.setting.detail
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,23 +18,24 @@ import androidx.compose.material.icons.outlined.IosShare
 import androidx.compose.material.icons.outlined.PrivacyTip
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.TipsAndUpdates
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
@@ -52,10 +50,10 @@ import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.Platform
 import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.presentation.component.ConfettiEffect
-import org.yangdai.kori.presentation.component.CurlyCornerShape
 import org.yangdai.kori.presentation.component.login.LogoText
 import org.yangdai.kori.presentation.util.clickToShareText
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AboutPane() {
     val uriHandler = LocalUriHandler.current
@@ -68,53 +66,41 @@ fun AboutPane() {
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        var pressAMP by remember { mutableFloatStateOf(12f) }
-        val animatedPress by animateFloatAsState(pressAMP)
         val haptic = LocalHapticFeedback.current
+        var clickedCount by rememberSaveable { mutableStateOf(0) }
 
-        Box(
+        Button(
             modifier = Modifier
                 .padding(top = 8.dp)
-                .size(240.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    shape = CurlyCornerShape(curlAmplitude = animatedPress.toDouble()),
-                )
-                .shadow(
-                    elevation = 10.dp,
-                    shape = CurlyCornerShape(curlAmplitude = animatedPress.toDouble()),
-                    ambientColor = MaterialTheme.colorScheme.primaryContainer,
-                    spotColor = MaterialTheme.colorScheme.primaryContainer,
-                )
-                .pointerInput(Unit) {
-                    detectTapGestures(
-                        onPress = {
-                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                            pressAMP = 0f
-                            tryAwaitRelease()
-                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                            pressAMP = 12f
-                        },
-                        onLongPress = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            showConfetti = true
-                        }
-                    )
-                },
-            contentAlignment = Alignment.Center
+                .size(240.dp),
+            shapes = ButtonDefaults.shapes(
+                shape = MaterialShapes.Cookie12Sided.toShape(),
+                pressedShape = CircleShape
+            ),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ),
+            onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                clickedCount++
+                if (clickedCount >= 5) {
+                    showConfetti = true
+                    clickedCount = 0
+                }
+            }
         ) {
-            LogoText()
-            Text(
-                modifier = Modifier
-                    .padding(bottom = 36.dp)
-                    .align(Alignment.BottomCenter),
-                text = (if (currentPlatformInfo.platform != Platform.Desktop) currentPlatformInfo.operatingSystem.name + " " else "")
-                        + currentPlatformInfo.version
-                        + "\n" + currentPlatformInfo.deviceModel,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.labelMedium
-            )
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                LogoText()
+                Text(
+                    modifier = Modifier.padding(bottom = 36.dp).align(Alignment.BottomCenter),
+                    text = (if (currentPlatformInfo.platform != Platform.Desktop) currentPlatformInfo.operatingSystem.name + " " else "")
+                            + currentPlatformInfo.version
+                            + "\n" + currentPlatformInfo.deviceModel,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.labelMedium
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))

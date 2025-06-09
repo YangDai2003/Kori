@@ -22,19 +22,19 @@ import androidx.compose.ui.unit.dp
  * @param content The main content.
  */
 @Composable
-fun AdaptiveNavigationDrawerScreen(
+fun AdaptiveNavigationDrawerLayout(
     isLargeScreen: Boolean,
     drawerState: DrawerState,
     gesturesEnabled: Boolean,
     drawerContent: @Composable ColumnScope.() -> Unit,
     content: @Composable () -> Unit
 ) = if (isLargeScreen) {
-    PermanentNavigationDrawerScreen(
+    PermanentNavigationDrawerLayout(
         drawerContent = drawerContent,
         content = content
     )
 } else {
-    ModalNavigationDrawerScreen(
+    ModalNavigationDrawerLayout(
         drawerState = drawerState,
         gesturesEnabled = gesturesEnabled,
         drawerContent = drawerContent,
@@ -43,7 +43,7 @@ fun AdaptiveNavigationDrawerScreen(
 }
 
 @Composable
-private fun ModalNavigationDrawerScreen(
+private fun ModalNavigationDrawerLayout(
     drawerState: DrawerState,
     gesturesEnabled: Boolean,
     drawerContent: @Composable ColumnScope.() -> Unit,
@@ -63,7 +63,7 @@ private fun ModalNavigationDrawerScreen(
 )
 
 @Composable
-private fun PermanentNavigationDrawerScreen(
+private fun PermanentNavigationDrawerLayout(
     drawerContent: @Composable ColumnScope.() -> Unit,
     content: @Composable () -> Unit
 ) = PermanentNavigationDrawer(

@@ -331,7 +331,8 @@ fun MainScreenContent(
                         )
                         ExpandedDockedSearchBar(
                             state = searchBarState,
-                            inputField = inputField
+                            inputField = inputField,
+                            shadowElevation = 4.dp
                         ) {
                             if (searchHistorySet.isEmpty()) return@ExpandedDockedSearchBar
                             ListItem(

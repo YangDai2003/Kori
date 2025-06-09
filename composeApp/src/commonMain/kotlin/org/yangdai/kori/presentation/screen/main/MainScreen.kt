@@ -18,7 +18,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.presentation.component.TooltipIconButton
-import org.yangdai.kori.presentation.component.main.AdaptiveNavigationDrawerScreen
+import org.yangdai.kori.presentation.component.main.AdaptiveNavigationDrawerLayout
 import org.yangdai.kori.presentation.component.main.DrawerItem
 import org.yangdai.kori.presentation.component.main.DrawerState
 import org.yangdai.kori.presentation.component.main.MainScreenContent
@@ -47,7 +47,7 @@ fun MainScreen(
     val trashNotesCount by viewModel.trashNotesCount.collectAsStateWithLifecycle()
     val isAppProtected by viewModel.isAppProtected.collectAsStateWithLifecycle()
 
-    AdaptiveNavigationDrawerScreen(
+    AdaptiveNavigationDrawerLayout(
         isLargeScreen = isLargeScreen,
         gesturesEnabled = true,
         drawerState = drawerState,
