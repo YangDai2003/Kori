@@ -24,7 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
@@ -129,8 +129,6 @@ fun SettingsDetailPaneContent(
 ) {
     val isDesktop = currentPlatformInfo.platform == Platform.Desktop
     val showSmallTopAppBar = remember(isDesktop, isExpanded) { isDesktop || isExpanded }
-    val topBarColor = if (isExpanded) MaterialTheme.colorScheme.surfaceContainer
-    else MaterialTheme.colorScheme.surfaceContainerLow
     val scrollBehavior =
         if (showSmallTopAppBar) TopAppBarDefaults.pinnedScrollBehavior()
         else TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -147,8 +145,8 @@ fun SettingsDetailPaneContent(
                     ),
                     colors = TopAppBarDefaults.topAppBarColors()
                         .copy(
-                            containerColor = topBarColor,
-                            scrolledContainerColor = topBarColor
+                            containerColor = Color.Transparent,
+                            scrolledContainerColor = Color.Transparent
                         ),
                     scrollBehavior = scrollBehavior
                 )
@@ -159,8 +157,8 @@ fun SettingsDetailPaneContent(
                     actions = actions,
                     colors = TopAppBarDefaults.topAppBarColors()
                         .copy(
-                            containerColor = topBarColor,
-                            scrolledContainerColor = topBarColor
+                            containerColor = Color.Transparent,
+                            scrolledContainerColor = Color.Transparent
                         ),
                     scrollBehavior = scrollBehavior
                 )
@@ -171,18 +169,19 @@ fun SettingsDetailPaneContent(
         val layoutDirection = LocalLayoutDirection.current
         Box(
             Modifier
-                .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    end = innerPadding.calculateEndPadding(layoutDirection)
-                )
+                .padding(top = innerPadding.calculateTopPadding())
                 .fillMaxSize()
                 .background(
                     color = MaterialTheme.colorScheme.surfaceContainerLow,
-                    shape = if (isExpanded) RoundedCornerShape(topStart = 8.dp) else RectangleShape
+                    shape = if (isExpanded) RoundedCornerShape(topStart = 12.dp)
+                    else RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
                 ),
             contentAlignment = Alignment.TopCenter
         ) {
-            Box(Modifier.widthIn(max = 600.dp).fillMaxSize()) {
+            Box(
+                Modifier.widthIn(max = 600.dp).fillMaxSize()
+                    .padding(end = innerPadding.calculateEndPadding(layoutDirection))
+            ) {
                 content()
             }
         }

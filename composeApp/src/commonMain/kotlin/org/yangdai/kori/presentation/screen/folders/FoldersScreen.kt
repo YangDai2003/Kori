@@ -130,7 +130,7 @@ fun FoldersScreen(
                     },
                     scrollBehavior = scrollBehavior,
                     colors = TopAppBarDefaults.topAppBarColors()
-                        .copy(scrolledContainerColor = MaterialTheme.colorScheme.surface)
+                        .copy(containerColor = MaterialTheme.colorScheme.surfaceContainer)
                 )
             },
             floatingActionButton = {
@@ -153,25 +153,31 @@ fun FoldersScreen(
                         )
                     }
                 }
-            }
+            },
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         ) { innerPadding ->
 
             val layoutDirection = LocalLayoutDirection.current
 
             Box(
                 Modifier
+                    .padding(top = innerPadding.calculateTopPadding())
+                    .fillMaxSize()
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceContainerLow,
+                        shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
+                    )
                     .padding(
-                        top = innerPadding.calculateTopPadding(),
                         start = innerPadding.calculateStartPadding(layoutDirection),
                         end = innerPadding.calculateEndPadding(layoutDirection)
                     )
-                    .fillMaxSize()
             ) {
                 val state = rememberLazyGridState()
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(380.dp),
                     state = state,
                     contentPadding = PaddingValues(
+                        top = 16.dp,
                         start = 16.dp,
                         end = 16.dp,
                         bottom = innerPadding.calculateBottomPadding()
@@ -180,7 +186,7 @@ fun FoldersScreen(
                 ) {
                     if (!groupedFolders[true].isNullOrEmpty())
                         stickyHeader(key = "starred") {
-                            Surface {
+                            Surface(color = MaterialTheme.colorScheme.surfaceContainerLow) {
                                 Text(
                                     modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
                                     text = stringResource(Res.string.starred),
@@ -201,7 +207,7 @@ fun FoldersScreen(
 
                     if (groupedFolders.size == 2)
                         stickyHeader(key = "others") {
-                            Surface {
+                            Surface(color = MaterialTheme.colorScheme.surfaceContainerLow) {
                                 Text(
                                     modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
                                     text = stringResource(Res.string.others),

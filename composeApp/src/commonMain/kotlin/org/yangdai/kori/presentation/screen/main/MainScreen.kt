@@ -25,7 +25,7 @@ import org.yangdai.kori.presentation.component.main.MainScreenContent
 import org.yangdai.kori.presentation.component.main.NavigationDrawerContent
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.util.AppLockManager
-import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
+import org.yangdai.kori.presentation.util.isScreenSizeLarge
 
 @Composable
 fun MainScreen(
@@ -34,7 +34,7 @@ fun MainScreen(
     navigateToScreen: (Screen) -> Unit
 ) {
     val scope = rememberCoroutineScope()
-    val isLargeScreen = rememberIsScreenSizeLarge()
+    val isLargeScreen = isScreenSizeLarge()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     var currentDrawerItem by rememberSaveable(stateSaver = DrawerItem.Saver) {
         mutableStateOf<DrawerItem>(DrawerItem.AllNotes)
@@ -64,15 +64,11 @@ fun MainScreen(
                 navigateToScreen = navigateToScreen,
                 onLockClick = {
                     appLockManager.lock()
-                    if (!isLargeScreen) {
-                        scope.launch { drawerState.close() }
-                    }
+                    scope.launch { drawerState.close() }
                 },
                 onItemClick = { item ->
                     currentDrawerItem = item
-                    if (!isLargeScreen) {
-                        scope.launch { drawerState.close() }
-                    }
+                    scope.launch { drawerState.close() }
                 }
             )
         }

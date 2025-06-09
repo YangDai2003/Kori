@@ -2,20 +2,16 @@ package org.yangdai.kori.presentation.util
 
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipEntry
 import androidx.window.core.layout.WindowSizeClass
-import androidx.window.core.layout.WindowWidthSizeClass
 import kotlinx.datetime.Instant
 import org.yangdai.kori.data.local.entity.NoteEntity
 
 @Composable
-fun rememberIsScreenSizeLarge(): Boolean {
+fun isScreenSizeLarge(): Boolean {
     val windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    return remember(windowSizeClass.windowWidthSizeClass) {
-        windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED
-    }
+    return windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
 }
 
 fun Int.toHexColor(): String {

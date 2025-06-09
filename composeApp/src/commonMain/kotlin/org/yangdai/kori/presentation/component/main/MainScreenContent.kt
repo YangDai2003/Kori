@@ -1,7 +1,6 @@
 package org.yangdai.kori.presentation.component.main
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,16 +11,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.DriveFileMove
 import androidx.compose.material.icons.filled.Close
@@ -33,9 +33,9 @@ import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.RestoreFromTrash
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SortByAlpha
-import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExpandedDockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -47,11 +47,14 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopSearchBar
+import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -67,7 +70,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
@@ -102,7 +104,7 @@ import org.yangdai.kori.presentation.component.dialog.FoldersDialog
 import org.yangdai.kori.presentation.component.dialog.NoteSortOptionDialog
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.screen.main.MainViewModel
-import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
+import org.yangdai.kori.presentation.util.isScreenSizeLarge
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -117,8 +119,66 @@ fun MainScreenContent(
     var showFilePickerDialog by rememberSaveable { mutableStateOf(false) }
     val selectedNotes = remember { mutableStateSetOf<String>() }
     val isSelectionMode by remember { derivedStateOf { selectedNotes.isNotEmpty() } }
-    val isLargeScreen = rememberIsScreenSizeLarge()
+    val isLargeScreen = isScreenSizeLarge()
     BackHandler(enabled = isSelectionMode) { selectedNotes.clear() }
+
+    val textFieldState = rememberTextFieldState()
+    val searchBarState = rememberSearchBarState()
+    val scope = rememberCoroutineScope()
+    val inputField = @Composable {
+        SearchBarDefaults.InputField(
+            searchBarState = searchBarState,
+            textFieldState = textFieldState,
+            onSearch = {
+                scope.launch { searchBarState.animateToCollapsed() }
+                viewModel.searchNotes(textFieldState.text.toString())
+            },
+            placeholder = { Text(stringResource(Res.string.search)) },
+            leadingIcon = {
+                AnimatedContent(isLargeScreen || searchBarState.currentValue == SearchBarValue.Expanded) { showSearchIcon ->
+                    if (showSearchIcon)
+                        IconButton(
+                            onClick = {
+                                scope.launch { searchBarState.animateToCollapsed() }
+                                viewModel.searchNotes(textFieldState.text.toString())
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Search,
+                                contentDescription = null
+                            )
+                        }
+                    else navigationIcon()
+                }
+            },
+            trailingIcon = {
+                AnimatedContent(searchBarState.currentValue == SearchBarValue.Expanded) { showClearIcon ->
+                    if (showClearIcon)
+                        IconButton(
+                            onClick = {
+                                if (textFieldState.text.isNotEmpty())
+                                    textFieldState.clearText()
+                                else {
+                                    scope.launch { searchBarState.animateToCollapsed() }
+                                    viewModel.searchNotes("")
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = null
+                            )
+                        }
+                    else
+                        TooltipIconButton(
+                            tipText = stringResource(Res.string.sort_by),
+                            icon = Icons.Outlined.SortByAlpha,
+                            onClick = { showSortDialog = true }
+                        )
+                }
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -177,6 +237,9 @@ fun MainScreenContent(
                                 }
                             )
                         },
+                        windowInsets = if (isLargeScreen)
+                            TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Top + WindowInsetsSides.End)
+                        else TopAppBarDefaults.windowInsets,
                         colors = TopAppBarDefaults.topAppBarColors()
                             .copy(containerColor = Color.Transparent)
                     )
@@ -252,9 +315,65 @@ fun MainScreenContent(
                                 }
                             },
                             navigationIcon = navigationIcon,
+                            windowInsets = if (isLargeScreen)
+                                TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Top + WindowInsetsSides.End)
+                            else TopAppBarDefaults.windowInsets,
                             colors = TopAppBarDefaults.topAppBarColors()
                                 .copy(containerColor = Color.Transparent)
                         )
+                    else {
+                        val searchHistorySet by viewModel.searchHistorySet.collectAsStateWithLifecycle()
+                        TopSearchBar(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            state = searchBarState,
+                            inputField = inputField,
+                            windowInsets = SearchBarDefaults.windowInsets.only(WindowInsetsSides.Top)
+                        )
+                        ExpandedDockedSearchBar(
+                            state = searchBarState,
+                            inputField = inputField
+                        ) {
+                            if (searchHistorySet.isEmpty()) return@ExpandedDockedSearchBar
+                            ListItem(
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                leadingContent = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.History,
+                                        contentDescription = null
+                                    )
+                                },
+                                headlineContent = { Text(stringResource(Res.string.search_history)) },
+                                trailingContent = {
+                                    Icon(
+                                        modifier = Modifier.clickable {
+                                            viewModel.clearSearchHistory()
+                                        },
+                                        imageVector = Icons.Outlined.DeleteForever,
+                                        contentDescription = null
+                                    )
+                                }
+                            )
+                            FlowRow(
+                                modifier = Modifier.padding(horizontal = 12.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                maxLines = 3
+                            ) {
+                                searchHistorySet.reversed().forEach {
+                                    SuggestionChip(
+                                        modifier = Modifier.defaultMinSize(48.dp),
+                                        onClick = { textFieldState.setTextAndPlaceCursorAtEnd(it) },
+                                        label = {
+                                            Text(
+                                                text = it,
+                                                textAlign = TextAlign.Center,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        })
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -304,8 +423,7 @@ fun MainScreenContent(
                 }
             }
         },
-        containerColor = if (isLargeScreen) MaterialTheme.colorScheme.surfaceContainer
-        else MaterialTheme.colorScheme.surfaceContainerLow
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) { innerPadding ->
         val page = when (currentDrawerItem) {
             DrawerItem.AllNotes -> 0
@@ -319,9 +437,9 @@ fun MainScreenContent(
             selectedNotes.clear()
             pagerState.scrollToPage(page)
         }
-        val contentPadding = remember(innerPadding, isLargeScreen) {
+        val contentPadding = remember(innerPadding) {
             PaddingValues(
-                top = if (isLargeScreen) 16.dp else 0.dp,
+                top = 16.dp,
                 start = 16.dp,
                 end = 16.dp,
                 bottom = innerPadding.calculateBottomPadding()
@@ -347,9 +465,8 @@ fun MainScreenContent(
                 .fillMaxSize()
                 .graphicsLayer {
                     shape =
-                        if ((isLargeScreen && currentDrawerItem !is DrawerItem.AllNotes) || isSelectionMode)
-                            RoundedCornerShape(topStart = 8.dp)
-                        else RectangleShape
+                        if (isLargeScreen) RoundedCornerShape(topStart = 12.dp)
+                        else RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
                     clip = true
                 }
                 .background(MaterialTheme.colorScheme.surfaceContainerLow),
@@ -361,143 +478,14 @@ fun MainScreenContent(
             when (pager) {
                 0 -> {
                     Box(modifier = Modifier.fillMaxSize()) {
-                        var expanded by remember { mutableStateOf(false) }
-                        var inputText by remember { mutableStateOf("") }
-                        val searchHistorySet by viewModel.searchHistorySet.collectAsStateWithLifecycle()
-                        val searchBarShadowElevation by animateDpAsState(if (expanded) 8.dp else 0.dp)
-                        if (!isSelectionMode)
-                            DockedSearchBar(
-                                modifier = Modifier.align(Alignment.TopCenter)
-                                    .statusBarsPadding()
-                                    .padding(top = 8.dp)
-                                    .padding(horizontal = 16.dp),
-                                inputField = {
-                                    SearchBarDefaults.InputField(
-                                        query = inputText,
-                                        onQueryChange = { inputText = it },
-                                        onSearch = {
-                                            viewModel.searchNotes(inputText)
-                                            expanded = false
-                                        },
-                                        expanded = expanded,
-                                        onExpandedChange = { expanded = it },
-                                        placeholder = { Text(text = stringResource(Res.string.search)) },
-                                        leadingIcon = {
-                                            AnimatedContent(isLargeScreen || expanded) { showSearchIcon ->
-                                                if (showSearchIcon)
-                                                    IconButton(
-                                                        onClick = {
-                                                            viewModel.searchNotes(inputText)
-                                                            expanded = false
-                                                        }
-                                                    ) {
-                                                        Icon(
-                                                            imageVector = Icons.Outlined.Search,
-                                                            contentDescription = null
-                                                        )
-                                                    }
-                                                else navigationIcon()
-                                            }
-                                        },
-                                        trailingIcon = {
-                                            AnimatedContent(expanded) { showClearIcon ->
-                                                if (showClearIcon)
-                                                    IconButton(
-                                                        onClick = {
-                                                            if (inputText.isNotEmpty())
-                                                                inputText = ""
-                                                            else {
-                                                                expanded = false
-                                                                viewModel.searchNotes("")
-                                                            }
-                                                        }
-                                                    ) {
-                                                        Icon(
-                                                            imageVector = Icons.Default.Close,
-                                                            contentDescription = null
-                                                        )
-                                                    }
-                                                else
-                                                    TooltipIconButton(
-                                                        tipText = stringResource(Res.string.sort_by),
-                                                        icon = Icons.Outlined.SortByAlpha,
-                                                        onClick = { showSortDialog = true }
-                                                    )
-                                            }
-                                        }
-                                    )
-                                },
-                                shadowElevation = searchBarShadowElevation,
-                                expanded = expanded,
-                                onExpandedChange = { expanded = it }
-                            ) {
-                                if (searchHistorySet.isEmpty()) return@DockedSearchBar
-                                ListItem(
-                                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                                    leadingContent = {
-                                        Icon(
-                                            imageVector = Icons.Outlined.History,
-                                            contentDescription = null
-                                        )
-                                    },
-                                    headlineContent = { Text(stringResource(Res.string.search_history)) },
-                                    trailingContent = {
-                                        Icon(
-                                            modifier = Modifier.clickable {
-                                                viewModel.clearSearchHistory()
-                                            },
-                                            imageVector = Icons.Outlined.DeleteForever,
-                                            contentDescription = null
-                                        )
-                                    }
-                                )
-                                FlowRow(
-                                    modifier = Modifier.padding(horizontal = 12.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    maxLines = 3
-                                ) {
-                                    searchHistorySet.reversed().forEach {
-                                        SuggestionChip(
-                                            modifier = Modifier.defaultMinSize(48.dp),
-                                            onClick = { inputText = it },
-                                            label = {
-                                                Text(
-                                                    text = it,
-                                                    textAlign = TextAlign.Center,
-                                                    maxLines = 1,
-                                                    overflow = TextOverflow.Ellipsis
-                                                )
-                                            })
-                                    }
-                                }
-                            }
-
                         val allNotes by viewModel.allNotes.collectAsStateWithLifecycle()
                         val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()
-                        val statusBarPadding =
-                            WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-                        val paddingValue = if (isSelectionMode) {
-                            PaddingValues(
-                                top = 16.dp,
-                                start = 16.dp,
-                                end = 16.dp,
-                                bottom = innerPadding.calculateBottomPadding()
-                            )
-                        } else {
-                            PaddingValues(
-                                top = 78.dp + statusBarPadding,
-                                start = 16.dp,
-                                end = 16.dp,
-                                bottom = innerPadding.calculateBottomPadding()
-                            )
-                        }
-
-                        AnimatedContent(inputText.isNotBlank() && !expanded) { showSearchRes ->
+                        AnimatedContent(textFieldState.text.isNotBlank() && searchBarState.currentValue == SearchBarValue.Collapsed) { showSearchRes ->
                             if (showSearchRes)
                                 SearchResultsPage(
-                                    keyword = inputText,
+                                    keyword = textFieldState.text.toString(),
                                     notes = searchResults,
-                                    contentPadding = paddingValue,
+                                    contentPadding = contentPadding,
                                     navigateToScreen = navigateToScreen,
                                     selectedNotes = selectedNotes,
                                     noteItemProperties = noteItemProperties,
@@ -506,7 +494,7 @@ fun MainScreenContent(
                             else
                                 Page(
                                     notes = allNotes,
-                                    contentPadding = paddingValue,
+                                    contentPadding = contentPadding,
                                     navigateToScreen = navigateToScreen,
                                     selectedNotes = selectedNotes,
                                     noteItemProperties = noteItemProperties,

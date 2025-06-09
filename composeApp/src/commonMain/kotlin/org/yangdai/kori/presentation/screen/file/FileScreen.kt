@@ -129,7 +129,7 @@ import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.screen.settings.AppTheme
 import org.yangdai.kori.presentation.util.formatInstant
 import org.yangdai.kori.presentation.util.formatNumber
-import org.yangdai.kori.presentation.util.rememberIsScreenSizeLarge
+import org.yangdai.kori.presentation.util.isScreenSizeLarge
 import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -184,7 +184,7 @@ fun FileScreen(
     }
 
 
-    val isLargeScreen = rememberIsScreenSizeLarge()
+    val isLargeScreen = isScreenSizeLarge()
     val pagerState = rememberPagerState { 2 }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current

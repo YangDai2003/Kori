@@ -67,6 +67,7 @@ kotlin {
             implementation(libs.androidx.documentfile)
             implementation(libs.androidx.browser)
             implementation(libs.ktor.client.okhttp)
+            implementation ("androidx.window:window:1.4.0")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
