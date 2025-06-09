@@ -140,8 +140,8 @@ fun DataPane(viewModel: DataViewModel = koinViewModel()) {
 
     if (showPickJsonDialog)
         PickJsonDialog { json ->
+            showPickJsonDialog = false
             if (json != null) {
-                showPickJsonDialog = false
                 viewModel.restoreFromJson(json)
             }
         }
