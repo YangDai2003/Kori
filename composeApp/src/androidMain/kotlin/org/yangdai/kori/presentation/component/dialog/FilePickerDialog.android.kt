@@ -1,6 +1,7 @@
 package org.yangdai.kori.presentation.component.dialog
 
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -112,5 +113,23 @@ actual fun PickJsonDialog(onJsonPicked: (String?) -> Unit) {
 
     LaunchedEffect(Unit) {
         openDocumentLauncher.launch(arrayOf("application/json"))
+    }
+}
+
+@Composable
+actual fun PhotosPickerDialog(onPhotosPicked: (List<String>) -> Unit) {
+    val context = LocalContext.current.applicationContext
+    val photoPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = 10)
+    ) { uris ->
+        onPhotosPicked(uris.map { uri -> uri.toString() })
+    }
+
+    LaunchedEffect(Unit) {
+        photoPicker.launch(
+            PickVisualMediaRequest(
+                ActivityResultContracts.PickVisualMedia.ImageOnly
+            )
+        )
     }
 }

@@ -23,3 +23,6 @@ expect fun SaveFileDialog(
     html: String,
     onFileSaved: (Boolean) -> Unit
 )
+
+@Composable
+expect fun PhotosPickerDialog(onPhotosPicked: (List<String>) -> Unit)

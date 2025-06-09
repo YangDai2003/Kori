@@ -70,9 +70,8 @@ actual fun FilesImportDialog(onFilePicked: (List<PlatformFile>) -> Unit) {
     ).apply {
         file = "*.txt;*.md"
         isVisible = true
+        isMultipleMode = true
     }
-
-    fileDialog.isMultipleMode = true
 
     val selectedFiles = mutableListOf<PlatformFile>()
     if (fileDialog.files != null) {
@@ -122,4 +121,27 @@ actual fun PickJsonDialog(onJsonPicked: (String?) -> Unit) {
         }
     }
     onJsonPicked(null)
+}
+
+@Composable
+actual fun PhotosPickerDialog(onPhotosPicked: (List<String>) -> Unit) {
+    val fileDialog = java.awt.FileDialog(
+        null as java.awt.Frame?,
+        stringResource(Res.string.app_name),
+        java.awt.FileDialog.LOAD
+    ).apply {
+        file = "*.jpg;*.jpeg;*.png;*.gif"
+        isVisible = true
+        isMultipleMode = true
+    }
+
+    val selectedPhotos = mutableListOf<String>()
+    if (fileDialog.files != null) {
+        for (file in fileDialog.files) {
+            if (file.extension in listOf("jpg", "jpeg", "png", "webp")) {
+                selectedPhotos.add(file.absolutePath)
+            }
+        }
+    }
+    onPhotosPicked(selectedPhotos)
 }
