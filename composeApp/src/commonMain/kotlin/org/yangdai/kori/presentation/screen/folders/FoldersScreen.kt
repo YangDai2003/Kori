@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -34,10 +33,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.outlined.CreateNewFolder
-import androidx.compose.material.icons.outlined.FolderDelete
 import androidx.compose.material.icons.outlined.SortByAlpha
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -46,11 +43,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,14 +55,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kori.composeapp.generated.resources.Res
@@ -201,8 +192,7 @@ fun FoldersScreen(
                             modifier = Modifier.animateItem(),
                             folderWithNoteCount = it,
                             visible = selectedFolder != it.folder,
-                            onClick = { selectedFolder = it.folder },
-                            onDeleteRequest = { deletingFolder = it.folder }
+                            onClick = { selectedFolder = it.folder }
                         )
                     }
 
@@ -222,8 +212,7 @@ fun FoldersScreen(
                             modifier = Modifier.animateItem(),
                             folderWithNoteCount = it,
                             visible = selectedFolder != it.folder,
-                            onClick = { selectedFolder = it.folder },
-                            onDeleteRequest = { deletingFolder = it.folder }
+                            onClick = { selectedFolder = it.folder }
                         )
                     }
                 }
@@ -241,6 +230,10 @@ fun FoldersScreen(
         ModifyFolderDialog(
             folder = selectedFolder,
             onDismissRequest = { selectedFolder = null },
+            onDeleteRequest = {
+                deletingFolder = selectedFolder
+                selectedFolder = null
+            },
             onConfirm = {
                 if (it.id.isEmpty()) viewModel.createFolder(it.copy(id = Uuid.random().toString()))
                 else viewModel.updateFolder(it)
@@ -270,107 +263,59 @@ fun SharedTransitionScope.FolderItem(
     modifier: Modifier = Modifier,
     folderWithNoteCount: FolderDao.FolderWithNoteCount,
     visible: Boolean,
-    onClick: () -> Unit,
-    onDeleteRequest: () -> Unit,
-    colorScheme: ColorScheme = MaterialTheme.colorScheme
+    onClick: () -> Unit
 ) = AnimatedVisibility(
     modifier = modifier,
     visible = visible,
     enter = fadeIn() + scaleIn(),
     exit = fadeOut() + scaleOut()
 ) {
-
-    val dismissState = rememberSwipeToDismissBoxState(
-        confirmValueChange = { value: SwipeToDismissBoxValue ->
-            if (value == SwipeToDismissBoxValue.EndToStart) {
-                onDeleteRequest()
-                false
-            } else false
-        }
-    )
-
-    SwipeToDismissBox(
-        state = dismissState,
-        enableDismissFromStartToEnd = false,
-        backgroundContent = {
-            if (dismissState.targetValue != SwipeToDismissBoxValue.EndToStart) return@SwipeToDismissBox
-            val cornerRightRadius = 16.dp * (dismissState.progress * 6f)
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .graphicsLayer {
-                        shape = RoundedCornerShape(
-                            topEnd = cornerRightRadius,
-                            bottomEnd = cornerRightRadius
-                        )
-                        clip = true
-                    }
-                    .background(colorScheme.errorContainer)
-                    .padding(horizontal = 20.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.FolderDelete,
-                    contentDescription = null,
-                    tint = colorScheme.onErrorContainer,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .size(30.dp)
-                        .offset {
-                            IntOffset(
-                                x = -(30.dp * (dismissState.progress * 1.5f)).roundToPx(),
-                                y = 0
-                            )
-                        }
-                )
-            }
-        },
+    ElevatedCard(
         modifier = Modifier.padding(bottom = 8.dp)
             .sharedBounds(
                 sharedContentState = rememberSharedContentState(key = "${folderWithNoteCount.folder.id}-bounds"),
                 animatedVisibilityScope = this,
                 clipInOverlayDuringTransition = OverlayClip(CardDefaults.elevatedShape)
-            )
-            .clip(CardDefaults.elevatedShape)
+            ),
+        onClick = onClick
     ) {
-        ElevatedCard(onClick = onClick) {
-            val folderColor = if (folderWithNoteCount.folder.colorValue != defaultFolderColor)
-                Color(folderWithNoteCount.folder.colorValue)
-            else colorScheme.primary
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(folderColor.copy(alpha = 0.1f))
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Folder,
-                    contentDescription = null,
-                    tint = folderColor,
-                    modifier = Modifier.size(40.dp)
+        val folderColor = if (folderWithNoteCount.folder.colorValue != defaultFolderColor)
+            Color(folderWithNoteCount.folder.colorValue)
+        else MaterialTheme.colorScheme.primary
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(folderColor.copy(alpha = 0.1f))
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.Folder,
+                contentDescription = null,
+                tint = folderColor,
+                modifier = Modifier.size(40.dp)
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Column {
+                Text(
+                    text = folderWithNoteCount.folder.name,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = folderColor
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
-                Spacer(modifier = Modifier.width(16.dp))
-                Column {
-                    Text(
-                        text = folderWithNoteCount.folder.name,
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = folderColor
-                        ),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                Text(
+                    text = pluralStringResource(
+                        Res.plurals.note_count,
+                        folderWithNoteCount.noteCount,
+                        folderWithNoteCount.noteCount
+                    ),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = Color.Gray
                     )
-                    Text(
-                        text = pluralStringResource(
-                            Res.plurals.note_count,
-                            folderWithNoteCount.noteCount,
-                            folderWithNoteCount.noteCount
-                        ),
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            color = Color.Gray
-                        )
-                    )
-                }
+                )
             }
         }
     }

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -31,6 +32,7 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Colorize
+import androidx.compose.material.icons.outlined.FolderDelete
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.AlertDialogDefaults
@@ -39,6 +41,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
@@ -85,6 +88,7 @@ fun SharedTransitionScope.ModifyFolderDialog(
     folder: FolderEntity?,
     modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit,
+    onDeleteRequest: () -> Unit,
     onConfirm: (FolderEntity) -> Unit
 ) = AnimatedContent(
     modifier = modifier,
@@ -230,35 +234,53 @@ fun SharedTransitionScope.ModifyFolderDialog(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    TextButton(onDismissRequest) {
-                        Text(stringResource(Res.string.cancel))
-                    }
-                    Spacer(Modifier.width(8.dp))
-                    val haptic = LocalHapticFeedback.current
-                    Button(
-                        onClick = {
-                            if (textFieldState.text.isBlank()) {
-                                isError = true
-                                return@Button
-                            }
-
-                            haptic.performHapticFeedback(HapticFeedbackType.Confirm)
-
-                            onConfirm(
-                                FolderEntity(
-                                    id = targetState.id,
-                                    name = textFieldState.text.toString(),
-                                    colorValue = color,
-                                    isStarred = isStarred,
-                                    createdAt = targetState.createdAt
-                                )
+                    if (targetState.id.isNotEmpty())
+                        IconButton(
+                            shapes = IconButtonDefaults.shapes(),
+                            colors = IconButtonDefaults.outlinedIconButtonVibrantColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer,
+                                contentColor = MaterialTheme.colorScheme.onErrorContainer
+                            ),
+                            onClick = onDeleteRequest,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.FolderDelete,
+                                contentDescription = null
                             )
                         }
-                    ) {
-                        Text(stringResource(Res.string.confirm))
+                    else Spacer(Modifier.size(48.dp))
+
+                    Row {
+                        TextButton(onDismissRequest) {
+                            Text(stringResource(Res.string.cancel))
+                        }
+                        Spacer(Modifier.width(8.dp))
+                        val haptic = LocalHapticFeedback.current
+                        Button(
+                            onClick = {
+                                if (textFieldState.text.isBlank()) {
+                                    isError = true
+                                    return@Button
+                                }
+
+                                haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+
+                                onConfirm(
+                                    FolderEntity(
+                                        id = targetState.id,
+                                        name = textFieldState.text.toString(),
+                                        colorValue = color,
+                                        isStarred = isStarred,
+                                        createdAt = targetState.createdAt
+                                    )
+                                )
+                            }
+                        ) {
+                            Text(stringResource(Res.string.confirm))
+                        }
                     }
                 }
             }
