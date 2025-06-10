@@ -14,6 +14,17 @@ import kori.composeapp.generated.resources.cancel
 import kori.composeapp.generated.resources.confirm
 import kori.composeapp.generated.resources.warning
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
+
+@Composable
+@Preview
+fun WarningDialogPreview() {
+    WarningDialog(
+        message = "This is a warning message.",
+        onDismissRequest = {},
+        onConfirm = {}
+    )
+}
 
 @Composable
 fun WarningDialog(

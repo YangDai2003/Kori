@@ -6,9 +6,9 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,13 +19,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
@@ -38,10 +36,12 @@ import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -57,7 +57,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -77,7 +76,10 @@ import org.yangdai.kori.data.local.entity.defaultFolderColor
 import org.yangdai.kori.data.local.entity.folderColorOptions
 import org.yangdai.kori.presentation.component.HorizontalLazyListScrollbar
 
-@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
+@OptIn(
+    ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3ExpressiveApi::class
+)
 @Composable
 fun SharedTransitionScope.ModifyFolderDialog(
     folder: FolderEntity?,
@@ -139,7 +141,8 @@ fun SharedTransitionScope.ModifyFolderDialog(
                         shape = AlertDialogDefaults.shape
                     )
                     .clip(AlertDialogDefaults.shape)
-                    .padding(24.dp)
+                    .padding(horizontal = 24.dp)
+                    .padding(bottom = 24.dp, top = 16.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
@@ -151,11 +154,14 @@ fun SharedTransitionScope.ModifyFolderDialog(
                         style = MaterialTheme.typography.titleLarge
                             .copy(color = AlertDialogDefaults.titleContentColor)
                     )
-                    IconToggleButton(
+                    FilledIconToggleButton(
                         checked = isStarred,
                         onCheckedChange = { isStarred = it },
-                        colors = IconButtonDefaults.iconToggleButtonColors()
-                            .copy(checkedContentColor = MaterialTheme.colorScheme.tertiary)
+                        shapes = IconButtonDefaults.toggleableShapes(),
+                        colors = IconButtonDefaults.filledIconToggleButtonColors(
+                            checkedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            checkedContentColor = MaterialTheme.colorScheme.tertiary
+                        )
                     ) {
                         Icon(
                             imageVector = if (isStarred) Icons.Outlined.Star else Icons.Outlined.StarOutline,
@@ -190,22 +196,22 @@ fun SharedTransitionScope.ModifyFolderDialog(
                         items(folderColorOptions.size + 2) {
                             when (it) {
                                 0 -> {
-                                    ColoredCircle2(selected = color == defaultFolderColor) {
-                                        color = defaultFolderColor
-                                    }
+                                    OutlinedTextCircle(
+                                        selected = color == defaultFolderColor,
+                                        onClick = { color = defaultFolderColor }
+                                    )
                                 }
 
                                 folderColorOptions.size + 1 -> {
-                                    ColoredCircle3(
-                                        background = if (custom) Color(color) else Color.Black,
-                                        selected = custom
-                                    ) {
-                                        showColorPicker = true
-                                    }
+                                    OutlinedCustomCircle(
+                                        color = if (custom) Color(color) else Color.Black,
+                                        selected = custom,
+                                        onClick = { showColorPicker = true }
+                                    )
                                 }
 
                                 else -> {
-                                    ColoredCircle(
+                                    OutlinedCircle(
                                         color = folderColorOptions[it - 1],
                                         selected = Color(color) == folderColorOptions[it - 1],
                                         onClick = {
@@ -275,68 +281,43 @@ fun SharedTransitionScope.ModifyFolderDialog(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun ColoredCircle(
-    background: Color = MaterialTheme.colorScheme.onSurface,
+private fun OutlinedCircle(
     color: Color,
     selected: Boolean,
     onClick: () -> Unit
-) = Box(
-    modifier = Modifier
-        .size(50.dp)
-        .drawBehind {
-            if (selected)
-                drawCircle(
-                    color = background
-                )
-        }
-        .clip(shape = CircleShape)
-        .clickable(onClick = onClick)
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(4.dp)
-            .clip(shape = CircleShape)
-            .background(color = color)
-    )
-}
+) = OutlinedIconButton(
+    shapes = IconButtonDefaults.shapes(),
+    colors = IconButtonDefaults.outlinedIconButtonVibrantColors(containerColor = color),
+    border = if (selected) BorderStroke(2.dp, MaterialTheme.colorScheme.outline) else null,
+    onClick = onClick
+) { }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun ColoredCircle2(
-    background: Color = MaterialTheme.colorScheme.onSurface,
+private fun OutlinedCustomCircle(
+    color: Color,
     selected: Boolean,
     onClick: () -> Unit
-) = Box(
-    modifier = Modifier
-        .size(50.dp)
-        .drawBehind {
-            if (selected)
-                drawCircle(
-                    color = background
-                )
-        }
-        .clip(shape = CircleShape)
-        .clickable(onClick = onClick),
-    contentAlignment = Alignment.Center
-) {
-    Text("A")
-}
+) = OutlinedIconButton(
+    shapes = IconButtonDefaults.shapes(),
+    colors = IconButtonDefaults.outlinedIconButtonVibrantColors(containerColor = color),
+    border = if (selected) BorderStroke(2.dp, MaterialTheme.colorScheme.outline) else null,
+    onClick = onClick
+) { Icon(imageVector = Icons.Outlined.Colorize, contentDescription = null) }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun ColoredCircle3(background: Color, selected: Boolean, onClick: () -> Unit) =
-    Box(
-        modifier = Modifier
-            .size(50.dp)
-            .drawBehind {
-                if (selected)
-                    drawCircle(
-                        color = background
-                    )
-            }
-            .clip(shape = CircleShape)
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(imageVector = Icons.Outlined.Colorize, contentDescription = null)
-    }
+private fun OutlinedTextCircle(
+    selected: Boolean,
+    onClick: () -> Unit
+) = OutlinedIconButton(
+    shapes = IconButtonDefaults.shapes(),
+    colors = IconButtonDefaults.outlinedIconButtonVibrantColors(
+        containerColor = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary
+    ),
+    border = if (selected) BorderStroke(2.dp, MaterialTheme.colorScheme.outline) else null,
+    onClick = onClick
+) { Text("A") }

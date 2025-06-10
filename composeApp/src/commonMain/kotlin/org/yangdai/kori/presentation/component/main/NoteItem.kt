@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridItemScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PushPin
@@ -23,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -58,96 +56,6 @@ private fun NoteItemCard(
     border = if (isSelected) CardDefaults.outlinedCardBorder() else null,
     content = content
 )
-
-@Composable
-fun LazyGridItemScope.NoteItem(
-    note: NoteEntity,
-    noteItemProperties: NoteItemProperties,
-    isSelected: Boolean = false,
-    isSelectionMode: Boolean = false,
-    onClick: () -> Unit,
-    onLongClick: () -> Unit
-) = NoteItemCard(
-    modifier = Modifier
-        .fillMaxWidth()
-        .padding(bottom = 8.dp)
-        .animateItem(),
-    isSelected = isSelected
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .combinedClickable(
-                onClick = onClick,
-                onLongClick = onLongClick
-            )
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            // 标题
-            if (note.title.isNotBlank()) {
-                Text(
-                    text = note.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    modifier = Modifier.basicMarquee()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-
-            if (noteItemProperties.cardSize != CardSize.TITLE_ONLY) {
-                val lines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 5 else 2
-                Text(
-                    text = note.content,
-                    style = MaterialTheme.typography.bodyMedium,
-                    minLines = lines,
-                    maxLines = lines,
-                    overflow = if (noteItemProperties.clipOverflow) TextOverflow.Clip else TextOverflow.Ellipsis
-                )
-            }
-
-            // 底部行：笔记类型和更新时间信息
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .padding(top = 12.dp)
-                    .alpha(0.7f)
-            ) {
-
-                Text(
-                    text = when (note.noteType) {
-                        NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
-                        NoteType.MARKDOWN -> stringResource(Res.string.markdown)
-                    },
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                val instant =
-                    if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
-                    else Instant.parse(note.updatedAt)
-                Text(
-                    text = formatInstant(instant),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
-
-        // 选择框
-        if (isSelectionMode) {
-            Checkbox(
-                checked = isSelected,
-                onCheckedChange = null,
-                modifier = Modifier
-                    .padding(12.dp)
-                    .align(Alignment.TopEnd)
-            )
-        }
-    }
-}
 
 @Composable
 fun LazyStaggeredGridItemScope.NoteItem(

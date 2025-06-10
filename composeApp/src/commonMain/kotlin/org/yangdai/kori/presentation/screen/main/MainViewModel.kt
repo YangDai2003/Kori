@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +15,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -45,9 +45,8 @@ class MainViewModel(
         .stateIn(viewModelScope, SharingStarted.Companion.Eagerly, false)
 
     private var _currentFolderId by mutableStateOf<String>("")
-    private val _currentFolderNotesMap =
-        MutableStateFlow<Map<Boolean, List<NoteEntity>>>(emptyMap())
-    val currentFolderNotesMap = _currentFolderNotesMap.asStateFlow()
+    private val _currentFolderNotes = MutableStateFlow<List<NoteEntity>>(emptyList())
+    val currentFolderNotes = _currentFolderNotes.asStateFlow()
 
     private val _searchResults = MutableStateFlow<List<NoteEntity>>(emptyList())
     val searchResults = _searchResults.asStateFlow()
@@ -139,14 +138,10 @@ class MainViewModel(
 
     fun loadNotesByFolder(folderId: String) {
         _currentFolderId = folderId
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             noteRepository
                 .getNotesByFolderId(folderId, noteSortType)
-                .map { notes -> notes.groupBy { it.isPinned } }
-                .flowOn(Dispatchers.Default)
-                .collect { notesMap ->
-                    _currentFolderNotesMap.value = notesMap
-                }
+                .collect { notes -> _currentFolderNotes.value = notes }
         }
     }
 

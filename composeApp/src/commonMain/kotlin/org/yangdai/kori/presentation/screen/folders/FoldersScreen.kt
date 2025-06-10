@@ -63,6 +63,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
@@ -278,74 +279,63 @@ fun SharedTransitionScope.FolderItem(
     enter = fadeIn() + scaleIn(),
     exit = fadeOut() + scaleOut()
 ) {
-    val folder = folderWithNoteCount.folder
-    val notesCountInFolder = folderWithNoteCount.noteCount
-    val folderColor = if (folder.colorValue != defaultFolderColor) Color(folder.colorValue)
-    else colorScheme.primary
 
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = { value: SwipeToDismissBoxValue ->
-            when (value) {
-                SwipeToDismissBoxValue.EndToStart -> {
-                    onDeleteRequest()
-                    false
-                }
-
-                else -> false
-            }
+            if (value == SwipeToDismissBoxValue.EndToStart) {
+                onDeleteRequest()
+                false
+            } else false
         }
     )
 
     SwipeToDismissBox(
         state = dismissState,
+        enableDismissFromStartToEnd = false,
         backgroundContent = {
-            val direction = dismissState.targetValue
-            val progress = dismissState.progress
-            val iconOffset = 30.dp * (progress * 1.5f)
-            val backgroundColor = when (direction) {
-                SwipeToDismissBoxValue.EndToStart -> colorScheme.errorContainer
-                else -> Color.Transparent
-            }
-
-            val cornerLeftRadius =
-                if (direction == SwipeToDismissBoxValue.StartToEnd) 16.dp * (progress * 6f) else 0.dp
-            val cornerRightRadius =
-                if (direction == SwipeToDismissBoxValue.EndToStart) 16.dp * (progress * 6f) else 0.dp
+            if (dismissState.targetValue != SwipeToDismissBoxValue.EndToStart) return@SwipeToDismissBox
+            val cornerRightRadius = 16.dp * (dismissState.progress * 6f)
             Box(
                 Modifier
                     .fillMaxSize()
-                    .clip(
+                    .graphicsLayer {
                         shape = RoundedCornerShape(
-                            topStart = cornerLeftRadius,
                             topEnd = cornerRightRadius,
-                            bottomStart = cornerLeftRadius,
                             bottomEnd = cornerRightRadius
                         )
-                    )
-                    .background(backgroundColor)
+                        clip = true
+                    }
+                    .background(colorScheme.errorContainer)
                     .padding(horizontal = 20.dp)
             ) {
-                if (direction == SwipeToDismissBoxValue.EndToStart)
-                    Icon(
-                        imageVector = Icons.Outlined.FolderDelete,
-                        contentDescription = null,
-                        tint = colorScheme.onErrorContainer,
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .size(30.dp)
-                            .offset { IntOffset(x = -iconOffset.roundToPx(), y = 0) }
-                    )
+                Icon(
+                    imageVector = Icons.Outlined.FolderDelete,
+                    contentDescription = null,
+                    tint = colorScheme.onErrorContainer,
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .size(30.dp)
+                        .offset {
+                            IntOffset(
+                                x = -(30.dp * (dismissState.progress * 1.5f)).roundToPx(),
+                                y = 0
+                            )
+                        }
+                )
             }
         },
         modifier = Modifier.padding(bottom = 8.dp)
             .sharedBounds(
-                sharedContentState = rememberSharedContentState(key = "${folder.id}-bounds"),
+                sharedContentState = rememberSharedContentState(key = "${folderWithNoteCount.folder.id}-bounds"),
                 animatedVisibilityScope = this,
                 clipInOverlayDuringTransition = OverlayClip(CardDefaults.elevatedShape)
             )
             .clip(CardDefaults.elevatedShape)
     ) {
         ElevatedCard(onClick = onClick) {
+            val folderColor = if (folderWithNoteCount.folder.colorValue != defaultFolderColor)
+                Color(folderWithNoteCount.folder.colorValue)
+            else colorScheme.primary
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -362,7 +352,7 @@ fun SharedTransitionScope.FolderItem(
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
                     Text(
-                        text = folder.name,
+                        text = folderWithNoteCount.folder.name,
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
                             color = folderColor
@@ -373,8 +363,8 @@ fun SharedTransitionScope.FolderItem(
                     Text(
                         text = pluralStringResource(
                             Res.plurals.note_count,
-                            notesCountInFolder,
-                            notesCountInFolder
+                            folderWithNoteCount.noteCount,
+                            folderWithNoteCount.noteCount
                         ),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = Color.Gray

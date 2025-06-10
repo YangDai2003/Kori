@@ -47,7 +47,7 @@ import org.jetbrains.compose.resources.stringResource
 data class FindAndReplaceState(
     val searchWord: String = "",
     val replaceWord: String = "",
-    val matchCount: Int = 0,
+    val position: String = "",
     val scrollDirection: ScrollDirection? = null,
     val replaceType: ReplaceType? = null
 )
@@ -80,7 +80,7 @@ fun FindAndReplaceField(
             suffix = {
                 Text(
                     modifier = Modifier.padding(end = 8.dp),
-                    text = if (state.searchWord.isBlank()) "" else state.matchCount.toString(),
+                    text = if (state.searchWord.isBlank()) "" else state.position,
                     style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
                 )
             },

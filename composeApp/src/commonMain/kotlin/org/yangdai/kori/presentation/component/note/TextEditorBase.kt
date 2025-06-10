@@ -42,10 +42,19 @@ fun TextEditorBase(
         } else {
             emptyList()
         }
+        onFindAndReplaceUpdate(
+            findAndReplaceState.copy(
+                position = if (indices.isNotEmpty()) {
+                    "${currentIndex + 1}/${indices.size}"
+                } else {
+                    ""
+                }
+            )
+        )
     }
 
     // Handle search navigation
-    LaunchedEffect(findAndReplaceState.searchWord, indices, findAndReplaceState.scrollDirection) {
+    LaunchedEffect(indices, findAndReplaceState.scrollDirection) {
         if (indices.isNotEmpty() && textLayoutResult != null && findAndReplaceState.scrollDirection != null) {
             // Update current index
             currentIndex = when (findAndReplaceState.scrollDirection) {
@@ -64,7 +73,12 @@ fun TextEditorBase(
             // Execute scroll
             scrollState.animateScrollTo(scrollPosition)
             // Notify scroll completion
-            onFindAndReplaceUpdate(findAndReplaceState.copy(scrollDirection = null))
+            onFindAndReplaceUpdate(
+                findAndReplaceState.copy(
+                    scrollDirection = null,
+                    position = "${currentIndex + 1}/${indices.size}"
+                )
+            )
         }
     }
 

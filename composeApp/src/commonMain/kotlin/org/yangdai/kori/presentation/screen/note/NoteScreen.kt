@@ -43,6 +43,7 @@ import androidx.compose.material.icons.outlined.IosShare
 import androidx.compose.material.icons.outlined.Print
 import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.SearchOff
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.SwapHorizontalCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -201,19 +202,6 @@ fun NoteScreen(
     var isSearching by remember { mutableStateOf(false) }
     var selectedHeader by remember { mutableStateOf<IntRange?>(null) }
     var findAndReplaceState by remember { mutableStateOf(FindAndReplaceState()) }
-    LaunchedEffect(findAndReplaceState.searchWord, viewModel.contentState.text) {
-        withContext(Dispatchers.Default) {
-            findAndReplaceState = findAndReplaceState.copy(
-                matchCount = if (findAndReplaceState.searchWord.isNotBlank())
-                    findAndReplaceState.searchWord.toRegex()
-                        .findAll(viewModel.contentState.text)
-                        .count()
-                else 0
-            )
-        }
-    }
-
-
     val isLargeScreen = isScreenSizeLarge()
     val pagerState = rememberPagerState { 2 }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -337,7 +325,8 @@ fun NoteScreen(
                     if (!isReadView)
                         TooltipIconButton(
                             tipText = "Ctrl + F",
-                            icon = Icons.Outlined.Search,
+                            icon = if (isSearching) Icons.Outlined.SearchOff
+                            else Icons.Outlined.Search,
                             onClick = { isSearching = !isSearching }
                         )
 

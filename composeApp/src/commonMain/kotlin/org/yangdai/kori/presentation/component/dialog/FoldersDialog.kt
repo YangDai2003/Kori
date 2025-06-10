@@ -34,6 +34,7 @@ import kori.composeapp.generated.resources.cancel
 import kori.composeapp.generated.resources.confirm
 import kori.composeapp.generated.resources.destination_folder
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.yangdai.kori.data.local.dao.FolderDao
 import org.yangdai.kori.data.local.entity.defaultFolderColor
 
@@ -131,4 +132,16 @@ fun FoldersDialog(
                 Text(stringResource(Res.string.confirm))
             }
         })
+}
+
+@Composable
+@Preview
+fun FoldersDialogPreview() {
+    FoldersDialog(
+        hint = stringResource(Res.string.destination_folder),
+        oFolderId = null,
+        foldersWithNoteCounts = listOf(),
+        onDismissRequest = {},
+        onSelect = {}
+    )
 }

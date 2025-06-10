@@ -496,7 +496,7 @@ fun MainScreenContent(
                                 Page(
                                     notes = allNotes,
                                     contentPadding = contentPadding,
-                                    navigateToScreen = navigateToScreen,
+                                    navigateToNote = { navigateToScreen(Screen.Note(it)) },
                                     selectedNotes = selectedNotes,
                                     noteItemProperties = noteItemProperties,
                                     isSelectionMode = isSelectionMode
@@ -507,10 +507,10 @@ fun MainScreenContent(
 
                 1 -> {
                     val templateNotes by viewModel.templateNotes.collectAsStateWithLifecycle()
-                    TemplatesPage(
+                    Page(
                         notes = templateNotes,
                         contentPadding = contentPadding,
-                        navigateToScreen = navigateToScreen,
+                        navigateToNote = { navigateToScreen(Screen.Template(it)) },
                         selectedNotes = selectedNotes,
                         noteItemProperties = noteItemProperties,
                         isSelectionMode = isSelectionMode
@@ -522,7 +522,7 @@ fun MainScreenContent(
                     Page(
                         notes = trashNotes,
                         contentPadding = contentPadding,
-                        navigateToScreen = { },
+                        navigateToNote = { },
                         selectedNotes = selectedNotes,
                         noteItemProperties = noteItemProperties,
                         isSelectionMode = isSelectionMode
@@ -530,16 +530,16 @@ fun MainScreenContent(
                 }
 
                 3 -> {
-                    val folderNotesMap by viewModel.currentFolderNotesMap.collectAsStateWithLifecycle()
+                    val folderNotes by viewModel.currentFolderNotes.collectAsStateWithLifecycle()
                     if (currentDrawerItem is DrawerItem.Folder) {
                         val folderId = currentDrawerItem.folder.id
                         LaunchedEffect(folderId) {
                             viewModel.loadNotesByFolder(folderId)
                         }
-                        GroupedPage(
-                            notesMap = folderNotesMap,
+                        Page(
+                            notes = folderNotes,
                             contentPadding = contentPadding,
-                            navigateToScreen = navigateToScreen,
+                            navigateToNote = { navigateToScreen(Screen.Note(it)) },
                             selectedNotes = selectedNotes,
                             noteItemProperties = noteItemProperties,
                             isSelectionMode = isSelectionMode

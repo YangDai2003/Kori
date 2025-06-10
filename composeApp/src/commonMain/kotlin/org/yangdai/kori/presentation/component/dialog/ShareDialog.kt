@@ -23,11 +23,21 @@ import kori.composeapp.generated.resources.share_note_as
 import kori.composeapp.generated.resources.text
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.presentation.component.TextOptionButton
 import org.yangdai.kori.presentation.util.clickToShareFile
 import org.yangdai.kori.presentation.util.clickToShareText
 import org.yangdai.kori.presentation.util.clipEntryOf
+
+@Composable
+@Preview
+fun ShareDialogPreview() {
+    ShareDialog(
+        noteEntity = NoteEntity(),
+        onDismissRequest = {}
+    )
+}
 
 @Composable
 fun ShareDialog(

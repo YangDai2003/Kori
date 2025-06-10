@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.export_as
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.presentation.component.TextOptionButton
 
@@ -63,4 +64,14 @@ fun ExportDialog(
             onDismissRequest()
         }
     }
+}
+
+@Preview
+@Composable
+fun ExportDialogPreview() {
+    ExportDialog(
+        noteEntity = NoteEntity(),
+        html = "",
+        onDismissRequest = {}
+    )
 }

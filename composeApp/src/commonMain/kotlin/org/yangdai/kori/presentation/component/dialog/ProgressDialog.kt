@@ -36,7 +36,21 @@ import androidx.compose.ui.window.DialogProperties
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.cancel
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.yangdai.kori.presentation.screen.settings.DataActionState
+
+@Preview
+@Composable
+fun ProgressDialogPreview() {
+    ProgressDialog(
+        dataActionState = DataActionState(
+            progress = 0.5f,
+            infinite = false,
+            message = "Loading..."
+        ),
+        onDismissRequest = {}
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable

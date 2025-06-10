@@ -30,7 +30,18 @@ import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.plain_text
 import kori.composeapp.generated.resources.type
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.yangdai.kori.data.local.entity.NoteType
+
+@Preview
+@Composable
+fun NoteTypeDialogPreview() {
+    NoteTypeDialog(
+        oNoteType = NoteType.PLAIN_TEXT,
+        onDismissRequest = {},
+        onNoteTypeSelected = {}
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
