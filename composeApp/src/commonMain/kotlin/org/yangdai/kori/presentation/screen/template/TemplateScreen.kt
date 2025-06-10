@@ -198,7 +198,7 @@ fun TemplateScreen(
                     BasicTextField(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
+                            .padding(end = 8.dp)
                             .onPreviewKeyEvent { keyEvent ->
                                 if (keyEvent.type == KeyEventType.KeyDown) {
                                     when (keyEvent.key) {
