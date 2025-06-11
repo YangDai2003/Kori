@@ -132,6 +132,7 @@ fun MarkdownEditor(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.None
                 ),
+                outputTransformation = remember { MarkdownTransformation() } ,
                 decorator = { innerTextField ->
                     Box(
                         modifier = Modifier
