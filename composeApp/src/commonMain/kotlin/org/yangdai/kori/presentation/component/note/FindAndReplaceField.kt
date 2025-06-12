@@ -100,14 +100,8 @@ fun FindAndReplaceField(
                 imageVector = Icons.Outlined.ArrowDownward, contentDescription = "Next"
             )
         }
-
         IconButton(onClick = {
-            onStateUpdate(
-                state.copy(
-                    searchWord = "",
-                    replaceWord = ""
-                )
-            )
+            onStateUpdate(state.copy(searchWord = "", replaceWord = ""))
         }) {
             Icon(
                 imageVector = Icons.Outlined.Close, contentDescription = "Clear"
