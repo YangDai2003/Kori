@@ -14,25 +14,34 @@ class MarkdownTransformation : AnnotatedOutputTransformation {
 
     val marker = SpanStyle(color = Color(0xFFCE8D6E), fontFamily = FontFamily.Monospace)
     val keyword = SpanStyle(color = Color(0xFFC67CBA))
-
     val linkText = SpanStyle(color = linkColor, textDecoration = TextDecoration.Underline)
     val linkUrl =
         SpanStyle(fontWeight = FontWeight.Light, color = Color.Gray, fontStyle = FontStyle.Italic)
 
+    companion object {
+        private val codeBlockRegex = Regex("""```(\w+)?\n([\s\S]*?)\n```""")
+        private val linkRegex = Regex("""\[(.+?)]\((.+?)\)""")
+        private val taskListRegex = Regex("""^[ \t]*-\s\[([ x])]\s.+$""", RegexOption.MULTILINE)
+        private val unorderedListRegex = Regex("""^([ \t]*)([-*+])\s.+$""", RegexOption.MULTILINE)
+        private val orderedListRegex = Regex("""^[ \t]*\d+\.\s.+$""", RegexOption.MULTILINE)
+        private val headingRegex = Regex("""^(#{1,6})\s+(.+)$""", RegexOption.MULTILINE)
+        private val hrRegex = Regex("""^[ \t]*(\*{3,}|-{3,}|_{3,})[ \t]*$""", RegexOption.MULTILINE)
+    }
+
     override fun OutputTransformationAnnotationScope.annotateOutput() {
         // 链接 [text](url)
-        Regex("""\[(.+?)]\((.+?)\)""").findAll(text).forEach {
+        linkRegex.findAll(text).forEach {
             addAnnotation(linkText, it.range.first, it.range.first + it.groupValues[1].length + 2)
             addAnnotation(linkUrl, it.range.first + it.groupValues[1].length + 2, it.range.last + 1)
         }
 
         // 任务列表 - [ ] text or - [x] text
-        Regex("""^[ \t]*-\s\[([ x])]\s.+$""", RegexOption.MULTILINE).findAll(text).forEach {
+        taskListRegex.findAll(text).forEach {
             addAnnotation(marker, it.range.first, it.range.first + it.value.indexOf(']') + 1)
         }
 
         // 列表 - text or * text or + text
-        Regex("""^([ \t]*)([-*+])\s.+$""", RegexOption.MULTILINE).findAll(text).forEach {
+        unorderedListRegex.findAll(text).forEach {
             val start = it.range.first
             val markerLength =
                 it.groupValues[1].length + it.groupValues[2].length + 1 // 前导空白 + 标记 + 空格
@@ -40,27 +49,42 @@ class MarkdownTransformation : AnnotatedOutputTransformation {
         }
 
         // 有序列表 1. text
-        Regex("""^[ \t]*\d+\.\s.+$""", RegexOption.MULTILINE).findAll(text).forEach {
+        orderedListRegex.findAll(text).forEach {
             addAnnotation(marker, it.range.first, it.range.first + it.value.indexOf('.') + 1)
         }
 
-        // 代码块
-        Regex("""```(\w+)?\n([\s\S]*?)\n```""").findAll(text).forEach {
-            val codeStart = it.range.first + it.groupValues[1].length + 3
-            addAnnotation(marker, it.range.first, it.range.first + 3)
-            addAnnotation(marker, it.range.last - 2, it.range.last + 1)
-            // it.groupValues[1] 是可选语言
-            addAnnotation(
-                keyword,
-                it.range.first + 3,
-                codeStart
-            )
+        // 先收集所有代码块区间
+        val codeBlockRanges = codeBlockRegex.findAll(text).toList().also {
+            it.forEach {
+                val codeStart = it.range.first + it.groupValues[1].length + 3
+                val codeEnd = it.range.last - 2
+                // 添加代码块的起始和结束标记
+                addAnnotation(marker, it.range.first, codeStart)
+                addAnnotation(marker, codeEnd, it.range.last + 1)
+                // 添加可选语言标记
+                addAnnotation(keyword, it.range.first + 3, codeStart)
+            }
+        }
+
+        // 判断某个位置是否在代码块区间内
+        fun inCodeBlock(pos: Int): Boolean =
+            codeBlockRanges.any { pos in it.range }
+
+        // 标题
+        headingRegex.findAll(text).forEach {
+            if (!inCodeBlock(it.range.first)) {
+                addAnnotation(marker, it.range.first, it.range.first + it.groupValues[1].length)
+                addAnnotation(
+                    keyword,
+                    it.range.first + it.groupValues[1].length + 1,
+                    it.range.last + 1
+                )
+            }
         }
 
         // 分割线 *** 或 --- 或 ___（独占一行，允许空格，不能有其他内容）
-        Regex("""^[ \t]*(\*{3,}|-{3,}|_{3,})[ \t]*$""", RegexOption.MULTILINE).findAll(text)
-            .forEach {
-                addAnnotation(marker, it.range.first, it.range.last + 1)
-            }
+        hrRegex.findAll(text).forEach {
+            addAnnotation(marker, it.range.first, it.range.last + 1)
+        }
     }
 }

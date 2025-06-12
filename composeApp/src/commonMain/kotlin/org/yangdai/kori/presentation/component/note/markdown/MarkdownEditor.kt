@@ -23,6 +23,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -43,6 +44,9 @@ import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.content
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.note.FindAndReplaceState
@@ -78,12 +82,19 @@ fun MarkdownEditor(
         label = "wave-phase"
     )
     var lintErrors by remember { mutableStateOf(emptyList<MarkdownLint.Issue>()) }
-
+    var lintJob by remember { mutableStateOf<Job?>(null) }
+    val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(state.text, isLintActive) {
-        withContext(Dispatchers.Default) {
-            lintErrors =
-                if (isLintActive) MarkdownLint().validate(state.text.toString())
-                else emptyList()
+        lintJob?.cancel()
+        if (isLintActive) {
+            lintJob = coroutineScope.launch {
+                delay(300L) // 300ms 防抖
+                withContext(Dispatchers.Default) {
+                    lintErrors = MarkdownLint().validate(state.text.toString())
+                }
+            }
+        } else {
+            lintErrors = emptyList()
         }
     }
 
@@ -132,7 +143,7 @@ fun MarkdownEditor(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.None
                 ),
-                outputTransformation = remember { MarkdownTransformation() } ,
+                outputTransformation = remember { MarkdownTransformation() },
                 decorator = { innerTextField ->
                     Box(
                         modifier = Modifier
@@ -180,7 +191,7 @@ fun MarkdownEditor(
                                                 if (start < end && end <= text.length) {
                                                     val path =
                                                         layoutResult.getPathForRange(start, end)
-                                                    drawWavyUnderline(this, path, phase)
+                                                    drawWavyUnderlineOptimized(path, phase)
                                                 }
                                             }
                                         }
@@ -206,34 +217,26 @@ fun MarkdownEditor(
     }
 }
 
-private fun drawWavyUnderline(
-    drawScope: DrawScope,
+private fun DrawScope.drawWavyUnderlineOptimized(
     path: Path,
     phase: Float,
     amplitude: Float = 3f,
-    wavelength: Float = 25f
+    wavelength: Float = 25f,
+    sampleStep: Float = 1f // 每1px采样一次
 ) {
     val bounds = path.getBounds()
+    val width = bounds.right - bounds.left
+    if (width <= 0f) return
 
-    // 预计算正弦波点数
-    val pointCount = ((bounds.right - bounds.left) * 2).toInt()
-    if (pointCount <= 0) return
-
-    val points = FloatArray(pointCount * 2)
-    val startX = bounds.left
-    val y = bounds.bottom + 2f
-
-    // 批量计算波浪点
-    for (i in 0 until pointCount) {
-        val x = startX + i * 0.5f
-        val yOffset = amplitude * sin((x * (2f * PI / wavelength)) + phase).toFloat()
-        points[i * 2] = x
-        points[i * 2 + 1] = y + yOffset
+    val pointCount = (width / sampleStep).toInt().coerceAtLeast(2)
+    val points = Array(pointCount) { i ->
+        val x = bounds.left + i * sampleStep
+        val y = bounds.bottom + 2f + amplitude * sin((x * (2f * PI / wavelength)) + phase).toFloat()
+        Offset(x, y)
     }
 
-    // 单次绘制所有点
-    drawScope.drawPoints(
-        points = points.toList().chunked(2).map { (x, y) -> Offset(x, y) },
+    drawPoints(
+        points = points.toList(),
         pointMode = PointMode.Polygon,
         color = Color.Red,
         strokeWidth = 1.5f,
