@@ -1,7 +1,7 @@
 package org.yangdai.kori.presentation.component.note
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.foundation.Canvas
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -22,8 +22,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -35,7 +33,9 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.UnfoldLess
 import androidx.compose.material.icons.outlined.UnfoldMore
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.DrawerDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,7 +45,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,7 +55,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.PredictiveBackHandler
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.SpanStyle
@@ -68,6 +66,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
+import androidx.compose.ui.window.DialogProperties
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.outline
 import kori.composeapp.generated.resources.overview
@@ -85,7 +84,7 @@ import kotlin.math.roundToInt
 private val SheetWidth = 320.dp
 private val ActionWidth = 48.dp
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun NoteSideSheet(
     isDrawerOpen: Boolean,
@@ -94,225 +93,263 @@ fun NoteSideSheet(
     outline: HeaderNode,
     onHeaderClick: (IntRange) -> Unit,
     navigateTo: (Screen) -> Unit,
-    scrimColor: Color = MaterialTheme.colorScheme.scrim,
     actionContent: @Composable ColumnScope.() -> Unit,
     drawerContent: @Composable ColumnScope.() -> Unit
 ) {
-    val scope = rememberCoroutineScope()
-    val density = LocalDensity.current
+    // 仅在 isDrawerOpen 为 true 时组合 Dialog
+    if (isDrawerOpen) {
+        val scope = rememberCoroutineScope()
 
-    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        val contentWidth = maxWidth
+        // 由于 Dialog 有自己的生命周期，我们需要一个在 Dialog 内部触发关闭动画并最终调用 onDismiss 的方法
+        // 不能直接在 onDismissRequest 中调用 onDismiss，否则动画会被打断
+        var isExiting by remember { mutableStateOf(false) }
 
-        val drawerWidth = remember(contentWidth) {
-            // 计算合适的抽屉宽度：
-            // 1. 尽可能接近320dp
-            // 2. 确保与屏幕宽度至少相差96dp
-            val maxAllowedWidth = contentWidth - 96.dp
-            min(SheetWidth, maxAllowedWidth)
-        }
+        BasicAlertDialog(
+            onDismissRequest = {
+                // 标记为正在退出，以防止重复触发
+                if (!isExiting) {
+                    isExiting = true
+                    // onDismiss 将在动画结束后被调用
+                }
+            },
+            modifier = Modifier.fillMaxSize(),
+            properties = DialogProperties(
+                usePlatformDefaultWidth = false, // 允许内容填充整个屏幕
+                dismissOnClickOutside = false
+            )
+        ) {
+            val density = LocalDensity.current
 
-        val drawerWidthPx = with(density) { drawerWidth.toPx() }
-        val actionWidthPx = with(density) { ActionWidth.toPx() }
-        val fullOffsetPx = drawerWidthPx + actionWidthPx
+            BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
 
-        val offsetX = remember { Animatable(fullOffsetPx) }
-        val maskAlpha = remember { Animatable(0f) }
+                val drawerWidth = remember(maxWidth) {
+                    val maxAllowedWidth = maxWidth - 96.dp
+                    min(SheetWidth, maxAllowedWidth)
+                }
 
-        LaunchedEffect(isDrawerOpen) {
-            val targetMaskAlpha = if (isDrawerOpen) 0.6f else 0f
-            val targetOffsetX = if (isDrawerOpen) 0f else fullOffsetPx
+                val drawerWidthPx = with(density) { drawerWidth.toPx() }
+                val actionWidthPx = with(density) { ActionWidth.toPx() }
+                val fullOffsetPx = drawerWidthPx + actionWidthPx
 
-            launch { maskAlpha.animateTo(targetValue = targetMaskAlpha) }
-            launch { offsetX.animateTo(targetValue = targetOffsetX) }
-        }
+                val offsetX = remember { Animatable(fullOffsetPx) }
 
-        PredictiveBackHandler(enabled = isDrawerOpen) { progress ->
-            try {
-                progress.collect { event ->
+                // 动画退出逻辑
+                val animateExit = {
                     scope.launch {
-                        val newOffset = drawerWidthPx * event.progress
-                        offsetX.snapTo(newOffset)
-                        val newAlpha = 0.6f * (1f - event.progress)
-                        maskAlpha.snapTo(newAlpha)
+                        offsetX.animateTo(fullOffsetPx, animationSpec = tween(durationMillis = 300))
+                    }.invokeOnCompletion {
+                        onDismiss()
                     }
                 }
-                onDismiss()
-            } catch (_: CancellationException) {
-                scope.launch {
-                    offsetX.animateTo(0f)
-                    maskAlpha.animateTo(0.6f)
+
+                // isExiting 状态变化时触发退出动画
+                LaunchedEffect(isExiting) {
+                    if (isExiting) {
+                        animateExit()
+                    }
                 }
-            }
-        }
 
-        Box(Modifier.fillMaxSize()) {
-            val showMask by remember { derivedStateOf { maskAlpha.value > 0f } }
-            val scrimModifier = if (showMask) Modifier.pointerInput(Unit) {
-                detectTapGestures(onTap = { onDismiss() })
-            } else Modifier
+                // 首次进入时触发打开动画
+                LaunchedEffect(Unit) {
+                    offsetX.animateTo(0f, animationSpec = tween(durationMillis = 300))
+                }
 
-            Canvas(Modifier.fillMaxSize().then(scrimModifier)) {
-                drawRect(scrimColor, alpha = maskAlpha.value)
-            }
+                PredictiveBackHandler(enabled = !isExiting) { progress ->
+                    try {
+                        progress.collect { event ->
+                            scope.launch {
+                                val newOffset = fullOffsetPx * event.progress
+                                offsetX.snapTo(newOffset)
+                            }
+                        }
+                        // 预测性返回手势完成，触发退出
+                        if (!isExiting) isExiting = true
+                    } catch (_: CancellationException) {
+                        // 手势取消，恢复到打开状态
+                        scope.launch {
+                            offsetX.animateTo(0f)
+                        }
+                    }
+                }
 
-            Column(
-                modifier = Modifier
-                    .statusBarsPadding()
-                    .padding(top = 16.dp)
-                    .offset { IntOffset(x = (offsetX.value - drawerWidthPx).roundToInt(), y = 0) }
-                    .align(Alignment.TopEnd)
-                    .background(
-                        color = DrawerDefaults.modalContainerColor.copy(alpha = 0.9f),
-                        shape = MaterialTheme.shapes.extraLarge.copy(
+                // 整个 Dialog 内容的根 Box
+                Box(Modifier.fillMaxSize()) {
+
+                    Box(
+                        Modifier.fillMaxSize().pointerInput(Unit) {
+                            detectTapGestures(onTap = { if (!isExiting) isExiting = true })
+                        }
+                    )
+
+                    // 侧边操作栏 (左侧部分)
+                    Column(
+                        modifier = Modifier
+                            .padding(top = 16.dp)
+                            .offset {
+                                IntOffset(
+                                    x = (offsetX.value - drawerWidthPx).roundToInt(),
+                                    y = 0
+                                )
+                            }
+                            .align(Alignment.TopEnd)
+                            .background(
+                                color = DrawerDefaults.modalContainerColor.copy(alpha = 0.9f),
+                                shape = MaterialTheme.shapes.extraLarge.copy(
+                                    topEnd = CornerSize(0),
+                                    bottomEnd = CornerSize(0)
+                                )
+                            ),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Top,
+                        content = actionContent
+                    )
+
+                    // 拖动状态
+                    val dragState = rememberDraggableState { delta ->
+                        scope.launch {
+                            val newValue = (offsetX.value + delta).coerceIn(0f, fullOffsetPx)
+                            offsetX.snapTo(newValue)
+                        }
+                    }
+
+                    // 抽屉内容 (右侧主体)
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(drawerWidth)
+                            .offset { IntOffset(x = offsetX.value.roundToInt(), y = 0) }
+                            .align(Alignment.CenterEnd)
+                            .draggable(
+                                orientation = Orientation.Horizontal,
+                                state = dragState,
+                                enabled = !isExiting,
+                                onDragStopped = { velocity ->
+                                    val shouldClose = if (abs(velocity) < 100) {
+                                        offsetX.value > drawerWidthPx / 2
+                                    } else {
+                                        velocity > 0
+                                    }
+
+                                    if (shouldClose) {
+                                        if (!isExiting) isExiting = true
+                                    } else {
+                                        // 动画恢复到打开状态
+                                        scope.launch {
+                                            offsetX.animateTo(0f)
+                                        }
+                                    }
+                                }
+                            ),
+                        color = DrawerDefaults.modalContainerColor.copy(alpha = 0.95f),
+                        shape = MaterialTheme.shapes.large.copy(
                             topEnd = CornerSize(0),
                             bottomEnd = CornerSize(0)
-                        )
-                    )
-                    .pointerInput(Unit) {},
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top,
-                content = actionContent
-            )
+                        ),
+                        shadowElevation = 2.dp,
+                        tonalElevation = DrawerDefaults.ModalDrawerElevation
+                    ) {
+                        var isAllExpanded by rememberSaveable { mutableStateOf(true) }
 
-            val dragState = rememberDraggableState { delta ->
-                scope.launch {
-                    val newValue =
-                        (offsetX.value + delta).coerceIn(0f, fullOffsetPx)
-                    offsetX.snapTo(newValue)
-                    val progress = 1f - (newValue / drawerWidthPx).coerceIn(0f, 1f)
-                    maskAlpha.snapTo(0.6f * progress)
-                }
-            }
-
-            Surface(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(drawerWidth)
-                    .offset { IntOffset(x = offsetX.value.roundToInt(), y = 0) }
-                    .align(Alignment.CenterEnd)
-                    .draggable(
-                        orientation = Orientation.Horizontal,
-                        state = dragState,
-                        onDragStopped = { velocity ->
-                            val targetValue = if (abs(velocity) < 100) {
-                                if (offsetX.value > drawerWidthPx / 2) fullOffsetPx else 0f
-                            } else {
-                                if (velocity > 0) fullOffsetPx else 0f
-                            }
-
-                            val targetAlpha = if (targetValue == 0f) 0.6f else 0f
-
-                            scope.launch {
-                                if (targetValue == fullOffsetPx && offsetX.value < drawerWidthPx) {
-                                    onDismiss()
-                                }
-
-                                launch { offsetX.animateTo(targetValue) }
-                                launch { maskAlpha.animateTo(targetAlpha) }
-                            }
-                        }
-                    ),
-                color = DrawerDefaults.modalContainerColor.copy(alpha = 0.95f),
-                shape = MaterialTheme.shapes.large.copy(
-                    topEnd = CornerSize(0),
-                    bottomEnd = CornerSize(0)
-                ),
-                shadowElevation = 2.dp,
-                tonalElevation = DrawerDefaults.ModalDrawerElevation
-            ) {
-                var isAllExpanded by rememberSaveable { mutableStateOf(true) }
-
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .systemBarsPadding()
-                ) {
-                    // 顶部操作按钮
-                    item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                modifier = Modifier.padding(start = 12.dp),
-                                text = stringResource(Res.string.overview),
-                                style = MaterialTheme.typography.titleLarge,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                TooltipIconButton(
-                                    tipText = stringResource(Res.string.settings),
-                                    icon = Icons.Outlined.Settings,
-                                    onClick = { navigateTo(Screen.Settings) }
-                                )
-                                IconButton(onClick = onDismiss) {
-                                    Icon(
-                                        painter = painterResource(Res.drawable.right_panel_close),
-                                        tint = MaterialTheme.colorScheme.onSurface,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    // 详细内容
-                    item {
-                        SelectionContainer {
-                            Column(Modifier.padding(start = 16.dp, end = 12.dp)) {
-                                drawerContent()
-                            }
-                        }
-                    }
-
-                    if (outline.children.isNotEmpty() && showOutline)
-                        item {
-                            HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 12.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = stringResource(Res.string.outline),
-                                    style = MaterialTheme.typography.titleLarge,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    fontWeight = FontWeight.Bold
-                                )
-
-                                IconButton(
-                                    onClick = { isAllExpanded = !isAllExpanded }
+                        LazyColumn(Modifier.fillMaxSize()) {
+                            // 顶部操作按钮
+                            item {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    Icon(
-                                        imageVector = if (isAllExpanded) Icons.Outlined.UnfoldLess
-                                        else Icons.Outlined.UnfoldMore,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    Text(
+                                        modifier = Modifier.padding(start = 12.dp),
+                                        text = stringResource(Res.string.overview),
+                                        style = MaterialTheme.typography.titleLarge,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        fontWeight = FontWeight.Bold
                                     )
+
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        TooltipIconButton(
+                                            tipText = stringResource(Res.string.settings),
+                                            icon = Icons.Outlined.Settings,
+                                            onClick = {
+                                                if (!isExiting) isExiting = true
+                                                navigateTo(Screen.Settings)
+                                            }
+                                        )
+                                        IconButton(onClick = { if (!isExiting) isExiting = true }) {
+                                            Icon(
+                                                painter = painterResource(Res.drawable.right_panel_close),
+                                                tint = MaterialTheme.colorScheme.onSurface,
+                                                contentDescription = null
+                                            )
+                                        }
+                                    }
                                 }
                             }
-                        }
 
-                    if (outline.children.isNotEmpty() && showOutline)
-                        items(outline.children) { header ->
-                            HeaderItem(
-                                header = header,
-                                depth = 0,
-                                onHeaderClick = onHeaderClick,
-                                parentExpanded = isAllExpanded
-                            )
+                            // 详细内容
+                            item {
+                                SelectionContainer {
+                                    Column(Modifier.padding(start = 16.dp, end = 12.dp)) {
+                                        drawerContent()
+                                    }
+                                }
+                            }
+
+                            // ... 大纲部分 (outline) ...
+                            if (outline.children.isNotEmpty() && showOutline)
+                                item {
+                                    HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 12.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = stringResource(Res.string.outline),
+                                            style = MaterialTheme.typography.titleLarge,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            fontWeight = FontWeight.Bold
+                                        )
+
+                                        IconButton(
+                                            onClick = { isAllExpanded = !isAllExpanded }
+                                        ) {
+                                            Icon(
+                                                imageVector = if (isAllExpanded) Icons.Outlined.UnfoldLess
+                                                else Icons.Outlined.UnfoldMore,
+                                                contentDescription = null,
+                                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                    }
+                                }
+
+                            if (outline.children.isNotEmpty() && showOutline)
+                                items(outline.children) { header ->
+                                    HeaderItem(
+                                        header = header,
+                                        depth = 0,
+                                        onHeaderClick = onHeaderClick,
+                                        parentExpanded = isAllExpanded
+                                    )
+                                }
                         }
+                    }
                 }
             }
         }
     }
 }
+
+@Stable
+data class HeaderNode(
+    val title: String,
+    val level: Int,
+    val range: IntRange,
+    val children: MutableList<HeaderNode> = mutableListOf()
+)
 
 @Composable
 fun NoteSideSheetItem(
@@ -349,13 +386,6 @@ fun NoteSideSheetItem(
     )
 }
 
-@Stable
-data class HeaderNode(
-    val title: String,
-    val level: Int,
-    val range: IntRange,
-    val children: MutableList<HeaderNode> = mutableListOf()
-)
 
 @Composable
 private fun HeaderItem(
@@ -377,7 +407,9 @@ private fun HeaderItem(
     ) {
         if (header.children.isNotEmpty()) {
             IconButton(
-                modifier = Modifier.padding(start = (depth * 8).dp).size(32.dp),
+                modifier = Modifier
+                    .padding(start = (depth * 8).dp)
+                    .size(32.dp),
                 onClick = { expanded = !expanded }
             ) {
                 Icon(
@@ -388,7 +420,11 @@ private fun HeaderItem(
                 )
             }
         } else {
-            Spacer(modifier = Modifier.padding(start = (depth * 8).dp).width(32.dp))
+            Spacer(
+                modifier = Modifier
+                    .padding(start = (depth * 8).dp)
+                    .width(32.dp)
+            )
         }
 
         Text(
