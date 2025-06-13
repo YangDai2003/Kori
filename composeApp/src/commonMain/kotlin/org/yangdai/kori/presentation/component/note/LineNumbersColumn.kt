@@ -1,5 +1,6 @@
 package org.yangdai.kori.presentation.component.note
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -7,35 +8,38 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
 import kotlin.math.max
 
+@OptIn(FlowPreview::class)
 @Composable
 fun LineNumbersColumn(
     currentLine: Int,
     actualLinePositions: List<Pair<Int, Float>>, // line start index to line top position
-    scrollProvider: () -> Int
+    scrollProvider: () -> Int,
+    textStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(fontFamily = FontFamily.Monospace),
+    textColor: Color = MaterialTheme.colorScheme.onSurfaceVariant
 ) {
     val textMeasurer = rememberTextMeasurer()
     val density = LocalDensity.current
-    val textStyle = MaterialTheme.typography.bodyLarge.copy(fontFamily = FontFamily.Monospace)
-    val textColor = MaterialTheme.colorScheme.onSurfaceVariant
 
     val requiredWidth by remember(actualLinePositions.size, textStyle, density) {
         derivedStateOf {
@@ -46,13 +50,13 @@ fun LineNumbersColumn(
     }
 
     // 用于UI的、经过防抖处理的宽度状态
-    var debouncedWidth by remember { mutableStateOf(requiredWidth) }
-    LaunchedEffect(requiredWidth) {
-        // 等待 200 毫秒
-        delay(200)
-        // 延迟结束后，如果 requiredWidth 没有再次变化，就更新UI状态
-        debouncedWidth = requiredWidth
+    val debouncedWidth by produceState(initialValue = requiredWidth, key1 = requiredWidth) {
+        snapshotFlow { requiredWidth }
+            .debounce(200L)
+            .collect { value = it }
     }
+
+    val width by animateDpAsState(debouncedWidth)
 
     val lineLayoutsCache = remember(textMeasurer, textStyle) {
         mutableMapOf<String, TextLayoutResult>()
@@ -61,7 +65,7 @@ fun LineNumbersColumn(
     Box(
         Modifier
             .fillMaxHeight()
-            .width(debouncedWidth)
+            .width(width)
             .padding(horizontal = 4.dp)
             .clipToBounds(),
         contentAlignment = Alignment.TopEnd
