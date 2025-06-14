@@ -483,11 +483,11 @@ fun MainScreenContent(
                         val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()
                         AnimatedContent(textFieldState.text.isNotBlank() && searchBarState.currentValue == SearchBarValue.Collapsed) { showSearchRes ->
                             if (showSearchRes)
-                                SearchResultsPage(
+                                Page(
                                     keyword = textFieldState.text.toString(),
                                     notes = searchResults,
                                     contentPadding = contentPadding,
-                                    navigateToScreen = navigateToScreen,
+                                    navigateToNote = { navigateToScreen(Screen.Note(it)) },
                                     selectedNotes = selectedNotes,
                                     noteItemProperties = noteItemProperties,
                                     isSelectionMode = isSelectionMode

@@ -19,31 +19,11 @@ class MarkdownTransformation : AnnotatedOutputTransformation {
         SpanStyle(fontWeight = FontWeight.Light, color = Color.Gray, fontStyle = FontStyle.Italic)
 
     // 为不同 alert 类型定义更鲜明的样式
-    val noteStyle = SpanStyle(
-        color = Color(0xFF2F81F7),
-        fontWeight = FontWeight.SemiBold,
-        background = Color(0x142F81F7)
-    )
-    val tipStyle = SpanStyle(
-        color = Color(0xFF238636),
-        fontWeight = FontWeight.SemiBold,
-        background = Color(0x14238636)
-    )
-    val importantStyle = SpanStyle(
-        color = Color(0xFF8250DF),
-        fontWeight = FontWeight.SemiBold,
-        background = Color(0x148250DF)
-    )
-    val warningStyle = SpanStyle(
-        color = Color(0xFFD29922),
-        fontWeight = FontWeight.SemiBold,
-        background = Color(0x14FFD299)
-    )
-    val cautionStyle = SpanStyle(
-        color = Color(0xFFF85149),
-        fontWeight = FontWeight.SemiBold,
-        background = Color(0x14F85149)
-    )
+    val noteStyle = SpanStyle(color = Color(0xFF2F81F7), background = Color(0x142F81F7))
+    val tipStyle = SpanStyle(color = Color(0xFF238636), background = Color(0x14238636))
+    val importantStyle = SpanStyle(color = Color(0xFF8250DF), background = Color(0x148250DF))
+    val warningStyle = SpanStyle(color = Color(0xFFD29922), background = Color(0x14FFD299))
+    val cautionStyle = SpanStyle(color = Color(0xFFF85149), background = Color(0x14F85149))
 
     companion object {
         // 支持语言名包含符号（如c#, c++, .net, C--等）

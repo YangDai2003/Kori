@@ -46,122 +46,18 @@ data class NoteItemProperties(
 )
 
 @Composable
-private fun NoteItemCard(
-    modifier: Modifier,
-    isSelected: Boolean,
-    content: @Composable () -> Unit
-) = Surface(
-    modifier = modifier,
-    shape = CardDefaults.shape,
-    border = if (isSelected) CardDefaults.outlinedCardBorder() else null,
-    content = content
-)
-
-@Composable
 fun LazyStaggeredGridItemScope.NoteItem(
-    note: NoteEntity,
-    noteItemProperties: NoteItemProperties,
-    isSelected: Boolean = false,
-    isSelectionMode: Boolean = false,
-    onClick: () -> Unit,
-    onLongClick: () -> Unit
-) = NoteItemCard(
-    modifier = Modifier.fillMaxWidth().animateItem(),
-    isSelected = isSelected
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .combinedClickable(
-                onClick = onClick,
-                onLongClick = onLongClick
-            )
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            // 标题
-            if (note.title.isNotBlank()) {
-                Text(
-                    text = note.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    modifier = Modifier.basicMarquee()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-
-            // 内容预览
-            if (noteItemProperties.cardSize != CardSize.TITLE_ONLY) {
-                val lines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 5 else 2
-                Text(
-                    text = note.content,
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = lines,
-                    overflow = if (noteItemProperties.clipOverflow) TextOverflow.Clip else TextOverflow.Ellipsis
-                )
-            }
-
-            // 底部行：笔记类型和更新时间信息
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 12.dp)
-            ) {
-
-                if (note.isPinned)
-                    Icon(
-                        modifier = Modifier.padding(end = 8.dp).size(16.dp),
-                        imageVector = Icons.Default.PushPin,
-                        tint = MaterialTheme.colorScheme.primary,
-                        contentDescription = null,
-                    )
-
-                Text(
-                    text = when (note.noteType) {
-                        NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
-                        NoteType.MARKDOWN -> stringResource(Res.string.markdown)
-                    },
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                val instant =
-                    if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
-                    else Instant.parse(note.updatedAt)
-                Text(
-                    text = formatInstant(instant),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                )
-            }
-        }
-
-        // 选择框
-        if (isSelectionMode) {
-            Checkbox(
-                checked = isSelected,
-                onCheckedChange = null,
-                modifier = Modifier
-                    .padding(12.dp)
-                    .align(Alignment.TopEnd)
-            )
-        }
-    }
-}
-
-@Composable
-fun LazyStaggeredGridItemScope.SearchResultNoteItem(
     keyword: String,
     note: NoteEntity,
     noteItemProperties: NoteItemProperties,
-    isSelected: Boolean = false,
-    isSelectionMode: Boolean = false,
+    isSelected: Boolean,
+    isSelectionMode: Boolean,
     onClick: () -> Unit,
     onLongClick: () -> Unit
-) = NoteItemCard(
+) = Surface(
     modifier = Modifier.fillMaxWidth().animateItem(),
-    isSelected = isSelected
+    shape = CardDefaults.shape,
+    border = if (isSelected) CardDefaults.outlinedCardBorder() else null
 ) {
     Box(
         modifier = Modifier
@@ -176,6 +72,10 @@ fun LazyStaggeredGridItemScope.SearchResultNoteItem(
             if (note.title.isNotBlank()) {
                 val annotatedString = buildAnnotatedString {
                     val title = note.title
+                    if (keyword.isEmpty()) {
+                        append(title)
+                        return@buildAnnotatedString
+                    }
                     val index = title.indexOf(keyword, ignoreCase = true)
                     if (index != -1) {
                         append(title.substring(0, index))
@@ -191,7 +91,6 @@ fun LazyStaggeredGridItemScope.SearchResultNoteItem(
                         append(title)
                     }
                 }
-
                 Text(
                     text = annotatedString,
                     style = MaterialTheme.typography.titleMedium,
@@ -201,7 +100,6 @@ fun LazyStaggeredGridItemScope.SearchResultNoteItem(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
-
 
             // 内容预览
             if (noteItemProperties.cardSize != CardSize.TITLE_ONLY) {
@@ -213,7 +111,6 @@ fun LazyStaggeredGridItemScope.SearchResultNoteItem(
                     overflow = if (noteItemProperties.clipOverflow) TextOverflow.Clip else TextOverflow.Ellipsis
                 )
             }
-
 
             // 底部行：笔记类型和更新时间信息
             Row(
