@@ -133,6 +133,23 @@ val SampleNote = """
     > It can span multiple lines
     >
     > > Nested blockquotes are also possible
+    
+    ### Github Alerts
+    
+    > [!NOTE]
+    > This is a note block.
+    
+    > [!TIP]
+    > This is a tip block.
+    
+    > [!WARNING]
+    > This is a warning block.
+    
+    > [!IMPORTANT]
+    > This is an important block.
+    
+    > [!CAUTION]
+    > This is a caution block.
 
     ## Code
 

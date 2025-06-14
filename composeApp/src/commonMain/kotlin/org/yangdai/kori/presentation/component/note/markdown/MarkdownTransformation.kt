@@ -46,7 +46,8 @@ class MarkdownTransformation : AnnotatedOutputTransformation {
     )
 
     companion object {
-        private val codeBlockRegex = Regex("""```(\w+)?\n([\s\S]*?)\n```""")
+        // 支持语言名包含符号（如c#, c++, .net, C--等）
+        private val codeBlockRegex = Regex("""```([^\s\n`]*)?\n([\s\S]*?)\n```""")
         private val linkRegex = Regex("""\[(.+?)]\((.+?)\)""")
         private val taskListRegex = Regex("""^[ \t]*-\s\[([ x])]\s.+$""", RegexOption.MULTILINE)
         private val listRegex = Regex("""^([ \t]*)([-*+]|(\d+\.))\s.+$""", RegexOption.MULTILINE)
