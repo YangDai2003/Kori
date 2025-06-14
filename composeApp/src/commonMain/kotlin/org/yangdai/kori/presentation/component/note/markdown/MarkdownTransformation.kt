@@ -18,14 +18,42 @@ class MarkdownTransformation : AnnotatedOutputTransformation {
     val linkUrl =
         SpanStyle(fontWeight = FontWeight.Light, color = Color.Gray, fontStyle = FontStyle.Italic)
 
+    // 为不同 alert 类型定义更鲜明的样式
+    val noteStyle = SpanStyle(
+        color = Color(0xFF2F81F7),
+        fontWeight = FontWeight.SemiBold,
+        background = Color(0x142F81F7)
+    )
+    val tipStyle = SpanStyle(
+        color = Color(0xFF238636),
+        fontWeight = FontWeight.SemiBold,
+        background = Color(0x14238636)
+    )
+    val importantStyle = SpanStyle(
+        color = Color(0xFF8250DF),
+        fontWeight = FontWeight.SemiBold,
+        background = Color(0x148250DF)
+    )
+    val warningStyle = SpanStyle(
+        color = Color(0xFFD29922),
+        fontWeight = FontWeight.SemiBold,
+        background = Color(0x14FFD299)
+    )
+    val cautionStyle = SpanStyle(
+        color = Color(0xFFF85149),
+        fontWeight = FontWeight.SemiBold,
+        background = Color(0x14F85149)
+    )
+
     companion object {
         private val codeBlockRegex = Regex("""```(\w+)?\n([\s\S]*?)\n```""")
         private val linkRegex = Regex("""\[(.+?)]\((.+?)\)""")
         private val taskListRegex = Regex("""^[ \t]*-\s\[([ x])]\s.+$""", RegexOption.MULTILINE)
-        private val unorderedListRegex = Regex("""^([ \t]*)([-*+])\s.+$""", RegexOption.MULTILINE)
-        private val orderedListRegex = Regex("""^[ \t]*\d+\.\s.+$""", RegexOption.MULTILINE)
+        private val listRegex = Regex("""^([ \t]*)([-*+]|(\d+\.))\s.+$""", RegexOption.MULTILINE)
         private val headingRegex = Regex("""^(#{1,6})\s+(.+)$""", RegexOption.MULTILINE)
         private val hrRegex = Regex("""^[ \t]*(\*{3,}|-{3,}|_{3,})[ \t]*$""", RegexOption.MULTILINE)
+        private val githubAlertRegex =
+            Regex("""^> \[(!(NOTE|TIP|IMPORTANT|WARNING|CAUTION))]""", RegexOption.MULTILINE)
     }
 
     override fun OutputTransformationAnnotationScope.annotateOutput() {
@@ -40,17 +68,12 @@ class MarkdownTransformation : AnnotatedOutputTransformation {
             addAnnotation(marker, it.range.first, it.range.first + it.value.indexOf(']') + 1)
         }
 
-        // 列表 - text or * text or + text
-        unorderedListRegex.findAll(text).forEach {
+        // 列表处理
+        listRegex.findAll(text).forEach {
             val start = it.range.first
-            val markerLength =
-                it.groupValues[1].length + it.groupValues[2].length + 1 // 前导空白 + 标记 + 空格
+            // 前导空白 + 标记 + 空格
+            val markerLength = it.groupValues[1].length + it.groupValues[2].length + 1
             addAnnotation(marker, start, start + markerLength)
-        }
-
-        // 有序列表 1. text
-        orderedListRegex.findAll(text).forEach {
-            addAnnotation(marker, it.range.first, it.range.first + it.value.indexOf('.') + 1)
         }
 
         // 先收集所有代码块区间
@@ -85,6 +108,23 @@ class MarkdownTransformation : AnnotatedOutputTransformation {
         // 分割线 *** 或 --- 或 ___（独占一行，允许空格，不能有其他内容）
         hrRegex.findAll(text).forEach {
             addAnnotation(marker, it.range.first, it.range.last + 1)
+        }
+
+        // 为 > [!NOTE] [!TIP] [!IMPORTANT] [!WARNING] [!CAUTION] 添加不同颜色���式
+        githubAlertRegex.findAll(text).forEach {
+            val type = it.groupValues[2]
+            val style = when (type) {
+                "NOTE" -> noteStyle
+                "TIP" -> tipStyle
+                "IMPORTANT" -> importantStyle
+                "WARNING" -> warningStyle
+                "CAUTION" -> cautionStyle
+                else -> keyword
+            }
+            // 只为 [] 部分添加样式
+            val bracketStart = it.range.first + 2 // > 后的空格
+            val bracketEnd = it.range.last + 1
+            addAnnotation(style, bracketStart, bracketEnd)
         }
     }
 }

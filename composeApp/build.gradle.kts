@@ -60,13 +60,11 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.appcompat)
             implementation(libs.androidx.core.ktx)
-            implementation(libs.koin.android)
-            implementation(libs.koin.androidx.compose)
             implementation(libs.androidx.biometric)
             implementation(libs.androidx.documentfile)
             implementation(libs.androidx.browser)
             implementation(libs.ktor.client.okhttp)
-            implementation ("androidx.window:window:1.4.0")
+            implementation("androidx.window:window:1.4.0")
         }
         commonMain.dependencies {
             implementation(compose.runtime)

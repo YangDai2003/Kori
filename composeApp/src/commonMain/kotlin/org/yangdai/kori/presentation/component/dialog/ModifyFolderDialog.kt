@@ -164,7 +164,7 @@ fun SharedTransitionScope.ModifyFolderDialog(
                         shapes = IconButtonDefaults.toggleableShapes(),
                         colors = IconButtonDefaults.filledIconToggleButtonColors(
                             checkedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            checkedContentColor = MaterialTheme.colorScheme.tertiary
+                            checkedContentColor = MaterialTheme.colorScheme.onTertiaryContainer
                         )
                     ) {
                         Icon(
