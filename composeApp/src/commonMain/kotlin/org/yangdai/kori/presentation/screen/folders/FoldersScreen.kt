@@ -11,6 +11,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,6 +50,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -57,6 +59,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -69,6 +72,7 @@ import kori.composeapp.generated.resources.note_count
 import kori.composeapp.generated.resources.others
 import kori.composeapp.generated.resources.sort_by
 import kori.composeapp.generated.resources.starred
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -105,12 +109,21 @@ fun FoldersScreen(
 
     var selectedFolder by remember { mutableStateOf<FolderEntity?>(null) }
     var deletingFolder by remember { mutableStateOf<FolderEntity?>(null) }
+    val state = rememberLazyGridState()
+    val scope = rememberCoroutineScope()
 
     SharedTransitionLayout(Modifier.fillMaxSize()) {
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 PlatformStyleTopAppBar(
+                    modifier = Modifier.pointerInput(Unit) {
+                        detectTapGestures(onDoubleTap = {
+                            scope.launch {
+                                state.animateScrollToItem(0)
+                            }
+                        })
+                    },
                     title = { PlatformStyleTopAppBarTitle(stringResource(Res.string.folders)) },
                     navigationIcon = { PlatformStyleTopAppBarNavigationIcon(onClick = navigateUp) },
                     actions = {
@@ -164,7 +177,6 @@ fun FoldersScreen(
                         end = innerPadding.calculateEndPadding(layoutDirection)
                     )
             ) {
-                val state = rememberLazyGridState()
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(380.dp),
                     state = state,

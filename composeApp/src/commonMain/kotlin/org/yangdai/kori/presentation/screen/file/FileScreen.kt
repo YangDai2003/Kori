@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -75,6 +76,7 @@ import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -165,6 +167,8 @@ fun FileScreen(
         }
     }
 
+    val coroutineScope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
     var isReadView by rememberSaveable { mutableStateOf(false) }
     var showTemplatesBottomSheet by rememberSaveable { mutableStateOf(false) }
     var isSearching by remember { mutableStateOf(false) }
@@ -219,6 +223,15 @@ fun FileScreen(
         },
         topBar = {
             TopAppBar(
+                modifier = Modifier.pointerInput(Unit) {
+                    detectTapGestures(
+                        onDoubleTap = {
+                            coroutineScope.launch {
+                                scrollState.animateScrollTo(0)
+                            }
+                        }
+                    )
+                },
                 title = {
                     BasicTextField(
                         modifier = Modifier.onPreviewKeyEvent { keyEvent ->
@@ -246,7 +259,7 @@ fun FileScreen(
                         },
                         state = viewModel.titleState,
                         lineLimits = TextFieldLineLimits.SingleLine,
-                        textStyle = MaterialTheme.typography.titleMedium.copy(
+                        textStyle = MaterialTheme.typography.titleLarge.copy(
                             color = MaterialTheme.colorScheme.onSurface
                         ),
                         readOnly = true,
@@ -263,7 +276,7 @@ fun FileScreen(
                                 placeholder = {
                                     Text(
                                         text = stringResource(Res.string.title),
-                                        style = MaterialTheme.typography.titleMedium.copy(
+                                        style = MaterialTheme.typography.titleLarge.copy(
                                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
                                                 alpha = 0.6f
                                             )
@@ -330,7 +343,6 @@ fun FileScreen(
                 )
             }
 
-            val scrollState = rememberScrollState()
             if (fileEditingState.fileType == NoteType.PLAIN_TEXT) {
                 Editor(
                     modifier = Modifier.fillMaxWidth().weight(1f),
@@ -457,7 +469,6 @@ fun FileScreen(
     }
 
     val templatesSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val coroutineScope = rememberCoroutineScope()
     val hideTemplatesBottomSheet: () -> Unit = {
         coroutineScope.launch {
             templatesSheetState.hide()

@@ -2,6 +2,7 @@ package org.yangdai.kori.presentation.screen.template
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -48,6 +49,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -59,6 +61,7 @@ import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -79,6 +82,7 @@ import kori.composeapp.generated.resources.type
 import kori.composeapp.generated.resources.updated
 import kori.composeapp.generated.resources.word_count
 import kori.composeapp.generated.resources.word_count_without_punctuation
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -148,6 +152,8 @@ fun TemplateScreen(
         }
     }
 
+    val coroutineScope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
     var isSearching by remember { mutableStateOf(false) }
     var selectedHeader by remember { mutableStateOf<IntRange?>(null) }
     var findAndReplaceState by remember { mutableStateOf(FindAndReplaceState()) }
@@ -194,34 +200,40 @@ fun TemplateScreen(
         },
         topBar = {
             TopAppBar(
+                modifier = Modifier.pointerInput(Unit) {
+                    detectTapGestures(
+                        onDoubleTap = {
+                            coroutineScope.launch {
+                                scrollState.animateScrollTo(0)
+                            }
+                        }
+                    )
+                },
                 title = {
                     BasicTextField(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(end = 8.dp)
-                            .onPreviewKeyEvent { keyEvent ->
-                                if (keyEvent.type == KeyEventType.KeyDown) {
-                                    when (keyEvent.key) {
-                                        Key.DirectionLeft -> {
-                                            if (currentPlatformInfo.platform == Platform.Android) {
-                                                viewModel.titleState.edit { moveCursorLeftStateless() }
-                                                true
-                                            } else false
-                                        }
-
-                                        Key.DirectionRight -> {
-                                            if (currentPlatformInfo.platform == Platform.Android) {
-                                                viewModel.titleState.edit { moveCursorRightStateless() }
-                                                true
-                                            } else false
-                                        }
-
-                                        else -> false
+                        modifier = Modifier.onPreviewKeyEvent { keyEvent ->
+                            if (keyEvent.type == KeyEventType.KeyDown) {
+                                when (keyEvent.key) {
+                                    Key.DirectionLeft -> {
+                                        if (currentPlatformInfo.platform == Platform.Android) {
+                                            viewModel.titleState.edit { moveCursorLeftStateless() }
+                                            true
+                                        } else false
                                     }
-                                } else {
-                                    false
+
+                                    Key.DirectionRight -> {
+                                        if (currentPlatformInfo.platform == Platform.Android) {
+                                            viewModel.titleState.edit { moveCursorRightStateless() }
+                                            true
+                                        } else false
+                                    }
+
+                                    else -> false
                                 }
-                            },
+                            } else {
+                                false
+                            }
+                        },
                         state = viewModel.titleState,
                         lineLimits = TextFieldLineLimits.SingleLine,
                         textStyle = MaterialTheme.typography.titleLarge.copy(
@@ -240,7 +252,6 @@ fun TemplateScreen(
                                 interactionSource = remember { MutableInteractionSource() },
                                 placeholder = {
                                     Text(
-                                        modifier = Modifier.fillMaxWidth(),
                                         text = stringResource(Res.string.title),
                                         style = MaterialTheme.typography.titleLarge.copy(
                                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
@@ -295,7 +306,6 @@ fun TemplateScreen(
                 )
             }
 
-            val scrollState = rememberScrollState()
             if (noteEditingState.noteType == NoteType.PLAIN_TEXT) {
                 Editor(
                     modifier = Modifier.fillMaxWidth().weight(1f),

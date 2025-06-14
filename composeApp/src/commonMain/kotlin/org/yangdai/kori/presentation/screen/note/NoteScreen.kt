@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -82,6 +83,7 @@ import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -199,6 +201,8 @@ fun NoteScreen(
         }
     }
 
+    val coroutineScope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
     var isSearching by remember { mutableStateOf(false) }
     var selectedHeader by remember { mutableStateOf<IntRange?>(null) }
     var findAndReplaceState by remember { mutableStateOf(FindAndReplaceState()) }
@@ -245,6 +249,15 @@ fun NoteScreen(
         },
         topBar = {
             TopAppBar(
+                modifier = Modifier.pointerInput(Unit) {
+                    detectTapGestures(
+                        onDoubleTap = {
+                            coroutineScope.launch {
+                                scrollState.animateScrollTo(0)
+                            }
+                        }
+                    )
+                },
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         FilledTonalButton(
@@ -258,7 +271,6 @@ fun NoteScreen(
                         if (isLargeScreen) {
                             BasicTextField(
                                 modifier = Modifier
-                                    .fillMaxWidth()
                                     .padding(horizontal = 16.dp)
                                     .onPreviewKeyEvent { keyEvent ->
                                         if (keyEvent.type == KeyEventType.KeyDown) {
@@ -301,7 +313,6 @@ fun NoteScreen(
                                         interactionSource = remember { MutableInteractionSource() },
                                         placeholder = {
                                             Text(
-                                                modifier = Modifier.fillMaxWidth(),
                                                 text = stringResource(Res.string.title),
                                                 style = MaterialTheme.typography.titleLarge.copy(
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
@@ -428,7 +439,6 @@ fun NoteScreen(
                 }
             }
 
-            val scrollState = rememberScrollState()
             if (noteEditingState.noteType == NoteType.PLAIN_TEXT) {
                 Editor(
                     modifier = Modifier.fillMaxWidth().weight(1f),
@@ -571,7 +581,6 @@ fun NoteScreen(
     }
 
     val templatesSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val coroutineScope = rememberCoroutineScope()
     val hideTemplatesBottomSheet: () -> Unit = {
         coroutineScope.launch {
             templatesSheetState.hide()
