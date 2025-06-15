@@ -21,7 +21,6 @@ import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.GeneratingTokens
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
@@ -69,7 +68,6 @@ import org.yangdai.kori.presentation.screen.settings.AiProvider
 import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import org.yangdai.kori.presentation.util.Constants
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AiPane(settingsViewModel: SettingsViewModel) {
 

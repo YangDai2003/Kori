@@ -22,40 +22,38 @@ fun Editor(
     headerRange: IntRange?,
     findAndReplaceState: FindAndReplaceState,
     onFindAndReplaceUpdate: (FindAndReplaceState) -> Unit
-) {
-    if (isTemplate) TemplateEditor(
-        modifier = modifier,
-        state = state,
-        scrollState = scrollState,
-        readMode = readMode,
-        showLineNumbers = showLineNumbers,
-        findAndReplaceState = findAndReplaceState,
-        onFindAndReplaceUpdate = onFindAndReplaceUpdate
-    ) else when (type) {
-        NoteType.MARKDOWN -> {
-            MarkdownEditor(
-                modifier = modifier,
-                state = state,
-                scrollState = scrollState,
-                readMode = readMode,
-                showLineNumbers = showLineNumbers,
-                isLintActive = isLintActive,
-                headerRange = headerRange,
-                findAndReplaceState = findAndReplaceState,
-                onFindAndReplaceUpdate = onFindAndReplaceUpdate
-            )
-        }
+) = if (isTemplate) TemplateEditor(
+    modifier = modifier,
+    state = state,
+    scrollState = scrollState,
+    readMode = readMode,
+    showLineNumbers = showLineNumbers,
+    findAndReplaceState = findAndReplaceState,
+    onFindAndReplaceUpdate = onFindAndReplaceUpdate
+) else when (type) {
+    NoteType.MARKDOWN -> {
+        MarkdownEditor(
+            modifier = modifier,
+            state = state,
+            scrollState = scrollState,
+            readMode = readMode,
+            showLineNumbers = showLineNumbers,
+            isLintActive = isLintActive,
+            headerRange = headerRange,
+            findAndReplaceState = findAndReplaceState,
+            onFindAndReplaceUpdate = onFindAndReplaceUpdate
+        )
+    }
 
-        NoteType.PLAIN_TEXT -> {
-            PlainTextEditor(
-                modifier = modifier,
-                state = state,
-                scrollState = scrollState,
-                readMode = readMode,
-                showLineNumbers = showLineNumbers,
-                findAndReplaceState = findAndReplaceState,
-                onFindAndReplaceUpdate = onFindAndReplaceUpdate
-            )
-        }
+    NoteType.PLAIN_TEXT -> {
+        PlainTextEditor(
+            modifier = modifier,
+            state = state,
+            scrollState = scrollState,
+            readMode = readMode,
+            showLineNumbers = showLineNumbers,
+            findAndReplaceState = findAndReplaceState,
+            onFindAndReplaceUpdate = onFindAndReplaceUpdate
+        )
     }
 }

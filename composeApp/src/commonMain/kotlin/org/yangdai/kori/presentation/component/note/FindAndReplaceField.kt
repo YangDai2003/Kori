@@ -17,7 +17,6 @@ import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.Autorenew
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.LocationSearching
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -138,7 +137,6 @@ fun FindAndReplaceField(
 }
 
 // 由于OutlinedTextField有诡异的边距和大小，因此自定义BasicTextField来实现
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomTextField(
     modifier: Modifier = Modifier,

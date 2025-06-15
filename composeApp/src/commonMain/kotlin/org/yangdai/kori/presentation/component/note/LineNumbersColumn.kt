@@ -22,11 +22,9 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlin.math.max
 
-@OptIn(FlowPreview::class)
 @Composable
 fun LineNumbersColumn(
     currentLine: Int,

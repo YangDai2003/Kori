@@ -8,7 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.ExperimentalComposeApi
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -30,7 +29,7 @@ import org.yangdai.kori.presentation.theme.KoriTheme
 import org.yangdai.kori.presentation.util.AppLockManager
 import org.yangdai.kori.presentation.util.Constants
 
-@OptIn(ExperimentalComposeApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 fun MainViewController() = ComposeUIViewController(
     configure = {
         parallelRendering = true

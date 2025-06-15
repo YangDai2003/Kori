@@ -5,7 +5,6 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.DarkDefaultContextMenuRepresentation
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LightDefaultContextMenuRepresentation
 import androidx.compose.foundation.LocalContextMenuRepresentation
 import androidx.compose.foundation.background
@@ -44,7 +43,6 @@ import java.awt.Dimension
 @Suppress("unused")
 val fakeJFXPanel = JFXPanel()
 
-@OptIn(ExperimentalFoundationApi::class)
 fun main() {
     System.setProperty("compose.interop.blending", "true")
     System.setProperty("compose.swing.render.on.graphics", "true")
