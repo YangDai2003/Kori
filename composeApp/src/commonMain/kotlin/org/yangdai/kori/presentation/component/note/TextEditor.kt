@@ -9,6 +9,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.OutputTransformation
@@ -26,6 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
@@ -49,7 +52,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
+import org.yangdai.kori.presentation.component.VerticalScrollbar
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownLint
+import org.yangdai.kori.presentation.util.isScreenSizeLarge
 import kotlin.math.PI
 import kotlin.math.sin
 
@@ -231,74 +236,83 @@ fun TextEditor(
             )
             VerticalDivider()
         }
-        BasicTextField(
-            modifier = textFieldModifier,
-            scrollState = scrollState,
-            readOnly = readMode,
-            state = state,
-            textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-            onTextLayout = { textLayoutResult = it() },
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Sentences,
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.None
-            ),
-            outputTransformation = outputTransformation,
-            decorator = { innerTextField ->
-                Box(
-                    modifier = Modifier
-                        .clipToBounds()
-                        .drawBehind {
-                            textLayoutResult?.let { layoutResult ->
-                                // 提前计算滚动偏移,避免重复计算
-                                val scrollOffset = Offset(0f, -scrollState.value.toFloat())
-                                val text = state.text.toString()
+        Box(Modifier.fillMaxSize()) {
+            BasicTextField(
+                modifier = textFieldModifier,
+                scrollState = scrollState,
+                readOnly = readMode,
+                state = state,
+                textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                onTextLayout = { textLayoutResult = it() },
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences,
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.None
+                ),
+                outputTransformation = outputTransformation,
+                decorator = { innerTextField ->
+                    Box(
+                        modifier = Modifier
+                            .clipToBounds()
+                            .drawBehind {
+                                textLayoutResult?.let { layoutResult ->
+                                    // 提前计算滚动偏移,避免重复计算
+                                    val scrollOffset = Offset(0f, -scrollState.value.toFloat())
+                                    val text = state.text.toString()
 
-                                // 使用 withTransform 避免多次 translate
-                                withTransform({ translate(scrollOffset.x, scrollOffset.y) }) {
-                                    // 批量绘制搜索高亮
-                                    if (findAndReplaceState.searchWord.isNotBlank())
-                                        matchedWordsRanges.forEachIndexed { index, (start, end) ->
-                                            if (start < end && end <= text.length && start >= 0) {
-                                                val path =
-                                                    layoutResult.getPathForRange(start, end)
-                                                drawPath(
-                                                    path = path,
-                                                    color = if (index == currentRangeIndex) Color.Green else Color.Cyan,
-                                                    alpha = 0.5f,
-                                                )
+                                    // 使用 withTransform 避免多次 translate
+                                    withTransform({ translate(scrollOffset.x, scrollOffset.y) }) {
+                                        // 批量绘制搜索高亮
+                                        if (findAndReplaceState.searchWord.isNotBlank())
+                                            matchedWordsRanges.forEachIndexed { index, (start, end) ->
+                                                if (start < end && end <= text.length && start >= 0) {
+                                                    val path =
+                                                        layoutResult.getPathForRange(start, end)
+                                                    drawPath(
+                                                        path = path,
+                                                        color = if (index == currentRangeIndex) Color.Green else Color.Cyan,
+                                                        alpha = 0.5f,
+                                                    )
+                                                }
                                             }
-                                        }
 
-                                    // 批量绘制波浪线
-                                    if (isLintActive)
-                                        lintErrors.forEach { issue ->
-                                            val start = issue.startIndex
-                                            val end = issue.endIndex
-                                            if (start < end && end <= text.length && start >= 0) {
-                                                val path = layoutResult.getPathForRange(start, end)
-                                                drawWavyUnderlineOptimized(path, phase)
+                                        // 批量绘制波浪线
+                                        if (isLintActive)
+                                            lintErrors.forEach { issue ->
+                                                val start = issue.startIndex
+                                                val end = issue.endIndex
+                                                if (start < end && end <= text.length && start >= 0) {
+                                                    val path =
+                                                        layoutResult.getPathForRange(start, end)
+                                                    drawWavyUnderlineOptimized(path, phase)
+                                                }
                                             }
-                                        }
+                                    }
                                 }
                             }
-                        }
-                ) {
-                    if (state.text.isEmpty()) {
-                        Text(
-                            text = stringResource(Res.string.content),
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                    alpha = 0.6f
+                    ) {
+                        if (state.text.isEmpty()) {
+                            Text(
+                                text = stringResource(Res.string.content),
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                        alpha = 0.6f
+                                    )
                                 )
                             )
-                        )
+                        }
+                        innerTextField()
                     }
-                    innerTextField()
                 }
+            )
+            if (!isScreenSizeLarge()) {
+                VerticalScrollbar(
+                    modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+                    state = scrollState
+                )
             }
-        )
+        }
     }
 }
 

@@ -7,19 +7,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-expect fun LazyGridScrollbar(
+expect fun VerticalScrollbar(
     modifier: Modifier,
     state: LazyGridState,
 )
 
 @Composable
-expect fun HorizontalLazyListScrollbar(
+expect fun HorizontalScrollbar(
     modifier: Modifier,
     state: LazyListState,
 )
 
 @Composable
-expect fun VerticalColumnScrollbar(
+expect fun VerticalScrollbar(
     modifier: Modifier,
     state: ScrollState,
 )

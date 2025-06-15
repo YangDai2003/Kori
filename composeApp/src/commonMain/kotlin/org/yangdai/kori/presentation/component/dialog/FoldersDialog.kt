@@ -26,6 +26,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isShiftPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextOverflow
 import kori.composeapp.generated.resources.Res
@@ -48,13 +54,29 @@ fun FoldersDialog(
 ) {
 
     var selectedFolderId by remember { mutableStateOf(oFolderId) }
+    val haptic = LocalHapticFeedback.current
+
+    val onConfirm = {
+        haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+        onSelect(selectedFolderId)
+        onDismissRequest()
+    }
 
     AlertDialog(
         title = { Text(hint) },
         text = {
             Column {
                 HorizontalDivider(Modifier.fillMaxWidth())
-                LazyColumn(Modifier.fillMaxWidth()) {
+                LazyColumn(
+                    Modifier.fillMaxWidth().onPreviewKeyEvent {
+                        if (it.type == KeyEventType.KeyUp && it.key == Key.Enter && it.isShiftPressed) {
+                            onConfirm()
+                            true
+                        } else {
+                            false
+                        }
+                    }
+                ) {
                     item {
                         val isSelected = selectedFolderId == null
                         ListItem(
@@ -121,14 +143,7 @@ fun FoldersDialog(
             }
         },
         confirmButton = {
-            val haptic = LocalHapticFeedback.current
-            Button(
-                onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.Confirm)
-                    onSelect(selectedFolderId)
-                    onDismissRequest()
-                }
-            ) {
+            Button(onClick = onConfirm) {
                 Text(stringResource(Res.string.confirm))
             }
         })

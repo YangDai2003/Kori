@@ -13,6 +13,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -77,7 +78,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.FolderEntity
 import org.yangdai.kori.data.local.entity.defaultFolderColor
 import org.yangdai.kori.data.local.entity.folderColorOptions
-import org.yangdai.kori.presentation.component.HorizontalLazyListScrollbar
+import org.yangdai.kori.presentation.component.HorizontalScrollbar
 
 @OptIn(
     ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class,
@@ -190,11 +191,16 @@ fun SharedTransitionScope.ModifyFolderDialog(
                     onKeyboardAction = { focusManager.clearFocus() },
                     placeholder = { Text(stringResource(Res.string.name)) }
                 )
-                Box {
+                Box(
+                    Modifier.padding(vertical = 12.dp).fillMaxWidth().background(
+                        shape = MaterialTheme.shapes.medium,
+                        color = MaterialTheme.colorScheme.surfaceContainer
+                    )
+                ) {
                     val state = rememberLazyListState()
                     LazyRow(
                         state = state,
-                        modifier = Modifier.padding(vertical = 16.dp),
+                        contentPadding = PaddingValues(8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         items(folderColorOptions.size + 2) {
@@ -226,7 +232,7 @@ fun SharedTransitionScope.ModifyFolderDialog(
                             }
                         }
                     }
-                    HorizontalLazyListScrollbar(
+                    HorizontalScrollbar(
                         state = state,
                         modifier = Modifier.align(Alignment.BottomStart).fillMaxWidth()
                     )

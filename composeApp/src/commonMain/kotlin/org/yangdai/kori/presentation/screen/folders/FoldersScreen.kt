@@ -81,7 +81,7 @@ import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.data.local.dao.FolderDao
 import org.yangdai.kori.data.local.entity.FolderEntity
 import org.yangdai.kori.data.local.entity.defaultFolderColor
-import org.yangdai.kori.presentation.component.LazyGridScrollbar
+import org.yangdai.kori.presentation.component.VerticalScrollbar
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBar
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
@@ -228,7 +228,7 @@ fun FoldersScreen(
                         )
                     }
                 }
-                LazyGridScrollbar(
+                VerticalScrollbar(
                     modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
                     state = state
                 )

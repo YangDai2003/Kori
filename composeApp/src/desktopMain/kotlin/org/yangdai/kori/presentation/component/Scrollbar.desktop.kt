@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-actual fun LazyGridScrollbar(
+actual fun VerticalScrollbar(
     modifier: Modifier,
     state: LazyGridState
 ) {
@@ -28,7 +28,7 @@ actual fun LazyGridScrollbar(
 }
 
 @Composable
-actual fun HorizontalLazyListScrollbar(
+actual fun HorizontalScrollbar(
     modifier: Modifier,
     state: LazyListState
 ) {
@@ -44,7 +44,7 @@ actual fun HorizontalLazyListScrollbar(
 }
 
 @Composable
-actual fun VerticalColumnScrollbar(
+actual fun VerticalScrollbar(
     modifier: Modifier,
     state: ScrollState
 ) {
