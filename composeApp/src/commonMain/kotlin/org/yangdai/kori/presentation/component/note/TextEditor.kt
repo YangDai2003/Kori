@@ -31,7 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.input.ImeAction
@@ -255,39 +256,67 @@ fun TextEditor(
                     Box(
                         modifier = Modifier
                             .clipToBounds()
-                            .drawBehind {
-                                textLayoutResult?.let { layoutResult ->
-                                    // 提前计算滚动偏移,避免重复计算
-                                    val scrollOffset = Offset(0f, -scrollState.value.toFloat())
-                                    val text = state.text.toString()
+                            .drawWithCache {
+                                val searchPaths = if (findAndReplaceState.searchWord.isNotBlank()) {
+                                    matchedWordsRanges.mapNotNull { (start, end) ->
+                                        // 安全检查
+                                        if (start < end && end <= state.text.length && start >= 0) {
+                                            textLayoutResult?.getPathForRange(start, end)
+                                        } else {
+                                            null
+                                        }
+                                    }
+                                } else emptyList()
 
-                                    // 使用 withTransform 避免多次 translate
-                                    withTransform({ translate(scrollOffset.x, scrollOffset.y) }) {
-                                        // 批量绘制搜索高亮
-                                        if (findAndReplaceState.searchWord.isNotBlank())
-                                            matchedWordsRanges.forEachIndexed { index, (start, end) ->
-                                                if (start < end && end <= text.length && start >= 0) {
-                                                    val path =
-                                                        layoutResult.getPathForRange(start, end)
-                                                    drawPath(
-                                                        path = path,
-                                                        color = if (index == currentRangeIndex) Color.Green else Color.Cyan,
-                                                        alpha = 0.5f,
-                                                    )
-                                                }
+                                val lintPaths = if (isLintActive) {
+                                    lintErrors.mapNotNull { issue ->
+                                        if (issue.startIndex < issue.endIndex && issue.endIndex <= state.text.length) {
+                                            textLayoutResult?.getPathForRange(
+                                                issue.startIndex,
+                                                issue.endIndex
+                                            )
+                                        } else {
+                                            null
+                                        }
+                                    }
+                                } else emptyList()
+
+                                // 预先计算颜色，避免在绘制循环中重复创建
+                                val highlightBgColor = Color.Cyan.copy(alpha = 0.5f)
+                                val currentHighlightBorderColor = Color.Blue
+                                val otherHighlightBorderColor = Color.Cyan
+
+                                onDrawBehind {
+
+                                    val currentPhase = phase
+
+                                    textLayoutResult?.let {
+                                        val scrollOffset = Offset(0f, -scrollState.value.toFloat())
+                                        withTransform({
+                                            translate(scrollOffset.x, scrollOffset.y)
+                                        }) {
+                                            // 绘制搜索高亮
+                                            searchPaths.forEachIndexed { index, path ->
+                                                drawPath(
+                                                    path,
+                                                    color = highlightBgColor,
+                                                    alpha = 0.5f
+                                                )
+                                                val borderColor =
+                                                    if (index == currentRangeIndex) currentHighlightBorderColor
+                                                    else otherHighlightBorderColor
+                                                drawPath(
+                                                    path,
+                                                    color = borderColor,
+                                                    style = Stroke(width = 1.5f)
+                                                )
                                             }
 
-                                        // 批量绘制波浪线
-                                        if (isLintActive)
-                                            lintErrors.forEach { issue ->
-                                                val start = issue.startIndex
-                                                val end = issue.endIndex
-                                                if (start < end && end <= text.length && start >= 0) {
-                                                    val path =
-                                                        layoutResult.getPathForRange(start, end)
-                                                    drawWavyUnderlineOptimized(path, phase)
-                                                }
+                                            // 绘制波浪线
+                                            lintPaths.forEach {
+                                                drawWavyUnderlineOptimized(it, currentPhase)
                                             }
+                                        }
                                     }
                                 }
                             }
