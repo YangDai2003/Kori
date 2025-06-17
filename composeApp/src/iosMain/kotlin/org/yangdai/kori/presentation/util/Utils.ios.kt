@@ -7,9 +7,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipEntry
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.datetime.Instant
+import kotlinx.datetime.toNSDate
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
-import platform.Foundation.NSDate
 import platform.Foundation.NSDateFormatter
 import platform.Foundation.NSDateFormatterMediumStyle
 import platform.Foundation.NSDateFormatterShortStyle
@@ -41,8 +41,7 @@ private val dateTimeFormatter by lazy {
 }
 
 actual fun formatInstant(instant: Instant): String {
-    val date = NSDate(instant.toEpochMilliseconds() / 1000.0)
-    return dateTimeFormatter.stringFromDate(date)
+    return dateTimeFormatter.stringFromDate(instant.toNSDate())
 }
 
 private val numberFormatter by lazy {
