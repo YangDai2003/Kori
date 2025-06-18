@@ -56,6 +56,14 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.PredictiveBackHandler
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.SpanStyle
@@ -100,7 +108,7 @@ fun NoteSideSheet(
     // 仅在 isDrawerOpen 为 true 时组合 Dialog
     if (isDrawerOpen) {
         val scope = rememberCoroutineScope()
-
+        val focusRequester = remember { FocusRequester() }
         // 由于 Dialog 有自己的生命周期，我们需要一个在 Dialog 内部触发关闭动画并最终调用 onDismiss 的方法
         // 不能直接在 onDismissRequest 中调用 onDismiss，否则动画会被打断
         var isExiting by remember { mutableStateOf(false) }
@@ -121,7 +129,7 @@ fun NoteSideSheet(
         ) {
             val density = LocalDensity.current
 
-            BoxWithConstraints(modifier = Modifier.fillMaxSize().clipToBounds()) {
+            BoxWithConstraints(Modifier.fillMaxSize().clipToBounds()) {
 
                 val drawerWidth = remember(maxWidth) {
                     val maxAllowedWidth = maxWidth - 96.dp
@@ -150,11 +158,6 @@ fun NoteSideSheet(
                     }
                 }
 
-                // 首次进入时触发打开动画
-                LaunchedEffect(Unit) {
-                    offsetX.animateTo(0f, animationSpec = tween(durationMillis = 300))
-                }
-
                 PredictiveBackHandler(enabled = !isExiting) { progress ->
                     try {
                         progress.collect { event ->
@@ -174,7 +177,21 @@ fun NoteSideSheet(
                 }
 
                 // 整个 Dialog 内容的根 Box
-                Box(Modifier.fillMaxSize()) {
+                Box(
+                    Modifier.fillMaxSize().focusRequester(focusRequester)
+                        .onPreviewKeyEvent { keyEvent ->
+                            if (keyEvent.type == KeyEventType.KeyDown && keyEvent.isCtrlPressed) {
+                                when (keyEvent.key) {
+                                    Key.Tab -> {
+                                        if (!isExiting) isExiting = true
+                                        true
+                                    }
+
+                                    else -> false
+                                }
+                            } else false
+                        }
+                ) {
 
                     Box(
                         Modifier.fillMaxSize().pointerInput(Unit) {
@@ -338,6 +355,11 @@ fun NoteSideSheet(
                                 }
                         }
                     }
+                }
+
+                LaunchedEffect(Unit) {
+                    offsetX.animateTo(0f, animationSpec = tween(durationMillis = 300))
+                    focusRequester.requestFocus()
                 }
             }
         }

@@ -1,10 +1,10 @@
 package org.yangdai.kori.presentation.component.note
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,14 +21,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.OutlinedTextFieldDefaults.Container
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
@@ -41,6 +43,7 @@ import kori.composeapp.generated.resources.replace
 import kori.composeapp.generated.resources.replace_all
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.yangdai.kori.presentation.util.isScreenSizeLarge
 
 @Stable
 data class FindAndReplaceState(
@@ -61,79 +64,116 @@ enum class ReplaceType {
 
 @Composable
 fun FindAndReplaceField(
+    isLargeScreen: Boolean = isScreenSizeLarge(),
     state: FindAndReplaceState,
     onStateUpdate: (FindAndReplaceState) -> Unit
-) = Column(
-    modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp)
-) {
+) = if (isLargeScreen) {
     Row(
-        modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp, bottom = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        CustomTextField(
+        FindField(
             modifier = Modifier.weight(1f),
-            value = state.searchWord,
-            onValueChange = { onStateUpdate(state.copy(searchWord = it)) },
-            leadingIcon = Icons.Outlined.LocationSearching,
-            suffix = {
-                Text(
-                    modifier = Modifier.padding(end = 8.dp),
-                    text = if (state.searchWord.isBlank()) "" else state.position,
-                    style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
-                )
-            },
-            placeholderText = stringResource(Res.string.find)
+            state = state,
+            onStateUpdate = onStateUpdate
         )
-        IconButton(onClick = {
-            onStateUpdate(state.copy(scrollDirection = ScrollDirection.PREVIOUS))
-        }) {
-            Icon(
-                imageVector = Icons.Outlined.ArrowUpward, contentDescription = "PREVIOUS"
-            )
-        }
-        IconButton(onClick = {
-            onStateUpdate(state.copy(scrollDirection = ScrollDirection.NEXT))
-        }) {
-            Icon(
-                imageVector = Icons.Outlined.ArrowDownward, contentDescription = "Next"
-            )
-        }
-        IconButton(onClick = {
-            onStateUpdate(state.copy(searchWord = "", replaceWord = ""))
-        }) {
-            Icon(
-                imageVector = Icons.Outlined.Close, contentDescription = "Clear"
-            )
-        }
+        ReplaceField(
+            modifier = Modifier.weight(1f),
+            state = state,
+            onStateUpdate = onStateUpdate
+        )
     }
-    Spacer(modifier = Modifier.height(6.dp))
-    Row(
-        modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+} else {
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp, bottom = 4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        CustomTextField(
-            modifier = Modifier
-                .padding(end = 8.dp)
-                .weight(1f),
-            value = state.replaceWord,
-            onValueChange = { onStateUpdate(state.copy(replaceWord = it)) },
-            leadingIcon = Icons.Outlined.Autorenew,
-            placeholderText = stringResource(Res.string.replace)
+        FindField(
+            modifier = Modifier.fillMaxWidth(),
+            state = state,
+            onStateUpdate = onStateUpdate
         )
-        IconButton(onClick = { onStateUpdate(state.copy(replaceType = ReplaceType.CURRENT)) }) {
-            Icon(
-                painter = painterResource(Res.drawable.replace),
-                contentDescription = "Replace"
-            )
-        }
-        IconButton(onClick = { onStateUpdate(state.copy(replaceType = ReplaceType.ALL)) }) {
-            Icon(
-                painter = painterResource(Res.drawable.replace_all),
-                contentDescription = "Replace all"
-            )
-        }
+        ReplaceField(
+            modifier = Modifier.fillMaxWidth(),
+            state = state,
+            onStateUpdate = onStateUpdate
+        )
     }
-    Spacer(modifier = Modifier.height(4.dp))
+}
+
+@Composable
+private fun FindField(
+    modifier: Modifier = Modifier,
+    state: FindAndReplaceState,
+    onStateUpdate: (FindAndReplaceState) -> Unit
+) = Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+    val focusRequester = remember { FocusRequester() }
+    CustomTextField(
+        modifier = Modifier.padding(end = 4.dp).weight(1f).focusRequester(focusRequester),
+        value = state.searchWord,
+        onValueChange = { onStateUpdate(state.copy(searchWord = it)) },
+        leadingIcon = Icons.Outlined.LocationSearching,
+        suffix = {
+            Text(
+                modifier = Modifier.padding(end = 8.dp),
+                text = if (state.searchWord.isBlank()) "" else state.position,
+                style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
+            )
+        },
+        placeholderText = stringResource(Res.string.find)
+    )
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+    IconButton(onClick = {
+        onStateUpdate(state.copy(scrollDirection = ScrollDirection.PREVIOUS))
+    }) {
+        Icon(
+            imageVector = Icons.Outlined.ArrowUpward, contentDescription = "PREVIOUS"
+        )
+    }
+    IconButton(onClick = {
+        onStateUpdate(state.copy(scrollDirection = ScrollDirection.NEXT))
+    }) {
+        Icon(
+            imageVector = Icons.Outlined.ArrowDownward, contentDescription = "Next"
+        )
+    }
+    IconButton(onClick = {
+        onStateUpdate(state.copy(searchWord = "", replaceWord = ""))
+    }) {
+        Icon(
+            imageVector = Icons.Outlined.Close, contentDescription = "Clear"
+        )
+    }
+}
+
+@Composable
+private fun ReplaceField(
+    modifier: Modifier = Modifier,
+    state: FindAndReplaceState,
+    onStateUpdate: (FindAndReplaceState) -> Unit
+) = Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+    CustomTextField(
+        modifier = Modifier.padding(end = 4.dp).weight(1f),
+        value = state.replaceWord,
+        onValueChange = { onStateUpdate(state.copy(replaceWord = it)) },
+        leadingIcon = Icons.Outlined.Autorenew,
+        placeholderText = stringResource(Res.string.replace)
+    )
+    IconButton(onClick = { onStateUpdate(state.copy(replaceType = ReplaceType.CURRENT)) }) {
+        Icon(
+            painter = painterResource(Res.drawable.replace),
+            contentDescription = "Replace"
+        )
+    }
+    IconButton(onClick = { onStateUpdate(state.copy(replaceType = ReplaceType.ALL)) }) {
+        Icon(
+            painter = painterResource(Res.drawable.replace_all),
+            contentDescription = "Replace all"
+        )
+    }
 }
 
 // 由于OutlinedTextField有诡异的边距和大小，因此自定义BasicTextField来实现
@@ -189,7 +229,7 @@ fun CustomTextField(
                 suffix = suffix,
                 contentPadding = PaddingValues(0.dp),
                 container = {
-                    Container(
+                    OutlinedTextFieldDefaults.Container(
                         enabled = true,
                         isError = isError,
                         interactionSource = interactionSource,
