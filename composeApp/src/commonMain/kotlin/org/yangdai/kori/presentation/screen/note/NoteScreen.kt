@@ -117,10 +117,10 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.OS
-import org.yangdai.kori.Platform
 import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
+import org.yangdai.kori.isDesktop
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.ExportDialog
@@ -276,14 +276,14 @@ fun NoteScreen(
                                         if (keyEvent.type == KeyEventType.KeyDown) {
                                             when (keyEvent.key) {
                                                 Key.DirectionLeft -> {
-                                                    if (currentPlatformInfo.platform == Platform.Android) {
+                                                    if (currentPlatformInfo.operatingSystem == OS.ANDROID) {
                                                         viewModel.titleState.edit { moveCursorLeftStateless() }
                                                         true
                                                     } else false
                                                 }
 
                                                 Key.DirectionRight -> {
-                                                    if (currentPlatformInfo.platform == Platform.Android) {
+                                                    if (currentPlatformInfo.operatingSystem == OS.ANDROID) {
                                                         viewModel.titleState.edit { moveCursorRightStateless() }
                                                         true
                                                     } else false
@@ -385,14 +385,14 @@ fun NoteScreen(
                                     if (keyEvent.type == KeyEventType.KeyDown) {
                                         when (keyEvent.key) {
                                             Key.DirectionLeft -> {
-                                                if (currentPlatformInfo.platform == Platform.Android) {
+                                                if (currentPlatformInfo.operatingSystem == OS.ANDROID) {
                                                     viewModel.titleState.edit { moveCursorLeftStateless() }
                                                     true
                                                 } else false
                                             }
 
                                             Key.DirectionRight -> {
-                                                if (currentPlatformInfo.platform == Platform.Android) {
+                                                if (currentPlatformInfo.operatingSystem == OS.ANDROID) {
                                                     viewModel.titleState.edit { moveCursorRightStateless() }
                                                     true
                                                 } else false
@@ -682,10 +682,10 @@ fun NoteScreen(
                 )
             }
 
-            if (currentPlatformInfo.platform != Platform.Desktop)
+            if (!currentPlatformInfo.isDesktop())
                 IconButton(onClick = { showShareDialog = true }) {
                     Icon(
-                        imageVector = if (currentPlatformInfo.platform == Platform.Android) Icons.Outlined.Share
+                        imageVector = if (currentPlatformInfo.operatingSystem == OS.ANDROID) Icons.Outlined.Share
                         else Icons.Outlined.IosShare,
                         contentDescription = null
                     )

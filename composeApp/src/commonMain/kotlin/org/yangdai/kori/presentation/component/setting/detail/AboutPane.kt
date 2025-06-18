@@ -47,8 +47,9 @@ import kori.composeapp.generated.resources.report_a_bug_or_request_a_feature
 import kori.composeapp.generated.resources.shareContent
 import kori.composeapp.generated.resources.share_this_app
 import org.jetbrains.compose.resources.stringResource
-import org.yangdai.kori.Platform
+import org.yangdai.kori.OS
 import org.yangdai.kori.currentPlatformInfo
+import org.yangdai.kori.isDesktop
 import org.yangdai.kori.presentation.component.ConfettiEffect
 import org.yangdai.kori.presentation.component.login.LogoText
 import org.yangdai.kori.presentation.util.clickToShareText
@@ -94,7 +95,7 @@ fun AboutPane() {
                 LogoText()
                 Text(
                     modifier = Modifier.padding(bottom = 36.dp).align(Alignment.BottomCenter),
-                    text = (if (currentPlatformInfo.platform != Platform.Desktop) currentPlatformInfo.operatingSystem.name + " " else "")
+                    text = (if (!currentPlatformInfo.isDesktop()) currentPlatformInfo.operatingSystem.name + " " else "")
                             + currentPlatformInfo.version
                             + "\n" + currentPlatformInfo.deviceModel,
                     textAlign = TextAlign.Center,
@@ -154,7 +155,7 @@ fun AboutPane() {
                 .clickToShareText(stringResource(Res.string.shareContent)),
             leadingContent = {
                 Icon(
-                    imageVector = if (currentPlatformInfo.platform == Platform.Android) Icons.Outlined.Share
+                    imageVector = if (currentPlatformInfo.operatingSystem == OS.ANDROID) Icons.Outlined.Share
                     else Icons.Outlined.IosShare,
                     contentDescription = null
                 )

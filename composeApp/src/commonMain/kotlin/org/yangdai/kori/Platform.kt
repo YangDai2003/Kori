@@ -1,7 +1,6 @@
 package org.yangdai.kori
 
 data class PlatformInfo(
-    val platform: Platform,
     val version: String,
     val deviceModel: String,
     val operatingSystem: OS
@@ -9,11 +8,12 @@ data class PlatformInfo(
 
 expect val currentPlatformInfo: PlatformInfo
 
-enum class Platform {
-    IOS,
-    Desktop,
-    Android,
-    Web
+fun PlatformInfo.isMobile(): Boolean {
+    return operatingSystem == OS.IOS || operatingSystem == OS.ANDROID
+}
+
+fun PlatformInfo.isDesktop(): Boolean {
+    return operatingSystem == OS.LINUX || operatingSystem == OS.MACOS || operatingSystem == OS.WINDOWS
 }
 
 enum class OS {

@@ -9,7 +9,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
-import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.Language
@@ -31,18 +30,15 @@ import kori.composeapp.generated.resources.backup
 import kori.composeapp.generated.resources.card
 import kori.composeapp.generated.resources.card_size
 import kori.composeapp.generated.resources.color_platte
-import kori.composeapp.generated.resources.cowriter
 import kori.composeapp.generated.resources.dark_mode
 import kori.composeapp.generated.resources.data
 import kori.composeapp.generated.resources.date_format
 import kori.composeapp.generated.resources.default_view
 import kori.composeapp.generated.resources.editor
 import kori.composeapp.generated.resources.guide
-import kori.composeapp.generated.resources.key
 import kori.composeapp.generated.resources.language
 import kori.composeapp.generated.resources.language_description
 import kori.composeapp.generated.resources.line_numbers
-import kori.composeapp.generated.resources.model
 import kori.composeapp.generated.resources.password
 import kori.composeapp.generated.resources.privacy_policy
 import kori.composeapp.generated.resources.restore_from_backup
@@ -53,8 +49,8 @@ import kori.composeapp.generated.resources.templates
 import kori.composeapp.generated.resources.text_overflow
 import kori.composeapp.generated.resources.time_format
 import org.jetbrains.compose.resources.stringResource
-import org.yangdai.kori.Platform
 import org.yangdai.kori.currentPlatformInfo
+import org.yangdai.kori.isDesktop
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBar
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
@@ -69,7 +65,7 @@ fun SettingsListPane(
     navigateToDetail: (Int) -> Unit
 ) {
     val scrollBehavior =
-        if (currentPlatformInfo.platform == Platform.Desktop) TopAppBarDefaults.pinnedScrollBehavior()
+        if (currentPlatformInfo.isDesktop()) TopAppBarDefaults.pinnedScrollBehavior()
         else TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Scaffold(

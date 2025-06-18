@@ -19,12 +19,13 @@ import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.back
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.OS
-import org.yangdai.kori.Platform
 import org.yangdai.kori.currentPlatformInfo
+import org.yangdai.kori.isDesktop
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlatformStyleTopAppBar(
+    showSmallTopAppBar: Boolean = currentPlatformInfo.isDesktop(),
     title: @Composable (() -> Unit),
     modifier: Modifier = Modifier,
     navigationIcon: @Composable (() -> Unit) = {},
@@ -32,27 +33,23 @@ fun PlatformStyleTopAppBar(
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
     scrollBehavior: TopAppBarScrollBehavior? = null
-) = if (currentPlatformInfo.platform == Platform.Desktop) {
-    TopAppBar(
-        title = title,
-        modifier = modifier,
-        navigationIcon = navigationIcon,
-        actions = actions,
-        windowInsets = windowInsets,
-        colors = colors,
-        scrollBehavior = scrollBehavior
-    )
-} else {
-    LargeTopAppBar(
-        title = title,
-        modifier = modifier,
-        navigationIcon = navigationIcon,
-        actions = actions,
-        windowInsets = windowInsets,
-        colors = colors,
-        scrollBehavior = scrollBehavior
-    )
-}
+) = if (showSmallTopAppBar) TopAppBar(
+    title = title,
+    modifier = modifier,
+    navigationIcon = navigationIcon,
+    actions = actions,
+    windowInsets = windowInsets,
+    colors = colors,
+    scrollBehavior = scrollBehavior
+) else LargeTopAppBar(
+    title = title,
+    modifier = modifier,
+    navigationIcon = navigationIcon,
+    actions = actions,
+    windowInsets = windowInsets,
+    colors = colors,
+    scrollBehavior = scrollBehavior
+)
 
 @Composable
 fun PlatformStyleTopAppBarNavigationIcon(onClick: () -> Unit) =

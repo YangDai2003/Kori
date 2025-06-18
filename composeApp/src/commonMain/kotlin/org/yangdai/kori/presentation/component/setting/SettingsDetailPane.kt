@@ -12,10 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,8 +37,9 @@ import kori.composeapp.generated.resources.style
 import kori.composeapp.generated.resources.templates
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import org.yangdai.kori.Platform
 import org.yangdai.kori.currentPlatformInfo
+import org.yangdai.kori.isDesktop
+import org.yangdai.kori.presentation.component.PlatformStyleTopAppBar
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
 import org.yangdai.kori.presentation.component.setting.detail.AboutPane
@@ -127,42 +126,29 @@ fun SettingsDetailPaneContent(
     actions: @Composable RowScope.() -> Unit = {},
     content: @Composable BoxScope.() -> Unit
 ) {
-    val isDesktop = currentPlatformInfo.platform == Platform.Desktop
+    val isDesktop = currentPlatformInfo.isDesktop()
     val showSmallTopAppBar = remember(isDesktop, isExpanded) { isDesktop || isExpanded }
     val scrollBehavior =
         if (showSmallTopAppBar) TopAppBarDefaults.pinnedScrollBehavior()
         else TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val windowInsets = if (showSmallTopAppBar)
+        TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Top + WindowInsetsSides.End)
+    else TopAppBarDefaults.windowInsets
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            if (showSmallTopAppBar) {
-                TopAppBar(
-                    title = { PlatformStyleTopAppBarTitle(topBarTitle) },
-                    navigationIcon = navigationIcon,
-                    actions = actions,
-                    windowInsets = TopAppBarDefaults.windowInsets.only(
-                        WindowInsetsSides.Top + WindowInsetsSides.End
-                    ),
-                    colors = TopAppBarDefaults.topAppBarColors()
-                        .copy(
-                            containerColor = Color.Transparent,
-                            scrolledContainerColor = Color.Transparent
-                        ),
-                    scrollBehavior = scrollBehavior
+            PlatformStyleTopAppBar(
+                showSmallTopAppBar = showSmallTopAppBar,
+                title = { PlatformStyleTopAppBarTitle(topBarTitle) },
+                navigationIcon = navigationIcon,
+                actions = actions,
+                scrollBehavior = scrollBehavior,
+                windowInsets = windowInsets,
+                colors = TopAppBarDefaults.topAppBarColors().copy(
+                    containerColor = Color.Transparent,
+                    scrolledContainerColor = Color.Transparent
                 )
-            } else {
-                LargeTopAppBar(
-                    title = { PlatformStyleTopAppBarTitle(topBarTitle) },
-                    navigationIcon = navigationIcon,
-                    actions = actions,
-                    colors = TopAppBarDefaults.topAppBarColors()
-                        .copy(
-                            containerColor = Color.Transparent,
-                            scrolledContainerColor = Color.Transparent
-                        ),
-                    scrollBehavior = scrollBehavior
-                )
-            }
+            )
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) { innerPadding ->
