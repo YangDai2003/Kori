@@ -89,6 +89,7 @@ import org.yangdai.kori.presentation.component.VerticalScrollbar
 import org.yangdai.kori.presentation.component.dialog.FolderSortOptionDialog
 import org.yangdai.kori.presentation.component.dialog.ModifyFolderDialog
 import org.yangdai.kori.presentation.component.dialog.WarningDialog
+import org.yangdai.kori.presentation.util.isScreenSizeLarge
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -103,8 +104,9 @@ fun FoldersScreen(
 ) {
     val groupedFolders by viewModel.foldersMap.collectAsStateWithLifecycle()
     var showSortDialog by rememberSaveable { mutableStateOf(false) }
+    val showSmallTopAppBar = currentPlatformInfo.isDesktop() || isScreenSizeLarge()
     val scrollBehavior =
-        if (currentPlatformInfo.isDesktop()) TopAppBarDefaults.pinnedScrollBehavior()
+        if (showSmallTopAppBar) TopAppBarDefaults.pinnedScrollBehavior()
         else TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     var selectedFolder by remember { mutableStateOf<FolderEntity?>(null) }
@@ -124,6 +126,7 @@ fun FoldersScreen(
                             }
                         })
                     },
+                    showSmallTopAppBar = showSmallTopAppBar,
                     title = { PlatformStyleTopAppBarTitle(stringResource(Res.string.folders)) },
                     navigationIcon = { PlatformStyleTopAppBarNavigationIcon(onClick = navigateUp) },
                     actions = {

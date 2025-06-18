@@ -61,11 +61,13 @@ import org.yangdai.kori.presentation.util.shouldShowLanguageSetting
 @Composable
 fun SettingsListPane(
     selectedItem: Int? = null,
+    isExpanded: Boolean,
     navigateUp: () -> Unit,
     navigateToDetail: (Int) -> Unit
 ) {
+    val showSmallTopAppBar = currentPlatformInfo.isDesktop() || isExpanded
     val scrollBehavior =
-        if (currentPlatformInfo.isDesktop()) TopAppBarDefaults.pinnedScrollBehavior()
+        if (showSmallTopAppBar) TopAppBarDefaults.pinnedScrollBehavior()
         else TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Scaffold(
@@ -73,6 +75,7 @@ fun SettingsListPane(
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         topBar = {
             PlatformStyleTopAppBar(
+                showSmallTopAppBar = showSmallTopAppBar,
                 title = { PlatformStyleTopAppBarTitle(stringResource(Res.string.settings)) },
                 navigationIcon = { PlatformStyleTopAppBarNavigationIcon(onClick = navigateUp) },
                 colors = TopAppBarDefaults.topAppBarColors()

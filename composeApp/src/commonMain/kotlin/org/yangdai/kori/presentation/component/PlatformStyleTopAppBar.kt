@@ -20,12 +20,11 @@ import kori.composeapp.generated.resources.back
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.OS
 import org.yangdai.kori.currentPlatformInfo
-import org.yangdai.kori.isDesktop
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlatformStyleTopAppBar(
-    showSmallTopAppBar: Boolean = currentPlatformInfo.isDesktop(),
+    showSmallTopAppBar: Boolean,
     title: @Composable (() -> Unit),
     modifier: Modifier = Modifier,
     navigationIcon: @Composable (() -> Unit) = {},

@@ -126,8 +126,7 @@ fun SettingsDetailPaneContent(
     actions: @Composable RowScope.() -> Unit = {},
     content: @Composable BoxScope.() -> Unit
 ) {
-    val isDesktop = currentPlatformInfo.isDesktop()
-    val showSmallTopAppBar = remember(isDesktop, isExpanded) { isDesktop || isExpanded }
+    val showSmallTopAppBar = currentPlatformInfo.isDesktop() || isExpanded
     val scrollBehavior =
         if (showSmallTopAppBar) TopAppBarDefaults.pinnedScrollBehavior()
         else TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
