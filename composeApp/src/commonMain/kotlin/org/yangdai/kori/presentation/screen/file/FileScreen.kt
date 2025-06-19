@@ -79,7 +79,6 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
@@ -118,12 +117,12 @@ import org.yangdai.kori.presentation.component.note.Editor
 import org.yangdai.kori.presentation.component.note.EditorRow
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
-import org.yangdai.kori.presentation.component.note.FindAndReplaceState
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownView
 import org.yangdai.kori.presentation.component.note.markdown.moveCursorLeftStateless
 import org.yangdai.kori.presentation.component.note.markdown.moveCursorRightStateless
+import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
 import org.yangdai.kori.presentation.component.note.template.TemplateProcessor
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.navigation.UiEvent
@@ -173,17 +172,15 @@ fun FileScreen(
     var showTemplatesBottomSheet by rememberSaveable { mutableStateOf(false) }
     var isSearching by remember { mutableStateOf(false) }
     var selectedHeader by remember { mutableStateOf<IntRange?>(null) }
-    var findAndReplaceState by remember { mutableStateOf(FindAndReplaceState()) }
+    val findAndReplaceState = rememberFindAndReplaceState()
     val isLargeScreen = isScreenSizeLarge()
     val pagerState = rememberPagerState { 2 }
-    val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     var isSideSheetOpen by rememberSaveable { mutableStateOf(false) }
     var showNoteTypeDialog by rememberSaveable { mutableStateOf(false) }
     var showShareDialog by rememberSaveable { mutableStateOf(false) }
     val printTrigger = remember { mutableStateOf(false) }
     LaunchedEffect(isReadView) {
-        keyboardController?.hide()
         focusManager.clearFocus()
         isSearching = false
         pagerState.animateScrollToPage(if (isReadView) 1 else 0)
@@ -212,8 +209,6 @@ fun FileScreen(
 
                     Key.Tab -> {
                         isSideSheetOpen = !isSideSheetOpen
-                        keyboardController?.hide()
-                        focusManager.clearFocus()
                         true
                     }
 
@@ -318,11 +313,7 @@ fun FileScreen(
                     TooltipIconButton(
                         tipText = "Ctrl + Tab",
                         icon = painterResource(Res.drawable.right_panel_open),
-                        onClick = {
-                            isSideSheetOpen = true
-                            keyboardController?.hide()
-                            focusManager.clearFocus()
-                        }
+                        onClick = { isSideSheetOpen = true }
                     )
                 }
             )
@@ -337,10 +328,7 @@ fun FileScreen(
             )
         ) {
             AnimatedVisibility(isSearching) {
-                FindAndReplaceField(
-                    state = findAndReplaceState,
-                    onStateUpdate = { findAndReplaceState = it }
-                )
+                FindAndReplaceField(findAndReplaceState)
             }
 
             if (fileEditingState.fileType == NoteType.PLAIN_TEXT) {
@@ -353,8 +341,7 @@ fun FileScreen(
                     showLineNumbers = editorState.showLineNumber,
                     isLintActive = editorState.isMarkdownLintEnabled,
                     headerRange = selectedHeader,
-                    findAndReplaceState = findAndReplaceState,
-                    onFindAndReplaceUpdate = { findAndReplaceState = it }
+                    findAndReplaceState = findAndReplaceState
                 )
             } else {
                 if (isLargeScreen) {
@@ -376,8 +363,7 @@ fun FileScreen(
                             showLineNumbers = editorState.showLineNumber,
                             isLintActive = editorState.isMarkdownLintEnabled,
                             headerRange = selectedHeader,
-                            findAndReplaceState = findAndReplaceState,
-                            onFindAndReplaceUpdate = { findAndReplaceState = it }
+                            findAndReplaceState = findAndReplaceState
                         )
 
                         VerticalDragHandle(
@@ -432,8 +418,7 @@ fun FileScreen(
                                     showLineNumbers = editorState.showLineNumber,
                                     isLintActive = editorState.isMarkdownLintEnabled,
                                     headerRange = selectedHeader,
-                                    findAndReplaceState = findAndReplaceState,
-                                    onFindAndReplaceUpdate = { findAndReplaceState = it }
+                                    findAndReplaceState = findAndReplaceState
                                 )
                             }
 

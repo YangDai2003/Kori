@@ -20,16 +20,14 @@ fun Editor(
     showLineNumbers: Boolean,
     isLintActive: Boolean,
     headerRange: IntRange?,
-    findAndReplaceState: FindAndReplaceState,
-    onFindAndReplaceUpdate: (FindAndReplaceState) -> Unit
+    findAndReplaceState: FindAndReplaceState
 ) = if (isTemplate) TemplateEditor(
     modifier = modifier,
     state = state,
     scrollState = scrollState,
     readMode = readMode,
     showLineNumbers = showLineNumbers,
-    findAndReplaceState = findAndReplaceState,
-    onFindAndReplaceUpdate = onFindAndReplaceUpdate
+    findAndReplaceState = findAndReplaceState
 ) else when (type) {
     NoteType.MARKDOWN -> {
         MarkdownEditor(
@@ -40,8 +38,7 @@ fun Editor(
             showLineNumbers = showLineNumbers,
             isLintActive = isLintActive,
             headerRange = headerRange,
-            findAndReplaceState = findAndReplaceState,
-            onFindAndReplaceUpdate = onFindAndReplaceUpdate
+            findAndReplaceState = findAndReplaceState
         )
     }
 
@@ -52,8 +49,7 @@ fun Editor(
             scrollState = scrollState,
             readMode = readMode,
             showLineNumbers = showLineNumbers,
-            findAndReplaceState = findAndReplaceState,
-            onFindAndReplaceUpdate = onFindAndReplaceUpdate
+            findAndReplaceState = findAndReplaceState
         )
     }
 }

@@ -21,8 +21,7 @@ fun MarkdownEditor(
     showLineNumbers: Boolean,
     isLintActive: Boolean,
     headerRange: IntRange?,
-    findAndReplaceState: FindAndReplaceState,
-    onFindAndReplaceUpdate: (FindAndReplaceState) -> Unit
+    findAndReplaceState: FindAndReplaceState
 ) = TextEditor(
     modifier = modifier,
     textFieldModifier = Modifier
@@ -32,11 +31,10 @@ fun MarkdownEditor(
         .dragAndDropText(state),
     state = state,
     scrollState = scrollState,
+    findAndReplaceState = findAndReplaceState,
     readMode = readMode,
     showLineNumbers = showLineNumbers,
     headerRange = headerRange,
     isLintActive = isLintActive,
-    outputTransformation = remember { MarkdownTransformation() },
-    findAndReplaceState = findAndReplaceState,
-    onFindAndReplaceUpdate = onFindAndReplaceUpdate
+    outputTransformation = remember { MarkdownTransformation() }
 )

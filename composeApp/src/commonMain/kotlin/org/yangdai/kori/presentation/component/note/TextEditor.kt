@@ -23,10 +23,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,12 +47,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.content
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.VerticalScrollbar
+import org.yangdai.kori.presentation.component.note.markdown.Issue
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownLint
 import org.yangdai.kori.presentation.util.isScreenSizeLarge
 import kotlin.math.PI
@@ -65,43 +63,47 @@ fun TextEditor(
     textFieldModifier: Modifier,
     state: TextFieldState,
     scrollState: ScrollState,
+    findAndReplaceState: FindAndReplaceState,
     readMode: Boolean,
     showLineNumbers: Boolean,
-    findAndReplaceState: FindAndReplaceState,
-    onFindAndReplaceUpdate: (FindAndReplaceState) -> Unit,
     headerRange: IntRange? = null,
     isLintActive: Boolean = false,
     outputTransformation: OutputTransformation? = null
 ) {
-    var matchedWordsRanges by remember { mutableStateOf(emptyList<Pair<Int, Int>>()) }
-    var currentRangeIndex by remember { mutableIntStateOf(0) }
     var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
 
-    // Search functionality
-    LaunchedEffect(state.text, findAndReplaceState.searchWord, readMode) {
-        matchedWordsRanges = if (!readMode && findAndReplaceState.searchWord.isNotBlank()) {
+    val matchedWordsRanges by produceState<List<Pair<Int, Int>>>(
+        initialValue = emptyList(),
+        key1 = state.text,
+        key2 = findAndReplaceState.searchWord,
+        key3 = readMode
+    ) {
+        value = if (!readMode && findAndReplaceState.searchWord.isNotBlank())
             findAllRanges(state.text.toString(), findAndReplaceState.searchWord)
-        } else {
-            emptyList()
-        }
+        else emptyList()
+    }
+
+    val currentRangeIndex by produceState(
+        initialValue = 0,
+        key1 = matchedWordsRanges,
+        key2 = findAndReplaceState.scrollDirection
+    ) {
+        value = if (matchedWordsRanges.isNotEmpty()) {
+            when (findAndReplaceState.scrollDirection) {
+                ScrollDirection.NEXT -> (value + 1).takeIf { it < matchedWordsRanges.size } ?: 0
+                ScrollDirection.PREVIOUS -> (value - 1).takeIf { it >= 0 }
+                    ?: (matchedWordsRanges.size - 1)
+
+                else -> value
+            }
+        } else 0
     }
 
     // Handle search navigation
-    LaunchedEffect(matchedWordsRanges, findAndReplaceState.scrollDirection) {
-        onFindAndReplaceUpdate(
-            findAndReplaceState.copy(
-                position = if (matchedWordsRanges.isNotEmpty()) "${currentRangeIndex + 1}/${matchedWordsRanges.size}" else ""
-            )
-        )
+    LaunchedEffect(matchedWordsRanges, currentRangeIndex) {
+        findAndReplaceState.position =
+            if (matchedWordsRanges.isNotEmpty()) "${currentRangeIndex + 1}/${matchedWordsRanges.size}" else ""
         if (matchedWordsRanges.isNotEmpty() && textLayoutResult != null && findAndReplaceState.scrollDirection != null) {
-            // Update current index
-            currentRangeIndex = when (findAndReplaceState.scrollDirection) {
-                ScrollDirection.NEXT -> (currentRangeIndex + 1).takeIf { it < matchedWordsRanges.size }
-                    ?: 0 // Wrap around
-                ScrollDirection.PREVIOUS -> (currentRangeIndex - 1).takeIf { it >= 0 }
-                    ?: (matchedWordsRanges.size - 1) // Wrap around
-            }
-
             // Get the target match position
             val targetMatch = matchedWordsRanges[currentRangeIndex]
             // Get the text bounds
@@ -111,7 +113,7 @@ fun TextEditor(
             // Execute scroll
             scrollState.animateScrollTo(scrollPosition)
             // Notify scroll completion
-            onFindAndReplaceUpdate(findAndReplaceState.copy(scrollDirection = null))
+            findAndReplaceState.scrollDirection = null
         }
     }
 
@@ -149,59 +151,42 @@ fun TextEditor(
                     replace(startIndex, endIndex, findAndReplaceState.replaceWord)
                 }
             }
-            onFindAndReplaceUpdate(findAndReplaceState.copy(replaceType = null))
+            findAndReplaceState.replaceType = null // Reset after replacement
         }
     }
 
-    val actualLinePositions by remember(showLineNumbers, textLayoutResult) {
+    val actualLinePositions by remember(showLineNumbers) {
         derivedStateOf {
-            if (showLineNumbers && textLayoutResult != null) {
-                // Calculate line positions only if line numbers are needed and layout result is available
-                val currentText = state.text
-                val lineCount = textLayoutResult!!.lineCount
-                buildList {
-                    for (lineIndex in 0 until lineCount) {
-                        // Get the starting character offset of the line
-                        val lineStartOffset = textLayoutResult!!.getLineStart(lineIndex)
-                        val isNewLine = lineIndex == 0 ||
-                                (lineStartOffset > 0 && lineStartOffset <= currentText.length && currentText[lineStartOffset - 1] == '\n')
-                        if (isNewLine) {
-                            val lineTopY = textLayoutResult!!.getLineTop(lineIndex)
-                            add(lineStartOffset to lineTopY)
-                        }
+            val layoutResult = textLayoutResult
+            if (!showLineNumbers || layoutResult == null) return@derivedStateOf emptyList()
+
+            val lineCount = layoutResult.lineCount
+            buildList {
+                for (lineIndex in 0 until lineCount) {
+                    val lineStartOffset = layoutResult.getLineStart(lineIndex)
+                    // An "actual" line starts at offset 0 or is preceded by a newline character.
+                    // This distinguishes from soft-wrapped lines.
+                    if (lineIndex == 0 || layoutResult.layoutInput.text[lineStartOffset - 1] == '\n') {
+                        val lineTopY = layoutResult.getLineTop(lineIndex)
+                        add(lineStartOffset to lineTopY)
                     }
                 }
-            } else {
-                emptyList()
             }
         }
     }
 
-    val currentLine by remember(state.selection) {
+    val currentLine by remember(actualLinePositions) {
         derivedStateOf {
             if (actualLinePositions.isEmpty()) 0
             else {
                 val selectionStart = state.selection.start
-                // 使用二分查找找到最后一个小于等于 selectionStart 的位置
-                var left = 0
-                var right = actualLinePositions.size - 1
-                var result = 0
-
-                while (left <= right) {
-                    val mid = left + (right - left) / 2
-                    if (actualLinePositions[mid].first <= selectionStart) {
-                        result = mid
-                        left = mid + 1
-                    } else {
-                        right = mid - 1
-                    }
-                }
-                result
+                val index = actualLinePositions.binarySearch { it.first.compareTo(selectionStart) }
+                if (index >= 0) index else -(index + 2)
             }
         }
     }
 
-    val infiniteTransition = rememberInfiniteTransition(label = "wavy-line")
+    val infiniteTransition = rememberInfiniteTransition("wavy-line")
     val phase by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 2f * PI.toFloat(),
@@ -211,20 +196,16 @@ fun TextEditor(
         ),
         label = "wave-phase"
     )
-    var lintErrors by remember { mutableStateOf(emptyList<MarkdownLint.Issue>()) }
-    var lintJob by remember { mutableStateOf<Job?>(null) }
-    val coroutineScope = rememberCoroutineScope()
-    LaunchedEffect(state.text, isLintActive) {
-        lintJob?.cancel()
+
+    val markdownLint = remember { MarkdownLint() }
+    val lintErrors by produceState<List<Issue>>(emptyList(), state.text, isLintActive) {
         if (isLintActive) {
-            lintJob = coroutineScope.launch {
-                delay(300L) // 300ms 防抖
-                withContext(Dispatchers.Default) {
-                    lintErrors = MarkdownLint().validate(state.text.toString())
-                }
+            delay(300L) // 300ms 防抖
+            value = withContext(Dispatchers.Default) {
+                markdownLint.validate(state.text.toString())
             }
         } else {
-            lintErrors = emptyList()
+            value = emptyList()
         }
     }
 

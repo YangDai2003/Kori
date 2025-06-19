@@ -26,7 +26,12 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -46,13 +51,36 @@ import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.util.isScreenSizeLarge
 
 @Stable
-data class FindAndReplaceState(
-    val searchWord: String = "",
-    val replaceWord: String = "",
-    val position: String = "",
-    val scrollDirection: ScrollDirection? = null,
-    val replaceType: ReplaceType? = null
-)
+class FindAndReplaceState {
+    var searchWord by mutableStateOf("")
+    var replaceWord by mutableStateOf("")
+    var position by mutableStateOf("")
+    var scrollDirection by mutableStateOf<ScrollDirection?>(null)
+    var replaceType by mutableStateOf<ReplaceType?>(null)
+
+    companion object {
+        val Saver: Saver<FindAndReplaceState, Triple<String, String, String>> = Saver(
+            save = { state -> Triple(state.searchWord, state.replaceWord, state.position) },
+            restore = { data ->
+                val (searchWord, replaceWord, position) = data
+                FindAndReplaceState().apply {
+                    this.searchWord = searchWord
+                    this.replaceWord = replaceWord
+                    this.position = position
+                    this.scrollDirection = null
+                    this.replaceType = null
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun rememberFindAndReplaceState(): FindAndReplaceState {
+    return rememberSaveable(saver = FindAndReplaceState.Saver) {
+        FindAndReplaceState()
+    }
+}
 
 enum class ScrollDirection {
     NEXT, PREVIOUS
@@ -64,24 +92,15 @@ enum class ReplaceType {
 
 @Composable
 fun FindAndReplaceField(
-    isLargeScreen: Boolean = isScreenSizeLarge(),
     state: FindAndReplaceState,
-    onStateUpdate: (FindAndReplaceState) -> Unit
+    isLargeScreen: Boolean = isScreenSizeLarge()
 ) = if (isLargeScreen) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp, bottom = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        FindField(
-            modifier = Modifier.weight(1f),
-            state = state,
-            onStateUpdate = onStateUpdate
-        )
-        ReplaceField(
-            modifier = Modifier.weight(1f),
-            state = state,
-            onStateUpdate = onStateUpdate
-        )
+        FindField(modifier = Modifier.weight(1f), state = state)
+        ReplaceField(modifier = Modifier.weight(1f), state = state)
     }
 } else {
     Column(
@@ -89,30 +108,21 @@ fun FindAndReplaceField(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        FindField(
-            modifier = Modifier.fillMaxWidth(),
-            state = state,
-            onStateUpdate = onStateUpdate
-        )
-        ReplaceField(
-            modifier = Modifier.fillMaxWidth(),
-            state = state,
-            onStateUpdate = onStateUpdate
-        )
+        FindField(modifier = Modifier.fillMaxWidth(), state = state)
+        ReplaceField(modifier = Modifier.fillMaxWidth(), state = state)
     }
 }
 
 @Composable
 private fun FindField(
     modifier: Modifier = Modifier,
-    state: FindAndReplaceState,
-    onStateUpdate: (FindAndReplaceState) -> Unit
+    state: FindAndReplaceState
 ) = Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
     val focusRequester = remember { FocusRequester() }
     CustomTextField(
         modifier = Modifier.padding(end = 4.dp).weight(1f).focusRequester(focusRequester),
         value = state.searchWord,
-        onValueChange = { onStateUpdate(state.copy(searchWord = it)) },
+        onValueChange = { state.searchWord = it },
         leadingIcon = Icons.Outlined.LocationSearching,
         suffix = {
             Text(
@@ -126,22 +136,19 @@ private fun FindField(
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
-    IconButton(onClick = {
-        onStateUpdate(state.copy(scrollDirection = ScrollDirection.PREVIOUS))
-    }) {
+    IconButton(onClick = { state.scrollDirection = ScrollDirection.PREVIOUS }) {
         Icon(
             imageVector = Icons.Outlined.ArrowUpward, contentDescription = "PREVIOUS"
         )
     }
-    IconButton(onClick = {
-        onStateUpdate(state.copy(scrollDirection = ScrollDirection.NEXT))
-    }) {
+    IconButton(onClick = { state.scrollDirection = ScrollDirection.NEXT }) {
         Icon(
             imageVector = Icons.Outlined.ArrowDownward, contentDescription = "Next"
         )
     }
     IconButton(onClick = {
-        onStateUpdate(state.copy(searchWord = "", replaceWord = ""))
+        state.searchWord = ""
+        state.replaceWord = ""
     }) {
         Icon(
             imageVector = Icons.Outlined.Close, contentDescription = "Clear"
@@ -152,23 +159,22 @@ private fun FindField(
 @Composable
 private fun ReplaceField(
     modifier: Modifier = Modifier,
-    state: FindAndReplaceState,
-    onStateUpdate: (FindAndReplaceState) -> Unit
+    state: FindAndReplaceState
 ) = Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
     CustomTextField(
         modifier = Modifier.padding(end = 4.dp).weight(1f),
         value = state.replaceWord,
-        onValueChange = { onStateUpdate(state.copy(replaceWord = it)) },
+        onValueChange = { state.replaceWord = it },
         leadingIcon = Icons.Outlined.Autorenew,
         placeholderText = stringResource(Res.string.replace)
     )
-    IconButton(onClick = { onStateUpdate(state.copy(replaceType = ReplaceType.CURRENT)) }) {
+    IconButton(onClick = { state.replaceType = ReplaceType.CURRENT }) {
         Icon(
             painter = painterResource(Res.drawable.replace),
             contentDescription = "Replace"
         )
     }
-    IconButton(onClick = { onStateUpdate(state.copy(replaceType = ReplaceType.ALL)) }) {
+    IconButton(onClick = { state.replaceType = ReplaceType.ALL }) {
         Icon(
             painter = painterResource(Res.drawable.replace_all),
             contentDescription = "Replace all"

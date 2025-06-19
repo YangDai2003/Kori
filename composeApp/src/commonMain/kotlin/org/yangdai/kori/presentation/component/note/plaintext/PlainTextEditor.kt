@@ -18,8 +18,7 @@ fun PlainTextEditor(
     scrollState: ScrollState,
     readMode: Boolean,
     showLineNumbers: Boolean,
-    findAndReplaceState: FindAndReplaceState,
-    onFindAndReplaceUpdate: (FindAndReplaceState) -> Unit
+    findAndReplaceState: FindAndReplaceState
 ) = TextEditor(
     modifier = modifier,
     textFieldModifier = Modifier
@@ -29,8 +28,7 @@ fun PlainTextEditor(
         .dragAndDropText(state),
     state = state,
     scrollState = scrollState,
-    readMode = readMode,
-    showLineNumbers = showLineNumbers,
     findAndReplaceState = findAndReplaceState,
-    onFindAndReplaceUpdate = onFindAndReplaceUpdate
+    readMode = readMode,
+    showLineNumbers = showLineNumbers
 )

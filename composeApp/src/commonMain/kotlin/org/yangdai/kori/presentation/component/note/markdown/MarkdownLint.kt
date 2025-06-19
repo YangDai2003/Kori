@@ -1,9 +1,16 @@
 package org.yangdai.kori.presentation.component.note.markdown
 
+// 增强的 Issue 类
+data class Issue(
+    val startIndex: Int,    // 问题起始索引 (包含)
+    val endIndex: Int,      // 问题结束索引 (不包含)
+    val ruleId: String     // 对应的规则 ID
+)
+
 class MarkdownLint {
 
     // 规则标识符 (为了清晰度和未来可能的配置)
-    companion object Rules {
+    companion object {
         object RuleIds {
             const val HEADING_INVALID_FORMAT = "MD001"       // 标题格式无效
             const val HEADING_INVALID_SPACING = "MD002"      // 标题井号后空格无效
@@ -14,7 +21,6 @@ class MarkdownLint {
             const val INLINE_CODE_SURROUNDING_SPACES = "MD007" // 行内代码内容前后有空格
             const val LINK_TEXT_SURROUNDING_SPACES = "MD008"   // 链接/图片文本前后有空格
         }
-
 
         // 标题结构: 可选前导空格, #号(1-6个), 必须的空格, 内容
         val HEADING_PATTERN = Regex("^\\s*(#{1,6})(\\s+)(.*)$")
@@ -39,13 +45,6 @@ class MarkdownLint {
         // 用于检查文本内容前后的空格 (Rule MD008)
         val LINK_TEXT_BRACKETS = Regex("""\[([^\[\]]*?)]""")
     }
-
-    // 增强的 Issue 类
-    data class Issue(
-        val startIndex: Int,    // 问题起始索引 (包含)
-        val endIndex: Int,      // 问题结束索引 (不包含)
-        val ruleId: String     // 对应的规则 ID
-    )
 
     // 主验证函数
     fun validate(markdown: String): List<Issue> {

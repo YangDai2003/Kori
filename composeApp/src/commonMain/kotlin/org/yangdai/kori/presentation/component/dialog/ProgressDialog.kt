@@ -52,6 +52,31 @@ fun ProgressDialogPreview() {
     )
 }
 
+@Preview
+@Composable
+fun ProgressDialogInfinitePreview() {
+    ProgressDialog(
+        dataActionState = DataActionState(
+            progress = 0.5f,
+            infinite = true
+        ),
+        onDismissRequest = {}
+    )
+}
+
+@Preview
+@Composable
+fun ProgressDialogDonePreview() {
+    ProgressDialog(
+        dataActionState = DataActionState(
+            progress = 1f,
+            infinite = false,
+            message = "Done!"
+        ),
+        onDismissRequest = {}
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ProgressDialog(
