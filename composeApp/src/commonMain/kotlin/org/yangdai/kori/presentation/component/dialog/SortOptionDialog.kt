@@ -62,7 +62,7 @@ fun NoteSortOptionDialog(
     ) {
         Text(
             text = stringResource(Res.string.sort_by),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
             modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp)
         )
 
@@ -123,7 +123,7 @@ fun FolderSortOptionDialog(
     ) {
         Text(
             text = stringResource(Res.string.sort_by),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
             modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp)
         )
 

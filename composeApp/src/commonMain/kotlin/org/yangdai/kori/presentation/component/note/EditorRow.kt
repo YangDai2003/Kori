@@ -90,7 +90,7 @@ val platformKeyboardShortCut =
     else "Ctrl"
 
 @Composable
-fun EditorRowSection(content: @Composable RowScope.() -> Unit) {
+fun EditorRowSection(content: @Composable RowScope.() -> Unit) =
     Surface(
         modifier = Modifier
             .fillMaxHeight()
@@ -103,7 +103,6 @@ fun EditorRowSection(content: @Composable RowScope.() -> Unit) {
             content()
         }
     }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -131,8 +130,7 @@ fun EditorRowButton(
     ) {
         Icon(
             imageVector = icon,
-            tint = if (enabled) MaterialTheme.colorScheme.onSurface
-            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = if (enabled) 1f else 0.3f),
             contentDescription = null
         )
     }
@@ -164,8 +162,7 @@ fun EditorRowButton(
     ) {
         Icon(
             painter = icon,
-            tint = if (enabled) MaterialTheme.colorScheme.onSurface
-            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = if (enabled) 1f else 0.3f),
             contentDescription = null
         )
     }

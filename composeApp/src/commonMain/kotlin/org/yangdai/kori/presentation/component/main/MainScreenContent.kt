@@ -138,6 +138,7 @@ fun MainScreenContent(
                 AnimatedContent(isLargeScreen || searchBarState.currentValue == SearchBarValue.Expanded) { showSearchIcon ->
                     if (showSearchIcon)
                         IconButton(
+                            colors = IconButtonDefaults.iconButtonVibrantColors(),
                             onClick = {
                                 scope.launch { searchBarState.animateToCollapsed() }
                                 viewModel.searchNotes(textFieldState.text.toString())

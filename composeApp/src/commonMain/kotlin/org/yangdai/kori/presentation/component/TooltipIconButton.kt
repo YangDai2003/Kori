@@ -22,7 +22,7 @@ fun TooltipIconButton(
     iconModifier: Modifier = Modifier,
     tipText: String,
     icon: ImageVector,
-    colors: IconButtonColors = IconButtonDefaults.iconButtonColors(),
+    colors: IconButtonColors = IconButtonDefaults.iconButtonVibrantColors(),
     enabled: Boolean = true,
     onClick: () -> Unit
 ) = TooltipBox(
@@ -57,7 +57,7 @@ fun TooltipIconButton(
     iconModifier: Modifier = Modifier,
     tipText: String,
     icon: Painter,
-    colors: IconButtonColors = IconButtonDefaults.iconButtonColors(),
+    colors: IconButtonColors = IconButtonDefaults.iconButtonVibrantColors(),
     enabled: Boolean = true,
     onClick: () -> Unit
 ) = TooltipBox(

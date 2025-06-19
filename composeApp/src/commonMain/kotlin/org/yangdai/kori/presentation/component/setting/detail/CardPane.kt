@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -22,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
@@ -88,24 +85,16 @@ fun CardPane(settingsViewModel: SettingsViewModel) {
                 Modifier.fillMaxWidth().padding(8.dp)
                     .background(
                         color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.6f),
-                        shape = MaterialTheme.shapes.large
+                        shape = MaterialTheme.shapes.extraLarge
                     )
             ) {
-                ListItem(
-                    headlineContent = {
-                        Text(
-                            modifier = Modifier.basicMarquee(),
-                            text = stringResource(Res.string.text_overflow),
-                            maxLines = 1
-                        )
-                    },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                Text(
+                    modifier = Modifier.padding(top = 8.dp, start = 12.dp),
+                    text = stringResource(Res.string.text_overflow),
+                    style = MaterialTheme.typography.labelLarge,
+                    maxLines = 1
                 )
-                SingleChoiceSegmentedButtonRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
-                ) {
+                SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(8.dp)) {
                     overflowStyles.forEachIndexed { index, label ->
                         SegmentedButton(
                             shape = SegmentedButtonDefaults.itemShape(
@@ -136,25 +125,16 @@ fun CardPane(settingsViewModel: SettingsViewModel) {
                 Modifier.fillMaxWidth().padding(horizontal = 8.dp).padding(bottom = 8.dp)
                     .background(
                         color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.6f),
-                        shape = MaterialTheme.shapes.large
+                        shape = MaterialTheme.shapes.extraLarge
                     )
             ) {
-                ListItem(
-                    headlineContent = {
-                        Text(
-                            modifier = Modifier.basicMarquee(),
-                            text = stringResource(Res.string.card_size),
-                            maxLines = 1
-                        )
-                    },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                Text(
+                    modifier = Modifier.padding(top = 8.dp, start = 12.dp),
+                    text = stringResource(Res.string.card_size),
+                    style = MaterialTheme.typography.labelLarge,
+                    maxLines = 1
                 )
-                SingleChoiceSegmentedButtonRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp)
-                        .padding(horizontal = 8.dp),
-                ) {
+                SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(8.dp)) {
                     sizeStyles.forEachIndexed { index, label ->
                         SegmentedButton(
                             shape = SegmentedButtonDefaults.itemShape(

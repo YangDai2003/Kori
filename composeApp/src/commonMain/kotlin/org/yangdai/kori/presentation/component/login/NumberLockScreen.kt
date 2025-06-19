@@ -33,6 +33,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,11 +41,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
@@ -74,105 +82,170 @@ fun NumberLockScreen(
     onPassCreated: (String) -> Unit = {},
     onBiometricClick: () -> Unit = {},
     onAuthenticated: () -> Unit = {}
-) = BoxWithConstraints(
-    modifier = Modifier.fillMaxSize().pointerInput(Unit) { }.then(modifier),
-    contentAlignment = Alignment.Center
 ) {
-    val screenWidth = maxWidth
-    val screenHeight = maxHeight
-    val isLandscape = screenWidth > screenHeight
-
-    // 计算适合当前屏幕的按钮尺寸
-    val buttonSize = calculateButtonSize(isLandscape, screenWidth, screenHeight)
-    val padding = buttonSize.times(0.25f)
-
     val hapticFeedback = LocalHapticFeedback.current
     var inputPassword by remember { mutableStateOf("") }
     var inputPassword2 by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
 
-    // 处理错误动画
-    val offsetX = handleErrorAnimation(isError) {
-        isError = false
-        inputPassword = ""
-        inputPassword2 = ""
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) { }
+            .focusRequester(focusRequester) // 关联 FocusRequester
+            .onKeyEvent { keyEvent ->
+                // 只在按键抬起时处理，防止按住按键时重复触发
+                if (keyEvent.type != KeyEventType.KeyUp) {
+                    return@onKeyEvent false
+                }
+
+                val number = when (keyEvent.key) {
+                    Key.One, Key.NumPad1 -> "1"
+                    Key.Two, Key.NumPad2 -> "2"
+                    Key.Three, Key.NumPad3 -> "3"
+                    Key.Four, Key.NumPad4 -> "4"
+                    Key.Five, Key.NumPad5 -> "5"
+                    Key.Six, Key.NumPad6 -> "6"
+                    Key.Seven, Key.NumPad7 -> "7"
+                    Key.Eight, Key.NumPad8 -> "8"
+                    Key.Nine, Key.NumPad9 -> "9"
+                    Key.Zero, Key.NumPad0 -> "0"
+                    else -> null
+                }
+
+                // 如果是数字键
+                if (number != null) {
+                    // 复用现有的密码输入逻辑
+                    handlePasswordInput(
+                        number = number,
+                        isCreatingPassword = isCreatingPassword,
+                        inputPassword = inputPassword,
+                        inputPassword2 = inputPassword2,
+                        storedPassword = storedPassword,
+                        hapticFeedback = hapticFeedback,
+                        onPasswordChanged = { newPassword -> inputPassword = newPassword },
+                        onPassword2Changed = { newPassword2 -> inputPassword2 = newPassword2 },
+                        onError = { isError = true },
+                        onPassCreated = onPassCreated,
+                        onAuthenticated = onAuthenticated
+                    )
+                    return@onKeyEvent true // 事件已处理
+                }
+
+                // 如果是删除键
+                if (keyEvent.key == Key.Backspace || keyEvent.key == Key.Delete) {
+                    // 复用现有的删除逻辑
+                    handleDeleteClick(
+                        isCreatingPassword = isCreatingPassword,
+                        inputPassword = inputPassword,
+                        inputPassword2 = inputPassword2,
+                        onPasswordChanged = { newPassword -> inputPassword = newPassword },
+                        onPassword2Changed = { newPassword2 -> inputPassword2 = newPassword2 }
+                    )
+                    return@onKeyEvent true // 事件已处理
+                }
+
+                false // 其他按键不处理
+            }
+            .then(modifier),
+        contentAlignment = Alignment.Center
+    ) {
+        val screenWidth = maxWidth
+        val screenHeight = maxHeight
+        val isLandscape = screenWidth > screenHeight
+
+        // 计算适合当前屏幕的按钮尺寸
+        val buttonSize = calculateButtonSize(isLandscape, screenWidth, screenHeight)
+        val padding = buttonSize.times(0.25f)
+
+        // 处理错误动画
+        val offsetX = handleErrorAnimation(isError) {
+            isError = false
+            inputPassword = ""
+            inputPassword2 = ""
+        }
+
+        // 根据屏幕方向选择不同布局
+        if (isLandscape) {
+            LandscapeLayout(
+                isCreatingPassword = isCreatingPassword,
+                inputPassword = inputPassword,
+                inputPassword2 = inputPassword2,
+                offsetX = offsetX,
+                isError = isError,
+                buttonSize = buttonSize,
+                padding = padding,
+                isBiometricAuthEnabled = isBiometricAuthEnabled,
+                onNumberClick = { number ->
+                    handlePasswordInput(
+                        number = number,
+                        isCreatingPassword = isCreatingPassword,
+                        inputPassword = inputPassword,
+                        inputPassword2 = inputPassword2,
+                        storedPassword = storedPassword,
+                        hapticFeedback = hapticFeedback,
+                        onPasswordChanged = { newPassword -> inputPassword = newPassword },
+                        onPassword2Changed = { newPassword2 -> inputPassword2 = newPassword2 },
+                        onError = { isError = true },
+                        onPassCreated = onPassCreated,
+                        onAuthenticated = onAuthenticated
+                    )
+                },
+                onDeleteClick = {
+                    handleDeleteClick(
+                        isCreatingPassword = isCreatingPassword,
+                        inputPassword = inputPassword,
+                        inputPassword2 = inputPassword2,
+                        onPasswordChanged = { newPassword -> inputPassword = newPassword },
+                        onPassword2Changed = { newPassword2 -> inputPassword2 = newPassword2 }
+                    )
+                },
+                onBiometricClick = onBiometricClick,
+                onCreatingCanceled = onCreatingCanceled
+            )
+        } else {
+            PortraitLayout(
+                isCreatingPassword = isCreatingPassword,
+                inputPassword = inputPassword,
+                inputPassword2 = inputPassword2,
+                offsetX = offsetX,
+                isError = isError,
+                buttonSize = buttonSize,
+                padding = padding,
+                isBiometricAuthEnabled = isBiometricAuthEnabled,
+                onNumberClick = { number ->
+                    handlePasswordInput(
+                        number = number,
+                        isCreatingPassword = isCreatingPassword,
+                        inputPassword = inputPassword,
+                        inputPassword2 = inputPassword2,
+                        storedPassword = storedPassword,
+                        hapticFeedback = hapticFeedback,
+                        onPasswordChanged = { newPassword -> inputPassword = newPassword },
+                        onPassword2Changed = { newPassword2 -> inputPassword2 = newPassword2 },
+                        onError = { isError = true },
+                        onPassCreated = onPassCreated,
+                        onAuthenticated = onAuthenticated
+                    )
+                },
+                onDeleteClick = {
+                    handleDeleteClick(
+                        isCreatingPassword = isCreatingPassword,
+                        inputPassword = inputPassword,
+                        inputPassword2 = inputPassword2,
+                        onPasswordChanged = { newPassword -> inputPassword = newPassword },
+                        onPassword2Changed = { newPassword2 -> inputPassword2 = newPassword2 }
+                    )
+                },
+                onBiometricClick = onBiometricClick,
+                onCreatingCanceled = onCreatingCanceled
+            )
+        }
     }
 
-    // 根据屏幕方向选择不同布局
-    if (isLandscape) {
-        LandscapeLayout(
-            isCreatingPassword = isCreatingPassword,
-            inputPassword = inputPassword,
-            inputPassword2 = inputPassword2,
-            offsetX = offsetX,
-            isError = isError,
-            buttonSize = buttonSize,
-            padding = padding,
-            isBiometricAuthEnabled = isBiometricAuthEnabled,
-            onNumberClick = { number ->
-                handlePasswordInput(
-                    number = number,
-                    isCreatingPassword = isCreatingPassword,
-                    inputPassword = inputPassword,
-                    inputPassword2 = inputPassword2,
-                    storedPassword = storedPassword,
-                    hapticFeedback = hapticFeedback,
-                    onPasswordChanged = { newPassword -> inputPassword = newPassword },
-                    onPassword2Changed = { newPassword2 -> inputPassword2 = newPassword2 },
-                    onError = { isError = true },
-                    onPassCreated = onPassCreated,
-                    onAuthenticated = onAuthenticated
-                )
-            },
-            onDeleteClick = {
-                handleDeleteClick(
-                    isCreatingPassword = isCreatingPassword,
-                    inputPassword = inputPassword,
-                    inputPassword2 = inputPassword2,
-                    onPasswordChanged = { newPassword -> inputPassword = newPassword },
-                    onPassword2Changed = { newPassword2 -> inputPassword2 = newPassword2 }
-                )
-            },
-            onBiometricClick = onBiometricClick,
-            onCreatingCanceled = onCreatingCanceled
-        )
-    } else {
-        PortraitLayout(
-            isCreatingPassword = isCreatingPassword,
-            inputPassword = inputPassword,
-            inputPassword2 = inputPassword2,
-            offsetX = offsetX,
-            isError = isError,
-            buttonSize = buttonSize,
-            padding = padding,
-            isBiometricAuthEnabled = isBiometricAuthEnabled,
-            onNumberClick = { number ->
-                handlePasswordInput(
-                    number = number,
-                    isCreatingPassword = isCreatingPassword,
-                    inputPassword = inputPassword,
-                    inputPassword2 = inputPassword2,
-                    storedPassword = storedPassword,
-                    hapticFeedback = hapticFeedback,
-                    onPasswordChanged = { newPassword -> inputPassword = newPassword },
-                    onPassword2Changed = { newPassword2 -> inputPassword2 = newPassword2 },
-                    onError = { isError = true },
-                    onPassCreated = onPassCreated,
-                    onAuthenticated = onAuthenticated
-                )
-            },
-            onDeleteClick = {
-                handleDeleteClick(
-                    isCreatingPassword = isCreatingPassword,
-                    inputPassword = inputPassword,
-                    inputPassword2 = inputPassword2,
-                    onPasswordChanged = { newPassword -> inputPassword = newPassword },
-                    onPassword2Changed = { newPassword2 -> inputPassword2 = newPassword2 }
-                )
-            },
-            onBiometricClick = onBiometricClick,
-            onCreatingCanceled = onCreatingCanceled
-        )
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
     }
 }
 

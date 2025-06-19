@@ -293,13 +293,11 @@ fun NoteSideSheet(
                                                 navigateTo(Screen.Settings)
                                             }
                                         )
-                                        IconButton(onClick = { if (!isExiting) isExiting = true }) {
-                                            Icon(
-                                                painter = painterResource(Res.drawable.right_panel_close),
-                                                tint = MaterialTheme.colorScheme.onSurface,
-                                                contentDescription = null
-                                            )
-                                        }
+                                        TooltipIconButton(
+                                            tipText = "Ctrl + Tab",
+                                            icon = painterResource(Res.drawable.right_panel_close),
+                                            onClick = { if (!isExiting) isExiting = true }
+                                        )
                                     }
                                 }
                             }
