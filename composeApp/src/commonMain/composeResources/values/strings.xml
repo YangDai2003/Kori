@@ -76,6 +76,7 @@
     <string name="type">Type</string>
     <string name="plain_text">Plain text</string>
     <string name="markdown" translatable="false">Markdown</string>
+    <string name="todo_text">Todo.txt</string>
     <string name="created">Created</string>
     <string name="updated">Updated</string>
     <string name="char_count">Characters</string>

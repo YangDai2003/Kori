@@ -197,12 +197,11 @@ fun TextEditor(
         label = "wave-phase"
     )
 
-    val markdownLint = remember { MarkdownLint() }
     val lintErrors by produceState<List<Issue>>(emptyList(), state.text, isLintActive) {
         if (isLintActive) {
             delay(300L) // 300ms 防抖
             value = withContext(Dispatchers.Default) {
-                markdownLint.validate(state.text.toString())
+                MarkdownLint().validate(state.text.toString())
             }
         } else {
             value = emptyList()

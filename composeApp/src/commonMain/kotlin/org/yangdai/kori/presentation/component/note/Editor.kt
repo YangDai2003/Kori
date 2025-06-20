@@ -8,6 +8,7 @@ import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownEditor
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditor
 import org.yangdai.kori.presentation.component.note.template.TemplateEditor
+import org.yangdai.kori.presentation.component.note.todo.TodoTextEditor
 
 @Composable
 fun Editor(
@@ -44,6 +45,17 @@ fun Editor(
 
     NoteType.PLAIN_TEXT -> {
         PlainTextEditor(
+            modifier = modifier,
+            state = state,
+            scrollState = scrollState,
+            readMode = readMode,
+            showLineNumbers = showLineNumbers,
+            findAndReplaceState = findAndReplaceState
+        )
+    }
+
+    NoteType.TODO -> {
+        TodoTextEditor(
             modifier = modifier,
             state = state,
             scrollState = scrollState,

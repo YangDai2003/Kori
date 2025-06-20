@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.plain_text
+import kori.composeapp.generated.resources.todo_text
 import kori.composeapp.generated.resources.type
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -77,6 +78,7 @@ fun NoteTypeDialog(
                         val typeName = when (noteType) {
                             NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
                             NoteType.MARKDOWN -> stringResource(Res.string.markdown)
+                            NoteType.TODO -> stringResource(Res.string.todo_text)
                         }
                         Text(
                             typeName,

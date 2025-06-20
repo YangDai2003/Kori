@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.plain_text
+import kori.composeapp.generated.resources.todo_text
 import kotlinx.datetime.Instant
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.NoteEntity
@@ -130,6 +131,7 @@ fun LazyStaggeredGridItemScope.NoteItem(
                     text = when (note.noteType) {
                         NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
                         NoteType.MARKDOWN -> stringResource(Res.string.markdown)
+                        NoteType.TODO -> stringResource(Res.string.todo_text)
                     },
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)

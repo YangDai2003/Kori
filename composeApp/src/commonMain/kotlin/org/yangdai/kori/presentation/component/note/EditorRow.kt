@@ -40,6 +40,7 @@ import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownEditorRow
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditorRow
+import org.yangdai.kori.presentation.component.note.todo.TodoTextEditorRow
 
 @Composable
 fun EditorRow(
@@ -73,6 +74,10 @@ fun EditorRow(
 
                     NoteType.MARKDOWN -> {
                         MarkdownEditorRow(textFieldState, onEditorRowAction)
+                    }
+
+                    NoteType.TODO -> {
+                        TodoTextEditorRow(textFieldState, onEditorRowAction)
                     }
                 }
             }

@@ -103,6 +103,7 @@ import kori.composeapp.generated.resources.right_panel_open
 import kori.composeapp.generated.resources.saveAsTemplate
 import kori.composeapp.generated.resources.templates
 import kori.composeapp.generated.resources.title
+import kori.composeapp.generated.resources.todo_text
 import kori.composeapp.generated.resources.type
 import kori.composeapp.generated.resources.updated
 import kori.composeapp.generated.resources.word_count
@@ -703,6 +704,7 @@ fun NoteScreen(
                 value = when (noteEditingState.noteType) {
                     NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
                     NoteType.MARKDOWN -> stringResource(Res.string.markdown)
+                    NoteType.TODO -> stringResource(Res.string.todo_text)
                 }
             )
 

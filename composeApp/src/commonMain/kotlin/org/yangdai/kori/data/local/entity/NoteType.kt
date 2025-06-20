@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 enum class NoteType {
     PLAIN_TEXT,
     MARKDOWN,
+    TODO,
     // 未来可以在这里添加更多类型
 }
