@@ -97,12 +97,12 @@ import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.ExportDialog
 import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
 import org.yangdai.kori.presentation.component.dialog.ShareDialog
-import org.yangdai.kori.presentation.component.note.Editor
+import org.yangdai.kori.presentation.component.note.AdaptiveEditor
+import org.yangdai.kori.presentation.component.note.AdaptiveView
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.HeaderNode
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
-import org.yangdai.kori.presentation.component.note.markdown.MarkdownView
 import org.yangdai.kori.presentation.component.note.markdown.moveCursorLeftStateless
 import org.yangdai.kori.presentation.component.note.markdown.moveCursorRightStateless
 import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
@@ -296,7 +296,7 @@ fun TemplateScreen(
             }
 
             if (noteEditingState.noteType == NoteType.PLAIN_TEXT) {
-                Editor(
+                AdaptiveEditor(
                     modifier = Modifier.fillMaxWidth().weight(1f),
                     isTemplate = true,
                     type = noteEditingState.noteType,
@@ -319,7 +319,7 @@ fun TemplateScreen(
                         var editorWeight by remember { mutableFloatStateOf(0.5f) }
                         val windowWidth = LocalWindowInfo.current.containerSize.width
 
-                        Editor(
+                        AdaptiveEditor(
                             modifier = Modifier.fillMaxHeight().weight(editorWeight),
                             isTemplate = true,
                             type = noteEditingState.noteType,
@@ -356,10 +356,10 @@ fun TemplateScreen(
                             interactionSource = interactionSource
                         )
 
-                        MarkdownView(
+                        AdaptiveView(
                             modifier = Modifier.fillMaxHeight().weight(1f - editorWeight),
-                            html = html,
-                            selection = viewModel.contentState.selection,
+                            noteType = noteEditingState.noteType,
+                            contentString = html,
                             scrollState = scrollState,
                             isAppInDarkTheme = isAppInDarkTheme,
                             isSheetVisible = isSideSheetOpen,
@@ -375,7 +375,7 @@ fun TemplateScreen(
                     ) { currentPage ->
                         when (currentPage) {
                             0 -> {
-                                Editor(
+                                AdaptiveEditor(
                                     modifier = Modifier.fillMaxSize(),
                                     isTemplate = true,
                                     type = noteEditingState.noteType,
@@ -390,10 +390,10 @@ fun TemplateScreen(
                             }
 
                             1 -> {
-                                MarkdownView(
+                                AdaptiveView(
                                     modifier = Modifier.fillMaxSize(),
-                                    html = html,
-                                    selection = viewModel.contentState.selection,
+                                    noteType = noteEditingState.noteType,
+                                    contentString = html,
                                     scrollState = scrollState,
                                     isAppInDarkTheme = isAppInDarkTheme,
                                     isSheetVisible = isSideSheetOpen,

@@ -12,7 +12,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingPanel
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextRange
 import javafx.application.Platform
 import javafx.concurrent.Worker
 import javafx.embed.swing.JFXPanel
@@ -28,7 +27,6 @@ import java.net.URI
 actual fun MarkdownView(
     modifier: Modifier,
     html: String,
-    selection: TextRange,
     scrollState: ScrollState,
     isAppInDarkTheme: Boolean,
     styles: MarkdownStyles,

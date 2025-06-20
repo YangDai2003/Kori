@@ -114,13 +114,13 @@ import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationI
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
 import org.yangdai.kori.presentation.component.dialog.ShareDialog
-import org.yangdai.kori.presentation.component.note.Editor
+import org.yangdai.kori.presentation.component.note.AdaptiveEditor
+import org.yangdai.kori.presentation.component.note.AdaptiveView
 import org.yangdai.kori.presentation.component.note.EditorRow
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
-import org.yangdai.kori.presentation.component.note.markdown.MarkdownView
 import org.yangdai.kori.presentation.component.note.markdown.moveCursorLeftStateless
 import org.yangdai.kori.presentation.component.note.markdown.moveCursorRightStateless
 import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
@@ -333,7 +333,7 @@ fun FileScreen(
             }
 
             if (fileEditingState.fileType == NoteType.PLAIN_TEXT) {
-                Editor(
+                AdaptiveEditor(
                     modifier = Modifier.fillMaxWidth().weight(1f),
                     type = fileEditingState.fileType,
                     state = viewModel.contentState,
@@ -355,7 +355,7 @@ fun FileScreen(
                         var editorWeight by remember { mutableFloatStateOf(0.5f) }
                         val windowWidth = LocalWindowInfo.current.containerSize.width
 
-                        Editor(
+                        AdaptiveEditor(
                             modifier = Modifier.fillMaxHeight().weight(editorWeight),
                             type = fileEditingState.fileType,
                             state = viewModel.contentState,
@@ -391,10 +391,10 @@ fun FileScreen(
                             interactionSource = interactionSource
                         )
 
-                        MarkdownView(
+                        AdaptiveView(
                             modifier = Modifier.fillMaxHeight().weight(1f - editorWeight),
-                            html = html,
-                            selection = viewModel.contentState.selection,
+                            noteType = fileEditingState.fileType,
+                            contentString = html,
                             scrollState = scrollState,
                             isAppInDarkTheme = isAppInDarkTheme,
                             isSheetVisible = isSideSheetOpen,
@@ -410,7 +410,7 @@ fun FileScreen(
                     ) { currentPage ->
                         when (currentPage) {
                             0 -> {
-                                Editor(
+                                AdaptiveEditor(
                                     modifier = Modifier.fillMaxSize(),
                                     type = fileEditingState.fileType,
                                     state = viewModel.contentState,
@@ -424,10 +424,10 @@ fun FileScreen(
                             }
 
                             1 -> {
-                                MarkdownView(
+                                AdaptiveView(
                                     modifier = Modifier.fillMaxSize(),
-                                    html = html,
-                                    selection = viewModel.contentState.selection,
+                                    noteType = fileEditingState.fileType,
+                                    contentString = html,
                                     scrollState = scrollState,
                                     isAppInDarkTheme = isAppInDarkTheme,
                                     isSheetVisible = isSideSheetOpen,

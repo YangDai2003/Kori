@@ -9,7 +9,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.viewinterop.UIKitView
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.CoreGraphics.CGRectMake
@@ -35,7 +34,6 @@ import platform.darwin.NSObject
 actual fun MarkdownView(
     modifier: Modifier,
     html: String,
-    selection: TextRange,
     scrollState: ScrollState,
     isAppInDarkTheme: Boolean,
     styles: MarkdownStyles,

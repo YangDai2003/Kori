@@ -21,7 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
 import org.yangdai.kori.presentation.util.rememberCustomTabsIntent
@@ -31,7 +30,6 @@ import org.yangdai.kori.presentation.util.rememberCustomTabsIntent
 actual fun MarkdownView(
     modifier: Modifier,
     html: String,
-    selection: TextRange,
     scrollState: ScrollState,
     isAppInDarkTheme: Boolean,
     styles: MarkdownStyles,

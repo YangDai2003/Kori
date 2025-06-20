@@ -11,7 +11,7 @@ import org.yangdai.kori.presentation.component.note.template.TemplateEditor
 import org.yangdai.kori.presentation.component.note.todo.TodoTextEditor
 
 @Composable
-fun Editor(
+fun AdaptiveEditor(
     modifier: Modifier = Modifier,
     isTemplate: Boolean = false,
     type: NoteType,

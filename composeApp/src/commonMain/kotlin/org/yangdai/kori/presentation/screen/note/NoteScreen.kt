@@ -127,13 +127,13 @@ import org.yangdai.kori.presentation.component.dialog.ExportDialog
 import org.yangdai.kori.presentation.component.dialog.FoldersDialog
 import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
 import org.yangdai.kori.presentation.component.dialog.ShareDialog
-import org.yangdai.kori.presentation.component.note.Editor
+import org.yangdai.kori.presentation.component.note.AdaptiveEditor
+import org.yangdai.kori.presentation.component.note.AdaptiveView
 import org.yangdai.kori.presentation.component.note.EditorRow
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
-import org.yangdai.kori.presentation.component.note.markdown.MarkdownView
 import org.yangdai.kori.presentation.component.note.markdown.moveCursorLeftStateless
 import org.yangdai.kori.presentation.component.note.markdown.moveCursorRightStateless
 import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
@@ -429,7 +429,7 @@ fun NoteScreen(
             }
 
             if (noteEditingState.noteType == NoteType.PLAIN_TEXT) {
-                Editor(
+                AdaptiveEditor(
                     modifier = Modifier.fillMaxWidth().weight(1f),
                     type = noteEditingState.noteType,
                     state = viewModel.contentState,
@@ -451,7 +451,7 @@ fun NoteScreen(
                         var editorWeight by remember { mutableFloatStateOf(0.5f) }
                         val windowWidth = LocalWindowInfo.current.containerSize.width
 
-                        Editor(
+                        AdaptiveEditor(
                             modifier = Modifier.fillMaxHeight().weight(editorWeight),
                             type = noteEditingState.noteType,
                             state = viewModel.contentState,
@@ -491,10 +491,10 @@ fun NoteScreen(
 //                            modifier = Modifier.fillMaxHeight().weight(1f - editorWeight).verticalScroll(rememberScrollState()),
 //                            text = html
 //                        )
-                        MarkdownView(
+                        AdaptiveView(
                             modifier = Modifier.fillMaxHeight().weight(1f - editorWeight),
-                            html = html,
-                            selection = viewModel.contentState.selection,
+                            noteType = noteEditingState.noteType,
+                            contentString = html,
                             scrollState = scrollState,
                             isAppInDarkTheme = isAppInDarkTheme,
                             isSheetVisible = isSideSheetOpen,
@@ -510,7 +510,7 @@ fun NoteScreen(
                     ) { currentPage ->
                         when (currentPage) {
                             0 -> {
-                                Editor(
+                                AdaptiveEditor(
                                     modifier = Modifier.fillMaxSize(),
                                     type = noteEditingState.noteType,
                                     state = viewModel.contentState,
@@ -524,10 +524,10 @@ fun NoteScreen(
                             }
 
                             1 -> {
-                                MarkdownView(
+                                AdaptiveView(
                                     modifier = Modifier.fillMaxSize(),
-                                    html = html,
-                                    selection = viewModel.contentState.selection,
+                                    noteType = noteEditingState.noteType,
+                                    contentString = html,
                                     scrollState = scrollState,
                                     isAppInDarkTheme = isAppInDarkTheme,
                                     isSheetVisible = isSideSheetOpen,
