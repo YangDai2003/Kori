@@ -218,4 +218,4 @@ Mermaid at the following links:
 - [GitHub Flavored Markdown](https://github.github.com/gfm/)
 - [LaTeX](https://www.latex-project.org/)
 - [Mermaid](https://mermaid.js.org/)
-- [Todo.txt](https://todotxt.org/)
+- [Todo.txt](https://github.com/todotxt/todo.txt)
