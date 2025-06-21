@@ -28,11 +28,11 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -213,7 +213,7 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
             onDismissRequest = { showURLDialog = false },
             text = {
                 Column {
-                    OutlinedTextField(
+                    TextField(
                         value = url,
                         onValueChange = {
                             url = it
@@ -221,6 +221,7 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
                         },
                         label = { Text("URL") },
                         isError = isError,
+                        singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
                     SelectionContainer {
@@ -229,9 +230,7 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
                             LinkHintText(
                                 "Github",
                                 "https://raw.githubusercontent.com/<username>/<repository>/<branch>/path/to/your/file.md",
-                                modifier = Modifier.clickable {
-                                    showMoreLinkHint = !showMoreLinkHint
-                                }
+                                Modifier.clickable { showMoreLinkHint = !showMoreLinkHint }
                             )
                             AnimatedVisibility(showMoreLinkHint) {
                                 Column {
@@ -249,11 +248,7 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
                                     )
                                 }
                             }
-                            Text(
-                                "...",
-                                modifier = Modifier.clickable {
-                                    showMoreLinkHint = !showMoreLinkHint
-                                })
+                            Text("...", Modifier.clickable { showMoreLinkHint = !showMoreLinkHint })
                         }
                     }
                 }
