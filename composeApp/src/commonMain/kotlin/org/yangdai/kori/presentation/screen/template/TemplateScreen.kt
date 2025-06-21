@@ -10,6 +10,8 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -63,6 +65,7 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
@@ -98,15 +101,14 @@ import org.yangdai.kori.presentation.component.dialog.ExportDialog
 import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
 import org.yangdai.kori.presentation.component.dialog.ShareDialog
 import org.yangdai.kori.presentation.component.note.AdaptiveEditor
+import org.yangdai.kori.presentation.component.note.AdaptiveEditorRow
 import org.yangdai.kori.presentation.component.note.AdaptiveView
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
-import org.yangdai.kori.presentation.component.note.HeaderNode
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.note.markdown.moveCursorLeftStateless
 import org.yangdai.kori.presentation.component.note.markdown.moveCursorRightStateless
 import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
-import org.yangdai.kori.presentation.component.note.template.TemplateEditorRow
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.screen.settings.AppTheme
@@ -126,6 +128,7 @@ fun TemplateScreen(
     val textState by viewModel.textState.collectAsStateWithLifecycle()
     val editorState by viewModel.editorState.collectAsStateWithLifecycle()
     val html by viewModel.html.collectAsStateWithLifecycle()
+    val outline by viewModel.outline.collectAsStateWithLifecycle()
     val appTheme by viewModel.appTheme.collectAsStateWithLifecycle()
     val isSystemInDarkTheme = isSystemInDarkTheme()
     val isAppInDarkTheme = remember(appTheme, isSystemInDarkTheme) {
@@ -290,7 +293,14 @@ fun TemplateScreen(
             )
         }
     ) { innerPadding ->
-        Column(Modifier.padding(innerPadding)) {
+        val layoutDirection = LocalLayoutDirection.current
+        Column(
+            Modifier.padding(
+                top = innerPadding.calculateTopPadding(),
+                start = innerPadding.calculateStartPadding(layoutDirection),
+                end = innerPadding.calculateEndPadding(layoutDirection)
+            )
+        ) {
             AnimatedVisibility(isSearching) {
                 FindAndReplaceField(findAndReplaceState)
             }
@@ -298,7 +308,6 @@ fun TemplateScreen(
             if (noteEditingState.noteType == NoteType.PLAIN_TEXT) {
                 AdaptiveEditor(
                     modifier = Modifier.fillMaxWidth().weight(1f),
-                    isTemplate = true,
                     type = noteEditingState.noteType,
                     state = viewModel.contentState,
                     scrollState = scrollState,
@@ -321,7 +330,6 @@ fun TemplateScreen(
 
                         AdaptiveEditor(
                             modifier = Modifier.fillMaxHeight().weight(editorWeight),
-                            isTemplate = true,
                             type = noteEditingState.noteType,
                             state = viewModel.contentState,
                             scrollState = scrollState,
@@ -339,13 +347,12 @@ fun TemplateScreen(
                                     interactionSource = interactionSource,
                                     state = rememberDraggableState { delta ->
                                         editorWeight =
-                                            (editorWeight + delta / windowWidth).coerceIn(
-                                                0.3f, 0.7f
-                                            )
+                                            (editorWeight + delta / windowWidth)
+                                                .coerceIn(0.15f, 0.85f)
                                     },
                                     orientation = Orientation.Horizontal,
                                     onDragStopped = {
-                                        val positions = listOf(1f / 3f, 0.5f, 2f / 3f)
+                                        val positions = listOf(0.2f, 1f / 3f, 0.5f, 2f / 3f, 0.8f)
                                         val closest =
                                             positions.minByOrNull { abs(it - editorWeight) }
                                         if (closest != null) {
@@ -359,7 +366,7 @@ fun TemplateScreen(
                         AdaptiveView(
                             modifier = Modifier.fillMaxHeight().weight(1f - editorWeight),
                             noteType = noteEditingState.noteType,
-                            contentString = html,
+                            contentString = if (noteEditingState.noteType == NoteType.MARKDOWN) html else viewModel.contentState.text.toString(),
                             scrollState = scrollState,
                             isAppInDarkTheme = isAppInDarkTheme,
                             isSheetVisible = isSideSheetOpen,
@@ -377,7 +384,6 @@ fun TemplateScreen(
                             0 -> {
                                 AdaptiveEditor(
                                     modifier = Modifier.fillMaxSize(),
-                                    isTemplate = true,
                                     type = noteEditingState.noteType,
                                     state = viewModel.contentState,
                                     scrollState = scrollState,
@@ -393,7 +399,7 @@ fun TemplateScreen(
                                 AdaptiveView(
                                     modifier = Modifier.fillMaxSize(),
                                     noteType = noteEditingState.noteType,
-                                    contentString = html,
+                                    contentString = if (noteEditingState.noteType == NoteType.MARKDOWN) html else viewModel.contentState.text.toString(),
                                     scrollState = scrollState,
                                     isAppInDarkTheme = isAppInDarkTheme,
                                     isSheetVisible = isSideSheetOpen,
@@ -404,17 +410,22 @@ fun TemplateScreen(
                     }
                 }
             }
-            AnimatedVisibility(visible = !isReadView) {
-                TemplateEditorRow(viewModel.contentState)
-            }
+            AdaptiveEditorRow(
+                visible = !isReadView,
+                type = noteEditingState.noteType,
+                scrollState = scrollState,
+                bottomPadding = innerPadding.calculateBottomPadding(),
+                textFieldState = viewModel.contentState,
+                isTemplate = true
+            )
         }
     }
 
     NoteSideSheet(
         isDrawerOpen = isSideSheetOpen,
         onDismiss = { isSideSheetOpen = false },
-        outline = HeaderNode("", 0, IntRange.EMPTY),
-        showOutline = false,
+        outline = outline,
+        showOutline = noteEditingState.noteType == NoteType.MARKDOWN,
         onHeaderClick = { selectedHeader = it },
         navigateTo = { navigateToScreen(it) },
         actionContent = {

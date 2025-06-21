@@ -72,7 +72,7 @@ fun AboutPane() {
 
         Button(
             modifier = Modifier
-                .padding(top = 8.dp)
+                .padding(top = 16.dp)
                 .size(240.dp),
             shapes = ButtonDefaults.shapes(
                 shape = MaterialShapes.Cookie12Sided.toShape(),

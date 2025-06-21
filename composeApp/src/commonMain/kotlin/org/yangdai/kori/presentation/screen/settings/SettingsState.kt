@@ -1,7 +1,5 @@
 package org.yangdai.kori.presentation.screen.settings
 
-import org.yangdai.kori.data.local.entity.NoteType
-
 data class StylePaneState(
     val theme: AppTheme = AppTheme.SYSTEM,
     val color: AppColor = AppColor.DYNAMIC,
@@ -20,8 +18,7 @@ data class SecurityPaneState(
 data class EditorPaneState(
     val showLineNumber: Boolean = false,
     val isMarkdownLintEnabled: Boolean = false,
-    val isDefaultReadingView: Boolean = false,
-    val defaultNoteType: NoteType = NoteType.PLAIN_TEXT,
+    val isDefaultReadingView: Boolean = false
 )
 
 data class TemplatePaneState(

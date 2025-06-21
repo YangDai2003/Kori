@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -45,8 +46,10 @@ import androidx.compose.material.icons.outlined.SearchOff
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.SwapHorizontalCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -56,6 +59,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.VerticalDragHandle
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -116,7 +120,7 @@ import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
 import org.yangdai.kori.presentation.component.dialog.ShareDialog
 import org.yangdai.kori.presentation.component.note.AdaptiveEditor
 import org.yangdai.kori.presentation.component.note.AdaptiveView
-import org.yangdai.kori.presentation.component.note.EditorRow
+import org.yangdai.kori.presentation.component.note.AdaptiveEditorRow
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
@@ -133,7 +137,7 @@ import org.yangdai.kori.presentation.util.formatNumber
 import org.yangdai.kori.presentation.util.isScreenSizeLarge
 import kotlin.math.abs
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FileScreen(
     viewModel: FileViewModel = koinViewModel(),
@@ -374,13 +378,12 @@ fun FileScreen(
                                     interactionSource = interactionSource,
                                     state = rememberDraggableState { delta ->
                                         editorWeight =
-                                            (editorWeight + delta / windowWidth).coerceIn(
-                                                0.3f, 0.7f
-                                            )
+                                            (editorWeight + delta / windowWidth)
+                                                .coerceIn(0.15f, 0.85f)
                                     },
                                     orientation = Orientation.Horizontal,
                                     onDragStopped = {
-                                        val positions = listOf(1f / 3f, 0.5f, 2f / 3f)
+                                        val positions = listOf(0.2f, 1f / 3f, 0.5f, 2f / 3f, 0.8f)
                                         val closest =
                                             positions.minByOrNull { abs(it - editorWeight) }
                                         if (closest != null) {
@@ -394,7 +397,7 @@ fun FileScreen(
                         AdaptiveView(
                             modifier = Modifier.fillMaxHeight().weight(1f - editorWeight),
                             noteType = fileEditingState.fileType,
-                            contentString = html,
+                            contentString = if (fileEditingState.fileType == NoteType.MARKDOWN) html else viewModel.contentState.text.toString(),
                             scrollState = scrollState,
                             isAppInDarkTheme = isAppInDarkTheme,
                             isSheetVisible = isSideSheetOpen,
@@ -427,7 +430,7 @@ fun FileScreen(
                                 AdaptiveView(
                                     modifier = Modifier.fillMaxSize(),
                                     noteType = fileEditingState.fileType,
-                                    contentString = html,
+                                    contentString = if (fileEditingState.fileType == NoteType.MARKDOWN) html else viewModel.contentState.text.toString(),
                                     scrollState = scrollState,
                                     isAppInDarkTheme = isAppInDarkTheme,
                                     isSheetVisible = isSideSheetOpen,
@@ -438,7 +441,7 @@ fun FileScreen(
                     }
                 }
             }
-            EditorRow(
+            AdaptiveEditorRow(
                 visible = !isReadView,
                 type = fileEditingState.fileType,
                 scrollState = scrollState,
@@ -467,6 +470,7 @@ fun FileScreen(
     if (showTemplatesBottomSheet) {
         ModalBottomSheet(
             sheetState = templatesSheetState,
+            sheetGesturesEnabled = false,
             onDismissRequest = { showTemplatesBottomSheet = false },
             dragHandle = {
                 Row(
@@ -476,13 +480,24 @@ fun FileScreen(
                 ) {
                     Text(
                         text = stringResource(Res.string.templates),
-                        modifier = Modifier.padding(start = 16.dp, top = 8.dp)
+                        modifier = Modifier.padding(start = 16.dp)
                     )
                     IconButton(
-                        modifier = Modifier.padding(end = 8.dp, top = 8.dp),
+                        modifier = Modifier.padding(end = 4.dp, top = 4.dp)
+                            .minimumInteractiveComponentSize()
+                            .size(
+                                IconButtonDefaults.extraSmallContainerSize(
+                                    IconButtonDefaults.IconButtonWidthOption.Uniform
+                                )
+                            ),
+                        colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
                         onClick = hideTemplatesBottomSheet
                     ) {
-                        Icon(imageVector = Icons.Default.Close, contentDescription = null)
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null,
+                            modifier = Modifier.size(IconButtonDefaults.extraSmallIconSize)
+                        )
                     }
                 }
             }

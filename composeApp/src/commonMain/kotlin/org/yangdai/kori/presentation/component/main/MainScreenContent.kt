@@ -1,12 +1,8 @@
 package org.yangdai.kori.presentation.component.main
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
@@ -26,6 +22,7 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.DriveFileMove
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DeleteForever
@@ -39,7 +36,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExpandedDockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.FloatingActionButtonMenu
+import androidx.compose.material3.FloatingActionButtonMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -51,11 +49,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.SuggestionChip
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleFloatingActionButton
+import androidx.compose.material3.ToggleFloatingActionButtonDefaults.animateIcon
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopSearchBar
+import androidx.compose.material3.animateFloatingActionButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
@@ -66,7 +66,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -74,26 +73,35 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kfile.getPath
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.all_notes
 import kori.composeapp.generated.resources.checked
 import kori.composeapp.generated.resources.delete
 import kori.composeapp.generated.resources.delete_all
+import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.move
 import kori.composeapp.generated.resources.pin
 import kori.composeapp.generated.resources.pinboard
+import kori.composeapp.generated.resources.plain_text
 import kori.composeapp.generated.resources.restore
 import kori.composeapp.generated.resources.restore_all
 import kori.composeapp.generated.resources.search
 import kori.composeapp.generated.resources.search_history
 import kori.composeapp.generated.resources.sort_by
 import kori.composeapp.generated.resources.templates
+import kori.composeapp.generated.resources.todo_text
 import kori.composeapp.generated.resources.toolbox
 import kori.composeapp.generated.resources.trash
 import kotlinx.coroutines.launch
@@ -102,7 +110,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.domain.sort.NoteSortType
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
 import org.yangdai.kori.presentation.component.TooltipIconButton
-import org.yangdai.kori.presentation.component.dialog.FilePickerDialog
 import org.yangdai.kori.presentation.component.dialog.FoldersDialog
 import org.yangdai.kori.presentation.component.dialog.NoteSortOptionDialog
 import org.yangdai.kori.presentation.navigation.Screen
@@ -120,13 +127,14 @@ fun MainScreenContent(
     navigationIcon: @Composable () -> Unit = {},
     navigateToScreen: (Screen) -> Unit
 ) {
-    var showSortDialog by rememberSaveable { mutableStateOf(false) }
-    var showFoldersDialog by rememberSaveable { mutableStateOf(false) }
-    var showFilePickerDialog by rememberSaveable { mutableStateOf(false) }
+    var showSortDialog by remember { mutableStateOf(false) }
+    var showFoldersDialog by remember { mutableStateOf(false) }
     val selectedNotes = remember { mutableStateSetOf<String>() }
     val isSelectionMode by remember { derivedStateOf { selectedNotes.isNotEmpty() } }
     val isLargeScreen = isScreenSizeLarge()
     BackHandler(enabled = isSelectionMode) { selectedNotes.clear() }
+    var fabMenuExpanded by remember { mutableStateOf(false) }
+    BackHandler(enabled = fabMenuExpanded) { fabMenuExpanded = false }
 
     val textFieldState = rememberTextFieldState()
     val searchBarState = rememberSearchBarState()
@@ -186,6 +194,7 @@ fun MainScreenContent(
             }
         )
     }
+    val cardPaneState by viewModel.cardPaneState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -408,64 +417,18 @@ fun MainScreenContent(
                 }
             }
         },
-        floatingActionButton = {
-            if (currentDrawerItem !is DrawerItem.Trash && currentDrawerItem !is DrawerItem.Toolbox && !isSelectionMode) {
-                val interactionSource = remember { MutableInteractionSource() }
-                val isPressed by interactionSource.collectIsPressedAsState()
-                val scale by animateFloatAsState(
-                    targetValue = if (isPressed) 0.9f else 1f,
-                    label = "scale"
-                )
-
-                Surface(
-                    modifier = Modifier
-                        .graphicsLayer {
-                            scaleX = scale
-                            scaleY = scale
-                        }
-                        .combinedClickable(
-                            interactionSource = interactionSource,
-                            indication = null,
-                            role = Role.Button,
-                            onClick = {
-                                if (currentDrawerItem is DrawerItem.Templates)
-                                    navigateToScreen(Screen.Template())
-                                else {
-                                    val folderId =
-                                        if (currentDrawerItem is DrawerItem.Folder) currentDrawerItem.folder.id
-                                        else null
-                                    navigateToScreen(Screen.Note(folderId = folderId))
-                                }
-                            },
-                            onLongClick = {
-                                showFilePickerDialog = true
-                            }
-                        ),
-                    shape = FloatingActionButtonDefaults.shape,
-                    color = FloatingActionButtonDefaults.containerColor,
-                    shadowElevation = 6.dp
-                ) {
-                    Box(
-                        modifier = Modifier.defaultMinSize(56.dp, 56.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(imageVector = Icons.Outlined.Create, contentDescription = "Add")
-                    }
-                }
-            }
-        },
         containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) { innerPadding ->
-        val page = when (currentDrawerItem) {
-            DrawerItem.AllNotes -> 0
-            DrawerItem.Templates -> 1
-            DrawerItem.Trash -> 2
-            is DrawerItem.Folder -> 3
-            DrawerItem.Toolbox -> 4
-        }
         val pagerState = rememberPagerState { 5 }
-        LaunchedEffect(page) {
+        LaunchedEffect(currentDrawerItem) {
             selectedNotes.clear()
+            val page = when (currentDrawerItem) {
+                DrawerItem.AllNotes -> 0
+                DrawerItem.Templates -> 1
+                DrawerItem.Trash -> 2
+                is DrawerItem.Folder -> 3
+                DrawerItem.Toolbox -> 4
+            }
             pagerState.scrollToPage(page)
         }
         val contentPadding = remember(innerPadding) {
@@ -476,115 +439,190 @@ fun MainScreenContent(
                 bottom = innerPadding.calculateBottomPadding()
             )
         }
-
-        val cardPaneState by viewModel.cardPaneState.collectAsStateWithLifecycle()
-        val noteItemProperties by remember(cardPaneState, viewModel.noteSortType) {
-            derivedStateOf {
-                NoteItemProperties(
-                    showCreatedTime = when (viewModel.noteSortType) {
-                        NoteSortType.CREATE_TIME_DESC, NoteSortType.CREATE_TIME_ASC -> true
-                        else -> false
-                    },
-                    cardSize = cardPaneState.cardSize,
-                    clipOverflow = cardPaneState.clipOverflow
-                )
-            }
+        val noteItemProperties = remember(cardPaneState, viewModel.noteSortType) {
+            NoteItemProperties(
+                showCreatedTime = when (viewModel.noteSortType) {
+                    NoteSortType.CREATE_TIME_DESC, NoteSortType.CREATE_TIME_ASC -> true
+                    else -> false
+                },
+                cardSize = cardPaneState.cardSize,
+                clipOverflow = cardPaneState.clipOverflow
+            )
         }
-        VerticalPager(
-            modifier = Modifier
-                .padding(top = innerPadding.calculateTopPadding())
-                .fillMaxSize()
-                .graphicsLayer {
-                    shape =
-                        if (isLargeScreen) RoundedCornerShape(topStart = 12.dp)
-                        else RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
-                    clip = true
-                }
-                .background(MaterialTheme.colorScheme.surfaceContainerLow),
-            state = pagerState,
-            beyondViewportPageCount = 1,
-            key = { it },
-            userScrollEnabled = false
-        ) { pager ->
-            when (pager) {
-                0 -> {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        val allNotes by viewModel.allNotes.collectAsStateWithLifecycle()
-                        val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()
-                        AnimatedContent(textFieldState.text.isNotBlank() && searchBarState.currentValue == SearchBarValue.Collapsed) { showSearchRes ->
-                            if (showSearchRes)
-                                Page(
-                                    keyword = textFieldState.text.toString(),
-                                    notes = searchResults,
-                                    contentPadding = contentPadding,
-                                    navigateToNote = { navigateToScreen(Screen.Note(it)) },
-                                    selectedNotes = selectedNotes,
-                                    noteItemProperties = noteItemProperties,
-                                    isSelectionMode = isSelectionMode
-                                )
-                            else
-                                Page(
-                                    notes = allNotes,
-                                    contentPadding = contentPadding,
-                                    navigateToNote = { navigateToScreen(Screen.Note(it)) },
-                                    selectedNotes = selectedNotes,
-                                    noteItemProperties = noteItemProperties,
-                                    isSelectionMode = isSelectionMode
-                                )
+        Box(Modifier.fillMaxSize()) {
+            VerticalPager(
+                modifier = Modifier
+                    .padding(top = innerPadding.calculateTopPadding())
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        shape =
+                            if (isLargeScreen) RoundedCornerShape(topStart = 12.dp)
+                            else RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
+                        clip = true
+                    }
+                    .background(MaterialTheme.colorScheme.surfaceContainerLow),
+                state = pagerState,
+                beyondViewportPageCount = 1,
+                key = { it },
+                userScrollEnabled = false
+            ) { pager ->
+                when (pager) {
+                    0 -> {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            val allNotes by viewModel.allNotes.collectAsStateWithLifecycle()
+                            val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()
+                            AnimatedContent(textFieldState.text.isNotBlank() && searchBarState.currentValue == SearchBarValue.Collapsed) { showSearchRes ->
+                                if (showSearchRes)
+                                    Page(
+                                        keyword = textFieldState.text.toString(),
+                                        notes = searchResults,
+                                        contentPadding = contentPadding,
+                                        navigateToNote = { navigateToScreen(Screen.Note(it)) },
+                                        selectedNotes = selectedNotes,
+                                        noteItemProperties = noteItemProperties,
+                                        isSelectionMode = isSelectionMode
+                                    )
+                                else
+                                    Page(
+                                        notes = allNotes,
+                                        contentPadding = contentPadding,
+                                        navigateToNote = { navigateToScreen(Screen.Note(it)) },
+                                        selectedNotes = selectedNotes,
+                                        noteItemProperties = noteItemProperties,
+                                        isSelectionMode = isSelectionMode
+                                    )
+                            }
                         }
                     }
-                }
 
-                1 -> {
-                    val templateNotes by viewModel.templateNotes.collectAsStateWithLifecycle()
-                    Page(
-                        notes = templateNotes,
-                        contentPadding = contentPadding,
-                        navigateToNote = { navigateToScreen(Screen.Template(it)) },
-                        selectedNotes = selectedNotes,
-                        noteItemProperties = noteItemProperties,
-                        isSelectionMode = isSelectionMode
-                    )
-                }
-
-                2 -> {
-                    val trashNotes by viewModel.trashNotes.collectAsStateWithLifecycle()
-                    Page(
-                        notes = trashNotes,
-                        contentPadding = contentPadding,
-                        navigateToNote = { },
-                        selectedNotes = selectedNotes,
-                        noteItemProperties = noteItemProperties,
-                        isSelectionMode = isSelectionMode
-                    )
-                }
-
-                3 -> {
-                    val folderNotes by viewModel.currentFolderNotes.collectAsStateWithLifecycle()
-                    if (currentDrawerItem is DrawerItem.Folder) {
-                        val folderId = currentDrawerItem.folder.id
-                        LaunchedEffect(folderId) {
-                            viewModel.loadNotesByFolder(folderId)
-                        }
+                    1 -> {
+                        val templateNotes by viewModel.templateNotes.collectAsStateWithLifecycle()
                         Page(
-                            notes = folderNotes,
+                            notes = templateNotes,
                             contentPadding = contentPadding,
-                            navigateToNote = { navigateToScreen(Screen.Note(it)) },
+                            navigateToNote = { navigateToScreen(Screen.Template(it)) },
                             selectedNotes = selectedNotes,
                             noteItemProperties = noteItemProperties,
                             isSelectionMode = isSelectionMode
                         )
                     }
-                }
 
-                4 -> {
-                    val scope = rememberCoroutineScope()
-                    ToolboxPage(navigateToScreen) {
-                        scope.launch {
-                            val id = viewModel.addSampleNote()
-                            navigateToScreen(Screen.Note(id))
+                    2 -> {
+                        val trashNotes by viewModel.trashNotes.collectAsStateWithLifecycle()
+                        Page(
+                            notes = trashNotes,
+                            contentPadding = contentPadding,
+                            navigateToNote = { },
+                            selectedNotes = selectedNotes,
+                            noteItemProperties = noteItemProperties,
+                            isSelectionMode = isSelectionMode
+                        )
+                    }
+
+                    3 -> {
+                        val folderNotes by viewModel.currentFolderNotes.collectAsStateWithLifecycle()
+                        if (currentDrawerItem is DrawerItem.Folder) {
+                            val folderId = currentDrawerItem.folder.id
+                            LaunchedEffect(folderId) {
+                                viewModel.loadNotesByFolder(folderId)
+                            }
+                            Page(
+                                notes = folderNotes,
+                                contentPadding = contentPadding,
+                                navigateToNote = { navigateToScreen(Screen.Note(it)) },
+                                selectedNotes = selectedNotes,
+                                noteItemProperties = noteItemProperties,
+                                isSelectionMode = isSelectionMode
+                            )
                         }
                     }
+
+                    4 -> {
+                        val scope = rememberCoroutineScope()
+                        ToolboxPage(navigateToScreen) {
+                            scope.launch {
+                                val id = viewModel.addSampleNote()
+                                navigateToScreen(Screen.Note(id))
+                            }
+                        }
+                    }
+                }
+            }
+
+            val items = listOf(
+                stringResource(Res.string.plain_text),
+                stringResource(Res.string.markdown),
+                stringResource(Res.string.todo_text)
+            )
+            FloatingActionButtonMenu(
+                modifier = Modifier.align(Alignment.BottomEnd)
+                    .padding(bottom = innerPadding.calculateBottomPadding()),
+                expanded = fabMenuExpanded,
+                button = {
+                    ToggleFloatingActionButton(
+                        modifier =
+                            Modifier.semantics {
+                                traversalIndex = -1f
+                                stateDescription = if (fabMenuExpanded) "Expanded" else "Collapsed"
+                                contentDescription = "Toggle menu"
+                            }.animateFloatingActionButton(
+                                visible = if (currentDrawerItem is DrawerItem.Trash || currentDrawerItem is DrawerItem.Toolbox || isSelectionMode) {
+                                    fabMenuExpanded = false
+                                    false
+                                } else true,
+                                alignment = Alignment.BottomEnd
+                            ),
+                        checked = fabMenuExpanded,
+                        onCheckedChange = { fabMenuExpanded = it },
+                    ) {
+                        val imageVector by remember {
+                            derivedStateOf {
+                                if (checkedProgress > 0.5f) Icons.Outlined.Close else Icons.Outlined.Create
+                            }
+                        }
+                        Icon(
+                            painter = rememberVectorPainter(imageVector),
+                            contentDescription = null,
+                            modifier = Modifier.animateIcon({ checkedProgress })
+                        )
+                    }
+                }
+            ) {
+                items.forEachIndexed { i, item ->
+                    FloatingActionButtonMenuItem(
+                        modifier =
+                            Modifier.semantics {
+                                isTraversalGroup = true
+                                // Add a custom a11y action to allow closing the menu when focusing
+                                // the last menu item, since the close button comes before the first
+                                // menu item in the traversal order.
+                                if (i == items.size - 1) {
+                                    customActions =
+                                        listOf(
+                                            CustomAccessibilityAction(
+                                                label = "Close menu",
+                                                action = {
+                                                    fabMenuExpanded = false
+                                                    true
+                                                }
+                                            )
+                                        )
+                                }
+                            },
+                        onClick = {
+                            fabMenuExpanded = false
+                            if (currentDrawerItem is DrawerItem.Templates)
+                                navigateToScreen(Screen.Template(noteType = i))
+                            else {
+                                val folderId =
+                                    if (currentDrawerItem is DrawerItem.Folder) currentDrawerItem.folder.id
+                                    else null
+                                navigateToScreen(Screen.Note(folderId = folderId, noteType = i))
+                            }
+                        },
+                        icon = { },
+                        text = { Text(item) },
+                    )
                 }
             }
         }
@@ -612,12 +650,4 @@ fun MainScreenContent(
             }
         )
     }
-
-    if (showFilePickerDialog)
-        FilePickerDialog { pickedFile ->
-            showFilePickerDialog = false
-            pickedFile?.let {
-                navigateToScreen(Screen.File(pickedFile.getPath()))
-            }
-        }
 }

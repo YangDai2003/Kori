@@ -13,7 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
-import androidx.compose.material.icons.automirrored.outlined.Note
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.FormatListNumbered
 import androidx.compose.material.icons.outlined.Spellcheck
@@ -34,19 +33,14 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kori.composeapp.generated.resources.Res
-import kori.composeapp.generated.resources.default_note_type
-import kori.composeapp.generated.resources.default_note_type_description
 import kori.composeapp.generated.resources.default_view
 import kori.composeapp.generated.resources.default_view_for_note
 import kori.composeapp.generated.resources.editing_view
 import kori.composeapp.generated.resources.line_numbers
 import kori.composeapp.generated.resources.lint
 import kori.composeapp.generated.resources.lint_description
-import kori.composeapp.generated.resources.markdown
-import kori.composeapp.generated.resources.plain_text
 import kori.composeapp.generated.resources.reading_view
 import org.jetbrains.compose.resources.stringResource
-import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.component.setting.DetailPaneItem
 import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import org.yangdai.kori.presentation.util.Constants
@@ -65,63 +59,6 @@ fun EditorPane(settingsViewModel: SettingsViewModel) {
     ) {
 
         Spacer(Modifier.height(16.dp))
-
-        Column(
-            Modifier.fillMaxWidth().padding(bottom = 8.dp)
-                .clip(MaterialTheme.shapes.large)
-                .background(MaterialTheme.colorScheme.surface)
-        ) {
-            ListItem(
-                headlineContent = {
-                    Text(
-                        modifier = Modifier.basicMarquee(),
-                        text = stringResource(Res.string.default_note_type),
-                        maxLines = 1
-                    )
-                },
-                leadingContent = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.Note,
-                        contentDescription = null
-                    )
-                },
-                supportingContent = {
-                    Text(stringResource(Res.string.default_note_type_description))
-                }
-            )
-
-            val noteTypeLabels =
-                listOf(
-                    stringResource(Res.string.plain_text),
-                    stringResource(Res.string.markdown)
-                )
-
-            SingleChoiceSegmentedButtonRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 16.dp)
-            ) {
-                noteTypeLabels.forEachIndexed { index, option ->
-                    SegmentedButton(
-                        shape = SegmentedButtonDefaults.itemShape(
-                            index = index,
-                            count = noteTypeLabels.size
-                        ),
-                        onClick = {
-                            hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                            settingsViewModel.putPreferenceValue(
-                                Constants.Preferences.DEFAULT_NOTE_TYPE,
-                                index
-                            )
-                        },
-                        selected = editorPaneState.defaultNoteType == NoteType.entries[index]
-                    ) {
-                        Text(option, maxLines = 1, modifier = Modifier.basicMarquee())
-                    }
-                }
-            }
-        }
 
         Column(
             Modifier.fillMaxWidth().padding(bottom = 8.dp)

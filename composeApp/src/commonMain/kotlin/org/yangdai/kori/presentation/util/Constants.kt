@@ -23,7 +23,6 @@ object Constants {
         const val SHOW_LINE_NUMBER = "show_line_number"
         const val IS_MARKDOWN_LINT_ENABLED = "is_markdown_lint_enabled"
         const val IS_DEFAULT_READING_VIEW = "is_default_reading_view"
-        const val DEFAULT_NOTE_TYPE = "default_note_type"
 
         const val DATE_FORMATTER = "date_formatter"
         const val TIME_FORMATTER = "time_formatter"
@@ -218,7 +217,7 @@ val SampleNote = """
     ## Tables
 
     | Header 1 | Header 2 | Header 3 |
-    |------------|------------|------------|
+    |-----------|------------|-----------|
     | Cell 1 | Cell 2 | Cell 3 |
     | Cell 4 | Cell 5 | Cell 6 |
     | Cell 7 | Cell 8 | Cell 9 |
@@ -226,7 +225,7 @@ val SampleNote = """
     ### Table Alignment
 
     | Left-aligned | Center-aligned | Right-aligned |
-    |:---------------|:-------------------:|---------------:|
+    |:--------------|:-----------------:|---------------:|
     | Left         |     Center     |         Right |
     | Left         |     Center     |         Right |
 

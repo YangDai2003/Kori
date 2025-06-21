@@ -34,6 +34,7 @@ import org.yangdai.kori.presentation.component.note.platformKeyboardShortCut
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TodoTextEditorRow(
+    isTemplate: Boolean,
     textFieldState: TextFieldState,
     onEditorRowAction: (EditorRowAction) -> Unit
 ) = Row(
@@ -77,12 +78,13 @@ fun TodoTextEditorRow(
         )
     }
 
-    EditorRowSection {
-        EditorRowButton(
-            icon = Icons.AutoMirrored.Outlined.TextSnippet,
-            onClick = { onEditorRowAction(EditorRowAction.Templates) }
-        )
-    }
+    if (!isTemplate)
+        EditorRowSection {
+            EditorRowButton(
+                icon = Icons.AutoMirrored.Outlined.TextSnippet,
+                onClick = { onEditorRowAction(EditorRowAction.Templates) }
+            )
+        }
 
     Spacer(Modifier.width(4.dp))
 }

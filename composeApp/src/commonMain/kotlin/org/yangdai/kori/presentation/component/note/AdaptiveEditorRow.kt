@@ -43,13 +43,14 @@ import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditorRow
 import org.yangdai.kori.presentation.component.note.todo.TodoTextEditorRow
 
 @Composable
-fun EditorRow(
+fun AdaptiveEditorRow(
     visible: Boolean,
     type: NoteType,
     scrollState: ScrollState,
     textFieldState: TextFieldState,
     bottomPadding: Dp,
-    onEditorRowAction: (EditorRowAction) -> Unit
+    isTemplate: Boolean = false,
+    onEditorRowAction: (EditorRowAction) -> Unit = { _ -> }
 ) {
     val showElevation by remember(visible) {
         derivedStateOf {
@@ -69,15 +70,15 @@ fun EditorRow(
             AnimatedVisibility(visible) {
                 when (type) {
                     NoteType.PLAIN_TEXT -> {
-                        PlainTextEditorRow(textFieldState, onEditorRowAction)
+                        PlainTextEditorRow(isTemplate, textFieldState, onEditorRowAction)
                     }
 
                     NoteType.MARKDOWN -> {
-                        MarkdownEditorRow(textFieldState, onEditorRowAction)
+                        MarkdownEditorRow(isTemplate, textFieldState, onEditorRowAction)
                     }
 
                     NoteType.TODO -> {
-                        TodoTextEditorRow(textFieldState, onEditorRowAction)
+                        TodoTextEditorRow(isTemplate, textFieldState, onEditorRowAction)
                     }
                 }
             }

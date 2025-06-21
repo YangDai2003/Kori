@@ -12,13 +12,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,13 +27,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -48,7 +45,7 @@ private data class TodoItem(
 
 private fun parseTodoLines(lines: List<String>): Pair<List<TodoItem>, List<TodoItem>> {
     val priorityRegex = Regex("""^\(([A-Z])\) """)
-    val dateRegex = Regex("""^(\d{4}-\d{2}-\d{2}) """)
+    val dateRegex = Regex("""(?<=^|\s)(\d{4}-\d{2}-\d{2})(?=\s|$)""")
     val doneRegex = Regex("""^x\s""")
     val doneDateRegex = Regex("""^x\s(\d{4}-\d{2}-\d{2})(?:\s(\d{4}-\d{2}-\d{2}))?""")
 
@@ -130,7 +127,7 @@ fun TodoView(
             stickyHeader {
                 Text(
                     "待办",
-                    style = MaterialTheme.typography.subtitle1,
+                    style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
@@ -145,7 +142,7 @@ fun TodoView(
             stickyHeader {
                 Text(
                     "已完成",
-                    style = MaterialTheme.typography.subtitle1,
+                    style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
@@ -160,7 +157,7 @@ fun TodoView(
 
 @Composable
 private fun TodoCard(todoItem: TodoItem) {
-    // 优先级颜色表（与TodoTransformation一致）
+    // 优先级颜色表保持不变
     val priorityColors = listOf(
         Color(0xFFD32F2F), Color(0xFFF57C00), Color(0xFFFBC02D), Color(0xFF388E3C),
         Color(0xFF1976D2), Color(0xFF7B1FA2), Color(0xFF0097A7), Color(0xFF5D4037),
@@ -173,30 +170,31 @@ private fun TodoCard(todoItem: TodoItem) {
     val priorityColor = todoItem.priority?.let { c ->
         val idx = (c - 'A').coerceIn(0, 25)
         priorityColors[idx]
-    } ?: Color(0xFFBDBDBD)
+    } ?: MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f) // 无优先级时给一个中性色
 
-    val cardAlpha = if (todoItem.isDone) 0.5f else 1f
-    val textColor = if (todoItem.isDone) Color(0xFF888888) else Color.Unspecified
+    // 根据是否完成来确定UI样式
+    val contentColor = if (todoItem.isDone) {
+        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+    val dateColor = MaterialTheme.colorScheme.onSurfaceVariant
     val textDecoration = if (todoItem.isDone) TextDecoration.LineThrough else null
 
-    // 提取内容（去掉优先级、日期、完成标记等前缀）
+    // 提取内容
     val content = remember(todoItem.raw) {
         var s = todoItem.raw
         if (todoItem.isDone) {
             s = s.removePrefix("x ").trimStart()
-            // 去掉完成日期和创建日期
             s = s.replace(Regex("""^\d{4}-\d{2}-\d{2}( \d{4}-\d{2}-\d{2})? """), "")
         }
-        // 去掉优先级
         s = s.replace(Regex("""^\([A-Z]\) """), "")
-        // 去掉日期
         s = s.replace(Regex("""^\d{4}-\d{2}-\d{2} """), "")
         s.trim()
     }
 
     // 时间显示
     val dateLabel = if (todoItem.isDone) {
-        // 完成日期
         todoItem.sortDate?.let { "完成于 $it" }
     } else {
         todoItem.date?.let { "计划 $it" }
@@ -205,53 +203,46 @@ private fun TodoCard(todoItem: TodoItem) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 6.dp)
-            .alpha(cardAlpha),
-        shape = RoundedCornerShape(12.dp),
-        elevation = 2.dp
+            .padding(horizontal = 16.dp, vertical = 6.dp),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.Transparent)
-                .padding(14.dp),
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 优先级圆点或已完成图标
             if (todoItem.isDone) {
                 Icon(
                     imageVector = Icons.Filled.CheckCircle,
-                    contentDescription = "已完成",
-                    tint = priorityColor,
-                    modifier = Modifier.size(24.dp)
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                    modifier = Modifier.size(22.dp)
                 )
             } else {
                 Box(
                     modifier = Modifier
-                        .size(16.dp)
-                        .background(priorityColor, shape = RoundedCornerShape(8.dp))
+                        .size(12.dp)
+                        .background(priorityColor, shape = CircleShape)
                 )
             }
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = content,
-                    style = TextStyle(
-                        color = textColor,
-                        fontSize = 17.sp,
+                    style = MaterialTheme.typography.bodyLarge.copy(
                         fontWeight = FontWeight.Medium,
                         textDecoration = textDecoration
                     ),
+                    color = contentColor,
                     maxLines = 3
                 )
                 if (!dateLabel.isNullOrBlank()) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = dateLabel,
-                        style = TextStyle(
-                            color = Color(0xFF888888),
-                            fontSize = 13.sp
-                        )
+                        style = MaterialTheme.typography.bodySmall,
+                        color = dateColor
                     )
                 }
             }

@@ -59,7 +59,7 @@ class NoteViewModel(
     savedStateHandle: SavedStateHandle,
     private val folderRepository: FolderRepository,
     private val noteRepository: NoteRepository,
-    private val dataStoreRepository: DataStoreRepository
+    dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
     private val route = savedStateHandle.toRoute<Screen.Note>()
 
@@ -90,10 +90,7 @@ class NoteViewModel(
                         folderId = route.folderId,
                         createdAt = currentTime,
                         updatedAt = currentTime,
-                        noteType = NoteType.entries[dataStoreRepository.getInt(
-                            Constants.Preferences.DEFAULT_NOTE_TYPE,
-                            0
-                        )]
+                        noteType = NoteType.entries[route.noteType]
                     )
                 }
             } else

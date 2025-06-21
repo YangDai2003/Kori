@@ -63,8 +63,8 @@ class TodoTransformation : AnnotatedOutputTransformation {
         // 优先级: (A)
         private val priorityRegex = Regex("""^\(([A-Z])\)""")
 
-        // 创建日期: 2020-01-01
-        private val dateRegex = Regex("""^(\d{4}-\d{2}-\d{2})""")
+        // 创建日期: 行中任意位置，前有空白或行首，后跟空格或行尾
+        private val dateRegex = Regex("""(?<=^|\s)(\d{4}-\d{2}-\d{2})(?=\s|$)""")
 
         // context: @xxx
         private val contextRegex = Regex("""(?:^|\s)(@\S+)""")
@@ -97,9 +97,8 @@ class TodoTransformation : AnnotatedOutputTransformation {
                         addAnnotation(priorityStyles[idx], lineStart, lineStart + priEnd)
                     }
                 }
-                // 3. 创建日期（优先级后或行首）
-                val dateMatch = dateRegex.find(line)
-                if (dateMatch != null) {
+                // 3. 创建日期（行中任意位置）
+                dateRegex.findAll(line).forEach { dateMatch ->
                     val dateStart = dateMatch.range.first
                     addAnnotation(dateStyle, lineStart + dateStart, lineStart + dateStart + 10)
                 }
@@ -121,7 +120,7 @@ class TodoTransformation : AnnotatedOutputTransformation {
             metaRegex.findAll(line).forEach {
                 val start = it.range.first
                 val end = it.range.last + 1
-                // 避免 context/project 被重复高亮
+                // 避免 context/project 被重复���亮
                 val value = it.groupValues[1]
                 if (!value.startsWith("@") && !value.startsWith("+")) {
                     addAnnotation(metaStyle, lineStart + start, lineStart + end)
