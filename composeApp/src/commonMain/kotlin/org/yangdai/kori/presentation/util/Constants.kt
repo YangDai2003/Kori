@@ -50,7 +50,20 @@ object Constants {
     }
 }
 
-val SampleNote = """
+val SampleTodoNote = """
+    2025-01-01 Document +TodoTxt task format
+    (A) 2025-06-01 Call Mom @Phone +Family
+    (A) Schedule annual checkup +Health
+    (B) Outline chapter 5 +Novel @Computer
+    (C) Add cover sheets @Office +TPSReports
+    Plan backyard herb garden @Home
+    Pick up phone @MediaMarkt
+    Research self-publishing services +Novel @Computer
+    x Download Kori mobile and desktop app @Phone
+    x 2025-03-02 2025-03-01 Review Tim's pull request +TodoTxtTouch @github
+""".trimIndent()
+
+val SampleMarkdownNote = """
     # Markdown Syntax Guide
     
     - [Headings](#headings)  

@@ -541,7 +541,7 @@ fun MainScreenContent(
                         val scope = rememberCoroutineScope()
                         ToolboxPage(navigateToScreen) {
                             scope.launch {
-                                val id = viewModel.addSampleNote()
+                                val id = viewModel.addSampleNote(it)
                                 navigateToScreen(Screen.Note(id))
                             }
                         }

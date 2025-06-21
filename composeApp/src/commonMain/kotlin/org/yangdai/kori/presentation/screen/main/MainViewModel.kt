@@ -29,7 +29,8 @@ import org.yangdai.kori.domain.sort.NoteSortType
 import org.yangdai.kori.presentation.screen.settings.CardPaneState
 import org.yangdai.kori.presentation.screen.settings.CardSize
 import org.yangdai.kori.presentation.util.Constants
-import org.yangdai.kori.presentation.util.SampleNote
+import org.yangdai.kori.presentation.util.SampleMarkdownNote
+import org.yangdai.kori.presentation.util.SampleTodoNote
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -247,20 +248,27 @@ class MainViewModel(
     }
 
     @OptIn(ExperimentalUuidApi::class)
-    suspend fun addSampleNote(folderId: String? = null): String {
+    suspend fun addSampleNote(noteType: NoteType): String {
         val noteId = Uuid.random().toString()
         noteRepository.insertNote(
             NoteEntity(
                 id = noteId,
-                title = "Sample Note",
-                content = SampleNote,
-                folderId = folderId,
+                title = "Sample Note" + when (noteType) {
+                    NoteType.MARKDOWN -> " - Markdown"
+                    NoteType.TODO -> " - Todo.txt"
+                    else -> ""
+                },
+                content = when (noteType) {
+                    NoteType.MARKDOWN -> SampleMarkdownNote
+                    NoteType.TODO -> SampleTodoNote
+                    else -> ""
+                },
+                folderId = null,
                 isPinned = true,
                 isDeleted = false,
-                noteType = NoteType.MARKDOWN
+                noteType = noteType
             )
         )
         return noteId
     }
-
 }
