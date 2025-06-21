@@ -10,11 +10,9 @@
 ![LaTeX](https://img.shields.io/badge/latex-%23008080.svg?style=for-the-badge&logo=latex&logoColor=white)
 ![Markdown](https://img.shields.io/badge/markdown-%23000000.svg?style=for-the-badge&logo=markdown&logoColor=white)
 
-Kori is an evolution of [Open Note](https://github.com/YangDai2003/OpenNote-Compose), with the goal of bringing a consistent note-taking experience across all platforms.
+Kori is an evolution of [Open Note](https://github.com/YangDai2003/OpenNote-Compose), aiming to provide a consistent note-taking experience across all platforms, with support for multiple formats including Markdown, TXT, LaTeX, Mermaid, and Todo.txt.
 
-This is a Compose Multiplatform project targeting Android, iOS, Desktop and Web.
-
-The project is still in its early stages and there is still a lot of work to be done.
+This is a Compose Multiplatform project targeting Android, iOS, Desktop and Web(planned).
 
 ## 🌎 Translations
 

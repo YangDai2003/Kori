@@ -8,6 +8,7 @@
 - [什么是 GitHub Flavored Markdown？](#什么是-github-flavored-markdown)
 - [什么是 LaTeX？](#什么是-latex)
 - [怎么在 Markdown 中使用 LaTeX？](#怎么在-markdown-中使用-latex)
+- [什么是 Todo.txt？](#什么是-todotxt)
 - [Kori 提供了什么？](#Kori-提供了什么)
 - [一些基本的 Markdown 语法](#一些基本的-markdown-语法)
 - [一些扩展的 Markdown 语法](#一些扩展的-markdown-语法)
@@ -15,7 +16,7 @@
 - [希腊字母](#希腊字母)
 - [参考](#参考)
 
-# 什么是 Markdown？
+## 什么是 Markdown？
 
 Markdown 是一种用于编写结构化文档的纯文本格式，基于以下约定指示电子邮件和新闻组帖子中的格式。
 
@@ -29,7 +30,7 @@ Markdown 转换为 HTML。
 Reddit、StackOverflow 和 GitHub 等网站拥有数百万人使用 Markdown。
 Markdown 开始在网络之外使用，用于撰写书籍、文章、幻灯片、信件和讲义。
 
-# 什么是 CommonMark？
+## 什么是 CommonMark？
 
 CommonMark 的开发是为了解决 Markdown 中的不一致和歧义。
 
@@ -37,7 +38,7 @@ CommonMark 规范定义了标题、列表、链接、强调和代码块等元素
 
 通过遵守 CommonMark 标准，开发人员可以确保在不同应用程序和平台上一致地呈现 Markdown 内容。
 
-# 什么是 GitHub Flavored Markdown？
+## 什么是 GitHub Flavored Markdown？
 
 GitHub Flavored Markdown（通常缩写为 GFM）是 Markdown 的方言，目前 GitHub.com 和 GitHub Enterprise
 上的用户内容受支持。
@@ -49,22 +50,27 @@ GFM 是 CommonMark 的严格超集。 因此，GitHub 用户内容中支持且�
 虽然 GFM 支持广泛的输入，但值得注意的是，GitHub.com 和 GitHub Enterprise 在 GFM 转换为 HTML
 后会执行额外的后处理和清理，以确保网站的安全性和一致性。
 
-# 什么是 LaTeX？
+## 什么是 LaTeX？
 
 LaTeX 是一种通常用于生成科学和数学文档的排版系统。
 LaTeX 提供了一种在文档中表示数学符号的强大方法，允许用户轻松创建复杂的方程和公式。
 
-# 怎么在 Markdown 中使用 LaTeX？
+## 怎么在 Markdown 中使用 LaTeX？
 
 数学表达式是工程师、科学家、数据科学家和数学家之间信息共享的关键。
 您可以在 GFM 中使用 $ 和 $$ 分隔符以 TeX 和 LaTeX 样式语法插入数学表达式。
 
-# Kori 提供了什么？
+## 什么是 Todo.txt？
 
-Kori 支持 CommonMark 和 GitHub Flavored Markdown (GFM) 语法，以及 LaTeX 数学语法。
+Todo.txt 是一种简单的文本文件格式，用于管理待办事项列表。
+
+## Kori 提供了什么？
+
+Kori 支持 CommonMark 和 GitHub Flavored Markdown (GFM) 语法，LaTeX 数学语法，Mermaid 图表和
+Todo.txt格式。
 这允许用户创建格式丰富的笔记，支持标题、列表、链接、强调、代码块、表格和数学表达式。
 
-# 一些基本的 Markdown 语法
+## 一些基本的 Markdown 语法
 
 |  元素  |                 语法                 |
 |:----:|:----------------------------------:|
@@ -78,7 +84,7 @@ Kori 支持 CommonMark 和 GitHub Flavored Markdown (GFM) 语法，以及 LaTeX 
 | 无序列表 | `- Apple 或者 + Banana 或者 * Orange`  |
 |  图片  |     `![alt text](image.jpeg)`      |
 
-# 一些扩展的 Markdown 语法
+## 一些扩展的 Markdown 语法
 
 |  元素   |                 语法                 |
 |:-----:|:----------------------------------:|
@@ -86,7 +92,7 @@ Kori 支持 CommonMark 和 GitHub Flavored Markdown (GFM) 语法，以及 LaTeX 
 | 任务列表  | `- [x] Task 1`<br/> `- [ ] Task 2` |
 | 标题 ID |   `# Heading`(自动根据标题生成ID Anchor)   |
 
-# LaTeX 数学语法
+## LaTeX 数学语法
 
 |  元素  |         语法         |
 |:----:|:------------------:|
@@ -130,7 +136,7 @@ Kori 支持 CommonMark 和 GitHub Flavored Markdown (GFM) 语法，以及 LaTeX 
 |  ∈   |       `\in`        |
 |  ∉   |      `\notin`      |
 
-# 希腊字母
+## 希腊字母
 
 | 大写 |     语法     | 小写 |     语法     |
 |:--:|:----------:|:--:|:----------:|
@@ -159,7 +165,7 @@ Kori 支持 CommonMark 和 GitHub Flavored Markdown (GFM) 语法，以及 LaTeX 
 | Ψ  |   `\Psi`   | ψ  |   `\psi`   |
 | Ω  |  `\Omega`  | ω  |  `\omega`  |
 
-# 键盘快捷键
+## 键盘快捷键
 
 |     元素     |      快捷键       |
 |:----------:|:--------------:|
@@ -189,7 +195,7 @@ Kori 支持 CommonMark 和 GitHub Flavored Markdown (GFM) 语法，以及 LaTeX 
 |    任务列表    | `Ctrl+Shift+T` |
 | Mermaid 图表 | `Ctrl+Shift+D` |
 
-# 参考
+## 参考
 
 你可以在以下链接中了解更多关于 Markdown、CommonMark、GitHub Flavored Markdown、LaTeX Math 和 Mermaid
 的信息：
@@ -198,3 +204,4 @@ Kori 支持 CommonMark 和 GitHub Flavored Markdown (GFM) 语法，以及 LaTeX 
 - [GitHub Flavored Markdown](https://github.github.com/gfm/)
 - [LaTeX](https://www.latex-project.org/)
 - [Mermaid](https://mermaid.js.org/)
+- [Todo.txt](https://todotxt.org/)

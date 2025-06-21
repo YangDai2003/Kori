@@ -8,6 +8,7 @@
 - [What is GitHub Flavored Markdown?](#what-is-github-flavored-markdown)
 - [What is LaTeX?](#what-is-latex)
 - [How to use LaTeX in Markdown?](#how-to-use-latex-in-markdown)
+- [What is Todo.txt?](#what-is-todotxt)
 - [What has Kori offered?](#what-has-Kori-offered)
 - [Some Basic Markdown Syntax](#some-basic-markdown-syntax)
 - [Some Extended Markdown Syntax](#some-extended-markdown-syntax)
@@ -15,7 +16,7 @@
 - [Greek Letters](#greek-letters)
 - [References](#references)
 
-# What is Markdown?
+## What is Markdown?
 
 Markdown is a plain text format for writing structured documents, based on conventions for
 indicating formatting in email and usenet posts.
@@ -31,7 +32,7 @@ Websites like Reddit, StackOverflow, and GitHub had millions of people using Mar
 And Markdown started to be used beyond the web, to author books, articles, slide shows, letters, and
 lecture notes.
 
-# What is CommonMark?
+## What is CommonMark?
 
 CommonMark was developed to address inconsistencies and ambiguities in Markdown.
 
@@ -41,7 +42,7 @@ and code blocks, among others.
 By adhering to the CommonMark standard, developers can ensure consistent rendering of Markdown
 content across different applications and platforms.
 
-# What is GitHub Flavored Markdown?
+## What is GitHub Flavored Markdown?
 
 GitHub Flavored Markdown, often shortened as GFM, is the dialect of Markdown that is currently
 supported for user content on GitHub.com and GitHub Enterprise.
@@ -57,29 +58,33 @@ While GFM supports a wide range of inputs, it’s worth noting that GitHub.com a
 perform additional post-processing and sanitization after GFM is converted to HTML to ensure
 security and consistency of the website.
 
-# What is LaTeX?
+## What is LaTeX?
 
 LaTeX is a typesetting system commonly used for producing scientific and mathematical documents.
 
 LaTeX provides a powerful way to represent mathematical notation in documents, allowing users to
 create complex equations and formulas with ease.
 
-# How to use LaTeX in Markdown?
+## How to use LaTeX in Markdown?
 
 Mathematical expressions are key to information sharing amongst engineers, scientists, data
 scientists, and mathematicians.
 
 You can use the $ and $$ delimiters in GFM to insert math expressions in TeX and LaTeX style syntax.
 
-# What has Kori offered?
+## What is Todo.txt?
 
-Kori supports CommonMark and GitHub Flavored Markdown (GFM) syntax, as well as LaTeX math
-syntax.
+Todo.txt is a simple text file format for managing to-do lists.
+
+## What has Kori offered?
+
+Kori supports CommonMark and GitHub Flavored Markdown (GFM) syntax, LaTeX math syntax, Mermaid
+Diagram, as well as Todo.txt.
 
 This allows users to create richly formatted notes with support for headings, lists, links,
 emphasis, code blocks, tables, and mathematical expressions.
 
-# Some Basic Markdown Syntax
+## Some Basic Markdown Syntax
 
 |    Element     |               Syntax               |
 |:--------------:|:----------------------------------:|
@@ -93,7 +98,7 @@ emphasis, code blocks, tables, and mathematical expressions.
 | Unordered List | `- Apple or + Banana or * Orange`  |
 |     Image      |     `![alt text](image.jpeg)`      |
 
-# Some Extended Markdown Syntax
+## Some Extended Markdown Syntax
 
 |    Element    |                        Syntax                         |
 |:-------------:|:-----------------------------------------------------:|
@@ -101,7 +106,7 @@ emphasis, code blocks, tables, and mathematical expressions.
 |   Task List   |          `- [x] Task 1`<br/> `- [ ] Task 2`           |
 |  Heading ID   | `# Heading`(Automatically generate Heading ID Anchor) |
 
-# LaTeX Math Syntax
+## LaTeX Math Syntax
 
 |   Element   |       Syntax       |
 |:-----------:|:------------------:|
@@ -145,7 +150,7 @@ emphasis, code blocks, tables, and mathematical expressions.
 |      ∈      |       `\in`        |
 |      ∉      |      `\notin`      |
 
-# Greek Letters
+## Greek Letters
 
 | Uppercase |   Syntax   | Lowercase |   Syntax   |
 |:---------:|:----------:|:---------:|:----------:|
@@ -174,7 +179,7 @@ emphasis, code blocks, tables, and mathematical expressions.
 |     Ψ     |   `\Psi`   |     ψ     |   `\psi`   |
 |     Ω     |  `\Omega`  |     ω     |  `\omega`  |
 
-# Keyboard Shortcuts
+## Keyboard Shortcuts
 
 |     Element      |    Shortcut    |
 |:----------------:|:--------------:|
@@ -204,7 +209,7 @@ emphasis, code blocks, tables, and mathematical expressions.
 |     TaskList     | `Ctrl+Shift+T` |
 | Mermaid Diagram  | `Ctrl+Shift+D` |
 
-# References
+## References
 
 You can find more information about Markdown, CommonMark, GitHub Flavored Markdown, LaTeX Math, and
 Mermaid at the following links:
@@ -213,3 +218,4 @@ Mermaid at the following links:
 - [GitHub Flavored Markdown](https://github.github.com/gfm/)
 - [LaTeX](https://www.latex-project.org/)
 - [Mermaid](https://mermaid.js.org/)
+- [Todo.txt](https://todotxt.org/)
