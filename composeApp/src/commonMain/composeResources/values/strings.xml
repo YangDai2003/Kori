@@ -54,6 +54,8 @@
     <string name="search">Search</string>
     <string name="search_history">Search history</string>
     <string name="add_sample_note">Add Sample Note</string>
+    <string name="todo">Todo</string>
+    <string name="done">Done</string>
 
     <string name="style">Style</string>
     <string name="dark_mode">Theme mode</string>
@@ -149,4 +151,6 @@
     <string name="fetch_file_from_url">Fetch file from URL</string>
     <string name="language">Language</string>
     <string name="language_description">Choose the app language</string>
+    <string name="todo_completed_at">Completed at %1$s</string>
+    <string name="todo_scheduled_at">Scheduled %1$s</string>
 </resources>

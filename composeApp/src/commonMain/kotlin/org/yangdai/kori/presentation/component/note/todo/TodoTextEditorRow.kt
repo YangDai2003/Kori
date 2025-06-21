@@ -16,6 +16,7 @@ import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.automirrored.outlined.Undo
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.AlternateEmail
+import androidx.compose.material.icons.outlined.CheckBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,9 +27,10 @@ import org.jetbrains.compose.resources.painterResource
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.EditorRowButton
 import org.yangdai.kori.presentation.component.note.EditorRowSection
-import org.yangdai.kori.presentation.component.note.add
+import org.yangdai.kori.presentation.component.note.addBefore
 import org.yangdai.kori.presentation.component.note.parentheses
 import org.yangdai.kori.presentation.component.note.platformKeyboardShortCut
+import org.yangdai.kori.presentation.component.note.toggleLineStart
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -68,12 +70,17 @@ fun TodoTextEditorRow(
 
         EditorRowButton(
             icon = Icons.Outlined.Add,
-            onClick = { textFieldState.edit { add("+") } }
+            onClick = { textFieldState.edit { addBefore("+") } }
         )
 
         EditorRowButton(
             icon = Icons.Outlined.AlternateEmail,
-            onClick = { textFieldState.edit { add("@") } }
+            onClick = { textFieldState.edit { addBefore("@") } }
+        )
+
+        EditorRowButton(
+            icon = Icons.Outlined.CheckBox,
+            onClick = { textFieldState.edit { toggleLineStart("x ") } }
         )
     }
 

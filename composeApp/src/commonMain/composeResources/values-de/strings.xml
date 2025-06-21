@@ -53,6 +53,8 @@
     <string name="search">Suchen</string>
     <string name="search_history">Suchverlauf</string>
     <string name="add_sample_note">Beispielnotiz hinzufügen</string>
+    <string name="todo">Todo</string>
+    <string name="done">Erledigt</string>
 
     <string name="style">Stil</string>
     <string name="dark_mode">Themenmodus</string>
@@ -146,4 +148,6 @@
     <string name="fetch_file_from_url">Datei von URL abrufen</string>
     <string name="language">Sprache</string>
     <string name="language_description">Wählen Sie die App-Sprache</string>
+    <string name="todo_completed_at">Erledigt am %1$s</string>
+    <string name="todo_scheduled_at">Geplant %1$s</string>
 </resources>

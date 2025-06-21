@@ -53,6 +53,8 @@
     <string name="search">搜索</string>
     <string name="search_history">搜索历史</string>
     <string name="add_sample_note">添加示例笔记</string>
+    <string name="todo">待办</string>
+    <string name="done">已完成</string>
 
     <string name="style">样式</string>
     <string name="dark_mode">主题模式</string>
@@ -65,7 +67,7 @@
     <string name="security">安全</string>
     <string name="keep_screen_on">屏幕常亮</string>
     <string name="report_a_bug_or_request_a_feature">报告错误或功能建议</string>
-    <string name="system_default">系统默认</string>
+    <string name="system_default">系统��认</string>
     <string name="light">浅色模式</string>
     <string name="dark">深色模式</string>
     <string name="font_size">字体大小</string>
@@ -146,4 +148,6 @@
     <string name="fetch_file_from_url">从 URL 获取文件内容</string>
     <string name="language">语言</string>
     <string name="language_description">选择应用语言</string>
+    <string name="todo_completed_at">完成于 %1$s</string>
+    <string name="todo_scheduled_at">计划 %1$s</string>
 </resources>

@@ -143,7 +143,31 @@ fun TextFieldBuffer.alert(type: String) {
     )
 }
 
-fun TextFieldBuffer.add(str: String) {
+fun TextFieldBuffer.toggleLineStart(str: String) {
+    val text = toString()
+    val lineStart = text.take(selection.min)
+        .lastIndexOf('\n')
+        .takeIf { it != -1 }
+        ?.let { it + 1 }
+        ?: 0
+
+    val lineContent = text.substring(lineStart, selection.min)
+
+    if (lineContent.startsWith(str)) {
+        // 如果行首已经有 str，则删除它
+        replace(lineStart, lineStart + str.length, "")
+    } else {
+        // 否则添加 str
+        replace(lineStart, lineStart, str)
+    }
+}
+
+fun TextFieldBuffer.addBefore(str: String) {
+    val initialSelection = selection
+    replace(initialSelection.min, initialSelection.min, str)
+}
+
+fun TextFieldBuffer.addAfter(str: String) {
     val initialSelection = selection
     replace(initialSelection.max, initialSelection.max, str)
 }
@@ -152,9 +176,9 @@ fun TextFieldBuffer.addInNewLine(str: String) {
     val text = toString()
     if (selection.max > 0 && text[selection.max - 1] != '\n') {
         // 如果不是换行符，那么就先添加一个换行符
-        add("\n")
+        addAfter("\n")
     }
-    add(str)
+    addAfter(str)
 }
 
 fun TextFieldBuffer.header(level: Int) {
@@ -177,8 +201,8 @@ fun TextFieldBuffer.header(level: Int) {
 
 fun TextFieldBuffer.horizontalRule() {
     addInNewLine("\n")
-    add("------\n")
-    add("\n")
+    addAfter("------\n")
+    addAfter("\n")
 }
 
 fun TextFieldBuffer.bulletList() {

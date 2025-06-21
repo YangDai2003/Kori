@@ -13,7 +13,7 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import org.yangdai.kori.OS
 import org.yangdai.kori.currentPlatformInfo
-import org.yangdai.kori.presentation.component.note.add
+import org.yangdai.kori.presentation.component.note.addAfter
 import org.yangdai.kori.presentation.component.note.bold
 import org.yangdai.kori.presentation.component.note.bulletList
 import org.yangdai.kori.presentation.component.note.codeBlock
@@ -196,7 +196,7 @@ fun Modifier.markdownKeyEvents(textFieldState: TextFieldState): Modifier =
                         // 确保起始位置小于结束位置
                         if (currentLineStart >= currentLineEnd) {
                             textFieldState.edit {
-                                add("\n")
+                                addAfter("\n")
                             }
                             return@onPreviewKeyEvent true
                         }
@@ -249,9 +249,9 @@ fun Modifier.markdownKeyEvents(textFieldState: TextFieldState): Modifier =
                         }
 
                         textFieldState.edit {
-                            add("\n")
+                            addAfter("\n")
                             if (newLinePrefix.isNotEmpty()) {
-                                add(indentation + newLinePrefix)
+                                addAfter(indentation + newLinePrefix)
                             }
                         }
                         true

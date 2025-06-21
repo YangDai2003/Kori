@@ -31,8 +31,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import kori.composeapp.generated.resources.Res
+import kori.composeapp.generated.resources.done
+import kori.composeapp.generated.resources.todo
+import kori.composeapp.generated.resources.todo_completed_at
+import kori.composeapp.generated.resources.todo_scheduled_at
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.stringResource
 
 // 数据模型
 private data class TodoItem(
@@ -126,7 +132,7 @@ fun TodoView(
         if (undone.isNotEmpty()) {
             stickyHeader {
                 Text(
-                    "待办",
+                    stringResource(Res.string.todo),
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -141,7 +147,7 @@ fun TodoView(
         if (done.isNotEmpty()) {
             stickyHeader {
                 Text(
-                    "已完成",
+                    stringResource(Res.string.done),
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -193,11 +199,15 @@ private fun TodoCard(todoItem: TodoItem) {
         s.trim()
     }
 
-    // 时间显示
+    // 时间显示（本地化）
     val dateLabel = if (todoItem.isDone) {
-        todoItem.sortDate?.let { "完成于 $it" }
+        todoItem.sortDate?.let { date ->
+            stringResource(Res.string.todo_completed_at, date)
+        }
     } else {
-        todoItem.date?.let { "计划 $it" }
+        todoItem.date?.let { date ->
+            stringResource(Res.string.todo_scheduled_at, date)
+        }
     }
 
     Card(
