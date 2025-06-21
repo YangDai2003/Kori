@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.component.note.markdown
+package org.yangdai.kori.presentation.component.note
 
 import androidx.compose.foundation.text.input.TextFieldBuffer
 import androidx.compose.ui.text.TextRange

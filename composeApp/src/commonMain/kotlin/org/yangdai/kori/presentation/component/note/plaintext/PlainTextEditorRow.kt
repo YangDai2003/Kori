@@ -28,11 +28,11 @@ import org.jetbrains.compose.resources.painterResource
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.EditorRowButton
 import org.yangdai.kori.presentation.component.note.EditorRowSection
-import org.yangdai.kori.presentation.component.note.markdown.braces
-import org.yangdai.kori.presentation.component.note.markdown.brackets
-import org.yangdai.kori.presentation.component.note.markdown.parentheses
-import org.yangdai.kori.presentation.component.note.markdown.tab
-import org.yangdai.kori.presentation.component.note.markdown.unTab
+import org.yangdai.kori.presentation.component.note.braces
+import org.yangdai.kori.presentation.component.note.brackets
+import org.yangdai.kori.presentation.component.note.parentheses
+import org.yangdai.kori.presentation.component.note.tab
+import org.yangdai.kori.presentation.component.note.unTab
 import org.yangdai.kori.presentation.component.note.platformKeyboardShortCut
 
 @OptIn(ExperimentalFoundationApi::class)

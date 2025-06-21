@@ -11,8 +11,8 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import org.yangdai.kori.OS
 import org.yangdai.kori.currentPlatformInfo
-import org.yangdai.kori.presentation.component.note.markdown.moveCursorLeftStateless
-import org.yangdai.kori.presentation.component.note.markdown.moveCursorRightStateless
+import org.yangdai.kori.presentation.component.note.moveCursorLeftStateless
+import org.yangdai.kori.presentation.component.note.moveCursorRightStateless
 
 @Composable
 fun Modifier.todoTextKeyEvents(textFieldState: TextFieldState): Modifier =

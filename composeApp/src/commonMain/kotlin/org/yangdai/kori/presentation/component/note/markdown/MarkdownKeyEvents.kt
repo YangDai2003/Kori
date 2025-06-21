@@ -13,6 +13,26 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import org.yangdai.kori.OS
 import org.yangdai.kori.currentPlatformInfo
+import org.yangdai.kori.presentation.component.note.add
+import org.yangdai.kori.presentation.component.note.bold
+import org.yangdai.kori.presentation.component.note.bulletList
+import org.yangdai.kori.presentation.component.note.codeBlock
+import org.yangdai.kori.presentation.component.note.header
+import org.yangdai.kori.presentation.component.note.highlight
+import org.yangdai.kori.presentation.component.note.horizontalRule
+import org.yangdai.kori.presentation.component.note.inlineCode
+import org.yangdai.kori.presentation.component.note.inlineMath
+import org.yangdai.kori.presentation.component.note.italic
+import org.yangdai.kori.presentation.component.note.link
+import org.yangdai.kori.presentation.component.note.mathBlock
+import org.yangdai.kori.presentation.component.note.mermaidDiagram
+import org.yangdai.kori.presentation.component.note.moveCursorLeftStateless
+import org.yangdai.kori.presentation.component.note.moveCursorRightStateless
+import org.yangdai.kori.presentation.component.note.numberedList
+import org.yangdai.kori.presentation.component.note.quote
+import org.yangdai.kori.presentation.component.note.strikeThrough
+import org.yangdai.kori.presentation.component.note.taskList
+import org.yangdai.kori.presentation.component.note.underline
 
 @Composable
 fun Modifier.markdownKeyEvents(textFieldState: TextFieldState): Modifier =

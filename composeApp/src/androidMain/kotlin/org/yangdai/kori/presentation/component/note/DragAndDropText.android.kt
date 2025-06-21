@@ -10,7 +10,6 @@ import androidx.compose.ui.draganddrop.DragAndDropEvent
 import androidx.compose.ui.draganddrop.DragAndDropTarget
 import androidx.compose.ui.draganddrop.mimeTypes
 import androidx.compose.ui.draganddrop.toAndroidDragEvent
-import org.yangdai.kori.presentation.component.note.markdown.addInNewLine
 
 @Composable
 actual fun Modifier.dragAndDropText(state: TextFieldState): Modifier {

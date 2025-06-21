@@ -14,8 +14,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Redo
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.automirrored.outlined.Undo
-import androidx.compose.material.icons.outlined.DataArray
-import androidx.compose.material.icons.outlined.DataObject
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.AlternateEmail
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,9 +26,8 @@ import org.jetbrains.compose.resources.painterResource
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.EditorRowButton
 import org.yangdai.kori.presentation.component.note.EditorRowSection
-import org.yangdai.kori.presentation.component.note.markdown.braces
-import org.yangdai.kori.presentation.component.note.markdown.brackets
-import org.yangdai.kori.presentation.component.note.markdown.parentheses
+import org.yangdai.kori.presentation.component.note.add
+import org.yangdai.kori.presentation.component.note.parentheses
 import org.yangdai.kori.presentation.component.note.platformKeyboardShortCut
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -68,13 +67,13 @@ fun TodoTextEditorRow(
         )
 
         EditorRowButton(
-            icon = Icons.Outlined.DataArray,
-            onClick = { textFieldState.edit { brackets() } }
+            icon = Icons.Outlined.Add,
+            onClick = { textFieldState.edit { add("+") } }
         )
 
         EditorRowButton(
-            icon = Icons.Outlined.DataObject,
-            onClick = { textFieldState.edit { braces() } }
+            icon = Icons.Outlined.AlternateEmail,
+            onClick = { textFieldState.edit { add("@") } }
         )
     }
 

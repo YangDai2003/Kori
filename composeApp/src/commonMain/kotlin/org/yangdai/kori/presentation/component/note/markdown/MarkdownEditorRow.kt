@@ -62,7 +62,30 @@ import org.jetbrains.compose.resources.painterResource
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.EditorRowButton
 import org.yangdai.kori.presentation.component.note.EditorRowSection
+import org.yangdai.kori.presentation.component.note.alert
+import org.yangdai.kori.presentation.component.note.bold
+import org.yangdai.kori.presentation.component.note.braces
+import org.yangdai.kori.presentation.component.note.brackets
+import org.yangdai.kori.presentation.component.note.bulletList
+import org.yangdai.kori.presentation.component.note.codeBlock
+import org.yangdai.kori.presentation.component.note.header
+import org.yangdai.kori.presentation.component.note.highlight
+import org.yangdai.kori.presentation.component.note.horizontalRule
+import org.yangdai.kori.presentation.component.note.inlineCode
+import org.yangdai.kori.presentation.component.note.inlineMath
+import org.yangdai.kori.presentation.component.note.italic
+import org.yangdai.kori.presentation.component.note.link
+import org.yangdai.kori.presentation.component.note.mathBlock
+import org.yangdai.kori.presentation.component.note.mermaidDiagram
+import org.yangdai.kori.presentation.component.note.numberedList
+import org.yangdai.kori.presentation.component.note.parentheses
 import org.yangdai.kori.presentation.component.note.platformKeyboardShortCut
+import org.yangdai.kori.presentation.component.note.quote
+import org.yangdai.kori.presentation.component.note.strikeThrough
+import org.yangdai.kori.presentation.component.note.tab
+import org.yangdai.kori.presentation.component.note.taskList
+import org.yangdai.kori.presentation.component.note.unTab
+import org.yangdai.kori.presentation.component.note.underline
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

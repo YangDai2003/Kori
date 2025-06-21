@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.DragAndDropEvent
 import androidx.compose.ui.draganddrop.DragAndDropTarget
 import androidx.compose.ui.uikit.loadString
-import org.yangdai.kori.presentation.component.note.markdown.addInNewLine
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
