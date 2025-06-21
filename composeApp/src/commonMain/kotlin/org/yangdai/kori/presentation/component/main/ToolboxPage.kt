@@ -92,7 +92,7 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
                     val size = SplitButtonDefaults.ExtraSmallContainerHeight
                     SplitButtonLayout(
                         leadingButton = {
-                            SplitButtonDefaults.LeadingButton(
+                            SplitButtonDefaults.TonalLeadingButton(
                                 modifier = Modifier.heightIn(size),
                                 shapes = SplitButtonDefaults.leadingButtonShapesFor(size),
                                 contentPadding = SplitButtonDefaults
@@ -118,7 +118,7 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
                             }
                         },
                         trailingButton = {
-                            SplitButtonDefaults.TrailingButton(
+                            SplitButtonDefaults.TonalTrailingButton(
                                 checked = checked,
                                 onCheckedChange = { checked = it },
                                 modifier =
