@@ -129,6 +129,7 @@ fun SharedTransitionScope.ModifyFolderDialog(
             val bottomSheetState =
                 rememberModalBottomSheetState(skipPartiallyExpanded = true)
             val focusManager = LocalFocusManager.current
+            val haptic = LocalHapticFeedback.current
 
             Column(
                 modifier = Modifier
@@ -161,7 +162,13 @@ fun SharedTransitionScope.ModifyFolderDialog(
                     )
                     FilledIconToggleButton(
                         checked = isStarred,
-                        onCheckedChange = { isStarred = it },
+                        onCheckedChange = {
+                            if (it)
+                                haptic.performHapticFeedback(HapticFeedbackType.ToggleOn)
+                            else
+                                haptic.performHapticFeedback(HapticFeedbackType.ToggleOff)
+                            isStarred = it
+                        },
                         shapes = IconButtonDefaults.toggleableShapes(),
                         colors = IconButtonDefaults.filledIconToggleButtonColors(
                             checkedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
