@@ -81,6 +81,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isCtrlPressed
@@ -89,6 +90,7 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.input.ImeAction
@@ -657,9 +659,14 @@ fun NoteScreen(
         onHeaderClick = { selectedHeader = it },
         navigateTo = { navigateToScreen(it) },
         actionContent = {
+            val hapticFeedback = LocalHapticFeedback.current
             IconToggleButton(
                 checked = noteEditingState.isPinned,
-                onCheckedChange = { viewModel.toggleNotePin() }
+                onCheckedChange = {
+                    if (it) hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOn)
+                    else hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOff)
+                    viewModel.toggleNotePin()
+                }
             ) {
                 Icon(
                     imageVector = if (noteEditingState.isPinned) Icons.Default.PushPin else Icons.Outlined.PushPin,
