@@ -42,6 +42,17 @@ import org.yangdai.kori.presentation.component.note.markdown.MarkdownEditorRow
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditorRow
 import org.yangdai.kori.presentation.component.note.todo.TodoTextEditorRow
 
+/**
+ * A composable function that renders an adaptive editor row based on the provided `NoteType`.
+ *
+ * @param visible Whether the editor row is visible.
+ * @param type The type of note, which determines the editor row to be displayed (Markdown, Plain Text...).
+ * @param scrollState The scroll state for the editor.
+ * @param textFieldState The state of the text field used in the editor.
+ * @param bottomPadding The padding at the bottom of the editor row.
+ * @param isTemplate Whether the editor row is displayed in a template.
+ * @param onEditorRowAction A callback function triggered by editor row actions.
+ */
 @Composable
 fun AdaptiveEditorRow(
     visible: Boolean,

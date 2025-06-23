@@ -9,6 +9,19 @@ import org.yangdai.kori.presentation.component.note.markdown.MarkdownEditor
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditor
 import org.yangdai.kori.presentation.component.note.todo.TodoTextEditor
 
+/**
+ * A composable function that renders an adaptive editor based on the provided `NoteType`.
+ *
+ * @param modifier Modifier to be applied to the editor.
+ * @param type The type of note, which determines the editor to be displayed (Markdown, Plain Text...).
+ * @param textState The state of the text field used in the editor.
+ * @param scrollState The scroll state for the editor.
+ * @param isReadOnly Whether the editor is in read-only mode.
+ * @param isLineNumberVisible Whether line numbers are visible in the editor.
+ * @param isLintActive Whether linting is active in the editor.
+ * @param headerRange The range of headers for Markdown editor, if applicable.
+ * @param findAndReplaceState The state for find-and-replace functionality in the editor.
+ */
 @Composable
 fun AdaptiveEditor(
     modifier: Modifier = Modifier,

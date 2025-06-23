@@ -13,6 +13,7 @@ import android.provider.Settings
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipEntry
@@ -106,6 +107,7 @@ actual fun Modifier.clickToShareFile(noteEntity: NoteEntity): Modifier {
     }
 }
 
+@Stable
 data class SharedContent(val title: String = "", val text: String = "", val uri: Uri? = null)
 
 private fun Uri.getMimeType(context: Context): String? = context.contentResolver.getType(this)
