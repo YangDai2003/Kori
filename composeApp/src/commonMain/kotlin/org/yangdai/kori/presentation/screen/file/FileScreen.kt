@@ -340,10 +340,10 @@ fun FileScreen(
                 AdaptiveEditor(
                     modifier = Modifier.fillMaxWidth().weight(1f),
                     type = fileEditingState.fileType,
-                    state = viewModel.contentState,
+                    textState = viewModel.contentState,
                     scrollState = scrollState,
-                    readMode = isReadView,
-                    showLineNumbers = editorState.showLineNumber,
+                    isReadOnly = isReadView,
+                    isLineNumberVisible = editorState.showLineNumber,
                     isLintActive = editorState.isMarkdownLintEnabled,
                     headerRange = selectedHeader,
                     findAndReplaceState = findAndReplaceState
@@ -362,10 +362,10 @@ fun FileScreen(
                         AdaptiveEditor(
                             modifier = Modifier.fillMaxHeight().weight(editorWeight),
                             type = fileEditingState.fileType,
-                            state = viewModel.contentState,
+                            textState = viewModel.contentState,
                             scrollState = scrollState,
-                            readMode = isReadView,
-                            showLineNumbers = editorState.showLineNumber,
+                            isReadOnly = isReadView,
+                            isLineNumberVisible = editorState.showLineNumber,
                             isLintActive = editorState.isMarkdownLintEnabled,
                             headerRange = selectedHeader,
                             findAndReplaceState = findAndReplaceState
@@ -416,10 +416,10 @@ fun FileScreen(
                                 AdaptiveEditor(
                                     modifier = Modifier.fillMaxSize(),
                                     type = fileEditingState.fileType,
-                                    state = viewModel.contentState,
+                                    textState = viewModel.contentState,
                                     scrollState = scrollState,
-                                    readMode = isReadView,
-                                    showLineNumbers = editorState.showLineNumber,
+                                    isReadOnly = isReadView,
+                                    isLineNumberVisible = editorState.showLineNumber,
                                     isLintActive = editorState.isMarkdownLintEnabled,
                                     headerRange = selectedHeader,
                                     findAndReplaceState = findAndReplaceState

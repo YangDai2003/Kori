@@ -422,6 +422,7 @@ fun MainScreenContent(
         val pagerState = rememberPagerState { 5 }
         LaunchedEffect(currentDrawerItem) {
             selectedNotes.clear()
+            fabMenuExpanded = false
             val page = when (currentDrawerItem) {
                 DrawerItem.AllNotes -> 0
                 DrawerItem.Templates -> 1
@@ -566,10 +567,7 @@ fun MainScreenContent(
                                 stateDescription = if (fabMenuExpanded) "Expanded" else "Collapsed"
                                 contentDescription = "Toggle menu"
                             }.animateFloatingActionButton(
-                                visible = if (currentDrawerItem is DrawerItem.Trash || currentDrawerItem is DrawerItem.Toolbox || isSelectionMode) {
-                                    fabMenuExpanded = false
-                                    false
-                                } else true,
+                                visible = !(currentDrawerItem is DrawerItem.Trash || currentDrawerItem is DrawerItem.Toolbox || isSelectionMode),
                                 alignment = Alignment.BottomEnd
                             ),
                         checked = fabMenuExpanded,

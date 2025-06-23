@@ -309,10 +309,10 @@ fun TemplateScreen(
                 AdaptiveEditor(
                     modifier = Modifier.fillMaxWidth().weight(1f),
                     type = noteEditingState.noteType,
-                    state = viewModel.contentState,
+                    textState = viewModel.contentState,
                     scrollState = scrollState,
-                    readMode = isReadView,
-                    showLineNumbers = editorState.showLineNumber,
+                    isReadOnly = isReadView,
+                    isLineNumberVisible = editorState.showLineNumber,
                     isLintActive = editorState.isMarkdownLintEnabled,
                     headerRange = selectedHeader,
                     findAndReplaceState = findAndReplaceState
@@ -331,10 +331,10 @@ fun TemplateScreen(
                         AdaptiveEditor(
                             modifier = Modifier.fillMaxHeight().weight(editorWeight),
                             type = noteEditingState.noteType,
-                            state = viewModel.contentState,
+                            textState = viewModel.contentState,
                             scrollState = scrollState,
-                            readMode = isReadView,
-                            showLineNumbers = editorState.showLineNumber,
+                            isReadOnly = isReadView,
+                            isLineNumberVisible = editorState.showLineNumber,
                             isLintActive = editorState.isMarkdownLintEnabled,
                             headerRange = selectedHeader,
                             findAndReplaceState = findAndReplaceState
@@ -385,10 +385,10 @@ fun TemplateScreen(
                                 AdaptiveEditor(
                                     modifier = Modifier.fillMaxSize(),
                                     type = noteEditingState.noteType,
-                                    state = viewModel.contentState,
+                                    textState = viewModel.contentState,
                                     scrollState = scrollState,
-                                    readMode = isReadView,
-                                    showLineNumbers = editorState.showLineNumber,
+                                    isReadOnly = isReadView,
+                                    isLineNumberVisible = editorState.showLineNumber,
                                     isLintActive = editorState.isMarkdownLintEnabled,
                                     headerRange = selectedHeader,
                                     findAndReplaceState = findAndReplaceState

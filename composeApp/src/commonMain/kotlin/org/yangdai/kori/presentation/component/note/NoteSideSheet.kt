@@ -33,7 +33,6 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.UnfoldLess
 import androidx.compose.material.icons.outlined.UnfoldMore
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -75,6 +74,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
+import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.outline
@@ -113,7 +113,7 @@ fun NoteSideSheet(
         // 不能直接在 onDismissRequest 中调用 onDismiss，否则动画会被打断
         var isExiting by remember { mutableStateOf(false) }
 
-        BasicAlertDialog(
+        Dialog(
             onDismissRequest = {
                 // 标记为正在退出，以防止重复触发
                 if (!isExiting) {
@@ -121,7 +121,6 @@ fun NoteSideSheet(
                     // onDismiss 将在动画结束后被调用
                 }
             },
-            modifier = Modifier.fillMaxSize(),
             properties = DialogProperties(
                 usePlatformDefaultWidth = false, // 允许内容填充整个屏幕
                 dismissOnClickOutside = false

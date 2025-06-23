@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.OutputTransformation
@@ -44,6 +45,7 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.content
 import kotlinx.coroutines.Dispatchers
@@ -57,29 +59,33 @@ import org.yangdai.kori.presentation.util.isScreenSizeLarge
 import kotlin.math.PI
 import kotlin.math.sin
 
+data class EditorProperties(
+    val isReadOnly: Boolean,
+    val isLineNumberVisible: Boolean,
+    val isLintActive: Boolean = false
+)
+
 @Composable
 fun TextEditor(
     modifier: Modifier,
     textFieldModifier: Modifier,
-    state: TextFieldState,
+    textState: TextFieldState,
     scrollState: ScrollState,
     findAndReplaceState: FindAndReplaceState,
-    readMode: Boolean,
-    showLineNumbers: Boolean,
+    editorProperties: EditorProperties,
     headerRange: IntRange? = null,
-    isLintActive: Boolean = false,
     outputTransformation: OutputTransformation? = null
 ) {
     var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
 
     val matchedWordsRanges by produceState<List<Pair<Int, Int>>>(
         initialValue = emptyList(),
-        key1 = state.text,
+        key1 = textState.text,
         key2 = findAndReplaceState.searchWord,
-        key3 = readMode
+        key3 = editorProperties.isReadOnly
     ) {
-        value = if (!readMode && findAndReplaceState.searchWord.isNotBlank())
-            findAllRanges(state.text.toString(), findAndReplaceState.searchWord)
+        value = if (!editorProperties.isReadOnly && findAndReplaceState.searchWord.isNotBlank())
+            findAllRanges(textState.text.toString(), findAndReplaceState.searchWord)
         else emptyList()
     }
 
@@ -135,19 +141,19 @@ fun TextEditor(
     LaunchedEffect(findAndReplaceState.replaceType) {
         if (findAndReplaceState.replaceType != null && findAndReplaceState.searchWord.isNotBlank()) {
             if (findAndReplaceState.replaceType == ReplaceType.ALL) {
-                val currentText = state.text.toString()
+                val currentText = textState.text.toString()
                 val newText = currentText.replace(
                     findAndReplaceState.searchWord,
                     findAndReplaceState.replaceWord
                 )
-                state.setTextAndPlaceCursorAtEnd(newText)
+                textState.setTextAndPlaceCursorAtEnd(newText)
             } else if (findAndReplaceState.replaceType == ReplaceType.CURRENT) {
                 // Check if index is valid
                 if (matchedWordsRanges.isEmpty() || currentRangeIndex >= matchedWordsRanges.size) return@LaunchedEffect
                 // Get the position to be replaced
                 val (startIndex, endIndex) = matchedWordsRanges[currentRangeIndex]
                 // Execute replacement
-                state.edit {
+                textState.edit {
                     replace(startIndex, endIndex, findAndReplaceState.replaceWord)
                 }
             }
@@ -155,10 +161,10 @@ fun TextEditor(
         }
     }
 
-    val actualLinePositions by remember(showLineNumbers) {
+    val actualLinePositions by remember(editorProperties.isLineNumberVisible) {
         derivedStateOf {
             val layoutResult = textLayoutResult
-            if (!showLineNumbers || layoutResult == null) return@derivedStateOf emptyList()
+            if (!editorProperties.isLineNumberVisible || layoutResult == null) return@derivedStateOf emptyList()
 
             val lineCount = layoutResult.lineCount
             buildList {
@@ -179,7 +185,7 @@ fun TextEditor(
         derivedStateOf {
             if (actualLinePositions.isEmpty()) 0
             else {
-                val selectionStart = state.selection.start
+                val selectionStart = textState.selection.start
                 val index = actualLinePositions.binarySearch { it.first.compareTo(selectionStart) }
                 if (index >= 0) index else -(index + 2)
             }
@@ -197,11 +203,15 @@ fun TextEditor(
         label = "wave-phase"
     )
 
-    val lintErrors by produceState<List<Issue>>(emptyList(), state.text, isLintActive) {
-        if (isLintActive) {
+    val lintErrors by produceState<List<Issue>>(
+        emptyList(),
+        textState.text,
+        editorProperties.isLintActive
+    ) {
+        if (editorProperties.isLintActive) {
             delay(300L) // 300ms 防抖
             value = withContext(Dispatchers.Default) {
-                MarkdownLint().validate(state.text.toString())
+                MarkdownLint().validate(textState.text.toString())
             }
         } else {
             value = emptyList()
@@ -209,7 +219,7 @@ fun TextEditor(
     }
 
     Row(modifier) {
-        if (showLineNumbers) {
+        if (editorProperties.isLineNumberVisible) {
             LineNumbersColumn(
                 currentLine = currentLine,
                 actualLinePositions = actualLinePositions,
@@ -219,10 +229,17 @@ fun TextEditor(
         }
         Box(Modifier.fillMaxSize()) {
             BasicTextField(
-                modifier = textFieldModifier,
+                modifier = textFieldModifier.then(
+                    Modifier
+                        .padding(
+                            start = if (editorProperties.isLineNumberVisible) 4.dp else 16.dp,
+                            end = 16.dp
+                        )
+                        .fillMaxSize()
+                ),
                 scrollState = scrollState,
-                readOnly = readMode,
-                state = state,
+                readOnly = editorProperties.isReadOnly,
+                state = textState,
                 textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
                 cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                 onTextLayout = { textLayoutResult = it() },
@@ -240,7 +257,7 @@ fun TextEditor(
                                 val searchPaths = if (findAndReplaceState.searchWord.isNotBlank()) {
                                     matchedWordsRanges.mapNotNull { (start, end) ->
                                         // 安全检查
-                                        if (start < end && end <= state.text.length && start >= 0) {
+                                        if (start < end && end <= textState.text.length && start >= 0) {
                                             textLayoutResult?.getPathForRange(start, end)
                                         } else {
                                             null
@@ -248,9 +265,9 @@ fun TextEditor(
                                     }
                                 } else emptyList()
 
-                                val lintPaths = if (isLintActive) {
+                                val lintPaths = if (editorProperties.isLintActive) {
                                     lintErrors.mapNotNull { issue ->
-                                        if (issue.startIndex < issue.endIndex && issue.endIndex <= state.text.length) {
+                                        if (issue.startIndex < issue.endIndex && issue.endIndex <= textState.text.length) {
                                             textLayoutResult?.getPathForRange(
                                                 issue.startIndex,
                                                 issue.endIndex
@@ -301,7 +318,7 @@ fun TextEditor(
                                 }
                             }
                     ) {
-                        if (state.text.isEmpty()) {
+                        if (textState.text.isEmpty()) {
                             Text(
                                 text = stringResource(Res.string.content),
                                 style = MaterialTheme.typography.bodyLarge.copy(

@@ -13,10 +13,10 @@ import org.yangdai.kori.presentation.component.note.todo.TodoTextEditor
 fun AdaptiveEditor(
     modifier: Modifier = Modifier,
     type: NoteType,
-    state: TextFieldState,
+    textState: TextFieldState,
     scrollState: ScrollState,
-    readMode: Boolean,
-    showLineNumbers: Boolean,
+    isReadOnly: Boolean,
+    isLineNumberVisible: Boolean,
     isLintActive: Boolean,
     headerRange: IntRange?,
     findAndReplaceState: FindAndReplaceState
@@ -24,12 +24,14 @@ fun AdaptiveEditor(
     NoteType.MARKDOWN -> {
         MarkdownEditor(
             modifier = modifier,
-            state = state,
+            textState = textState,
             scrollState = scrollState,
-            readMode = readMode,
-            showLineNumbers = showLineNumbers,
-            isLintActive = isLintActive,
             headerRange = headerRange,
+            editorProperties = EditorProperties(
+                isReadOnly = isReadOnly,
+                isLineNumberVisible = isLineNumberVisible,
+                isLintActive = isLintActive
+            ),
             findAndReplaceState = findAndReplaceState
         )
     }
@@ -37,10 +39,12 @@ fun AdaptiveEditor(
     NoteType.PLAIN_TEXT -> {
         PlainTextEditor(
             modifier = modifier,
-            state = state,
+            textState = textState,
             scrollState = scrollState,
-            readMode = readMode,
-            showLineNumbers = showLineNumbers,
+            editorProperties = EditorProperties(
+                isReadOnly = isReadOnly,
+                isLineNumberVisible = isLineNumberVisible
+            ),
             findAndReplaceState = findAndReplaceState
         )
     }
@@ -48,10 +52,12 @@ fun AdaptiveEditor(
     NoteType.TODO -> {
         TodoTextEditor(
             modifier = modifier,
-            state = state,
+            textState = textState,
             scrollState = scrollState,
-            readMode = readMode,
-            showLineNumbers = showLineNumbers,
+            editorProperties = EditorProperties(
+                isReadOnly = isReadOnly,
+                isLineNumberVisible = isLineNumberVisible
+            ),
             findAndReplaceState = findAndReplaceState
         )
     }
