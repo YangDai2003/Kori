@@ -59,14 +59,14 @@ class MarkdownTransformation : AnnotatedOutputTransformation {
 
         // 先收集所有代码块区间
         val codeBlockRanges = codeBlockRegex.findAll(text).toList().also {
-            it.forEach {
-                val codeStart = it.range.first + it.groupValues[1].length + 3
-                val codeEnd = it.range.last - 2
+            it.forEach { codeBlock ->
+                val codeStart = codeBlock.range.first + codeBlock.groupValues[1].length + 3
+                val codeEnd = codeBlock.range.last - 2
                 // 添加代码块的起始和结束标记
-                addAnnotation(marker, it.range.first, codeStart)
-                addAnnotation(marker, codeEnd, it.range.last + 1)
+                addAnnotation(marker, codeBlock.range.first, codeStart)
+                addAnnotation(marker, codeEnd, codeBlock.range.last + 1)
                 // 添加可选语言标记
-                addAnnotation(keyword, it.range.first + 3, codeStart)
+                addAnnotation(keyword, codeBlock.range.first + 3, codeStart)
             }
         }
 

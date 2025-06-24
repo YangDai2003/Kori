@@ -40,7 +40,7 @@ actual fun AppNavHost(
         val route = it.toRoute<Screen.File>()
         FileScreen(
             file = PlatformFile(File(route.path)),
-            navigateToScreen = { navHostController.navigate(it) }
+            navigateToScreen = { screen -> navHostController.navigate(screen) }
         ) {
             navHostController.navigateUp()
         }

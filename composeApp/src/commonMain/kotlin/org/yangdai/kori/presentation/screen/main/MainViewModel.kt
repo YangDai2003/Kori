@@ -45,7 +45,7 @@ class MainViewModel(
         .map { password -> password.isNotEmpty() }
         .stateIn(viewModelScope, SharingStarted.Companion.Eagerly, false)
 
-    private var _currentFolderId by mutableStateOf<String>("")
+    private var _currentFolderId by mutableStateOf("")
     private val _currentFolderNotes = MutableStateFlow<List<NoteEntity>>(emptyList())
     val currentFolderNotes = _currentFolderNotes.asStateFlow()
 
@@ -154,7 +154,7 @@ class MainViewModel(
         viewModelScope.launch {
             val currentSet = searchHistorySet.value
             // 创建一个新集合，首先添加新关键词，然后添加旧的关键词，但总数不超过30
-            val newSet = buildSet<String> {
+            val newSet = buildSet {
                 add(keyword)  // 确保新关键词在最前面
                 addAll(currentSet.filter { it != keyword }.take(29))  // 过滤掉相同的关键词，并限制只取29个
             }

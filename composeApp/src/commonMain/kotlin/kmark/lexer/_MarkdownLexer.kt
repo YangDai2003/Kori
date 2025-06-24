@@ -510,7 +510,7 @@ class _MarkdownLexer : GeneratedLexer {
          * Total runtime size is 14816 bytes
          */
         fun ZZ_CMAP(ch: Int): Int {
-            return ZZ_CMAP_A[ZZ_CMAP_Y[ZZ_CMAP_Z[ch shr 10].toInt() shl 6 or (ch shr 4 and 0x3f)].toInt() shl 4 or (ch and 0xf)].toInt()
+            return ZZ_CMAP_A[ZZ_CMAP_Y[ZZ_CMAP_Z[ch shr 10].code shl 6 or (ch shr 4 and 0x3f)].code shl 4 or (ch and 0xf)].code
         }
 
         /* The ZZ_CMAP_Z table has 1088 entries */
@@ -546,8 +546,8 @@ class _MarkdownLexer : GeneratedLexer {
             var j = offset /* index in unpacked array */
             val l = packed.length
             while (i < l) {
-                var count = packed[i++].toInt()
-                val value = packed[i++].toInt()
+                var count = packed[i++].code
+                val value = packed[i++].code
                 do result[j++] = value while (--count > 0)
             }
             return j
@@ -572,8 +572,8 @@ class _MarkdownLexer : GeneratedLexer {
             var j = offset /* index in unpacked array */
             val l = packed.length
             while (i < l) {
-                val high = packed[i++].toInt() shl 16
-                result[j++] = high or packed[i++].toInt()
+                val high = packed[i++].code shl 16
+                result[j++] = high or packed[i++].code
             }
             return j
         }
@@ -599,8 +599,8 @@ class _MarkdownLexer : GeneratedLexer {
             var j = offset /* index in unpacked array */
             val l = packed.length
             while (i < l) {
-                var count = packed[i++].toInt()
-                var value = packed[i++].toInt()
+                var count = packed[i++].code
+                var value = packed[i++].code
                 value--
                 do result[j++] = value while (--count > 0)
             }
@@ -637,8 +637,8 @@ class _MarkdownLexer : GeneratedLexer {
             var j = offset /* index in unpacked array */
             val l = packed.length
             while (i < l) {
-                var count = packed[i++].toInt()
-                val value = packed[i++].toInt()
+                var count = packed[i++].code
+                val value = packed[i++].code
                 do result[j++] = value while (--count > 0)
             }
             return j
@@ -670,7 +670,7 @@ class _MarkdownLexer : GeneratedLexer {
                 var i = 0
                 val length: Int = packed.length
                 while (i < length) {
-                    size += packed[i].toInt()
+                    size += packed[i].code
                     i += 2
                 }
             }
@@ -678,7 +678,7 @@ class _MarkdownLexer : GeneratedLexer {
             var i = 0 /* index in packed string  */
             var j = 0 /* index in unpacked array */
             while (i < packed.length) {
-                var count = packed[i++].toInt()
+                var count = packed[i++].code
                 val value = packed[i++]
                 do map[j++] = value while (--count > 0)
             }

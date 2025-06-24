@@ -3,8 +3,9 @@ package kfile
 import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 actual class PlatformFile(
     val context: Context,
@@ -62,6 +63,7 @@ actual suspend fun PlatformFile.delete(): Boolean {
     } == true
 }
 
+@OptIn(ExperimentalTime::class)
 actual fun PlatformFile.getLastModified(): Instant {
     val milliSeconds = documentFile?.lastModified() ?: 0L
     if (milliSeconds == 0L) return Clock.System.now()

@@ -30,7 +30,6 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.domain.repository.DataStoreRepository
@@ -44,9 +43,12 @@ import org.yangdai.kori.presentation.screen.settings.AppTheme
 import org.yangdai.kori.presentation.screen.settings.EditorPaneState
 import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.util.Properties.getPropertiesLineRange
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalTime::class)
 class TemplateViewModel(
     savedStateHandle: SavedStateHandle,
     dataStoreRepository: DataStoreRepository,

@@ -63,7 +63,7 @@ actual fun MarkdownView(
     AndroidView(
         modifier = modifier.clipToBounds(),
         factory = {
-            WebView(it).also { webView = it }.apply {
+            WebView(it).also { wv -> webView = wv }.apply {
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT

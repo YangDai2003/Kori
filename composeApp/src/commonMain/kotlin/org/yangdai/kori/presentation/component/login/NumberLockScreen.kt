@@ -368,8 +368,7 @@ fun LandscapeLayout(
     // 左侧: 标题和密码显示区域
     Column(
         modifier = Modifier.weight(1f),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         PasswordHeaderText(isCreatingPassword, inputPassword)
         Spacer(modifier = Modifier.height(32.dp))
@@ -391,9 +390,9 @@ fun LandscapeLayout(
     }
 
     // 右侧: 数字键盘
-    Box(
+    Column(
         modifier = Modifier.weight(1f),
-        contentAlignment = Alignment.Center
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         NumberPad(
             biometricAuthEnabled = isBiometricAuthEnabled,
@@ -426,11 +425,7 @@ fun PortraitLayout(
     verticalArrangement = Arrangement.SpaceEvenly
 ) {
     // 顶部区域: 标题和密码显示
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         PasswordHeaderText(isCreatingPassword, inputPassword)
         Spacer(modifier = Modifier.height(32.dp))
         PasswordCircles(
@@ -446,9 +441,7 @@ fun PortraitLayout(
 
     // 底部区域: 数字键盘
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .navigationBarsPadding(),
+        modifier = Modifier.navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         NumberPad(

@@ -117,7 +117,6 @@ import kori.composeapp.generated.resources.word_count_without_punctuation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Instant
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -151,8 +150,13 @@ import org.yangdai.kori.presentation.util.formatInstant
 import org.yangdai.kori.presentation.util.formatNumber
 import org.yangdai.kori.presentation.util.isScreenSizeLarge
 import kotlin.math.abs
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class,
+    ExperimentalTime::class
+)
 @Composable
 fun NoteScreen(
     viewModel: NoteViewModel = koinViewModel(),
@@ -502,7 +506,7 @@ fun NoteScreen(
                             contentString = if (noteEditingState.noteType == NoteType.MARKDOWN) html else viewModel.contentState.text.toString(),
                             scrollState = scrollState,
                             isAppInDarkTheme = isAppInDarkTheme,
-                            isSheetVisible = isSideSheetOpen,
+                            isSheetVisible = isSideSheetOpen || showFolderDialog || showTemplatesBottomSheet,
                             printTrigger = printTrigger
                         )
                     }
@@ -535,7 +539,7 @@ fun NoteScreen(
                                     contentString = if (noteEditingState.noteType == NoteType.MARKDOWN) html else viewModel.contentState.text.toString(),
                                     scrollState = scrollState,
                                     isAppInDarkTheme = isAppInDarkTheme,
-                                    isSheetVisible = isSideSheetOpen,
+                                    isSheetVisible = isSideSheetOpen || showFolderDialog || showTemplatesBottomSheet,
                                     printTrigger = printTrigger
                                 )
                             }

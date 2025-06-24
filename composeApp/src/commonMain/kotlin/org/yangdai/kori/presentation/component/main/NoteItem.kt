@@ -33,12 +33,13 @@ import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.plain_text
 import kori.composeapp.generated.resources.todo_text
-import kotlinx.datetime.Instant
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.screen.settings.CardSize
 import org.yangdai.kori.presentation.util.formatInstant
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 data class NoteItemProperties(
     val showCreatedTime: Boolean = false,
@@ -46,6 +47,7 @@ data class NoteItemProperties(
     val clipOverflow: Boolean = false
 )
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun LazyStaggeredGridItemScope.NoteItem(
     keyword: String,

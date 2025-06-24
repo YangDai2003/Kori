@@ -5,7 +5,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.uikit.LocalUIViewController
 import kfile.PlatformFile
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.datetime.Clock
 import org.yangdai.kori.data.local.entity.NoteEntity
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSString
@@ -18,6 +17,8 @@ import platform.UIKit.UIDocumentPickerDelegateProtocol
 import platform.UIKit.UIDocumentPickerMode
 import platform.UIKit.UIDocumentPickerViewController
 import platform.darwin.NSObject
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
@@ -171,7 +172,7 @@ actual fun FilesImportDialog(onFilePicked: (List<PlatformFile>) -> Unit) {
 }
 
 @Suppress("CAST_NEVER_SUCCEEDS")
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, ExperimentalTime::class)
 @Composable
 actual fun BackupJsonDialog(json: String, onJsonSaved: (Boolean) -> Unit) {
     val currentUIViewController = LocalUIViewController.current

@@ -86,7 +86,6 @@ import kori.composeapp.generated.resources.updated
 import kori.composeapp.generated.resources.word_count
 import kori.composeapp.generated.resources.word_count_without_punctuation
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Instant
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -116,8 +115,10 @@ import org.yangdai.kori.presentation.util.formatInstant
 import org.yangdai.kori.presentation.util.formatNumber
 import org.yangdai.kori.presentation.util.isScreenSizeLarge
 import kotlin.math.abs
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun TemplateScreen(
     viewModel: TemplateViewModel = koinViewModel(),

@@ -46,7 +46,6 @@ import kori.composeapp.generated.resources.time_in_the_template_file_will_be_rep
 import kori.composeapp.generated.resources.you_can_also_use_date_yyyy_mm_dd_to_override_the_format_once
 import kori.composeapp.generated.resources.you_can_also_use_time_hh_mm_to_override_the_format_once
 import kori.composeapp.generated.resources.your_current_syntax_looks_like_this
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
@@ -54,13 +53,16 @@ import kotlinx.datetime.format
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.todayIn
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.note.CustomTextField
 import org.yangdai.kori.presentation.component.setting.DetailPaneItem
 import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import org.yangdai.kori.presentation.util.Constants
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
-@OptIn(FormatStringsInDatetimeFormats::class)
+@OptIn(FormatStringsInDatetimeFormats::class, ExperimentalTime::class)
 @Composable
 fun TemplatePane(viewModel: SettingsViewModel) {
 
@@ -81,15 +83,11 @@ fun TemplatePane(viewModel: SettingsViewModel) {
         currentDateFormatter = templatePaneState.dateFormatter
         currentTimeFormatter = templatePaneState.timeFormatter
         runCatching {
-            val now = Clock.System.now()
-            val localDate = now.toLocalDateTime(TimeZone.currentSystemDefault()).date
+            val today: LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
             val dateFormatter = LocalDate.Format {
-                byUnicodePattern(
-                    if (currentDateFormatter.isBlank()) "yyyy-MM-dd"
-                    else currentDateFormatter
-                )
+                byUnicodePattern(currentDateFormatter.ifBlank { "yyyy-MM-dd" })
             }
-            currentDateFormatted = localDate.format(dateFormatter)
+            currentDateFormatted = today.format(dateFormatter)
         }.onFailure {
             isDateInvalid = true
         }.onSuccess {
@@ -100,10 +98,7 @@ fun TemplatePane(viewModel: SettingsViewModel) {
             val now = Clock.System.now()
             val localTime = now.toLocalDateTime(TimeZone.currentSystemDefault()).time
             val timeFormatter = LocalTime.Format {
-                byUnicodePattern(
-                    if (currentTimeFormatter.isBlank()) "HH:mm"
-                    else currentTimeFormatter
-                )
+                byUnicodePattern(currentTimeFormatter.ifBlank { "HH:mm" })
             }
             currentTimeFormatted = localTime.format(timeFormatter)
         }.onFailure {

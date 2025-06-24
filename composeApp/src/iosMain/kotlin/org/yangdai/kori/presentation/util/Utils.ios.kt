@@ -6,7 +6,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipEntry
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.datetime.Instant
 import kotlinx.datetime.toNSDate
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
@@ -24,6 +23,8 @@ import platform.Foundation.writeToURL
 import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
 import platform.UIKit.UIApplicationOpenSettingsURLString
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @Composable
 actual fun Modifier.clickToShareText(text: String): Modifier = clickable {
@@ -40,6 +41,7 @@ private val dateTimeFormatter by lazy {
     }
 }
 
+@OptIn(ExperimentalTime::class)
 actual fun formatInstant(instant: Instant): String {
     return dateTimeFormatter.stringFromDate(instant.toNSDate())
 }

@@ -4,7 +4,8 @@ import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 /**
  * 管理应用锁解锁状态的全局单例类
@@ -22,6 +23,7 @@ class AppLockManager {
     /**
      * 解锁应用
      */
+    @OptIn(ExperimentalTime::class)
     fun unlock() {
         _isUnlocked.value = true
         _lastUnlockTime.value = Clock.System.now().toEpochMilliseconds()

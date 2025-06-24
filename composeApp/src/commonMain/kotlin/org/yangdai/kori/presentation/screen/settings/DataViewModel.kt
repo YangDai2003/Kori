@@ -26,6 +26,7 @@ import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
+import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -70,7 +71,7 @@ class DataViewModel(
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
+    @OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
     fun importFiles(files: List<PlatformFile>, folderId: String?) {
         dataActionJob?.cancel()
         dataActionJob = viewModelScope.launch(Dispatchers.IO) {

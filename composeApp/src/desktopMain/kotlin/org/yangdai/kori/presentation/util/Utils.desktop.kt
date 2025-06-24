@@ -4,11 +4,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipEntry
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
-import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toLocalDateTime
 import org.yangdai.kori.data.local.entity.NoteEntity
 import java.awt.Toolkit
@@ -16,6 +14,9 @@ import java.awt.datatransfer.StringSelection
 import java.text.DateFormat
 import java.text.NumberFormat
 import java.util.Date
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
+import kotlin.time.toJavaInstant
 
 @Composable
 actual fun Modifier.clickToShareText(text: String): Modifier = clickable {
@@ -28,6 +29,7 @@ private val dateTimeFormatter by lazy {
     DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
 }
 
+@OptIn(ExperimentalTime::class)
 actual fun formatInstant(instant: Instant): String {
     return try {
         val date = Date.from(instant.toJavaInstant())

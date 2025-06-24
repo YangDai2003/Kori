@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import kotlinx.datetime.Clock
 import kotlinx.serialization.Serializable
 import org.yangdai.kori.presentation.theme.Blue
 import org.yangdai.kori.presentation.theme.Cyan
@@ -13,6 +12,8 @@ import org.yangdai.kori.presentation.theme.Orange
 import org.yangdai.kori.presentation.theme.Purple
 import org.yangdai.kori.presentation.theme.Red
 import org.yangdai.kori.presentation.theme.Yellow
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 @Serializable
 @Entity(
@@ -22,7 +23,7 @@ import org.yangdai.kori.presentation.theme.Yellow
         Index(value = ["created_at"]) // 为 created_at 添加索引
     ]
 )
-data class FolderEntity(
+data class FolderEntity @OptIn(ExperimentalTime::class) constructor(
     @PrimaryKey
     val id: String = "", // 使用 UUID 字符串表示
     @ColumnInfo(name = "name")

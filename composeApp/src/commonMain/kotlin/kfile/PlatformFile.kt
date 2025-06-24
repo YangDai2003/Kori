@@ -1,6 +1,7 @@
 package kfile
 
-import kotlinx.datetime.Instant
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 expect class PlatformFile
 
@@ -20,4 +21,5 @@ expect suspend fun PlatformFile.writeText(text: String)
 
 expect suspend fun PlatformFile.delete(): Boolean
 
+@OptIn(ExperimentalTime::class)
 expect fun PlatformFile.getLastModified(): Instant

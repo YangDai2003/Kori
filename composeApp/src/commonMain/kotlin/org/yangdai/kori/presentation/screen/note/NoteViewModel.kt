@@ -32,7 +32,6 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
@@ -52,9 +51,12 @@ import org.yangdai.kori.presentation.screen.settings.EditorPaneState
 import org.yangdai.kori.presentation.screen.settings.TemplatePaneState
 import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.util.Properties.getPropertiesLineRange
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalTime::class)
 class NoteViewModel(
     savedStateHandle: SavedStateHandle,
     private val folderRepository: FolderRepository,

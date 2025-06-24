@@ -11,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingPanel
-import androidx.compose.ui.graphics.Color
 import javafx.application.Platform
 import javafx.concurrent.Worker
 import javafx.embed.swing.JFXPanel
@@ -96,7 +95,6 @@ actual fun MarkdownView(
     SwingPanel(
         factory = { jfxPanel },
         modifier = modifier,
-        background = Color(styles.backgroundColor),
         update = {
             webView?.let {
                 Platform.runLater {

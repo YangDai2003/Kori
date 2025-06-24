@@ -5,8 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipEntry
 import androidx.window.core.layout.WindowSizeClass
-import kotlinx.datetime.Instant
 import org.yangdai.kori.data.local.entity.NoteEntity
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @Composable
 fun isScreenSizeLarge(): Boolean {
@@ -14,24 +15,17 @@ fun isScreenSizeLarge(): Boolean {
     return windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
 }
 
-fun Int.toHexColor(): String {
-    // 1. 使用 0xFFFFFF 进行位与操作，保留低 24 位 (RGB)
-    //    并确保结果为非负数，这对于 toString(16) 很重要，
-    //    虽然对于 0xFFFFFF and this 来说，结果总是正数或零。
-    val rgb = 0xFFFFFF and this
-
-    // 2. 将 RGB 整数值转换为十六进制字符串
-    //    toString(16) 会生成小写字母的十六进制，例如 "ff00ff"
-    val hexString = rgb.toString(16)
-
-    // 3. 使用 padStart 确保字符串长度为 6
-    //    如果 hexString 长度小于 6（例如颜色值为 0xFF，转换后是 "ff"），
-    //    则在前面用 '0' 填充，直到长度达到 6 ("0000ff")。
-    val paddedHexString = hexString.padStart(6, '0')
-
-    // 4. 在前面加上 '#' 符号
-    return "#$paddedHexString"
-}
+fun Int.toHexColor(): String =
+    (0xFFFFFF and this).toHexString(
+        HexFormat {
+            upperCase = false
+            number {
+                minLength = 6
+                removeLeadingZeros = true
+                prefix = "#"
+            }
+        }
+    )
 
 @Composable
 expect fun Modifier.clickToShareText(text: String): Modifier
@@ -39,6 +33,7 @@ expect fun Modifier.clickToShareText(text: String): Modifier
 @Composable
 expect fun Modifier.clickToShareFile(noteEntity: NoteEntity): Modifier
 
+@OptIn(ExperimentalTime::class)
 expect fun formatInstant(instant: Instant): String
 
 expect fun formatNumber(int: Int): String

@@ -41,7 +41,7 @@ actual fun AppNavHost(
         val url = NSURL.URLWithString(route.path) ?: return@composable
         FileScreen(
             file = PlatformFile(url),
-            navigateToScreen = { navHostController.navigate(it) }
+            navigateToScreen = { screen -> navHostController.navigate(screen) }
         ) {
             navHostController.navigateUp()
         }

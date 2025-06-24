@@ -1,8 +1,9 @@
 package kfile
 
-import kotlinx.datetime.Instant
 import java.io.File
 import java.nio.file.Files
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 actual class PlatformFile(
     val file: File
@@ -40,6 +41,7 @@ actual suspend fun PlatformFile.delete(): Boolean {
     return Files.deleteIfExists(file.toPath())
 }
 
+@OptIn(ExperimentalTime::class)
 actual fun PlatformFile.getLastModified(): Instant {
     return Instant.fromEpochMilliseconds(file.lastModified())
 }

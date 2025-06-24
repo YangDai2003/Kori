@@ -5,8 +5,9 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import kotlinx.datetime.Clock
 import kotlinx.serialization.Serializable
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 @Serializable
 @Entity(
@@ -40,7 +41,7 @@ import kotlinx.serialization.Serializable
         Index(value = ["folder_id"], name = "idx_notes_folder_id")
     ]
 )
-data class NoteEntity(
+data class NoteEntity @OptIn(ExperimentalTime::class) constructor(
     @PrimaryKey
     val id: String = "", // 使用 UUID 字符串作为主键
     val title: String = "",

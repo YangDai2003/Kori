@@ -4,10 +4,15 @@ import androidx.compose.runtime.Composable
 import kfile.PlatformFile
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_name
-import kotlinx.datetime.Clock
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.NoteEntity
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Composable
 actual fun FilePickerDialog(onFilePicked: (PlatformFile?) -> Unit) {
@@ -84,6 +89,7 @@ actual fun FilesImportDialog(onFilePicked: (List<PlatformFile>) -> Unit) {
     onFilePicked(selectedFiles)
 }
 
+@OptIn(ExperimentalTime::class)
 @Composable
 actual fun BackupJsonDialog(json: String, onJsonSaved: (Boolean) -> Unit) {
     val fileDialog = java.awt.FileDialog(
@@ -123,6 +129,7 @@ actual fun PickJsonDialog(onJsonPicked: (String?) -> Unit) {
     onJsonPicked(null)
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 actual fun PhotosPickerDialog(onPhotosPicked: (List<String>) -> Unit) {
     val fileDialog = java.awt.FileDialog(
@@ -135,13 +142,29 @@ actual fun PhotosPickerDialog(onPhotosPicked: (List<String>) -> Unit) {
         isMultipleMode = true
     }
 
-    val selectedPhotos = mutableListOf<String>()
+    val savedNames = mutableListOf<String>()
     if (fileDialog.files != null) {
+        val userHome: String =
+            System.getProperty("user.home") ?: System.getProperty("java.io.tmpdir")
+        val imagesDir = File(File(userHome, ".kori"), "images")
+        if (!imagesDir.exists()) imagesDir.mkdirs()
         for (file in fileDialog.files) {
-            if (file.extension in listOf("jpg", "jpeg", "png", "webp")) {
-                selectedPhotos.add(file.absolutePath)
+            if (file.extension in listOf("jpg", "jpeg", "png", "webp", "gif")) {
+                val ext = file.extension.ifBlank { "jpg" }
+                val fileName = "IMG_${Uuid.random().toHexString()}.$ext"
+                val destFile = File(imagesDir, fileName)
+                try {
+                    Files.copy(
+                        file.toPath(),
+                        destFile.toPath(),
+                        StandardCopyOption.REPLACE_EXISTING
+                    )
+                    savedNames.add(fileName)
+                } catch (_: Exception) {
+                    // ignore failed copy
+                }
             }
         }
     }
-    onPhotosPicked(selectedPhotos)
+    onPhotosPicked(savedNames)
 }

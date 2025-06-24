@@ -53,7 +53,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.VerticalScrollbar
-import org.yangdai.kori.presentation.component.note.markdown.Issue
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownLint
 import org.yangdai.kori.presentation.util.isScreenSizeLarge
 import kotlin.math.PI
@@ -78,7 +77,7 @@ fun TextEditor(
 ) {
     var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
 
-    val matchedWordsRanges by produceState<List<Pair<Int, Int>>>(
+    val matchedWordsRanges by produceState(
         initialValue = emptyList(),
         key1 = textState.text,
         key2 = findAndReplaceState.searchWord,
@@ -203,7 +202,7 @@ fun TextEditor(
         label = "wave-phase"
     )
 
-    val lintErrors by produceState<List<Issue>>(
+    val lintErrors by produceState(
         emptyList(),
         textState.text,
         editorProperties.isLintActive

@@ -7,8 +7,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import kfile.PlatformFile
-import kotlinx.datetime.Clock
 import org.yangdai.kori.data.local.entity.NoteEntity
+import java.io.File
+import java.io.FileOutputStream
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Composable
 actual fun FilePickerDialog(onFilePicked: (PlatformFile?) -> Unit) {
@@ -77,6 +82,7 @@ actual fun FilesImportDialog(onFilePicked: (List<PlatformFile>) -> Unit) {
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Composable
 actual fun BackupJsonDialog(json: String, onJsonSaved: (Boolean) -> Unit) {
     val context = LocalContext.current.applicationContext
@@ -116,13 +122,32 @@ actual fun PickJsonDialog(onJsonPicked: (String?) -> Unit) {
     }
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 actual fun PhotosPickerDialog(onPhotosPicked: (List<String>) -> Unit) {
     val context = LocalContext.current.applicationContext
     val photoPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = 10)
     ) { uris ->
-        onPhotosPicked(uris.map { uri -> uri.toString() })
+        val savedNames = mutableListOf<String>()
+        val imagesDir = File(context.filesDir, "images")
+        if (!imagesDir.exists()) imagesDir.mkdirs()
+        uris.forEach { uri ->
+            val ext = context.contentResolver.getType(uri)?.substringAfterLast('/') ?: "jpg"
+            val fileName = "IMG_${Uuid.random().toHexString()}.$ext"
+            val destFile = File(imagesDir, fileName)
+            try {
+                context.contentResolver.openInputStream(uri)?.use { input ->
+                    FileOutputStream(destFile).use { output ->
+                        input.copyTo(output)
+                    }
+                }
+                savedNames.add(fileName)
+            } catch (_: Exception) {
+                // ignore failed copy
+            }
+        }
+        onPhotosPicked(savedNames)
     }
 
     LaunchedEffect(Unit) {

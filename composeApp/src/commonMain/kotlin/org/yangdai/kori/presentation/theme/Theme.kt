@@ -88,6 +88,18 @@ fun animateColorSchemeAsState(targetColorScheme: ColorScheme): ColorScheme {
         surfaceContainerHighest = animateColor(targetColorScheme.surfaceContainerHighest),
         surfaceContainerLow = animateColor(targetColorScheme.surfaceContainerLow),
         surfaceContainerLowest = animateColor(targetColorScheme.surfaceContainerLowest),
+        primaryFixed = animateColor(targetColorScheme.primaryFixed),
+        primaryFixedDim = animateColor(targetColorScheme.primaryFixedDim),
+        onPrimaryFixed = animateColor(targetColorScheme.onPrimaryFixed),
+        onPrimaryFixedVariant = animateColor(targetColorScheme.onPrimaryFixedVariant),
+        secondaryFixed = animateColor(targetColorScheme.secondaryFixed),
+        secondaryFixedDim = animateColor(targetColorScheme.secondaryFixedDim),
+        onSecondaryFixed = animateColor(targetColorScheme.onSecondaryFixed),
+        onSecondaryFixedVariant = animateColor(targetColorScheme.onSecondaryFixedVariant),
+        tertiaryFixed = animateColor(targetColorScheme.tertiaryFixed),
+        tertiaryFixedDim = animateColor(targetColorScheme.tertiaryFixedDim),
+        onTertiaryFixed = animateColor(targetColorScheme.onTertiaryFixed),
+        onTertiaryFixedVariant = animateColor(targetColorScheme.onTertiaryFixedVariant)
     )
 }
 

@@ -37,7 +37,7 @@ fun MainScreen(
     val isLargeScreen = isScreenSizeLarge()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     var currentDrawerItem by rememberSaveable(stateSaver = DrawerItem.Saver) {
-        mutableStateOf<DrawerItem>(DrawerItem.AllNotes)
+        mutableStateOf(DrawerItem.AllNotes)
     }
 
     // 获取文件夹列表及其包含的笔记数量

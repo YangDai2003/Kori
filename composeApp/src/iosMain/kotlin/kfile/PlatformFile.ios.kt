@@ -1,8 +1,6 @@
 package kfile
 
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.datetime.toKotlinInstant
 import platform.Foundation.NSDate
 import platform.Foundation.NSFileManager
@@ -12,6 +10,9 @@ import platform.Foundation.NSURLIsDirectoryKey
 import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.stringWithContentsOfURL
 import platform.Foundation.writeToURL
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 actual class PlatformFile(
     val url: NSURL
@@ -27,7 +28,7 @@ actual suspend fun PlatformFile.readText(): String {
 }
 
 actual fun PlatformFile.getFileName(): String {
-    return url.lastPathComponent?.toString() ?: ""
+    return url.lastPathComponent ?: ""
 }
 
 actual fun PlatformFile.getPath(): String {
@@ -41,7 +42,7 @@ actual fun PlatformFile.isDirectory(): Boolean {
 }
 
 actual fun PlatformFile.getExtension(): String {
-    return url.pathExtension?.toString() ?: ""
+    return url.pathExtension ?: ""
 }
 
 @Suppress("CAST_NEVER_SUCCEEDS")
@@ -55,7 +56,7 @@ actual suspend fun PlatformFile.delete(): Boolean {
     return NSFileManager.defaultManager.removeItemAtURL(url, null)
 }
 
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, ExperimentalTime::class)
 actual fun PlatformFile.getLastModified(): Instant {
     val attributes = NSFileManager.defaultManager.attributesOfItemAtPath(
         url.path ?: return Clock.System.now(),
