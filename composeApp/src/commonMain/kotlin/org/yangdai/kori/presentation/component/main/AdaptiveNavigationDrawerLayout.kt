@@ -29,51 +29,29 @@ fun AdaptiveNavigationDrawerLayout(
     drawerContent: @Composable ColumnScope.() -> Unit,
     content: @Composable () -> Unit
 ) = if (isLargeScreen) {
-    PermanentNavigationDrawerLayout(
-        drawerContent = drawerContent,
+    PermanentNavigationDrawer(
+        drawerContent = {
+            PermanentDrawerSheet(
+                modifier = Modifier.width(320.dp),
+                drawerContainerColor = MaterialTheme.colorScheme.surfaceContainer
+            ) {
+                drawerContent()
+            }
+        },
         content = content
     )
 } else {
-    ModalNavigationDrawerLayout(
+    ModalNavigationDrawer(
+        drawerContent = {
+            ModalDrawerSheet(
+                drawerState = drawerState,
+                modifier = Modifier.width(320.dp)
+            ) {
+                drawerContent()
+            }
+        },
         drawerState = drawerState,
         gesturesEnabled = gesturesEnabled,
-        drawerContent = drawerContent,
         content = content
     )
 }
-
-@Composable
-private fun ModalNavigationDrawerLayout(
-    drawerState: DrawerState,
-    gesturesEnabled: Boolean,
-    drawerContent: @Composable ColumnScope.() -> Unit,
-    content: @Composable () -> Unit
-) = ModalNavigationDrawer(
-    drawerContent = {
-        ModalDrawerSheet(
-            drawerState = drawerState,
-            modifier = Modifier.width(320.dp)
-        ) {
-            drawerContent()
-        }
-    },
-    drawerState = drawerState,
-    gesturesEnabled = gesturesEnabled,
-    content = content
-)
-
-@Composable
-private fun PermanentNavigationDrawerLayout(
-    drawerContent: @Composable ColumnScope.() -> Unit,
-    content: @Composable () -> Unit
-) = PermanentNavigationDrawer(
-    drawerContent = {
-        PermanentDrawerSheet(
-            modifier = Modifier.width(320.dp),
-            drawerContainerColor = MaterialTheme.colorScheme.surfaceContainer
-        ) {
-            drawerContent()
-        }
-    },
-    content = content
-)

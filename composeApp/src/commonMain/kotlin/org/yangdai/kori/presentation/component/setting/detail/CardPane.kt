@@ -58,7 +58,6 @@ fun CardPane(settingsViewModel: SettingsViewModel) {
                 cardSize = cardPaneState.cardSize,
                 clipOverflow = cardPaneState.clipOverflow
             ),
-            navigateToNote = {},
             selectedNotes = mutableSetOf(),
             isSelectionMode = false
         )

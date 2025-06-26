@@ -14,13 +14,13 @@ import org.yangdai.kori.data.local.entity.NoteEntity
 
 @Composable
 fun Page(
-    keyword: String = "",
     notes: List<NoteEntity>,
     contentPadding: PaddingValues,
     noteItemProperties: NoteItemProperties,
-    navigateToNote: (String) -> Unit,
+    isSelectionMode: Boolean,
     selectedNotes: MutableSet<String>,
-    isSelectionMode: Boolean
+    keyword: String = "",
+    navigateToNote: (String) -> Unit = { _ -> }
 ) {
     val state = rememberLazyStaggeredGridState()
     LazyVerticalStaggeredGrid(

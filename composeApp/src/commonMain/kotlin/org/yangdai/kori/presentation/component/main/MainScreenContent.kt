@@ -513,7 +513,6 @@ fun MainScreenContent(
                         Page(
                             notes = trashNotes,
                             contentPadding = contentPadding,
-                            navigateToNote = { },
                             selectedNotes = selectedNotes,
                             noteItemProperties = noteItemProperties,
                             isSelectionMode = isSelectionMode
