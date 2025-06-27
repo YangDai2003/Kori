@@ -25,7 +25,7 @@ actual fun KoriTheme(
     content: @Composable (() -> Unit)
 ) {
     val targetColorScheme = when (color) {
-        AppColor.PURPLE -> if (darkMode) DarkPurpleColors else LightPurpleColors
+        AppColor.PURPLE -> if (darkMode) darkColorScheme() else expressiveLightColorScheme()
         AppColor.BLUE -> if (darkMode) DarkBlueColors else LightBlueColors
         AppColor.GREEN -> if (darkMode) DarkGreenColors else LightGreenColors
         AppColor.ORANGE -> if (darkMode) DarkOrangeColors else LightOrangeColors

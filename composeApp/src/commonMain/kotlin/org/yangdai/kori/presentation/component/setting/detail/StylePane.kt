@@ -30,6 +30,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -58,7 +59,6 @@ import org.yangdai.kori.presentation.theme.DarkBlueColors
 import org.yangdai.kori.presentation.theme.DarkCyanColors
 import org.yangdai.kori.presentation.theme.DarkGreenColors
 import org.yangdai.kori.presentation.theme.DarkOrangeColors
-import org.yangdai.kori.presentation.theme.DarkPurpleColors
 import org.yangdai.kori.presentation.theme.DarkRedColors
 import org.yangdai.kori.presentation.util.Constants
 
@@ -84,7 +84,7 @@ fun StyledPaletteImage() = Row(
 }
 
 val colorSchemes = listOf(
-    Pair(AppColor.PURPLE, DarkPurpleColors),
+    Pair(AppColor.PURPLE, darkColorScheme()),
     Pair(AppColor.BLUE, DarkBlueColors),
     Pair(AppColor.GREEN, DarkGreenColors),
     Pair(AppColor.ORANGE, DarkOrangeColors),
