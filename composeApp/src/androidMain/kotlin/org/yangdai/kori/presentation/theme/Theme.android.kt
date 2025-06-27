@@ -31,6 +31,7 @@ actual fun KoriTheme(
         AppColor.ORANGE -> if (darkMode) DarkOrangeColors else LightOrangeColors
         AppColor.RED -> if (darkMode) DarkRedColors else LightRedColors
         AppColor.CYAN -> if (darkMode) DarkCyanColors else LightCyanColors
+        AppColor.BLACK -> if (darkMode) DarkBlackColors else LightBlackColors
 
         else -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val context = LocalContext.current
