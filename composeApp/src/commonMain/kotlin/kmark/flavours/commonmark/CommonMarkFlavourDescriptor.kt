@@ -102,7 +102,7 @@ open class CommonMarkFlavourDescriptor(
                     ?.getTextInNode(text)?.toString()?.trim()?.let {
                         val number = it.substring(0, it.length - 1).trimStart('0')
                         if (number != "1") {
-                            attribute = "start=\"${if (number.isEmpty()) "0" else number}\""
+                            attribute = "start=\"${number.ifEmpty { "0" }}\""
                         }
                     }
                 visitor.consumeTagOpen(node, "ol", attribute)

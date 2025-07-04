@@ -64,7 +64,6 @@ kotlin {
             implementation(libs.androidx.documentfile)
             implementation(libs.androidx.browser)
             implementation(libs.ktor.client.okhttp)
-            implementation("androidx.window:window:1.4.0")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -79,16 +78,9 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.androidx.navigation.compose)
             implementation(libs.compose.backhandler)
-            val adaptiveVersion = "1.2.0-alpha02"
-            implementation("org.jetbrains.compose.material3.adaptive:adaptive:$adaptiveVersion") {
-                exclude(group = "org.jetbrains.androidx.window")
-            }
-            implementation("org.jetbrains.compose.material3.adaptive:adaptive-layout:$adaptiveVersion") {
-                exclude(group = "org.jetbrains.androidx.window")
-            }
-            implementation("org.jetbrains.compose.material3.adaptive:adaptive-navigation:$adaptiveVersion") {
-                exclude(group = "org.jetbrains.androidx.window")
-            }
+            implementation(libs.compose.adaptive)
+            implementation(libs.compose.adaptive.navigation)
+            implementation(libs.compose.adaptive.layout)
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.room.paging)
             implementation(libs.androidx.dataStore)
@@ -115,7 +107,6 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.okhttp)
-            implementation("androidx.window:window-core-jvm:1.4.0")
             val javafxVersion = "21.0.7"
             implementation("org.openjfx:javafx-base:$javafxVersion:$platform")
             implementation("org.openjfx:javafx-graphics:$javafxVersion:$platform")

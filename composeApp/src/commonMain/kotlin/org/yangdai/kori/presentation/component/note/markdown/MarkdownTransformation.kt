@@ -1,7 +1,7 @@
 package org.yangdai.kori.presentation.component.note.markdown
 
-import androidx.compose.foundation.text.input.AnnotatedOutputTransformation
-import androidx.compose.foundation.text.input.OutputTransformationAnnotationScope
+import androidx.compose.foundation.text.input.OutputTransformation
+import androidx.compose.foundation.text.input.TextFieldBuffer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -10,7 +10,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import org.yangdai.kori.presentation.theme.linkColor
 
-class MarkdownTransformation : AnnotatedOutputTransformation {
+class MarkdownTransformation : OutputTransformation {
 
     val marker = SpanStyle(color = Color(0xFFCE8D6E), fontFamily = FontFamily.Monospace)
     val keyword = SpanStyle(color = Color(0xFFC67CBA))
@@ -37,36 +37,36 @@ class MarkdownTransformation : AnnotatedOutputTransformation {
             Regex("""^> \[(!(NOTE|TIP|IMPORTANT|WARNING|CAUTION))]""", RegexOption.MULTILINE)
     }
 
-    override fun OutputTransformationAnnotationScope.annotateOutput() {
+    override fun TextFieldBuffer.transformOutput() {
         // 链接 [text](url)
-        linkRegex.findAll(text).forEach {
-            addAnnotation(linkText, it.range.first, it.range.first + it.groupValues[1].length + 2)
-            addAnnotation(linkUrl, it.range.first + it.groupValues[1].length + 2, it.range.last + 1)
+        linkRegex.findAll(originalText).forEach {
+            addStyle(linkText, it.range.first, it.range.first + it.groupValues[1].length + 2)
+            addStyle(linkUrl, it.range.first + it.groupValues[1].length + 2, it.range.last + 1)
         }
 
         // 任务列表 - [ ] text or - [x] text
-        taskListRegex.findAll(text).forEach {
-            addAnnotation(marker, it.range.first, it.range.first + it.value.indexOf(']') + 1)
+        taskListRegex.findAll(originalText).forEach {
+            addStyle(marker, it.range.first, it.range.first + it.value.indexOf(']') + 1)
         }
 
         // 列表处理
-        listRegex.findAll(text).forEach {
+        listRegex.findAll(originalText).forEach {
             val start = it.range.first
             // 前导空白 + 标记 + 空格
             val markerLength = it.groupValues[1].length + it.groupValues[2].length + 1
-            addAnnotation(marker, start, start + markerLength)
+            addStyle(marker, start, start + markerLength)
         }
 
         // 先收集所有代码块区间
-        val codeBlockRanges = codeBlockRegex.findAll(text).toList().also {
+        val codeBlockRanges = codeBlockRegex.findAll(originalText).toList().also {
             it.forEach { codeBlock ->
                 val codeStart = codeBlock.range.first + codeBlock.groupValues[1].length + 3
                 val codeEnd = codeBlock.range.last - 2
                 // 添加代码块的起始和结束标记
-                addAnnotation(marker, codeBlock.range.first, codeStart)
-                addAnnotation(marker, codeEnd, codeBlock.range.last + 1)
+                addStyle(marker, codeBlock.range.first, codeStart)
+                addStyle(marker, codeEnd, codeBlock.range.last + 1)
                 // 添加可选语言标记
-                addAnnotation(keyword, codeBlock.range.first + 3, codeStart)
+                addStyle(keyword, codeBlock.range.first + 3, codeStart)
             }
         }
 
@@ -75,10 +75,10 @@ class MarkdownTransformation : AnnotatedOutputTransformation {
             codeBlockRanges.any { pos in it.range }
 
         // 标题
-        headingRegex.findAll(text).forEach {
+        headingRegex.findAll(originalText).forEach {
             if (!inCodeBlock(it.range.first)) {
-                addAnnotation(marker, it.range.first, it.range.first + it.groupValues[1].length)
-                addAnnotation(
+                addStyle(marker, it.range.first, it.range.first + it.groupValues[1].length)
+                addStyle(
                     keyword,
                     it.range.first + it.groupValues[1].length + 1,
                     it.range.last + 1
@@ -87,12 +87,12 @@ class MarkdownTransformation : AnnotatedOutputTransformation {
         }
 
         // 分割线 *** 或 --- 或 ___（独占一行，允许空格，不能有其他内容）
-        hrRegex.findAll(text).forEach {
-            addAnnotation(marker, it.range.first, it.range.last + 1)
+        hrRegex.findAll(originalText).forEach {
+            addStyle(marker, it.range.first, it.range.last + 1)
         }
 
         // 为 > [!NOTE] [!TIP] [!IMPORTANT] [!WARNING] [!CAUTION] 添加不同颜色���式
-        githubAlertRegex.findAll(text).forEach {
+        githubAlertRegex.findAll(originalText).forEach {
             val type = it.groupValues[2]
             val style = when (type) {
                 "NOTE" -> noteStyle
@@ -105,7 +105,7 @@ class MarkdownTransformation : AnnotatedOutputTransformation {
             // 只为 [] 部分添加样式
             val bracketStart = it.range.first + 2 // > 后的空格
             val bracketEnd = it.range.last + 1
-            addAnnotation(style, bracketStart, bracketEnd)
+            addStyle(style, bracketStart, bracketEnd)
         }
     }
 }

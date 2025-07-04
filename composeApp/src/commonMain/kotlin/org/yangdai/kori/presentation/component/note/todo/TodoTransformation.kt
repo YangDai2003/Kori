@@ -1,14 +1,14 @@
 package org.yangdai.kori.presentation.component.note.todo
 
-import androidx.compose.foundation.text.input.AnnotatedOutputTransformation
-import androidx.compose.foundation.text.input.OutputTransformationAnnotationScope
+import androidx.compose.foundation.text.input.OutputTransformation
+import androidx.compose.foundation.text.input.TextFieldBuffer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 
-class TodoTransformation : AnnotatedOutputTransformation {
+class TodoTransformation : OutputTransformation {
 
     // A-Z颜色表
     private val priorityColors = listOf(
@@ -76,17 +76,17 @@ class TodoTransformation : AnnotatedOutputTransformation {
         private val metaRegex = Regex("""(?:^|\s)([^\s:]+:[^\s:]+)""")
     }
 
-    override fun OutputTransformationAnnotationScope.annotateOutput() {
+    override fun TextFieldBuffer.transformOutput() {
         // 按行处理
         var lineStart = 0
-        text.lines().forEach { line ->
+        originalText.lines().forEach { line ->
             val lineEnd = lineStart + line.length
 
             // 1. 完成标记
             val doneMatch = doneRegex.find(line)
             if (doneMatch != null) {
                 // 整行应用doneStyle
-                addAnnotation(doneStyle, lineStart, lineEnd)
+                addStyle(doneStyle, lineStart, lineEnd)
             } else {
                 // 2. 优先级
                 val priMatch = priorityRegex.find(line)
@@ -94,13 +94,13 @@ class TodoTransformation : AnnotatedOutputTransformation {
                     val priEnd = priMatch.range.last + 1
                     val idx = priMatch.groupValues[1][0] - 'A'
                     if (idx in 0..25) {
-                        addAnnotation(priorityStyles[idx], lineStart, lineStart + priEnd)
+                        addStyle(priorityStyles[idx], lineStart, lineStart + priEnd)
                     }
                 }
                 // 3. 创建日期（行中任意位置）
                 dateRegex.findAll(line).forEach { dateMatch ->
                     val dateStart = dateMatch.range.first
-                    addAnnotation(dateStyle, lineStart + dateStart, lineStart + dateStart + 10)
+                    addStyle(dateStyle, lineStart + dateStart, lineStart + dateStart + 10)
                 }
             }
 
@@ -108,13 +108,13 @@ class TodoTransformation : AnnotatedOutputTransformation {
             contextRegex.findAll(line).forEach {
                 val start = it.range.first
                 val end = it.range.last + 1
-                addAnnotation(contextStyle, lineStart + start, lineStart + end)
+                addStyle(contextStyle, lineStart + start, lineStart + end)
             }
             // 5. project
             projectRegex.findAll(line).forEach {
                 val start = it.range.first
                 val end = it.range.last + 1
-                addAnnotation(projectStyle, lineStart + start, lineStart + end)
+                addStyle(projectStyle, lineStart + start, lineStart + end)
             }
             // 6. 元数据 key:value
             metaRegex.findAll(line).forEach {
@@ -123,7 +123,7 @@ class TodoTransformation : AnnotatedOutputTransformation {
                 // 避免 context/project 被重复���亮
                 val value = it.groupValues[1]
                 if (!value.startsWith("@") && !value.startsWith("+")) {
-                    addAnnotation(metaStyle, lineStart + start, lineStart + end)
+                    addStyle(metaStyle, lineStart + start, lineStart + end)
                 }
             }
 
