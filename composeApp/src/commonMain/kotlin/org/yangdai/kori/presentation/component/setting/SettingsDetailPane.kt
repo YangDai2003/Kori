@@ -37,11 +37,11 @@ import kori.composeapp.generated.resources.style
 import kori.composeapp.generated.resources.templates
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import org.yangdai.kori.currentPlatformInfo
-import org.yangdai.kori.isDesktop
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBar
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
+import org.yangdai.kori.presentation.component.PlatformTopAppBarType
+import org.yangdai.kori.presentation.component.rememberPlatformStyleTopAppBarState
 import org.yangdai.kori.presentation.component.setting.detail.AboutPane
 import org.yangdai.kori.presentation.component.setting.detail.AiPane
 import org.yangdai.kori.presentation.component.setting.detail.CardPane
@@ -119,29 +119,24 @@ fun SettingsDetailPane(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsDetailPaneContent(
-    modifier: Modifier = Modifier,
     isExpanded: Boolean,
     topBarTitle: String,
     navigationIcon: @Composable () -> Unit,
     actions: @Composable RowScope.() -> Unit = {},
     content: @Composable BoxScope.() -> Unit
 ) {
-    val showSmallTopAppBar = currentPlatformInfo.isDesktop() || isExpanded
-    val scrollBehavior =
-        if (showSmallTopAppBar) TopAppBarDefaults.pinnedScrollBehavior()
-        else TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    val windowInsets = if (showSmallTopAppBar)
+    val topAppBarState = rememberPlatformStyleTopAppBarState()
+    val windowInsets = if (topAppBarState.type == PlatformTopAppBarType.Small)
         TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Top + WindowInsetsSides.End)
     else TopAppBarDefaults.windowInsets
     Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier.nestedScroll(topAppBarState.scrollBehavior.nestedScrollConnection),
         topBar = {
             PlatformStyleTopAppBar(
-                showSmallTopAppBar = showSmallTopAppBar,
+                state = topAppBarState,
                 title = { PlatformStyleTopAppBarTitle(topBarTitle) },
                 navigationIcon = navigationIcon,
                 actions = actions,
-                scrollBehavior = scrollBehavior,
                 windowInsets = windowInsets,
                 colors = TopAppBarDefaults.topAppBarColors().copy(
                     containerColor = Color.Transparent,

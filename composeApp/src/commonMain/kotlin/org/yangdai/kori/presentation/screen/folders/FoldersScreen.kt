@@ -76,11 +76,9 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.data.local.dao.FolderDao
 import org.yangdai.kori.data.local.entity.FolderEntity
 import org.yangdai.kori.data.local.entity.defaultFolderColor
-import org.yangdai.kori.isDesktop
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBar
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
@@ -89,12 +87,12 @@ import org.yangdai.kori.presentation.component.VerticalScrollbar
 import org.yangdai.kori.presentation.component.dialog.FolderSortOptionDialog
 import org.yangdai.kori.presentation.component.dialog.ModifyFolderDialog
 import org.yangdai.kori.presentation.component.dialog.WarningDialog
-import org.yangdai.kori.presentation.util.isScreenSizeLarge
+import org.yangdai.kori.presentation.component.rememberPlatformStyleTopAppBarState
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class,
+    ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class,
     ExperimentalComposeUiApi::class, ExperimentalUuidApi::class
 )
 @Composable
@@ -104,10 +102,7 @@ fun FoldersScreen(
 ) {
     val groupedFolders by viewModel.foldersMap.collectAsStateWithLifecycle()
     var showSortDialog by rememberSaveable { mutableStateOf(false) }
-    val showSmallTopAppBar = currentPlatformInfo.isDesktop() || isScreenSizeLarge()
-    val scrollBehavior =
-        if (showSmallTopAppBar) TopAppBarDefaults.pinnedScrollBehavior()
-        else TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val topAppBarState = rememberPlatformStyleTopAppBarState()
 
     var selectedFolder by remember { mutableStateOf<FolderEntity?>(null) }
     var deletingFolder by remember { mutableStateOf<FolderEntity?>(null) }
@@ -116,9 +111,10 @@ fun FoldersScreen(
 
     SharedTransitionLayout(Modifier.fillMaxSize()) {
         Scaffold(
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            modifier = Modifier.nestedScroll(topAppBarState.scrollBehavior.nestedScrollConnection),
             topBar = {
                 PlatformStyleTopAppBar(
+                    state = topAppBarState,
                     modifier = Modifier.pointerInput(Unit) {
                         detectTapGestures(onDoubleTap = {
                             scope.launch {
@@ -126,7 +122,6 @@ fun FoldersScreen(
                             }
                         })
                     },
-                    showSmallTopAppBar = showSmallTopAppBar,
                     title = { PlatformStyleTopAppBarTitle(stringResource(Res.string.folders)) },
                     navigationIcon = { PlatformStyleTopAppBarNavigationIcon(onClick = navigateUp) },
                     actions = {
@@ -136,7 +131,6 @@ fun FoldersScreen(
                             onClick = { showSortDialog = true },
                         )
                     },
-                    scrollBehavior = scrollBehavior,
                     colors = TopAppBarDefaults.topAppBarColors()
                         .copy(containerColor = MaterialTheme.colorScheme.surfaceContainer)
                 )

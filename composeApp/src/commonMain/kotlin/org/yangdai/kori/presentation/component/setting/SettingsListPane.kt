@@ -49,11 +49,10 @@ import kori.composeapp.generated.resources.templates
 import kori.composeapp.generated.resources.text_overflow
 import kori.composeapp.generated.resources.time_format
 import org.jetbrains.compose.resources.stringResource
-import org.yangdai.kori.currentPlatformInfo
-import org.yangdai.kori.isDesktop
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBar
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
+import org.yangdai.kori.presentation.component.rememberPlatformStyleTopAppBarState
 import org.yangdai.kori.presentation.util.clickToLanguageSetting
 import org.yangdai.kori.presentation.util.shouldShowLanguageSetting
 
@@ -61,29 +60,24 @@ import org.yangdai.kori.presentation.util.shouldShowLanguageSetting
 @Composable
 fun SettingsListPane(
     selectedItem: Int? = null,
-    isExpanded: Boolean,
     navigateUp: () -> Unit,
     navigateToDetail: (Int) -> Unit
 ) {
-    val showSmallTopAppBar = currentPlatformInfo.isDesktop() || isExpanded
-    val scrollBehavior =
-        if (showSmallTopAppBar) TopAppBarDefaults.pinnedScrollBehavior()
-        else TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val topAppBarState = rememberPlatformStyleTopAppBarState()
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier.nestedScroll(topAppBarState.scrollBehavior.nestedScrollConnection),
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         topBar = {
             PlatformStyleTopAppBar(
-                showSmallTopAppBar = showSmallTopAppBar,
+                state = topAppBarState,
                 title = { PlatformStyleTopAppBarTitle(stringResource(Res.string.settings)) },
                 navigationIcon = { PlatformStyleTopAppBarNavigationIcon(onClick = navigateUp) },
                 colors = TopAppBarDefaults.topAppBarColors()
                     .copy(
                         containerColor = MaterialTheme.colorScheme.surfaceContainer,
                         scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
-                    ),
-                scrollBehavior = scrollBehavior
+                    )
             )
         }
     ) { innerPadding ->

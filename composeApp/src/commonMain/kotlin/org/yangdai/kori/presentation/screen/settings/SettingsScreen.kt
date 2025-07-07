@@ -54,11 +54,7 @@ fun SettingsScreen(navigateUp: () -> Unit) {
                 enterTransition = slideInHorizontally { -it },
                 exitTransition = slideOutHorizontally { -it }
             ) {
-                SettingsListPane(
-                    selectedItem = selectedItem,
-                    navigateUp = navigateUp,
-                    isExpanded = isExpanded
-                ) {
+                SettingsListPane(selectedItem = selectedItem, navigateUp = navigateUp) {
                     coroutineScope.launch {
                         navigator.navigateTo(
                             ListDetailPaneScaffoldRole.Detail,
