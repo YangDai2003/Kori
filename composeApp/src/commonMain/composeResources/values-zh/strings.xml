@@ -133,7 +133,7 @@
     <string name="export_as">导出笔记为</string>
     <string name="data">数据</string>
     <string name="import_files">导入文本文件</string>
-    <string name="import_files_description">批量导入文本类型的文件。文件名会作为标题，并自动判断是否为 MARKDOWN 类型。</string>
+    <string name="import_files_description">批量导入文本类型的文件。文件名会作为标题，并自动判断笔记类型。</string>
     <string name="backup_description">将所有文件夹和笔记备份为一个 JSON 文件。</string>
     <string name="restore_description">将所选的 JSON 备份文件中的数据写入到数据库中。</string>
     <string name="reset_database_description">清空数据库中的所有内容（包括所有笔记和文件夹）。</string>

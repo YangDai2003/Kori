@@ -136,7 +136,7 @@
     <string name="export_as">Export note as</string>
     <string name="data">Data</string>
     <string name="import_files">Import text files</string>
-    <string name="import_files_description">Import text files as notes. The file name will be used as the title and the MARKDOWN type will be automatically determined.</string>
+    <string name="import_files_description">Batch import text files. The file name will be used as the title, and the note type will be automatically detected.</string>
     <string name="backup_description">Back up all folders and notes as a JSON file.</string>
     <string name="restore_description">Restore the data in the selected JSON type backup file to the database.</string>
     <string name="reset_database_description">Clear all data in the database (including all notes and folders).</string>
