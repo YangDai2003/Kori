@@ -221,11 +221,6 @@ private fun Intent.parseActionViewEdit(context: Context): SharedContent {
             text = readTextFromUri(context, uri).orEmpty()
         }
 
-        // If text is still empty (e.g., non-text file or read failed), use a placeholder
-        if (text.isEmpty()) {
-            text = "Viewing content: ${title.ifEmpty { uri.toString() }}"
-        }
-
         writableUri = uri.getWritableUri(context)
     }
     return SharedContent(title, text, writableUri)
