@@ -23,7 +23,9 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
@@ -213,6 +215,7 @@ sealed class DrawerItem(val id: String) {
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun NavigationDrawerContent(
     drawerState: DrawerState,
@@ -222,7 +225,7 @@ fun NavigationDrawerContent(
 ) = Column(Modifier.verticalScroll(rememberScrollState())) {
 
     Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -240,11 +243,13 @@ fun NavigationDrawerContent(
             TooltipIconButton(
                 tipText = stringResource(Res.string.lock),
                 icon = Icons.Outlined.Lock,
+                shape = IconButtonDefaults.smallSquareShape,
                 onClick = onLockClick
             )
         TooltipIconButton(
             tipText = stringResource(Res.string.settings),
             icon = Icons.Outlined.Settings,
+            shape = IconButtonDefaults.smallSquareShape,
             onClick = { navigateToScreen(Screen.Settings) }
         )
     }

@@ -265,6 +265,7 @@ fun MainScreenContent(
                                 }
                             )
                         },
+                        expandedHeight = 56.dp,
                         windowInsets = if (isLargeScreen)
                             TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Top + WindowInsetsSides.End)
                         else TopAppBarDefaults.windowInsets,
@@ -353,6 +354,7 @@ fun MainScreenContent(
                                     }
                                 }
                             },
+                            expandedHeight = 56.dp,
                             navigationIcon = navigationIcon,
                             windowInsets = if (isLargeScreen)
                                 TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Top + WindowInsetsSides.End)
