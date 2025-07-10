@@ -114,7 +114,7 @@ import org.yangdai.kori.presentation.component.dialog.FoldersDialog
 import org.yangdai.kori.presentation.component.dialog.NoteSortOptionDialog
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.screen.main.MainViewModel
-import org.yangdai.kori.presentation.util.isScreenSizeLarge
+import org.yangdai.kori.presentation.util.isScreenWidthExpanded
 
 @OptIn(
     ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class,
@@ -131,7 +131,7 @@ fun MainScreenContent(
     var showFoldersDialog by remember { mutableStateOf(false) }
     val selectedNotes = remember { mutableStateSetOf<String>() }
     val isSelectionMode by remember { derivedStateOf { selectedNotes.isNotEmpty() } }
-    val isLargeScreen = isScreenSizeLarge()
+    val isLargeScreen = isScreenWidthExpanded()
     BackHandler(enabled = isSelectionMode) { selectedNotes.clear() }
     var fabMenuExpanded by remember { mutableStateOf(false) }
     BackHandler(enabled = fabMenuExpanded) { fabMenuExpanded = false }

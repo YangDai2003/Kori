@@ -54,7 +54,7 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.VerticalScrollbar
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownLint
-import org.yangdai.kori.presentation.util.isScreenSizeLarge
+import org.yangdai.kori.presentation.util.isScreenWidthExpanded
 import kotlin.math.PI
 import kotlin.math.sin
 
@@ -331,7 +331,7 @@ fun TextEditor(
                     }
                 }
             )
-            if (!isScreenSizeLarge()) {
+            if (!isScreenWidthExpanded()) {
                 VerticalScrollbar(
                     modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
                     state = scrollState

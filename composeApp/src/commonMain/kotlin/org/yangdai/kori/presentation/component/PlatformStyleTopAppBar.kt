@@ -8,26 +8,28 @@ import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowSizeClass
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.back
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.OS
 import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.isDesktop
-import org.yangdai.kori.presentation.util.isScreenSizeLarge
 
 enum class PlatformTopAppBarType {
-    Small, Centered, Large
+    SmallPinned, CenteredPinned, Large, Medium
 }
 
 data class PlatformStyleTopAppBarState @OptIn(ExperimentalMaterial3Api::class) constructor(
@@ -37,16 +39,23 @@ data class PlatformStyleTopAppBarState @OptIn(ExperimentalMaterial3Api::class) c
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun rememberPlatformStyleTopAppBarState(): PlatformStyleTopAppBarState {
+fun rememberPlatformStyleTopAppBarState(
+    windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+): PlatformStyleTopAppBarState {
     val type = when {
-        currentPlatformInfo.isDesktop() || isScreenSizeLarge() -> PlatformTopAppBarType.Small
-        currentPlatformInfo.operatingSystem == OS.IOS -> PlatformTopAppBarType.Centered
-        else -> PlatformTopAppBarType.Large
+        currentPlatformInfo.isDesktop() || windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) -> PlatformTopAppBarType.SmallPinned
+        currentPlatformInfo.operatingSystem == OS.IOS -> PlatformTopAppBarType.CenteredPinned
+        else -> {
+            when {
+                windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_EXPANDED_LOWER_BOUND) -> PlatformTopAppBarType.Large
+                else -> PlatformTopAppBarType.Medium
+            }
+        }
     }
     val scrollBehavior =
         when (type) {
-            PlatformTopAppBarType.Small, PlatformTopAppBarType.Centered -> TopAppBarDefaults.pinnedScrollBehavior()
-            PlatformTopAppBarType.Large -> TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+            PlatformTopAppBarType.SmallPinned, PlatformTopAppBarType.CenteredPinned -> TopAppBarDefaults.pinnedScrollBehavior()
+            else -> TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
         }
     return remember(type, scrollBehavior) {
         PlatformStyleTopAppBarState(type, scrollBehavior)
@@ -64,7 +73,7 @@ fun PlatformStyleTopAppBar(
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
 ) = when (state.type) {
-    PlatformTopAppBarType.Small -> TopAppBar(
+    PlatformTopAppBarType.SmallPinned -> TopAppBar(
         title = title,
         modifier = modifier,
         navigationIcon = navigationIcon,
@@ -75,7 +84,7 @@ fun PlatformStyleTopAppBar(
         scrollBehavior = state.scrollBehavior
     )
 
-    PlatformTopAppBarType.Centered -> CenterAlignedTopAppBar(
+    PlatformTopAppBarType.CenteredPinned -> CenterAlignedTopAppBar(
         title = title,
         modifier = modifier,
         navigationIcon = navigationIcon,
@@ -87,6 +96,16 @@ fun PlatformStyleTopAppBar(
     )
 
     PlatformTopAppBarType.Large -> LargeTopAppBar(
+        title = title,
+        modifier = modifier,
+        navigationIcon = navigationIcon,
+        actions = actions,
+        windowInsets = windowInsets,
+        colors = colors,
+        scrollBehavior = state.scrollBehavior
+    )
+
+    PlatformTopAppBarType.Medium -> MediumTopAppBar(
         title = title,
         modifier = modifier,
         navigationIcon = navigationIcon,

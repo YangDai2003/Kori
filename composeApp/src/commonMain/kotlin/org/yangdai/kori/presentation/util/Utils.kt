@@ -10,7 +10,7 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @Composable
-fun isScreenSizeLarge(): Boolean {
+fun isScreenWidthExpanded(): Boolean {
     val windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     return windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
 }

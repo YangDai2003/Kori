@@ -148,7 +148,7 @@ import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.screen.settings.AppTheme
 import org.yangdai.kori.presentation.util.formatInstant
 import org.yangdai.kori.presentation.util.formatNumber
-import org.yangdai.kori.presentation.util.isScreenSizeLarge
+import org.yangdai.kori.presentation.util.isScreenWidthExpanded
 import kotlin.math.abs
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -216,7 +216,7 @@ fun NoteScreen(
     var isSearching by remember { mutableStateOf(false) }
     var selectedHeader by remember { mutableStateOf<IntRange?>(null) }
     val findAndReplaceState = rememberFindAndReplaceState()
-    val isLargeScreen = isScreenSizeLarge()
+    val isLargeScreen = isScreenWidthExpanded()
     val pagerState = rememberPagerState { 2 }
     val focusManager = LocalFocusManager.current
     var isSideSheetOpen by rememberSaveable { mutableStateOf(false) }

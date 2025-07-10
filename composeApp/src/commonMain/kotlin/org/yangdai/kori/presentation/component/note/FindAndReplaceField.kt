@@ -48,7 +48,7 @@ import kori.composeapp.generated.resources.replace
 import kori.composeapp.generated.resources.replace_all
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.yangdai.kori.presentation.util.isScreenSizeLarge
+import org.yangdai.kori.presentation.util.isScreenWidthExpanded
 
 @Stable
 class FindAndReplaceState {
@@ -91,19 +91,14 @@ enum class ReplaceType {
 }
 
 @Composable
-fun FindAndReplaceField(
-    state: FindAndReplaceState,
-    isLargeScreen: Boolean = isScreenSizeLarge()
-) = if (isLargeScreen) {
-    Row(
+fun FindAndReplaceField(state: FindAndReplaceState) =
+    if (isScreenWidthExpanded()) Row(
         modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp, bottom = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         FindField(modifier = Modifier.weight(1f), state = state)
         ReplaceField(modifier = Modifier.weight(1f), state = state)
-    }
-} else {
-    Column(
+    } else Column(
         modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp, bottom = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -111,7 +106,6 @@ fun FindAndReplaceField(
         FindField(modifier = Modifier.fillMaxWidth(), state = state)
         ReplaceField(modifier = Modifier.fillMaxWidth(), state = state)
     }
-}
 
 @Composable
 private fun FindField(

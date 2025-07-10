@@ -126,7 +126,7 @@ fun SettingsDetailPaneContent(
     content: @Composable BoxScope.() -> Unit
 ) {
     val topAppBarState = rememberPlatformStyleTopAppBarState()
-    val windowInsets = if (topAppBarState.type == PlatformTopAppBarType.Small)
+    val windowInsets = if (topAppBarState.type == PlatformTopAppBarType.SmallPinned)
         TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Top + WindowInsetsSides.End)
     else TopAppBarDefaults.windowInsets
     Scaffold(
