@@ -52,11 +52,10 @@ fun rememberPlatformStyleTopAppBarState(
             }
         }
     }
-    val scrollBehavior =
-        when (type) {
-            PlatformTopAppBarType.SmallPinned, PlatformTopAppBarType.CenteredPinned -> TopAppBarDefaults.pinnedScrollBehavior()
-            else -> TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-        }
+    val scrollBehavior = when (type) {
+        PlatformTopAppBarType.SmallPinned, PlatformTopAppBarType.CenteredPinned -> TopAppBarDefaults.pinnedScrollBehavior()
+        else -> TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    }
     return remember(type, scrollBehavior) {
         PlatformStyleTopAppBarState(type, scrollBehavior)
     }
