@@ -12,6 +12,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
@@ -80,15 +82,19 @@ class MainActivity : AppCompatActivity() {
                     val showPassScreen by remember {
                         derivedStateOf {
                             (securityPaneState.password.isNotEmpty() && !isUnlocked) ||
-                                    (securityPaneState.isCreatingPass && !isUnlocked)
+                                    securityPaneState.isCreatingPass
                         }
                     }
                     val blur by animateDpAsState(targetValue = if (showPassScreen) 16.dp else 0.dp)
                     AppNavHost(modifier = Modifier.blur(blur))
                     AnimatedVisibility(
                         visible = showPassScreen,
-                        enter = fadeIn(),
-                        exit = fadeOut()
+                        enter = slideInVertically(
+                            initialOffsetY = { fullHeight -> fullHeight }
+                        ) + fadeIn(),
+                        exit = slideOutVertically(
+                            targetOffsetY = { fullHeight -> fullHeight }
+                        ) + fadeOut()
                     ) {
                         LoginOverlayScreen(
                             storedPassword = securityPaneState.password,

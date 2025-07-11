@@ -110,12 +110,10 @@ actual fun SecurityPane(settingsViewModel: SettingsViewModel) {
                     onCheckedChange = { checked ->
                         if (checked) {
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOn)
-                            if (securityPaneState.password.isEmpty()) {
-                                settingsViewModel.putPreferenceValue(
-                                    Constants.Preferences.IS_CREATING_PASSWORD,
-                                    true
-                                )
-                            }
+                            settingsViewModel.putPreferenceValue(
+                                Constants.Preferences.IS_CREATING_PASSWORD,
+                                true
+                            )
                         } else {
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOff)
                             settingsViewModel.putPreferenceValue(

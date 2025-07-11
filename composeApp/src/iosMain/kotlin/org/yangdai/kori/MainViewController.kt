@@ -4,6 +4,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -64,16 +66,19 @@ fun MainViewController() = ComposeUIViewController(
             val showPassScreen by remember {
                 derivedStateOf {
                     (securityPaneState.password.isNotEmpty() && !isUnlocked) ||
-                            (securityPaneState.isCreatingPass && !isUnlocked)
+                            securityPaneState.isCreatingPass
                 }
             }
             val blur by animateDpAsState(targetValue = if (showPassScreen) 16.dp else 0.dp)
-
             AppNavHost(modifier = Modifier.blur(blur))
             AnimatedVisibility(
                 visible = showPassScreen,
-                enter = fadeIn(),
-                exit = fadeOut()
+                enter = slideInVertically(
+                    initialOffsetY = { fullHeight -> -fullHeight }
+                ) + fadeIn(),
+                exit = slideOutVertically(
+                    targetOffsetY = { fullHeight -> -fullHeight }
+                ) + fadeOut()
             ) {
                 NumberLockScreen(
                     modifier = Modifier.background(MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.25f)),

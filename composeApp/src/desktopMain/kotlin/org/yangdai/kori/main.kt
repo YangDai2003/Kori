@@ -4,6 +4,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.DarkDefaultContextMenuRepresentation
 import androidx.compose.foundation.LightDefaultContextMenuRepresentation
 import androidx.compose.foundation.LocalContextMenuRepresentation
@@ -84,22 +86,19 @@ fun main() {
                         val showPassScreen by remember {
                             derivedStateOf {
                                 (securityPaneState.password.isNotEmpty() && !isUnlocked) ||
-                                        (securityPaneState.isCreatingPass && !isUnlocked)
+                                        securityPaneState.isCreatingPass
                             }
                         }
                         val blur by animateDpAsState(targetValue = if (showPassScreen) 16.dp else 0.dp)
-
                         AppNavHost(modifier = Modifier.blur(blur))
                         AnimatedVisibility(
                             visible = showPassScreen,
-                            enter = fadeIn(),
-                            exit = fadeOut()
+                            enter = scaleIn(initialScale = 0.92f) + fadeIn(),
+                            exit = scaleOut(targetScale = 0.92f) + fadeOut()
                         ) {
                             NumberLockScreen(
                                 modifier = Modifier.background(
-                                    MaterialTheme.colorScheme.surfaceDim.copy(
-                                        alpha = 0.25f
-                                    )
+                                    MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.25f)
                                 ),
                                 storedPassword = securityPaneState.password,
                                 isCreatingPassword = securityPaneState.isCreatingPass,

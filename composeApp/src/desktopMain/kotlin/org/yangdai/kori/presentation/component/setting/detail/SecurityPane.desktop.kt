@@ -49,12 +49,10 @@ actual fun SecurityPane(settingsViewModel: SettingsViewModel) {
                     checked = securityPaneState.password.isNotEmpty() || securityPaneState.isCreatingPass,
                     onCheckedChange = { checked ->
                         if (checked) {
-                            if (securityPaneState.password.isEmpty()) {
-                                settingsViewModel.putPreferenceValue(
-                                    Constants.Preferences.IS_CREATING_PASSWORD,
-                                    true
-                                )
-                            }
+                            settingsViewModel.putPreferenceValue(
+                                Constants.Preferences.IS_CREATING_PASSWORD,
+                                true
+                            )
                         } else {
                             settingsViewModel.putPreferenceValue(
                                 Constants.Preferences.PASSWORD,
