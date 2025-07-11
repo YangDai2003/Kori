@@ -20,7 +20,6 @@ ksp = "2.2.0-2.0.2"
 kotlinxSerializationJson = "1.9.0"
 koin = "4.1.0"
 ktor = "3.2.1"
-colorpickerCompose = "1.1.2"
 biometricVersion = "1.4.0-alpha04"
 documentfile = "1.1.0"
 browser = "1.8.0"
@@ -64,8 +63,6 @@ ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "kto
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
-
-colorpicker-compose = { module = "com.github.skydoves:colorpicker-compose", version.ref = "colorpickerCompose" }
 
 ## Android-specific libraries
 

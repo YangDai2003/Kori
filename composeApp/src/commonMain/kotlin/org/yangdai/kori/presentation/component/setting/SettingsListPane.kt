@@ -91,40 +91,42 @@ fun SettingsListPane(
                 .verticalScroll(rememberScrollState())
         ) {
             ListPaneSection(
-                {
-                    ListPaneItem(
-                        title = stringResource(Res.string.style),
-                        description = stringResource(Res.string.dark_mode)
-                                + "  •  " + stringResource(Res.string.color_platte),
-                        icon = Icons.Outlined.Palette,
-                        isSelected = selectedItem == 0,
-                        onClick = { navigateToDetail(0) }
-                    )
-                },
-                {
-                    ListPaneItem(
-                        title = stringResource(Res.string.editor),
-                        description = stringResource(Res.string.default_view)
-                                + "  •  " + stringResource(Res.string.line_numbers),
-                        icon = Icons.Outlined.Edit,
-                        isSelected = selectedItem == 1,
-                        onClick = { navigateToDetail(1) }
-                    )
-                },
-                {
-                    ListPaneItem(
-                        title = stringResource(Res.string.card),
-                        description = stringResource(Res.string.text_overflow)
-                                + "  •  " + stringResource(Res.string.card_size),
-                        icon = Icons.Outlined.GridView,
-                        isSelected = selectedItem == 2,
-                        onClick = { navigateToDetail(2) }
-                    )
-                }
+                items = listOf(
+                    {
+                        ListPaneItem(
+                            title = stringResource(Res.string.style),
+                            description = stringResource(Res.string.dark_mode)
+                                    + "  •  " + stringResource(Res.string.color_platte),
+                            icon = Icons.Outlined.Palette,
+                            isSelected = selectedItem == 0,
+                            onClick = { navigateToDetail(0) }
+                        )
+                    },
+                    {
+                        ListPaneItem(
+                            title = stringResource(Res.string.editor),
+                            description = stringResource(Res.string.default_view)
+                                    + "  •  " + stringResource(Res.string.line_numbers),
+                            icon = Icons.Outlined.Edit,
+                            isSelected = selectedItem == 1,
+                            onClick = { navigateToDetail(1) }
+                        )
+                    },
+                    {
+                        ListPaneItem(
+                            title = stringResource(Res.string.card),
+                            description = stringResource(Res.string.text_overflow)
+                                    + "  •  " + stringResource(Res.string.card_size),
+                            icon = Icons.Outlined.GridView,
+                            isSelected = selectedItem == 2,
+                            onClick = { navigateToDetail(2) }
+                        )
+                    }
+                )
             )
             if (shouldShowLanguageSetting())
                 ListPaneSection(
-                    {
+                    items = listOf {
                         ListPaneItem(
                             modifier = Modifier.clickToLanguageSetting(),
                             title = stringResource(Res.string.language),
@@ -135,35 +137,36 @@ fun SettingsListPane(
                     }
                 )
             ListPaneSection(
-                {
-                    ListPaneItem(
-                        title = stringResource(Res.string.templates),
-                        description = stringResource(Res.string.time_format)
-                                + "  •  " + stringResource(Res.string.date_format),
-                        icon = Icons.AutoMirrored.Outlined.TextSnippet,
-                        isSelected = selectedItem == 3,
-                        onClick = { navigateToDetail(3) }
-                    )
-                },
-                {
-                    ListPaneItem(
-                        title = stringResource(Res.string.data),
-                        description = stringResource(Res.string.backup)
-                                + "  •  " + stringResource(Res.string.restore_from_backup),
-                        icon = Icons.Outlined.SdStorage,
-                        isSelected = selectedItem == 4,
-                        onClick = { navigateToDetail(4) }
-                    )
-                },
-                {
-                    ListPaneItem(
-                        title = stringResource(Res.string.security),
-                        description = stringResource(Res.string.password),
-                        icon = Icons.Outlined.Security,
-                        isSelected = selectedItem == 5,
-                        onClick = { navigateToDetail(5) }
-                    )
-                },
+                items = listOf(
+                    {
+                        ListPaneItem(
+                            title = stringResource(Res.string.templates),
+                            description = stringResource(Res.string.time_format)
+                                    + "  •  " + stringResource(Res.string.date_format),
+                            icon = Icons.AutoMirrored.Outlined.TextSnippet,
+                            isSelected = selectedItem == 3,
+                            onClick = { navigateToDetail(3) }
+                        )
+                    },
+                    {
+                        ListPaneItem(
+                            title = stringResource(Res.string.data),
+                            description = stringResource(Res.string.backup)
+                                    + "  •  " + stringResource(Res.string.restore_from_backup),
+                            icon = Icons.Outlined.SdStorage,
+                            isSelected = selectedItem == 4,
+                            onClick = { navigateToDetail(4) }
+                        )
+                    },
+                    {
+                        ListPaneItem(
+                            title = stringResource(Res.string.security),
+                            description = stringResource(Res.string.password),
+                            icon = Icons.Outlined.Security,
+                            isSelected = selectedItem == 5,
+                            onClick = { navigateToDetail(5) }
+                        )
+                    },
 //                {
 //                    ListPaneItem(
 //                        title = stringResource(Res.string.cowriter),
@@ -174,9 +177,10 @@ fun SettingsListPane(
 //                        onClick = { navigateToDetail(6) }
 //                    )
 //                }
+                )
             )
             ListPaneSection(
-                {
+                items = listOf {
                     ListPaneItem(
                         title = stringResource(Res.string.app_info),
                         description = stringResource(Res.string.guide)

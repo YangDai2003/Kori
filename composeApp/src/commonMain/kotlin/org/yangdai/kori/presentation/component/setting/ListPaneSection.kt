@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ListPaneSection(
-    vararg content: @Composable () -> Unit,
+    items: Iterable<@Composable () -> Unit>,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -24,9 +24,9 @@ fun ListPaneSection(
         color = MaterialTheme.colorScheme.surfaceBright.copy(alpha = 0.7f)
     ) {
         Column {
-            content.forEachIndexed { index, item ->
+            items.forEachIndexed { index, item ->
                 item()
-                if (index < content.size - 1) {
+                if (index < items.count() - 1) {
                     ListPaneSectionDivider()
                 }
             }
@@ -35,7 +35,7 @@ fun ListPaneSection(
 }
 
 @Composable
-fun ListPaneSectionDivider() = HorizontalDivider(
+private fun ListPaneSectionDivider() = HorizontalDivider(
     thickness = 4.dp,
     color = MaterialTheme.colorScheme.surfaceContainer
 )

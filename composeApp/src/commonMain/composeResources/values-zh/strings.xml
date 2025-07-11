@@ -51,7 +51,7 @@
     <string name="color_picker">颜色选择器</string>
     <string name="name">名称</string>
     <string name="search">搜索</string>
-    <string name="search_history">搜索历史</string>
+    <string name="search_history">近期搜索记录</string>
     <string name="add_sample_note">添加示例笔记</string>
     <string name="todo">待办</string>
     <string name="done">已完成</string>

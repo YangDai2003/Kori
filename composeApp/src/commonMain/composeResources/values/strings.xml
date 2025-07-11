@@ -52,7 +52,7 @@
     <string name="color_picker">Color Picker</string>
     <string name="name">Name</string>
     <string name="search">Search</string>
-    <string name="search_history">Search history</string>
+    <string name="search_history">Recent Search History</string>
     <string name="add_sample_note">Add Sample Note</string>
     <string name="todo">Todo</string>
     <string name="done">Done</string>

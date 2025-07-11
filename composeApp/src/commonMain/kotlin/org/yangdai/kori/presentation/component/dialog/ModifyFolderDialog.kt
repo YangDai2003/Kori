@@ -29,8 +29,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Colorize
 import androidx.compose.material.icons.outlined.FolderDelete
@@ -46,6 +44,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -126,8 +125,7 @@ fun SharedTransitionScope.ModifyFolderDialog(
 
             var showColorPicker by remember { mutableStateOf(false) }
             val scope = rememberCoroutineScope()
-            val bottomSheetState =
-                rememberModalBottomSheetState(skipPartiallyExpanded = true)
+            val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
             val focusManager = LocalFocusManager.current
             val haptic = LocalHapticFeedback.current
 
@@ -187,14 +185,6 @@ fun SharedTransitionScope.ModifyFolderDialog(
                     state = textFieldState,
                     lineLimits = TextFieldLineLimits.SingleLine,
                     isError = isError,
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        textColor = MaterialTheme.colorScheme.onSurface,
-                        cursorColor = MaterialTheme.colorScheme.primary,
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                        errorBorderColor = MaterialTheme.colorScheme.error,
-                        placeholderColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    ),
                     onKeyboardAction = { focusManager.clearFocus() },
                     placeholder = { Text(stringResource(Res.string.name)) }
                 )
@@ -215,7 +205,10 @@ fun SharedTransitionScope.ModifyFolderDialog(
                                 0 -> {
                                     OutlinedTextCircle(
                                         selected = color == defaultFolderColor,
-                                        onClick = { color = defaultFolderColor }
+                                        onClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                                            color = defaultFolderColor
+                                        }
                                     )
                                 }
 
@@ -223,7 +216,10 @@ fun SharedTransitionScope.ModifyFolderDialog(
                                     OutlinedCustomCircle(
                                         color = if (custom) Color(color) else Color.Black,
                                         selected = custom,
-                                        onClick = { showColorPicker = true }
+                                        onClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                                            showColorPicker = true
+                                        }
                                     )
                                 }
 
@@ -232,6 +228,7 @@ fun SharedTransitionScope.ModifyFolderDialog(
                                         color = folderColorOptions[it - 1],
                                         selected = Color(color) == folderColorOptions[it - 1],
                                         onClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
                                             color = folderColorOptions[it - 1].toArgb().toLong()
                                         }
                                     )
@@ -252,7 +249,6 @@ fun SharedTransitionScope.ModifyFolderDialog(
                 ) {
                     if (targetState.id.isNotEmpty())
                         IconButton(
-                            shapes = IconButtonDefaults.shapes(),
                             colors = IconButtonDefaults.outlinedIconButtonVibrantColors(
                                 containerColor = MaterialTheme.colorScheme.errorContainer,
                                 contentColor = MaterialTheme.colorScheme.onErrorContainer
@@ -316,39 +312,33 @@ fun SharedTransitionScope.ModifyFolderDialog(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun OutlinedCircle(
     color: Color,
     selected: Boolean,
     onClick: () -> Unit
 ) = OutlinedIconButton(
-    shapes = IconButtonDefaults.shapes(),
     colors = IconButtonDefaults.outlinedIconButtonVibrantColors(containerColor = color),
     border = if (selected) BorderStroke(2.dp, MaterialTheme.colorScheme.outline) else null,
     onClick = onClick
 ) { }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun OutlinedCustomCircle(
     color: Color,
     selected: Boolean,
     onClick: () -> Unit
 ) = OutlinedIconButton(
-    shapes = IconButtonDefaults.shapes(),
     colors = IconButtonDefaults.outlinedIconButtonVibrantColors(containerColor = color),
     border = if (selected) BorderStroke(2.dp, MaterialTheme.colorScheme.outline) else null,
     onClick = onClick
 ) { Icon(imageVector = Icons.Outlined.Colorize, contentDescription = null) }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun OutlinedTextCircle(
     selected: Boolean,
     onClick: () -> Unit
 ) = OutlinedIconButton(
-    shapes = IconButtonDefaults.shapes(),
     colors = IconButtonDefaults.outlinedIconButtonVibrantColors(
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary

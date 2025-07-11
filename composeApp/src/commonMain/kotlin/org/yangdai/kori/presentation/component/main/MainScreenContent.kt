@@ -384,7 +384,13 @@ fun MainScreenContent(
                                         contentDescription = null
                                     )
                                 },
-                                headlineContent = { Text(stringResource(Res.string.search_history)) },
+                                headlineContent = {
+                                    Text(
+                                        stringResource(Res.string.search_history),
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                },
                                 trailingContent = {
                                     Icon(
                                         modifier = Modifier.clickable {
