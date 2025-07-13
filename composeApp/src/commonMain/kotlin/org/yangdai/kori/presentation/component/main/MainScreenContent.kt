@@ -48,6 +48,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SearchBarDefaults.inputFieldColors
 import androidx.compose.material3.SearchBarValue
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleFloatingActionButton
@@ -104,9 +106,16 @@ import kori.composeapp.generated.resources.todo_text
 import kori.composeapp.generated.resources.toolbox
 import kori.composeapp.generated.resources.total
 import kori.composeapp.generated.resources.trash
+import kori.composeapp.generated.resources.snackbar_pinned
+import kori.composeapp.generated.resources.snackbar_moved_to_trash
+import kori.composeapp.generated.resources.snackbar_deleted_forever
+import kori.composeapp.generated.resources.snackbar_restored
+import kori.composeapp.generated.resources.snackbar_restored_all
+import kori.composeapp.generated.resources.snackbar_deleted_all
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.pluralStringResource
 import org.yangdai.kori.domain.sort.NoteSortType
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
 import org.yangdai.kori.presentation.component.TooltipIconButton
@@ -134,11 +143,13 @@ fun MainScreenContent(
     val isLargeScreen = isScreenWidthExpanded()
     BackHandler(enabled = isSelectionMode) { selectedNotes.clear() }
     var fabMenuExpanded by remember { mutableStateOf(false) }
+    LaunchedEffect(isSelectionMode) { if (isSelectionMode) fabMenuExpanded = false }
     BackHandler(enabled = fabMenuExpanded) { fabMenuExpanded = false }
 
     val textFieldState = rememberTextFieldState()
     val searchBarState = rememberSearchBarState()
     val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
     val inputField = @Composable {
         SearchBarDefaults.InputField(
             colors = inputFieldColors(
@@ -220,11 +231,18 @@ fun MainScreenContent(
                         },
                         actions = {
                             if (currentDrawerItem !is DrawerItem.Trash && currentDrawerItem !is DrawerItem.Templates) {
+                                val pinnedStr =
+                                    pluralStringResource(
+                                        Res.plurals.snackbar_pinned,
+                                        selectedNotes.size,
+                                        selectedNotes.size
+                                    )
                                 TooltipIconButton(
                                     tipText = stringResource(Res.string.pin),
                                     icon = painterResource(Res.drawable.pinboard),
                                     onClick = {
                                         viewModel.pinNotes(selectedNotes.toSet())
+                                        scope.launch { snackbarHostState.showSnackbar(pinnedStr) }
                                         selectedNotes.clear()
                                     }
                                 )
@@ -236,11 +254,18 @@ fun MainScreenContent(
                             }
 
                             if (currentDrawerItem is DrawerItem.Trash) {
+                                val restoredStr =
+                                    pluralStringResource(
+                                        Res.plurals.snackbar_restored,
+                                        selectedNotes.size,
+                                        selectedNotes.size
+                                    )
                                 TooltipIconButton(
                                     tipText = stringResource(Res.string.restore),
                                     icon = Icons.Default.RestoreFromTrash,
                                     onClick = {
                                         viewModel.restoreNotesFromTrash(selectedNotes.toSet())
+                                        scope.launch { snackbarHostState.showSnackbar(restoredStr) }
                                         selectedNotes.clear()
                                     }
                                 )
@@ -248,6 +273,16 @@ fun MainScreenContent(
 
                             val deleteForever =
                                 currentDrawerItem is DrawerItem.Trash || currentDrawerItem is DrawerItem.Templates
+                            val deletedForeverStr = pluralStringResource(
+                                Res.plurals.snackbar_deleted_forever,
+                                selectedNotes.size,
+                                selectedNotes.size
+                            )
+                            val movedToTrashStr = pluralStringResource(
+                                Res.plurals.snackbar_moved_to_trash,
+                                selectedNotes.size,
+                                selectedNotes.size
+                            )
                             TooltipIconButton(
                                 tipText = stringResource(Res.string.delete),
                                 icon = if (deleteForever) Icons.Default.DeleteForever
@@ -255,10 +290,17 @@ fun MainScreenContent(
                                 colors = IconButtonDefaults.iconButtonColors()
                                     .copy(contentColor = if (deleteForever) MaterialTheme.colorScheme.error else LocalContentColor.current),
                                 onClick = {
-                                    if (deleteForever) // 永久删除
+                                    if (deleteForever) {
                                         viewModel.deleteNotes(selectedNotes.toSet())
-                                    else
+                                        scope.launch {
+                                            snackbarHostState.showSnackbar(deletedForeverStr)
+                                        }
+                                    } else {
                                         viewModel.moveNotesToTrash(selectedNotes.toSet())
+                                        scope.launch {
+                                            snackbarHostState.showSnackbar(movedToTrashStr)
+                                        }
+                                    }
                                     selectedNotes.clear()
                                 }
                             )
@@ -342,7 +384,8 @@ fun MainScreenContent(
                                 when (currentDrawerItem) {
                                     DrawerItem.Trash -> {
                                         val trashNotes by viewModel.trashNotes.collectAsStateWithLifecycle()
-                                        Text(text = "${stringResource(Res.string.total)}: ${trashNotes.second}")
+                                        if (trashNotes.second.isNotEmpty())
+                                            Text(text = "${stringResource(Res.string.total)}: ${trashNotes.second}")
                                     }
 
                                     else -> {}
@@ -380,6 +423,10 @@ fun MainScreenContent(
                                         expanded = showMenu,
                                         onDismissRequest = { showMenu = false }
                                     ) {
+                                        val deletedAllStr =
+                                            stringResource(Res.string.snackbar_deleted_all)
+                                        val restoredAllStr =
+                                            stringResource(Res.string.snackbar_restored_all)
                                         DropdownMenuItem(
                                             leadingIcon = {
                                                 Icon(
@@ -388,7 +435,13 @@ fun MainScreenContent(
                                                 )
                                             },
                                             text = { Text(text = stringResource(Res.string.restore_all)) },
-                                            onClick = { viewModel.restoreAllNotesFromTrash() })
+                                            onClick = {
+                                                showMenu = false
+                                                viewModel.restoreAllNotesFromTrash()
+                                                scope.launch {
+                                                    snackbarHostState.showSnackbar(restoredAllStr)
+                                                }
+                                            })
 
                                         DropdownMenuItem(
                                             leadingIcon = {
@@ -404,7 +457,13 @@ fun MainScreenContent(
                                                     color = MaterialTheme.colorScheme.onErrorContainer
                                                 )
                                             },
-                                            onClick = { viewModel.emptyTrash() })
+                                            onClick = {
+                                                showMenu = false
+                                                viewModel.emptyTrash()
+                                                scope.launch {
+                                                    snackbarHostState.showSnackbar(deletedAllStr)
+                                                }
+                                            })
                                     }
                                 }
                             },
@@ -419,6 +478,7 @@ fun MainScreenContent(
                 }
             }
         },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) { innerPadding ->
         val pagerState = rememberPagerState { 5 }

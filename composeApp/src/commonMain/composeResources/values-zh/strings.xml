@@ -177,4 +177,23 @@
     <string name="numbered_list">有序列表</string>
     <string name="bulleted_list">无序列表</string>
     <string name="task_list">任务列表</string>
+    <!-- Snackbar messages -->
+    <plurals name="snackbar_pinned">
+        <item quantity="one">已将%1$d个笔记置顶</item>
+        <item quantity="other">已将%1$d个笔记置顶</item>
+    </plurals>
+    <plurals name="snackbar_moved_to_trash">
+        <item quantity="one">已将%1$d个笔记移至回收站</item>
+        <item quantity="other">已将%1$d个笔记移至回收站</item>
+    </plurals>
+    <plurals name="snackbar_deleted_forever">
+        <item quantity="one">已彻底删除%1$d个笔记</item>
+        <item quantity="other">已彻底删除%1$d个笔记</item>
+    </plurals>
+    <plurals name="snackbar_restored">
+        <item quantity="one">已恢复%1$d个笔记</item>
+        <item quantity="other">已恢复%1$d个笔记</item>
+    </plurals>
+    <string name="snackbar_restored_all">已恢复回收站中的所有笔记</string>
+    <string name="snackbar_deleted_all">已清空回收站中的所有笔记</string>
 </resources>

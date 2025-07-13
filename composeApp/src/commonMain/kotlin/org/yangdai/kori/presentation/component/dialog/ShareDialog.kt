@@ -4,13 +4,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CopyAll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -39,6 +44,7 @@ fun ShareDialogPreview() {
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ShareDialog(
     noteEntity: NoteEntity,
@@ -56,6 +62,14 @@ fun ShareDialog(
         ) {
             Text(stringResource(Res.string.share_note_as))
             IconButton(
+                modifier = Modifier.minimumInteractiveComponentSize()
+                    .size(
+                        IconButtonDefaults.extraSmallContainerSize(
+                            widthOption = IconButtonDefaults.IconButtonWidthOption.Uniform
+                        )
+                    ),
+                shape = IconButtonDefaults.extraSmallSquareShape,
+                colors = IconButtonDefaults.iconButtonVibrantColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
                 onClick = {
                     scope.launch {
                         clipboard.setClipEntry(clipEntryOf(noteEntity.content))
@@ -63,6 +77,7 @@ fun ShareDialog(
                 }
             ) {
                 Icon(
+                    modifier = Modifier.size(IconButtonDefaults.extraSmallIconSize),
                     imageVector = Icons.Outlined.CopyAll,
                     contentDescription = null
                 )

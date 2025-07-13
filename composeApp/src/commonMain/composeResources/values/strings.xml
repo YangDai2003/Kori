@@ -180,4 +180,23 @@
     <string name="numbered_list">Numbered List</string>
     <string name="bulleted_list">Bulleted List</string>
     <string name="task_list">Task List</string>
+    <!-- Snackbar messages -->
+    <plurals name="snackbar_pinned">
+        <item quantity="one">%1$d note pinned</item>
+        <item quantity="other">%1$d notes pinned</item>
+    </plurals>
+    <plurals name="snackbar_moved_to_trash">
+        <item quantity="one">%1$d note moved to trash</item>
+        <item quantity="other">%1$d notes moved to trash</item>
+    </plurals>
+    <plurals name="snackbar_deleted_forever">
+        <item quantity="one">%1$d note deleted forever</item>
+        <item quantity="other">%1$d notes deleted forever</item>
+    </plurals>
+    <plurals name="snackbar_restored">
+        <item quantity="one">%1$d note restored</item>
+        <item quantity="other">%1$d notes restored</item>
+    </plurals>
+    <string name="snackbar_restored_all">All notes in trash restored</string>
+    <string name="snackbar_deleted_all">All notes in trash deleted</string>
 </resources>

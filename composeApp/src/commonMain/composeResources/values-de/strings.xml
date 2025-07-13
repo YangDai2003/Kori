@@ -177,4 +177,23 @@
     <string name="numbered_list">Nummerierte Liste</string>
     <string name="bulleted_list">Aufzählungsliste</string>
     <string name="task_list">Aufgabenliste</string>
+    <!-- Snackbar messages -->
+    <plurals name="snackbar_pinned">
+        <item quantity="one">%1$d Notiz angepinnt</item>
+        <item quantity="other">%1$d Notizen angepinnt</item>
+    </plurals>
+    <plurals name="snackbar_moved_to_trash">
+        <item quantity="one">%1$d Notiz in den Papierkorb verschoben</item>
+        <item quantity="other">%1$d Notizen in den Papierkorb verschoben</item>
+    </plurals>
+    <plurals name="snackbar_deleted_forever">
+        <item quantity="one">%1$d Notiz endgültig gelöscht</item>
+        <item quantity="other">%1$d Notizen endgültig gelöscht</item>
+    </plurals>
+    <plurals name="snackbar_restored">
+        <item quantity="one">%1$d Notiz wiederhergestellt</item>
+        <item quantity="other">%1$d Notizen wiederhergestellt</item>
+    </plurals>
+    <string name="snackbar_restored_all">Alle Notizen im Papierkorb wiederhergestellt</string>
+    <string name="snackbar_deleted_all">Alle Notizen im Papierkorb gelöscht</string>
 </resources>
