@@ -151,6 +151,10 @@
     <string name="language_description">选择应用语言</string>
     <string name="todo_completed_at">完成于 %1$s</string>
     <string name="todo_scheduled_at">计划 %1$s</string>
+    <string name="project_tag">项目标签</string>
+    <string name="context_tag">上下文标签</string>
+    <string name="completion_mark">完成标记</string>
+    <string name="priority_mark">优先级标记</string>
 
     <string name="undo">撤销</string>
     <string name="redo">恢复</string>

@@ -22,7 +22,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
+import kori.composeapp.generated.resources.completion_mark
+import kori.composeapp.generated.resources.context_tag
 import kori.composeapp.generated.resources.parentheses
+import kori.composeapp.generated.resources.priority_mark
+import kori.composeapp.generated.resources.project_tag
 import kori.composeapp.generated.resources.redo
 import kori.composeapp.generated.resources.templates
 import kori.composeapp.generated.resources.undo
@@ -70,21 +74,25 @@ fun TodoTextEditorRow(
 
     EditorRowSection {
         EditorRowButton(
+            hint = stringResource(Res.string.priority_mark),
             icon = painterResource(Res.drawable.parentheses),
             onClick = { textFieldState.edit { parentheses() } }
         )
 
         EditorRowButton(
+            hint = stringResource(Res.string.project_tag),
             icon = Icons.Outlined.Add,
             onClick = { textFieldState.edit { addBefore("+") } }
         )
 
         EditorRowButton(
+            hint = stringResource(Res.string.context_tag),
             icon = Icons.Outlined.AlternateEmail,
             onClick = { textFieldState.edit { addBefore("@") } }
         )
 
         EditorRowButton(
+            hint = stringResource(Res.string.completion_mark),
             icon = Icons.Outlined.CheckBox,
             onClick = { textFieldState.edit { toggleLineStart("x ") } }
         )

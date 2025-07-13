@@ -154,6 +154,10 @@
     <string name="language_description">Choose the app language</string>
     <string name="todo_completed_at">Completed at %1$s</string>
     <string name="todo_scheduled_at">Scheduled %1$s</string>
+    <string name="project_tag">Project Tag</string>
+    <string name="context_tag">Context Tag</string>
+    <string name="completion_mark">Completion Mark</string>
+    <string name="priority_mark">Priority Mark</string>
 
     <string name="undo">Undo</string>
     <string name="redo">Redo</string>
