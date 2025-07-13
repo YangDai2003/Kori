@@ -1,28 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">Kori</string>
     <string name="compose">Compose</string>
-    <string name="note_editing">Note editing</string>
-    <string name="undo">Undo</string>
-    <string name="redo">Redo</string>
-    <string name="bold">Bold</string>
-    <string name="italic">Italic</string>
-    <string name="underline">Underline</string>
-    <string name="strikethrough">Strikethrough</string>
-    <string name="highlight">Highlight</string>
-    <string name="scan">Scan</string>
-    <string name="preview">Preview</string>
-    <string name="code">Code</string>
-    <string name="quote">Quote</string>
-    <string name="math">Math</string>
-    <string name="horizontal_rule">Horizontal Rule</string>
-    <string name="task_list">Task List</string>
-    <string name="mermaid_diagram">Mermaid Diagram</string>
-    <string name="link">Link</string>
-    <string name="find">Find</string>
-    <string name="table">Table</string>
-    <string name="image">Image</string>
-    <string name="list">List</string>
-    <string name="templates">Templates</string>
 
     <string name="unlock_to_use">Unlock to use Kori</string>
     <string name="dynamic_only_android_12">Dynamic color</string>

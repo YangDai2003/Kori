@@ -22,15 +22,15 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.DriveFileMove
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.RestoreFromTrash
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SortByAlpha
 import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material.icons.outlined.RestoreFromTrash
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.SortByAlpha
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExpandedDockedSearchBar
@@ -47,6 +47,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.SearchBarDefaults.inputFieldColors
 import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
@@ -141,6 +142,11 @@ fun MainScreenContent(
     val scope = rememberCoroutineScope()
     val inputField = @Composable {
         SearchBarDefaults.InputField(
+            colors = inputFieldColors(
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceBright,
+            ),
             searchBarState = searchBarState,
             textFieldState = textFieldState,
             onSearch = {
@@ -159,7 +165,7 @@ fun MainScreenContent(
                             }
                         ) {
                             Icon(
-                                imageVector = Icons.Outlined.Search,
+                                imageVector = Icons.Default.Search,
                                 contentDescription = null
                             )
                         }
@@ -187,7 +193,7 @@ fun MainScreenContent(
                     else
                         TooltipIconButton(
                             tipText = stringResource(Res.string.sort_by),
-                            icon = Icons.Outlined.SortByAlpha,
+                            icon = Icons.Default.SortByAlpha,
                             onClick = { showSortDialog = true }
                         )
                 }
@@ -240,7 +246,7 @@ fun MainScreenContent(
                             if (currentDrawerItem is DrawerItem.Trash) {
                                 TooltipIconButton(
                                     tipText = stringResource(Res.string.restore),
-                                    icon = Icons.Outlined.RestoreFromTrash,
+                                    icon = Icons.Default.RestoreFromTrash,
                                     onClick = {
                                         viewModel.restoreNotesFromTrash(selectedNotes.toSet())
                                         selectedNotes.clear()
@@ -252,7 +258,7 @@ fun MainScreenContent(
                                 currentDrawerItem is DrawerItem.Trash || currentDrawerItem is DrawerItem.Templates
                             TooltipIconButton(
                                 tipText = stringResource(Res.string.delete),
-                                icon = if (deleteForever) Icons.Outlined.DeleteForever
+                                icon = if (deleteForever) Icons.Default.DeleteForever
                                 else Icons.Outlined.Delete,
                                 colors = IconButtonDefaults.iconButtonColors()
                                     .copy(contentColor = if (deleteForever) MaterialTheme.colorScheme.error else LocalContentColor.current),
@@ -274,105 +280,19 @@ fun MainScreenContent(
                     )
                 } else {
                     // 常规模式的顶部应用栏
-                    if (currentDrawerItem !is DrawerItem.AllNotes)
-                        TopAppBar(
-                            title = {
-                                when (currentDrawerItem) {
-                                    DrawerItem.AllNotes ->
-                                        PlatformStyleTopAppBarTitle(stringResource(Res.string.all_notes))
-
-                                    DrawerItem.Templates ->
-                                        PlatformStyleTopAppBarTitle(stringResource(Res.string.templates))
-
-                                    DrawerItem.Trash ->
-                                        PlatformStyleTopAppBarTitle(stringResource(Res.string.trash))
-
-                                    is DrawerItem.Folder ->
-                                        PlatformStyleTopAppBarTitle(currentDrawerItem.folder.name)
-
-                                    DrawerItem.Toolbox ->
-                                        PlatformStyleTopAppBarTitle(stringResource(Res.string.toolbox))
-                                }
-                            },
-                            actions = {
-                                if (currentDrawerItem !is DrawerItem.Toolbox)
-                                    TooltipIconButton(
-                                        tipText = stringResource(Res.string.sort_by),
-                                        icon = Icons.Outlined.SortByAlpha,
-                                        onClick = { showSortDialog = true }
-                                    )
-
-                                if (currentDrawerItem is DrawerItem.Trash) {
-                                    var showMenu by remember { mutableStateOf(false) }
-                                    IconButton(
-                                        modifier =
-                                            Modifier.minimumInteractiveComponentSize()
-                                                .size(
-                                                    IconButtonDefaults.smallContainerSize(
-                                                        IconButtonDefaults.IconButtonWidthOption.Narrow
-                                                    )
-                                                ),
-                                        colors = IconButtonDefaults.iconButtonVibrantColors(),
-                                        shape = IconButtonDefaults.smallRoundShape,
-                                        onClick = { showMenu = !showMenu }
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.MoreVert,
-                                            contentDescription = null
-                                        )
-                                    }
-
-                                    DropdownMenu(
-                                        expanded = showMenu,
-                                        onDismissRequest = { showMenu = false }
-                                    ) {
-                                        DropdownMenuItem(
-                                            leadingIcon = {
-                                                Icon(
-                                                    imageVector = Icons.Outlined.RestoreFromTrash,
-                                                    contentDescription = null
-                                                )
-                                            },
-                                            text = { Text(text = stringResource(Res.string.restore_all)) },
-                                            onClick = { viewModel.restoreAllNotesFromTrash() })
-
-                                        DropdownMenuItem(
-                                            leadingIcon = {
-                                                Icon(
-                                                    imageVector = Icons.Outlined.DeleteForever,
-                                                    tint = MaterialTheme.colorScheme.error,
-                                                    contentDescription = null
-                                                )
-                                            },
-                                            text = {
-                                                Text(
-                                                    text = stringResource(Res.string.delete_all),
-                                                    color = MaterialTheme.colorScheme.onErrorContainer
-                                                )
-                                            },
-                                            onClick = { viewModel.emptyTrash() })
-                                    }
-                                }
-                            },
-                            expandedHeight = 56.dp,
-                            navigationIcon = navigationIcon,
-                            windowInsets = if (isLargeScreen)
-                                TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Top + WindowInsetsSides.End)
-                            else TopAppBarDefaults.windowInsets,
-                            colors = TopAppBarDefaults.topAppBarColors()
-                                .copy(containerColor = Color.Transparent)
-                        )
-                    else {
+                    if (currentDrawerItem is DrawerItem.AllNotes) {
                         val searchHistorySet by viewModel.searchHistorySet.collectAsStateWithLifecycle()
                         TopSearchBar(
                             modifier = Modifier.padding(horizontal = 16.dp),
                             state = searchBarState,
                             inputField = inputField,
+                            colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceBright),
                             windowInsets = SearchBarDefaults.windowInsets.only(WindowInsetsSides.Top)
                         )
                         ExpandedDockedSearchBar(
                             state = searchBarState,
                             inputField = inputField,
+                            colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceBright),
                             shadowElevation = 4.dp
                         ) {
                             if (searchHistorySet.isEmpty()) return@ExpandedDockedSearchBar
@@ -421,7 +341,94 @@ fun MainScreenContent(
                                 }
                             }
                         }
-                    }
+                    } else
+                        TopAppBar(
+                            title = {
+                                when (currentDrawerItem) {
+                                    DrawerItem.AllNotes ->
+                                        PlatformStyleTopAppBarTitle(stringResource(Res.string.all_notes))
+
+                                    DrawerItem.Templates ->
+                                        PlatformStyleTopAppBarTitle(stringResource(Res.string.templates))
+
+                                    DrawerItem.Trash ->
+                                        PlatformStyleTopAppBarTitle(stringResource(Res.string.trash))
+
+                                    is DrawerItem.Folder ->
+                                        PlatformStyleTopAppBarTitle(currentDrawerItem.folder.name)
+
+                                    DrawerItem.Toolbox ->
+                                        PlatformStyleTopAppBarTitle(stringResource(Res.string.toolbox))
+                                }
+                            },
+                            actions = {
+                                if (currentDrawerItem !is DrawerItem.Toolbox)
+                                    TooltipIconButton(
+                                        tipText = stringResource(Res.string.sort_by),
+                                        icon = Icons.Default.SortByAlpha,
+                                        onClick = { showSortDialog = true }
+                                    )
+
+                                if (currentDrawerItem is DrawerItem.Trash) {
+                                    var showMenu by remember { mutableStateOf(false) }
+                                    IconButton(
+                                        modifier =
+                                            Modifier.minimumInteractiveComponentSize()
+                                                .size(
+                                                    IconButtonDefaults.smallContainerSize(
+                                                        IconButtonDefaults.IconButtonWidthOption.Narrow
+                                                    )
+                                                ),
+                                        colors = IconButtonDefaults.iconButtonVibrantColors(),
+                                        shape = IconButtonDefaults.smallRoundShape,
+                                        onClick = { showMenu = !showMenu }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.MoreVert,
+                                            contentDescription = null
+                                        )
+                                    }
+
+                                    DropdownMenu(
+                                        expanded = showMenu,
+                                        onDismissRequest = { showMenu = false }
+                                    ) {
+                                        DropdownMenuItem(
+                                            leadingIcon = {
+                                                Icon(
+                                                    imageVector = Icons.Default.RestoreFromTrash,
+                                                    contentDescription = null
+                                                )
+                                            },
+                                            text = { Text(text = stringResource(Res.string.restore_all)) },
+                                            onClick = { viewModel.restoreAllNotesFromTrash() })
+
+                                        DropdownMenuItem(
+                                            leadingIcon = {
+                                                Icon(
+                                                    imageVector = Icons.Default.DeleteForever,
+                                                    tint = MaterialTheme.colorScheme.error,
+                                                    contentDescription = null
+                                                )
+                                            },
+                                            text = {
+                                                Text(
+                                                    text = stringResource(Res.string.delete_all),
+                                                    color = MaterialTheme.colorScheme.onErrorContainer
+                                                )
+                                            },
+                                            onClick = { viewModel.emptyTrash() })
+                                    }
+                                }
+                            },
+                            expandedHeight = 56.dp,
+                            navigationIcon = navigationIcon,
+                            windowInsets = if (isLargeScreen)
+                                TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Top + WindowInsetsSides.End)
+                            else TopAppBarDefaults.windowInsets,
+                            colors = TopAppBarDefaults.topAppBarColors()
+                                .copy(containerColor = Color.Transparent)
+                        )
                 }
             }
         },
@@ -582,7 +589,7 @@ fun MainScreenContent(
                     ) {
                         val imageVector by remember {
                             derivedStateOf {
-                                if (checkedProgress > 0.5f) Icons.Outlined.Close else Icons.Outlined.Create
+                                if (checkedProgress > 0.5f) Icons.Default.Close else Icons.Outlined.Create
                             }
                         }
                         Icon(

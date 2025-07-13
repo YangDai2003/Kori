@@ -20,6 +20,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kori.composeapp.generated.resources.Res
+import kori.composeapp.generated.resources.indent_decrease
+import kori.composeapp.generated.resources.indent_increase
+import kori.composeapp.generated.resources.redo
+import kori.composeapp.generated.resources.templates
+import kori.composeapp.generated.resources.undo
+import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.EditorRowButton
 import org.yangdai.kori.presentation.component.note.EditorRowSection
@@ -43,14 +50,16 @@ fun PlainTextEditorRow(
 
     EditorRowSection {
         EditorRowButton(
-            tipText = "$platformKeyboardShortCut + Z",
+            hint = stringResource(Res.string.undo),
+            actionText = "$platformKeyboardShortCut + Z",
             icon = Icons.AutoMirrored.Outlined.Undo,
             enabled = textFieldState.undoState.canUndo,
             onClick = { textFieldState.undoState.undo() }
         )
 
         EditorRowButton(
-            tipText = "$platformKeyboardShortCut + Y",
+            hint = stringResource(Res.string.redo),
+            actionText = "$platformKeyboardShortCut + Y",
             icon = Icons.AutoMirrored.Outlined.Redo,
             enabled = textFieldState.undoState.canRedo,
             onClick = { textFieldState.undoState.redo() }
@@ -59,10 +68,12 @@ fun PlainTextEditorRow(
 
     EditorRowSection {
         EditorRowButton(
+            hint = stringResource(Res.string.indent_increase),
             icon = Icons.AutoMirrored.Outlined.FormatIndentIncrease,
             onClick = { textFieldState.edit { tab() } }
         )
         EditorRowButton(
+            hint = stringResource(Res.string.indent_decrease),
             icon = Icons.AutoMirrored.Outlined.FormatIndentDecrease,
             onClick = { textFieldState.edit { unTab() } }
         )
@@ -71,6 +82,7 @@ fun PlainTextEditorRow(
     if (!isTemplate)
         EditorRowSection {
             EditorRowButton(
+                hint = stringResource(Res.string.templates),
                 icon = Icons.AutoMirrored.Outlined.TextSnippet,
                 onClick = { onEditorRowAction(EditorRowAction.Templates) }
             )

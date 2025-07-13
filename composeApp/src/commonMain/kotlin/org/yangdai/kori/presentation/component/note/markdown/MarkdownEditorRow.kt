@@ -51,14 +51,37 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
+import kori.composeapp.generated.resources.bold
+import kori.composeapp.generated.resources.bulleted_list
+import kori.composeapp.generated.resources.code
+import kori.composeapp.generated.resources.code_block
 import kori.composeapp.generated.resources.format_h1
 import kori.composeapp.generated.resources.format_h2
 import kori.composeapp.generated.resources.format_h3
 import kori.composeapp.generated.resources.format_h4
 import kori.composeapp.generated.resources.format_h5
 import kori.composeapp.generated.resources.format_h6
+import kori.composeapp.generated.resources.heading
+import kori.composeapp.generated.resources.highlight
+import kori.composeapp.generated.resources.horizontal_rule
+import kori.composeapp.generated.resources.indent_decrease
+import kori.composeapp.generated.resources.indent_increase
+import kori.composeapp.generated.resources.italic
+import kori.composeapp.generated.resources.link
+import kori.composeapp.generated.resources.math
+import kori.composeapp.generated.resources.math_block
+import kori.composeapp.generated.resources.mermaid_diagram
+import kori.composeapp.generated.resources.numbered_list
 import kori.composeapp.generated.resources.parentheses
+import kori.composeapp.generated.resources.quote
+import kori.composeapp.generated.resources.redo
+import kori.composeapp.generated.resources.strikethrough
+import kori.composeapp.generated.resources.task_list
+import kori.composeapp.generated.resources.templates
+import kori.composeapp.generated.resources.underline
+import kori.composeapp.generated.resources.undo
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.EditorRowButton
 import org.yangdai.kori.presentation.component.note.EditorRowSection
@@ -103,59 +126,59 @@ fun MarkdownEditorRow(
 
     EditorRowSection {
         EditorRowButton(
-            tipText = "$platformKeyboardShortCut + Z",
+            hint = stringResource(Res.string.undo),
+            actionText = "$platformKeyboardShortCut + Z",
             icon = Icons.AutoMirrored.Outlined.Undo,
             enabled = textFieldState.undoState.canUndo,
             onClick = { textFieldState.undoState.undo() }
         )
         EditorRowButton(
-            tipText = "$platformKeyboardShortCut + Y",
+            hint = stringResource(Res.string.redo),
+            actionText = "$platformKeyboardShortCut + Y",
             icon = Icons.AutoMirrored.Outlined.Redo,
             enabled = textFieldState.undoState.canRedo,
             onClick = { textFieldState.undoState.redo() }
         )
     }
 
-
     var isHeadingSectionExpanded by rememberSaveable { mutableStateOf(false) }
-
     EditorRowSection {
         EditorRowButton(
+            hint = stringResource(Res.string.heading),
             icon = Icons.Outlined.Title,
             onClick = { isHeadingSectionExpanded = !isHeadingSectionExpanded }
         )
     }
 
-
     AnimatedVisibility(visible = isHeadingSectionExpanded) {
         EditorRowSection {
             EditorRowButton(
-                tipText = "Ctrl + 1",
+                actionText = "Ctrl + 1",
                 icon = painterResource(Res.drawable.format_h1),
                 onClick = { textFieldState.edit { header(1) } }
             )
             EditorRowButton(
-                tipText = "Ctrl + 2",
+                actionText = "Ctrl + 2",
                 icon = painterResource(Res.drawable.format_h2),
                 onClick = { textFieldState.edit { header(2) } }
             )
             EditorRowButton(
-                tipText = "Ctrl + 3",
+                actionText = "Ctrl + 3",
                 icon = painterResource(Res.drawable.format_h3),
                 onClick = { textFieldState.edit { header(3) } }
             )
             EditorRowButton(
-                tipText = "Ctrl + 4",
+                actionText = "Ctrl + 4",
                 icon = painterResource(Res.drawable.format_h4),
                 onClick = { textFieldState.edit { header(4) } }
             )
             EditorRowButton(
-                tipText = "Ctrl + 5",
+                actionText = "Ctrl + 5",
                 icon = painterResource(Res.drawable.format_h5),
                 onClick = { textFieldState.edit { header(5) } }
             )
             EditorRowButton(
-                tipText = "Ctrl + 6",
+                actionText = "Ctrl + 6",
                 icon = painterResource(Res.drawable.format_h6),
                 onClick = { textFieldState.edit { header(6) } }
             )
@@ -164,31 +187,36 @@ fun MarkdownEditorRow(
 
     EditorRowSection {
         EditorRowButton(
-            tipText = "Ctrl + B",
+            hint = stringResource(Res.string.bold),
+            actionText = "Ctrl + B",
             icon = Icons.Outlined.FormatBold,
             onClick = { textFieldState.edit { bold() } }
         )
 
         EditorRowButton(
-            tipText = "Ctrl + I",
+            hint = stringResource(Res.string.italic),
+            actionText = "Ctrl + I",
             icon = Icons.Outlined.FormatItalic,
             onClick = { textFieldState.edit { italic() } }
         )
 
         EditorRowButton(
-            tipText = "Ctrl + U",
+            hint = stringResource(Res.string.underline),
+            actionText = "Ctrl + U",
             icon = Icons.Outlined.FormatUnderlined,
             onClick = { textFieldState.edit { underline() } }
         )
 
         EditorRowButton(
-            tipText = "Ctrl + D",
+            hint = stringResource(Res.string.strikethrough),
+            actionText = "Ctrl + D",
             icon = Icons.Outlined.StrikethroughS,
             onClick = { textFieldState.edit { strikeThrough() } }
         )
 
         EditorRowButton(
-            tipText = "Ctrl + H",
+            hint = stringResource(Res.string.highlight),
+            actionText = "Ctrl + H",
             icon = Icons.Outlined.FormatPaint,
             onClick = { textFieldState.edit { highlight() } }
         )
@@ -196,11 +224,13 @@ fun MarkdownEditorRow(
 
     EditorRowSection {
         EditorRowButton(
+            hint = stringResource(Res.string.indent_increase),
             icon = Icons.AutoMirrored.Outlined.FormatIndentIncrease,
             onClick = { textFieldState.edit { tab() } }
         )
 
         EditorRowButton(
+            hint = stringResource(Res.string.indent_decrease),
             icon = Icons.AutoMirrored.Outlined.FormatIndentDecrease,
             onClick = { textFieldState.edit { unTab() } }
         )
@@ -208,37 +238,43 @@ fun MarkdownEditorRow(
 
     EditorRowSection {
         EditorRowButton(
-            tipText = "Ctrl + E",
+            hint = stringResource(Res.string.code),
+            actionText = "Ctrl + E",
             icon = Icons.Outlined.Code,
             onClick = { textFieldState.edit { inlineCode() } }
         )
 
         EditorRowButton(
-            tipText = "Ctrl + Shift + E",
+            hint = stringResource(Res.string.code_block),
+            actionText = "Ctrl + Shift + E",
             icon = Icons.Outlined.IntegrationInstructions,
             onClick = { textFieldState.edit { codeBlock() } }
         )
 
         EditorRowButton(
-            tipText = "Ctrl + M",
+            hint = stringResource(Res.string.math),
+            actionText = "Ctrl + M",
             icon = Icons.Outlined.AttachMoney,
             onClick = { textFieldState.edit { inlineMath() } }
         )
 
         EditorRowButton(
-            tipText = "Ctrl + Shift + M",
+            hint = stringResource(Res.string.math_block),
+            actionText = "Ctrl + Shift + M",
             icon = Icons.Outlined.Functions,
             onClick = { textFieldState.edit { mathBlock() } }
         )
 
         EditorRowButton(
-            tipText = "Ctrl + L",
+            hint = stringResource(Res.string.link),
+            actionText = "Ctrl + L",
             icon = Icons.Outlined.Link,
             onClick = { textFieldState.edit { link() } }
         )
 
         EditorRowButton(
-            tipText = "Ctrl + Q",
+            hint = stringResource(Res.string.quote),
+            actionText = "Ctrl + Q",
             icon = Icons.Outlined.FormatQuote,
             onClick = { textFieldState.edit { quote() } }
         )
@@ -247,41 +283,40 @@ fun MarkdownEditorRow(
     var isAlertSectionExpanded by rememberSaveable { mutableStateOf(false) }
     EditorRowSection {
         EditorRowButton(
-            tipText = "Github Alert",
+            hint = "Github Alert",
             icon = Icons.AutoMirrored.Outlined.Label,
             onClick = { isAlertSectionExpanded = !isAlertSectionExpanded }
         )
     }
 
-
     AnimatedVisibility(visible = isAlertSectionExpanded) {
         EditorRowSection {
             EditorRowButton(
-                tipText = "NOTE",
+                hint = "NOTE",
                 icon = Icons.Outlined.Info,
                 onClick = { textFieldState.edit { alert("NOTE") } }
             )
 
             EditorRowButton(
-                tipText = "TIP",
+                hint = "TIP",
                 icon = Icons.Outlined.Lightbulb,
                 onClick = { textFieldState.edit { alert("TIP") } }
             )
 
             EditorRowButton(
-                tipText = "IMPORTANT",
+                hint = "IMPORTANT",
                 icon = Icons.AutoMirrored.Outlined.Announcement,
                 onClick = { textFieldState.edit { alert("IMPORTANT") } }
             )
 
             EditorRowButton(
-                tipText = "WARNING",
+                hint = "WARNING",
                 icon = Icons.Outlined.WarningAmber,
                 onClick = { textFieldState.edit { alert("WARNING") } }
             )
 
             EditorRowButton(
-                tipText = "CAUTION",
+                hint = "CAUTION",
                 icon = Icons.Outlined.ReportGmailerrorred,
                 onClick = { textFieldState.edit { alert("CAUTION") } }
             )
@@ -290,22 +325,24 @@ fun MarkdownEditorRow(
 
     EditorRowSection {
         EditorRowButton(
-            tipText = "Ctrl + Shift + B",
+            hint = stringResource(Res.string.bulleted_list),
+            actionText = "Ctrl + Shift + B",
             icon = Icons.AutoMirrored.Outlined.FormatListBulleted,
             onClick = { textFieldState.edit { bulletList() } }
         )
         EditorRowButton(
-            tipText = "Ctrl + Shift + N",
+            hint = stringResource(Res.string.numbered_list),
+            actionText = "Ctrl + Shift + N",
             icon = Icons.Outlined.FormatListNumbered,
             onClick = { textFieldState.edit { numberedList() } }
         )
         EditorRowButton(
-            tipText = "Ctrl + Shift + T",
+            hint = stringResource(Res.string.task_list),
+            actionText = "Ctrl + Shift + T",
             icon = Icons.Outlined.Checklist,
             onClick = { textFieldState.edit { taskList() } }
         )
     }
-
 
     EditorRowSection {
         EditorRowButton(
@@ -324,13 +361,15 @@ fun MarkdownEditorRow(
         )
 
         EditorRowButton(
-            tipText = "Ctrl + R",
+            hint = stringResource(Res.string.horizontal_rule),
+            actionText = "Ctrl + R",
             icon = Icons.Outlined.HorizontalRule,
             onClick = { textFieldState.edit { horizontalRule() } }
         )
 
         EditorRowButton(
-            tipText = "Ctrl + Shift + D",
+            hint = stringResource(Res.string.mermaid_diagram),
+            actionText = "Ctrl + Shift + D",
             icon = Icons.Outlined.AddChart,
             onClick = { textFieldState.edit { mermaidDiagram() } }
         )
@@ -339,6 +378,7 @@ fun MarkdownEditorRow(
     if (!isTemplate)
         EditorRowSection {
             EditorRowButton(
+                hint = stringResource(Res.string.templates),
                 icon = Icons.AutoMirrored.Outlined.TextSnippet,
                 onClick = { onEditorRowAction(EditorRowAction.Templates) }
             )

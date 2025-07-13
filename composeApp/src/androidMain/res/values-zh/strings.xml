@@ -1,32 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="note_editing">笔记编辑</string>
     <string name="compose">撰写</string>
-    <string name="link">链接</string>
-    <string name="table">表格</string>
-    <string name="undo">撤销</string>
-    <string name="redo">恢复</string>
-    <string name="bold">粗体</string>
-    <string name="italic">斜体</string>
-    <string name="underline">下划线</string>
-    <string name="strikethrough">删除线</string>
-    <string name="highlight">高亮</string>
-    <string name="scan">扫描</string>
-    <string name="preview">预览</string>
-    <string name="code">代码</string>
-    <string name="quote">引用</string>
-    <string name="math">数学</string>
-    <string name="horizontal_rule">分割线</string>
-    <string name="task_list">任务列表</string>
-    <string name="mermaid_diagram">Mermaid 图表</string>
-    <string name="image">图片</string>
-    <string name="list">列表</string>
-    <string name="find">查找</string>
-    <string name="templates">模板</string>
 
     <string name="unlock_to_use">解锁以使用 Kori</string>
     <string name="dynamic_only_android_12">动态颜色</string>
-
     <string name="screen_protection_detail">开启后，应用内容无法被截屏或录制，在后台应用列表中也不会显示内容。</string>
     <string name="screen_protection">屏幕隐私保护</string>
     <string name="biometric">使用生物识别解锁</string>

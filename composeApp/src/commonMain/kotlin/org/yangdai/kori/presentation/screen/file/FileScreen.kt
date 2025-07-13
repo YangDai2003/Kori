@@ -34,15 +34,15 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.MenuBook
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.EditNote
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.IosShare
 import androidx.compose.material.icons.outlined.Print
 import androidx.compose.material.icons.outlined.Save
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.SearchOff
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.SwapHorizontalCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -118,8 +118,8 @@ import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
 import org.yangdai.kori.presentation.component.dialog.ShareDialog
 import org.yangdai.kori.presentation.component.note.AdaptiveEditor
-import org.yangdai.kori.presentation.component.note.AdaptiveView
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorRow
+import org.yangdai.kori.presentation.component.note.AdaptiveView
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
@@ -306,15 +306,15 @@ fun FileScreen(
                     if (!isReadView)
                         TooltipIconButton(
                             tipText = "Ctrl + F",
-                            icon = if (isSearching) Icons.Outlined.SearchOff
-                            else Icons.Outlined.Search,
+                            icon = if (isSearching) Icons.Default.SearchOff
+                            else Icons.Default.Search,
                             onClick = { isSearching = !isSearching }
                         )
 
                     TooltipIconButton(
                         tipText = "Ctrl + P",
-                        icon = if (isReadView) Icons.Outlined.EditNote
-                        else Icons.AutoMirrored.Outlined.MenuBook,
+                        icon = if (isReadView) Icons.Default.EditNote
+                        else Icons.AutoMirrored.Filled.MenuBook,
                         onClick = { isReadView = !isReadView }
                     )
 

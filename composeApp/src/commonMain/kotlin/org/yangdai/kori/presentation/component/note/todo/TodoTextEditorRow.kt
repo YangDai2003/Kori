@@ -23,7 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.parentheses
+import kori.composeapp.generated.resources.redo
+import kori.composeapp.generated.resources.templates
+import kori.composeapp.generated.resources.undo
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.EditorRowButton
 import org.yangdai.kori.presentation.component.note.EditorRowSection
@@ -48,14 +52,16 @@ fun TodoTextEditorRow(
 
     EditorRowSection {
         EditorRowButton(
-            tipText = "$platformKeyboardShortCut + Z",
+            hint = stringResource(Res.string.undo),
+            actionText = "$platformKeyboardShortCut + Z",
             icon = Icons.AutoMirrored.Outlined.Undo,
             enabled = textFieldState.undoState.canUndo,
             onClick = { textFieldState.undoState.undo() }
         )
 
         EditorRowButton(
-            tipText = "$platformKeyboardShortCut + Y",
+            hint = stringResource(Res.string.redo),
+            actionText = "$platformKeyboardShortCut + Y",
             icon = Icons.AutoMirrored.Outlined.Redo,
             enabled = textFieldState.undoState.canRedo,
             onClick = { textFieldState.undoState.redo() }
@@ -87,6 +93,7 @@ fun TodoTextEditorRow(
     if (!isTemplate)
         EditorRowSection {
             EditorRowButton(
+                hint = stringResource(Res.string.templates),
                 icon = Icons.AutoMirrored.Outlined.TextSnippet,
                 onClick = { onEditorRowAction(EditorRowAction.Templates) }
             )

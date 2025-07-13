@@ -94,7 +94,7 @@
     <string name="reading_view">Reading view</string>
     <string name="line_numbers">Line numbers</string>
     <string name="lint">Lint</string>
-    <string name="lint_description" >When enabled, the Markdown text format and syntax will be checked in Standard mode to see if they meet the specification, and errors will be marked with red wavy lines.</string>
+    <string name="lint_description">When enabled, the Markdown text format and syntax will be checked in Standard mode to see if they meet the specification, and errors will be marked with red wavy lines.</string>
 
     <string name="date_format">Date format</string>
     <string name="time_format">Time format</string>
@@ -153,4 +153,26 @@
     <string name="language_description">Choose the app language</string>
     <string name="todo_completed_at">Completed at %1$s</string>
     <string name="todo_scheduled_at">Scheduled %1$s</string>
+
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
+    <string name="bold">Bold</string>
+    <string name="italic">Italic</string>
+    <string name="underline">Underline</string>
+    <string name="strikethrough">Strikethrough</string>
+    <string name="highlight">Highlight</string>
+    <string name="horizontal_rule">Horizontal Rule</string>
+    <string name="mermaid_diagram">Mermaid Diagram</string>
+    <string name="heading">Heading</string>
+    <string name="link">Link</string>
+    <string name="code">Inline Code</string>
+    <string name="quote">Quote</string>
+    <string name="math">Inline Math</string>
+    <string name="code_block">Code Block</string>
+    <string name="math_block">Mathe Block</string>
+    <string name="indent_increase">Increase Indent</string>
+    <string name="indent_decrease">Decrease Indent</string>
+    <string name="numbered_list">Numbered List</string>
+    <string name="bulleted_list">Bulleted List</string>
+    <string name="task_list">Task List</string>
 </resources>

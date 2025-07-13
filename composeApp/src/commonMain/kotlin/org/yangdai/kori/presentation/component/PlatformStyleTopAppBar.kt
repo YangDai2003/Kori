@@ -7,8 +7,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.MediumTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MediumFlexibleTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
@@ -29,7 +29,7 @@ import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.isDesktop
 
 enum class PlatformTopAppBarType {
-    SmallPinned, CenteredPinned, Large, Medium
+    SmallPinned, CenteredPinned, Flexible
 }
 
 data class PlatformStyleTopAppBarState @OptIn(ExperimentalMaterial3Api::class) constructor(
@@ -45,12 +45,7 @@ fun rememberPlatformStyleTopAppBarState(
     val type = when {
         currentPlatformInfo.isDesktop() || windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) -> PlatformTopAppBarType.SmallPinned
         currentPlatformInfo.operatingSystem == OS.IOS -> PlatformTopAppBarType.CenteredPinned
-        else -> {
-            when {
-                windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_EXPANDED_LOWER_BOUND) -> PlatformTopAppBarType.Large
-                else -> PlatformTopAppBarType.Medium
-            }
-        }
+        else -> PlatformTopAppBarType.Flexible
     }
     val scrollBehavior = when (type) {
         PlatformTopAppBarType.SmallPinned, PlatformTopAppBarType.CenteredPinned -> TopAppBarDefaults.pinnedScrollBehavior()
@@ -61,14 +56,14 @@ fun rememberPlatformStyleTopAppBarState(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun PlatformStyleTopAppBar(
     state: PlatformStyleTopAppBarState,
-    title: @Composable (() -> Unit),
+    title: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    navigationIcon: @Composable (() -> Unit) = {},
-    actions: @Composable (RowScope.() -> Unit) = {},
+    navigationIcon: @Composable () -> Unit = {},
+    actions: @Composable RowScope.() -> Unit = {},
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
 ) = when (state.type) {
@@ -94,17 +89,7 @@ fun PlatformStyleTopAppBar(
         scrollBehavior = state.scrollBehavior
     )
 
-    PlatformTopAppBarType.Large -> LargeTopAppBar(
-        title = title,
-        modifier = modifier,
-        navigationIcon = navigationIcon,
-        actions = actions,
-        windowInsets = windowInsets,
-        colors = colors,
-        scrollBehavior = state.scrollBehavior
-    )
-
-    PlatformTopAppBarType.Medium -> MediumTopAppBar(
+    PlatformTopAppBarType.Flexible -> MediumFlexibleTopAppBar(
         title = title,
         modifier = modifier,
         navigationIcon = navigationIcon,

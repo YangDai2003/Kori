@@ -1,32 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="note_editing">Notizbearbeitung</string>
     <string name="compose">Erstellen</string>
-    <string name="link">Link</string>
-    <string name="table">Tabelle</string>
-    <string name="undo">Rückgängig</string>
-    <string name="redo">Wiederholen</string>
-    <string name="bold">Fett</string>
-    <string name="italic">Kursiv</string>
-    <string name="underline">Unterstrichen</string>
-    <string name="strikethrough">Durchgestrichen</string>
-    <string name="highlight">Markieren</string>
-    <string name="scan">Scannen</string>
-    <string name="preview">Vorschau</string>
-    <string name="code">Code</string>
-    <string name="quote">Zitat</string>
-    <string name="math">Mathe</string>
-    <string name="horizontal_rule">Horizontale Linie</string>
-    <string name="task_list">Aufgabenliste</string>
-    <string name="mermaid_diagram">Mermaid-Diagramm</string>
-    <string name="image">Foto</string>
-    <string name="list">Liste</string>
-    <string name="find">Finden</string>
-    <string name="templates">Vorlagen</string>
 
     <string name="unlock_to_use">Freischalten, um Kori zu verwenden</string>
     <string name="dynamic_only_android_12">Dynamische Farbe</string>
-
     <string name="screen_protection">Bildschirmschutz</string>
     <string name="screen_protection_detail">Wenn diese Funktion aktiviert ist, können App-Inhalte nicht erfasst oder aufgezeichnet werden und die Inhalte werden nicht in der App-Liste im Hintergrund angezeigt.</string>
     <string name="biometric">Entsperren mit Biometrie</string>

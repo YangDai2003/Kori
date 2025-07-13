@@ -33,6 +33,11 @@ import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.yangdai.kori.OS
@@ -124,16 +129,26 @@ fun EditorRowSection(content: @Composable RowScope.() -> Unit) =
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditorRowButton(
-    tipText: String? = null,
     icon: ImageVector,
+    hint: String = "",
+    actionText: String = "",
     enabled: Boolean = true,
     onClick: () -> Unit
 ) = TooltipBox(
     positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
     tooltip = {
-        if (tipText == null) return@TooltipBox
+        if (actionText.isEmpty() && hint.isEmpty()) return@TooltipBox
         PlainTooltip(
-            content = { Text(tipText) }
+            content = {
+                val annotatedString = buildAnnotatedString {
+                    withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                        append(hint)
+                    }
+                    if (hint.isNotEmpty() && actionText.isNotEmpty()) append("\n")
+                    append(actionText)
+                }
+                Text(annotatedString, textAlign = TextAlign.Center)
+            }
         )
     },
     state = rememberTooltipState(),
@@ -156,16 +171,26 @@ fun EditorRowButton(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditorRowButton(
-    tipText: String? = null,
     icon: Painter,
+    hint: String = "",
+    actionText: String = "",
     enabled: Boolean = true,
     onClick: () -> Unit
 ) = TooltipBox(
     positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
     tooltip = {
-        if (tipText == null) return@TooltipBox
+        if (actionText.isEmpty() && hint.isEmpty()) return@TooltipBox
         PlainTooltip(
-            content = { Text(tipText) }
+            content = {
+                val annotatedString = buildAnnotatedString {
+                    withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                        append(hint)
+                    }
+                    if (hint.isNotEmpty() && actionText.isNotEmpty()) append("\n")
+                    append(actionText)
+                }
+                Text(annotatedString, textAlign = TextAlign.Center)
+            }
         )
     },
     state = rememberTooltipState(),

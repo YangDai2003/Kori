@@ -150,4 +150,26 @@
     <string name="language_description">Wählen Sie die App-Sprache</string>
     <string name="todo_completed_at">Erledigt am %1$s</string>
     <string name="todo_scheduled_at">Geplant %1$s</string>
+
+    <string name="undo">Rückgängig</string>
+    <string name="redo">Wiederholen</string>
+    <string name="bold">Fett</string>
+    <string name="italic">Kursiv</string>
+    <string name="underline">Unterstrichen</string>
+    <string name="strikethrough">Durchgestrichen</string>
+    <string name="highlight">Markieren</string>
+    <string name="horizontal_rule">Horizontale Linie</string>
+    <string name="mermaid_diagram">Mermaid Diagramm</string>
+    <string name="heading">Überschrift</string>
+    <string name="link">Link</string>
+    <string name="code">Inline Code</string>
+    <string name="quote">Zitat</string>
+    <string name="math">Inline Mathe</string>
+    <string name="code_block">Code Block</string>
+    <string name="math_block">Mathe Block</string>
+    <string name="indent_increase">Einzug vergrößern</string>
+    <string name="indent_decrease">Einzug verkleinern</string>
+    <string name="numbered_list">Nummerierte Liste</string>
+    <string name="bulleted_list">Aufzählungsliste</string>
+    <string name="task_list">Aufgabenliste</string>
 </resources>

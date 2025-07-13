@@ -33,8 +33,8 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.SortByAlpha
 import androidx.compose.material.icons.outlined.CreateNewFolder
-import androidx.compose.material.icons.outlined.SortByAlpha
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -127,7 +127,7 @@ fun FoldersScreen(
                     actions = {
                         TooltipIconButton(
                             tipText = stringResource(Res.string.sort_by),
-                            icon = Icons.Outlined.SortByAlpha,
+                            icon = Icons.Default.SortByAlpha,
                             onClick = { showSortDialog = true },
                         )
                     },
