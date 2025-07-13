@@ -102,6 +102,7 @@ import kori.composeapp.generated.resources.sort_by
 import kori.composeapp.generated.resources.templates
 import kori.composeapp.generated.resources.todo_text
 import kori.composeapp.generated.resources.toolbox
+import kori.composeapp.generated.resources.total
 import kori.composeapp.generated.resources.trash
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -327,21 +328,24 @@ fun MainScreenContent(
                     } else
                         TopAppBar(
                             title = {
+                                PlatformStyleTopAppBarTitle(
+                                    when (currentDrawerItem) {
+                                        DrawerItem.AllNotes -> stringResource(Res.string.all_notes)
+                                        DrawerItem.Templates -> stringResource(Res.string.templates)
+                                        DrawerItem.Trash -> stringResource(Res.string.trash)
+                                        is DrawerItem.Folder -> currentDrawerItem.folder.name
+                                        DrawerItem.Toolbox -> stringResource(Res.string.toolbox)
+                                    }
+                                )
+                            },
+                            subtitle = {
                                 when (currentDrawerItem) {
-                                    DrawerItem.AllNotes ->
-                                        PlatformStyleTopAppBarTitle(stringResource(Res.string.all_notes))
+                                    DrawerItem.Trash -> {
+                                        val trashNotes by viewModel.trashNotes.collectAsStateWithLifecycle()
+                                        Text(text = "${stringResource(Res.string.total)}: ${trashNotes.second}")
+                                    }
 
-                                    DrawerItem.Templates ->
-                                        PlatformStyleTopAppBarTitle(stringResource(Res.string.templates))
-
-                                    DrawerItem.Trash ->
-                                        PlatformStyleTopAppBarTitle(stringResource(Res.string.trash))
-
-                                    is DrawerItem.Folder ->
-                                        PlatformStyleTopAppBarTitle(currentDrawerItem.folder.name)
-
-                                    DrawerItem.Toolbox ->
-                                        PlatformStyleTopAppBarTitle(stringResource(Res.string.toolbox))
+                                    else -> {}
                                 }
                             },
                             actions = {
@@ -509,7 +513,7 @@ fun MainScreenContent(
                     2 -> {
                         val trashNotes by viewModel.trashNotes.collectAsStateWithLifecycle()
                         Page(
-                            notes = trashNotes,
+                            notes = trashNotes.first,
                             contentPadding = contentPadding,
                             selectedNotes = selectedNotes,
                             noteItemProperties = noteItemProperties,

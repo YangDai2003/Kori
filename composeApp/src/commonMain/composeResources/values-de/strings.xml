@@ -55,6 +55,7 @@
     <string name="add_sample_note">Beispielnotiz hinzufügen</string>
     <string name="todo">Todo</string>
     <string name="done">Erledigt</string>
+    <string name="total">Gesamt</string>
 
     <string name="style">Stil</string>
     <string name="dark_mode">Themenmodus</string>

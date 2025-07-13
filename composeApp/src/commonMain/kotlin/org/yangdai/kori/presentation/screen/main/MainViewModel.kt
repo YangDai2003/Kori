@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.ktor.utils.io.charsets.Charsets
+import io.ktor.utils.io.core.toByteArray
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.IO
@@ -31,6 +33,7 @@ import org.yangdai.kori.presentation.screen.settings.CardSize
 import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.util.SampleMarkdownNote
 import org.yangdai.kori.presentation.util.SampleTodoNote
+import kotlin.math.round
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -98,14 +101,31 @@ class MainViewModel(
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val trashNotes: StateFlow<List<NoteEntity>> = _noteSortTypeFlow
+    val trashNotes: StateFlow<Pair<List<NoteEntity>, String>> = _noteSortTypeFlow
         .flatMapLatest { sortType ->
             noteRepository.getNotesInTrash(sortType)
+                .map { notes: List<NoteEntity> ->
+                    val totalBytes = notes.sumOf { it.content.toByteArray(Charsets.UTF_8).size }
+                    val sizeString = when {
+                        totalBytes == 0 -> ""
+                        totalBytes < 1024 -> "$totalBytes B"
+                        totalBytes < 1024 * 1024 -> {
+                            val kb = totalBytes / 1024.0
+                            "${(round(kb * 100) / 100)} KB"
+                        }
+
+                        else -> {
+                            val mb = totalBytes / 1024.0 / 1024.0
+                            "${(round(mb * 100) / 100)} MB"
+                        }
+                    }
+                    Pair(notes, sizeString)
+                }
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Companion.WhileSubscribed(5_000L),
-            initialValue = emptyList()
+            initialValue = Pair(emptyList(), "")
         )
 
     var folderSortType by mutableStateOf(FolderSortType.CREATE_TIME_DESC)

@@ -55,6 +55,7 @@
     <string name="add_sample_note">添加示例笔记</string>
     <string name="todo">待办</string>
     <string name="done">已完成</string>
+    <string name="total">总计</string>
 
     <string name="style">样式</string>
     <string name="dark_mode">主题模式</string>
