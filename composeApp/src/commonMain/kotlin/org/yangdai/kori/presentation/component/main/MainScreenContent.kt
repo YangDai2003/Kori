@@ -209,13 +209,6 @@ fun MainScreenContent(
                         title = { PlatformStyleTopAppBarTitle("${stringResource(Res.string.checked)}${selectedNotes.size}") },
                         navigationIcon = {
                             IconButton(
-                                modifier =
-                                    Modifier.minimumInteractiveComponentSize()
-                                        .size(
-                                            IconButtonDefaults.smallContainerSize(
-                                                IconButtonDefaults.IconButtonWidthOption.Uniform
-                                            )
-                                        ),
                                 colors = IconButtonDefaults.iconButtonVibrantColors(
                                     containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
                                 ),

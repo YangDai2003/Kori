@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.util
+package org.yangdai.kori.presentation.component.note.markdown
 
 /**
  * Utility class for parsing note properties in YAML format

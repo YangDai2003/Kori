@@ -52,7 +52,7 @@ import org.yangdai.kori.presentation.screen.settings.AppTheme
 import org.yangdai.kori.presentation.screen.settings.EditorPaneState
 import org.yangdai.kori.presentation.screen.settings.TemplatePaneState
 import org.yangdai.kori.presentation.util.Constants
-import org.yangdai.kori.presentation.util.Properties.getPropertiesLineRange
+import org.yangdai.kori.presentation.component.note.markdown.Properties.getPropertiesLineRange
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
