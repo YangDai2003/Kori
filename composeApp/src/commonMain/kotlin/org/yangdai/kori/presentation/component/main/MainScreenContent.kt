@@ -33,7 +33,6 @@ import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExpandedDockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButtonMenu
@@ -55,7 +54,6 @@ import androidx.compose.material3.ToggleFloatingActionButton
 import androidx.compose.material3.ToggleFloatingActionButtonDefaults.animateIcon
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopSearchBar
 import androidx.compose.material3.animateFloatingActionButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberSearchBarState
@@ -282,20 +280,12 @@ fun MainScreenContent(
                     // 常规模式的顶部应用栏
                     if (currentDrawerItem is DrawerItem.AllNotes) {
                         val searchHistorySet by viewModel.searchHistorySet.collectAsStateWithLifecycle()
-                        TopSearchBar(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            state = searchBarState,
-                            inputField = inputField,
-                            colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceBright),
-                            windowInsets = SearchBarDefaults.windowInsets.only(WindowInsetsSides.Top)
-                        )
-                        ExpandedDockedSearchBar(
-                            state = searchBarState,
-                            inputField = inputField,
-                            colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceBright),
-                            shadowElevation = 4.dp
+                        AdaptiveSearchBar(
+                            isLargeScreen = isLargeScreen,
+                            searchBarState = searchBarState,
+                            inputField = inputField
                         ) {
-                            if (searchHistorySet.isEmpty()) return@ExpandedDockedSearchBar
+                            if (searchHistorySet.isEmpty()) return@AdaptiveSearchBar
                             ListItem(
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                                 leadingContent = {

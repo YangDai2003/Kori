@@ -12,10 +12,10 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowDownward
-import androidx.compose.material.icons.outlined.ArrowUpward
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Autorenew
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.LocationSearching
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -132,12 +132,12 @@ private fun FindField(
     }
     IconButton(onClick = { state.scrollDirection = ScrollDirection.PREVIOUS }) {
         Icon(
-            imageVector = Icons.Outlined.ArrowUpward, contentDescription = "PREVIOUS"
+            imageVector = Icons.Default.ArrowUpward, contentDescription = "PREVIOUS"
         )
     }
     IconButton(onClick = { state.scrollDirection = ScrollDirection.NEXT }) {
         Icon(
-            imageVector = Icons.Outlined.ArrowDownward, contentDescription = "Next"
+            imageVector = Icons.Default.ArrowDownward, contentDescription = "Next"
         )
     }
     IconButton(onClick = {
@@ -145,7 +145,7 @@ private fun FindField(
         state.replaceWord = ""
     }) {
         Icon(
-            imageVector = Icons.Outlined.Close, contentDescription = "Clear"
+            imageVector = Icons.Default.Close, contentDescription = "Clear"
         )
     }
 }
