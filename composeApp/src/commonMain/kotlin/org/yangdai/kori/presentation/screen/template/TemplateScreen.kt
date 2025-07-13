@@ -208,6 +208,7 @@ fun TemplateScreen(
                         }
                     )
                 },
+                expandedHeight = 56.dp,
                 title = {
                     BasicTextField(
                         modifier = Modifier.onPreviewKeyEvent { keyEvent ->

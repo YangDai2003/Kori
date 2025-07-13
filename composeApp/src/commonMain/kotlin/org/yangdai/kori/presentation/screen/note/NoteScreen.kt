@@ -264,6 +264,7 @@ fun NoteScreen(
                         }
                     )
                 },
+                expandedHeight = 56.dp,
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         FilledTonalButton(
