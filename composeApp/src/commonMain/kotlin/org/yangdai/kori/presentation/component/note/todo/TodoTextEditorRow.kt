@@ -35,7 +35,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.EditorRowButton
 import org.yangdai.kori.presentation.component.note.EditorRowSection
-import org.yangdai.kori.presentation.component.note.addBefore
+import org.yangdai.kori.presentation.component.note.addBeforeWithWhiteSpace
 import org.yangdai.kori.presentation.component.note.parentheses
 import org.yangdai.kori.presentation.component.note.platformKeyboardShortCut
 import org.yangdai.kori.presentation.component.note.toggleLineStart
@@ -82,13 +82,13 @@ fun TodoTextEditorRow(
         EditorRowButton(
             hint = stringResource(Res.string.project_tag),
             icon = Icons.Outlined.Add,
-            onClick = { textFieldState.edit { addBefore("+") } }
+            onClick = { textFieldState.edit { addBeforeWithWhiteSpace("+") } }
         )
 
         EditorRowButton(
             hint = stringResource(Res.string.context_tag),
             icon = Icons.Outlined.AlternateEmail,
-            onClick = { textFieldState.edit { addBefore("@") } }
+            onClick = { textFieldState.edit { addBeforeWithWhiteSpace("@") } }
         )
 
         EditorRowButton(

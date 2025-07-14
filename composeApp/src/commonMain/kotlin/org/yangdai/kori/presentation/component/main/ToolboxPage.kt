@@ -273,7 +273,10 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
                                             ?: url.substringAfterLast('/').substringBefore('?')
                                                 .substringBefore('#').takeIf { it.isNotBlank() }
                                             ?: url,
-                                        sharedContentText = document
+                                        sharedContentText = document,
+                                        noteType = if (url.contains(".md", ignoreCase = true)
+                                            || url.contains("markdown", ignoreCase = true)
+                                        ) NoteType.MARKDOWN.ordinal else NoteType.PLAIN_TEXT.ordinal,
                                     )
                                 )
                             }.onFailure {

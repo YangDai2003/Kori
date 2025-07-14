@@ -60,7 +60,8 @@ actual fun AppNavHost(
                             navHostController.navigate(
                                 Screen.Note(
                                     sharedContentTitle = sharedContent.title,
-                                    sharedContentText = sharedContent.text
+                                    sharedContentText = sharedContent.text,
+                                    noteType = sharedContent.type.ordinal
                                 )
                             )
                         }

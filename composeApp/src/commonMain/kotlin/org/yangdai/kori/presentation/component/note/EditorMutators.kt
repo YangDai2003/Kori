@@ -162,9 +162,12 @@ fun TextFieldBuffer.toggleLineStart(str: String) {
     }
 }
 
-fun TextFieldBuffer.addBefore(str: String) {
+fun TextFieldBuffer.addBeforeWithWhiteSpace(str: String) {
     val initialSelection = selection
-    replace(initialSelection.min, initialSelection.min, str)
+    val text = toString()
+    val needSpace = initialSelection.min > 0 && !text[initialSelection.min - 1].isWhitespace()
+    if (needSpace) replace(initialSelection.min, initialSelection.min, " $str")
+    else replace(initialSelection.min, initialSelection.min, str)
 }
 
 fun TextFieldBuffer.addAfter(str: String) {

@@ -110,10 +110,20 @@ actual fun Modifier.clickToShareFile(noteEntity: NoteEntity): Modifier {
 }
 
 @Stable
-data class SharedContent(val title: String = "", val text: String = "", val uri: Uri? = null)
+data class SharedContent(
+    val title: String = "",
+    val text: String = "",
+    val type: NoteType = NoteType.PLAIN_TEXT,
+    val uri: Uri? = null
+)
 
 private fun Uri.getMimeType(context: Context): String? = context.contentResolver.getType(this)
 private fun String?.isTextMimeType(): Boolean = this?.startsWith("text/") == true
+private fun String?.isMarkdownMimeType(): Boolean =
+    this == "text/markdown" || this == "application/x-markdown"
+
+private fun String?.isMarkdownFileName(): Boolean =
+    this?.lowercase()?.let { it.endsWith(".md") || it.endsWith(".markdown") } == true
 
 private fun getFileName(context: Context, uri: Uri): String? {
     if ("content" == uri.scheme) {
@@ -179,6 +189,7 @@ fun Intent.parseSharedContent(context: Context): SharedContent {
 private fun Intent.parseActionSend(context: Context): SharedContent {
     var title = getStringExtra(Intent.EXTRA_SUBJECT).orEmpty()
     var text = getStringExtra(Intent.EXTRA_TEXT).orEmpty()
+    var noteType = NoteType.PLAIN_TEXT
 
     // Check for a single shared stream (e.g., sharing a file)
     val streamUri = getParcelableExtraCompat<Uri>(Intent.EXTRA_STREAM)
@@ -186,15 +197,17 @@ private fun Intent.parseActionSend(context: Context): SharedContent {
         val streamFileName = getFileName(context, streamUri).orEmpty()
         if (title.isEmpty()) title = streamFileName
 
+        val mimeType = type ?: streamUri.getMimeType(context)
+        // 判断是否为markdown
+        if (mimeType.isMarkdownMimeType() || streamFileName.isMarkdownFileName()) {
+            noteType = NoteType.MARKDOWN
+        }
+
         // If EXTRA_TEXT is empty, try to get text from the stream if it's a text type
         if (text.isEmpty()) {
-            val mimeType =
-                type ?: streamUri.getMimeType(context) // Prefer intent type, fallback to URI type
             if (mimeType.isTextMimeType()) {
                 text = readTextFromUri(context, streamUri).orEmpty()
             }
-
-            // If text is still empty (e.g., non-text file or read failed), use a placeholder
             if (text.isEmpty()) {
                 text = "Shared file: ${streamFileName.ifEmpty { streamUri.toString() }}"
             }
@@ -204,26 +217,28 @@ private fun Intent.parseActionSend(context: Context): SharedContent {
             else "\n\n(Attached file: $streamFileName)"
         }
     }
-    return SharedContent(title, text)
+    return SharedContent(title, text, noteType)
 }
 
 private fun Intent.parseActionViewEdit(context: Context): SharedContent {
     var title = ""
     var text = ""
     var writableUri: Uri? = null
+    var type = NoteType.PLAIN_TEXT
 
     data?.let { uri ->
         title = getFileName(context, uri).orEmpty()
-
         val effectiveMimeType = this.type ?: uri.getMimeType(context)
-
+        // 判断是否为markdown
+        if (effectiveMimeType.isMarkdownMimeType() || title.isMarkdownFileName()) {
+            type = NoteType.MARKDOWN
+        }
         if (effectiveMimeType.isTextMimeType()) {
             text = readTextFromUri(context, uri).orEmpty()
         }
-
         writableUri = uri.getWritableUri(context)
     }
-    return SharedContent(title, text, writableUri)
+    return SharedContent(title, text, type, uri = writableUri)
 }
 
 actual fun shouldShowLanguageSetting(): Boolean {
