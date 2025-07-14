@@ -11,11 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.backhandler.PredictiveBackHandler
+import androidx.compose.ui.backhandler.BackHandler
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.withContext
-import kotlin.coroutines.cancellation.CancellationException
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -27,21 +25,16 @@ actual fun PlatformStyleSettingsLayout(
     detailPaneContent: @Composable (AnimatedPaneScope.() -> Unit)
 ) {
     key(navigator) {
-        PredictiveBackHandler(enabled = navigator.canNavigateBack()) { progress ->
-            try {
-                progress.collect { backEvent ->
-                    navigator.seekBack(fraction = backEvent.progress)
-                }
+        BackHandler(enabled = navigator.canNavigateBack()) {
+            coroutineScope.launch {
                 navigator.navigateBack()
-            } catch (_: CancellationException) {
-                withContext(NonCancellable) { navigator.seekBack(fraction = 0f) }
             }
         }
     }
     ListDetailPaneScaffold(
         modifier = modifier,
         directive = navigator.scaffoldDirective,
-        scaffoldState = navigator.scaffoldState,
+        value = navigator.scaffoldValue,
         listPane = {
             AnimatedPane(
                 enterTransition = slideInHorizontally { -it },

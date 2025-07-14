@@ -1,6 +1,6 @@
 package org.yangdai.kori.presentation.component.setting
 
-import androidx.activity.compose.PredictiveBackHandler
+import androidx.activity.compose.BackHandler
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.AnimatedPaneScope
@@ -10,12 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import org.yangdai.kori.presentation.navigation.INITIAL_OFFSET_FACTOR
 import org.yangdai.kori.presentation.navigation.sharedAxisXIn
 import org.yangdai.kori.presentation.navigation.sharedAxisXOut
-import kotlin.coroutines.cancellation.CancellationException
 
 @OptIn(markerClass = [ExperimentalMaterial3AdaptiveApi::class])
 @Composable
@@ -27,21 +25,16 @@ actual fun PlatformStyleSettingsLayout(
     detailPaneContent: @Composable (AnimatedPaneScope.() -> Unit)
 ) {
     key(navigator) {
-        PredictiveBackHandler(enabled = navigator.canNavigateBack()) { progress ->
-            try {
-                progress.collect { backEvent ->
-                    navigator.seekBack(fraction = backEvent.progress)
-                }
+        BackHandler(enabled = navigator.canNavigateBack()) {
+            coroutineScope.launch {
                 navigator.navigateBack()
-            } catch (_: CancellationException) {
-                withContext(NonCancellable) { navigator.seekBack(fraction = 0f) }
             }
         }
     }
     ListDetailPaneScaffold(
         modifier = modifier,
         directive = navigator.scaffoldDirective,
-        scaffoldState = navigator.scaffoldState,
+        value = navigator.scaffoldValue,
         listPane = {
             AnimatedPane(
                 enterTransition = sharedAxisXIn(initialOffsetX = { -(it * INITIAL_OFFSET_FACTOR).toInt() }),
