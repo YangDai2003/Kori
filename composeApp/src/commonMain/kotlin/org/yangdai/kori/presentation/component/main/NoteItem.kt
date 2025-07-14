@@ -58,23 +58,15 @@ fun LazyStaggeredGridItemScope.NoteItem(
     onClick: () -> Unit,
     onLongClick: () -> Unit
 ) = Surface(
-    modifier = Modifier.fillMaxWidth().animateItem(),
+    modifier = Modifier.animateItem(),
     shape = CardDefaults.shape,
     border = if (isSelected) CardDefaults.outlinedCardBorder() else null
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .combinedClickable(
-                onClick = onClick,
-                onLongClick = onLongClick
-            )
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            // 标题
-            if (note.title.isNotBlank()) {
+    Box(Modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick)) {
+        Column(Modifier.fillMaxWidth().padding(12.dp)) {
+            val title = note.title
+            if (title.isNotBlank()) {
                 val annotatedString = buildAnnotatedString {
-                    val title = note.title
                     if (keyword.isEmpty()) {
                         append(title)
                         return@buildAnnotatedString
@@ -101,19 +93,17 @@ fun LazyStaggeredGridItemScope.NoteItem(
                     maxLines = 1,
                     modifier = Modifier.basicMarquee()
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(Modifier.height(6.dp))
             }
 
             // 内容预览
-            if (noteItemProperties.cardSize != CardSize.TITLE_ONLY) {
-                val lines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 5 else 2
+            if (noteItemProperties.cardSize != CardSize.TITLE_ONLY)
                 Text(
                     text = note.content,
                     style = MaterialTheme.typography.bodyMedium,
-                    maxLines = lines,
+                    maxLines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 5 else 2,
                     overflow = if (noteItemProperties.clipOverflow) TextOverflow.Clip else TextOverflow.Ellipsis
                 )
-            }
 
             // 底部行：笔记类型和更新时间信息
             Row(
@@ -139,7 +129,7 @@ fun LazyStaggeredGridItemScope.NoteItem(
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                 )
 
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(Modifier.weight(1f))
 
                 val instant =
                     if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
@@ -153,14 +143,11 @@ fun LazyStaggeredGridItemScope.NoteItem(
         }
 
         // 选择框
-        if (isSelectionMode) {
+        if (isSelectionMode)
             Checkbox(
                 checked = isSelected,
                 onCheckedChange = null,
-                modifier = Modifier
-                    .padding(12.dp)
-                    .align(Alignment.TopEnd)
+                modifier = Modifier.padding(12.dp).align(Alignment.TopEnd)
             )
-        }
     }
 }
