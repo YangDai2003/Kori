@@ -1,7 +1,7 @@
 package org.yangdai.kori.presentation.component.dialog
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 
 @Composable
 expect fun ConfirmButton(
@@ -16,11 +16,4 @@ expect fun DismissButton(
 )
 
 @Composable
-expect fun PlatformStyleDialog(
-    onDismissRequest: () -> Unit,
-    modifier: Modifier = Modifier,
-    title: @Composable (() -> Unit)? = null,
-    text: @Composable (() -> Unit)? = null,
-    confirmButton: @Composable () -> Unit = {},
-    dismissButton: @Composable (() -> Unit)? = null
-)
+expect fun dialogShape(): Shape
