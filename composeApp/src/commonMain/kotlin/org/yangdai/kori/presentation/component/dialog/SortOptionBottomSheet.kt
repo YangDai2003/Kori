@@ -31,19 +31,8 @@ import kori.composeapp.generated.resources.sort_modified_d
 import kori.composeapp.generated.resources.sort_name_a
 import kori.composeapp.generated.resources.sort_name_d
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.yangdai.kori.domain.sort.FolderSortType
 import org.yangdai.kori.domain.sort.NoteSortType
-
-@Preview
-@Composable
-fun NoteSortOptionDialogPreview() {
-    NoteSortOptionBottomSheet(
-        oNoteSortType = NoteSortType.NAME_ASC,
-        onDismissRequest = {},
-        onSortTypeSelected = {}
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

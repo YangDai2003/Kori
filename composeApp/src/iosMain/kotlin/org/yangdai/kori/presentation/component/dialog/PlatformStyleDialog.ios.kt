@@ -1,8 +1,8 @@
 package org.yangdai.kori.presentation.component.dialog
 
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -21,4 +21,4 @@ actual fun DismissButton(onClick: () -> Unit) =
     TextButton(onClick) { Text(stringResource(Res.string.cancel)) }
 
 @Composable
-actual fun dialogShape(): Shape = MaterialTheme.shapes.large
+actual fun dialogShape(): Shape = AlertDialogDefaults.shape
