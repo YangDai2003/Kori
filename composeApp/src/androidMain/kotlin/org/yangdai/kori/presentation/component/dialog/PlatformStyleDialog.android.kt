@@ -2,6 +2,7 @@ package org.yangdai.kori.presentation.component.dialog
 
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -12,11 +13,11 @@ import kori.composeapp.generated.resources.confirm
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-actual fun ConfirmButton(text: String, onClick: () -> Unit) =
-    Button(onClick) { Text(stringResource(Res.string.confirm)) }
+actual fun ConfirmButton(colors: ButtonColors, onClick: () -> Unit) =
+    Button(colors = colors, onClick = onClick) { Text(stringResource(Res.string.confirm)) }
 
 @Composable
-actual fun DismissButton(text: String, onClick: () -> Unit) =
+actual fun DismissButton(onClick: () -> Unit) =
     TextButton(onClick) { Text(stringResource(Res.string.cancel)) }
 
 @Composable

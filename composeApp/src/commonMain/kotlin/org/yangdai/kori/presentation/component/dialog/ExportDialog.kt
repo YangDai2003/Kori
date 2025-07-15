@@ -35,6 +35,7 @@ fun ExportDialog(
     var exportType by remember { mutableStateOf(ExportType.TXT) }
     AlertDialog(
         modifier = Modifier.widthIn(max = 360.dp),
+        shape = dialogShape(),
         title = { Text(stringResource(Res.string.export_as)) },
         text = {
             Column(Modifier.fillMaxWidth()) {

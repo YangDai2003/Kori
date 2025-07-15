@@ -52,6 +52,7 @@ fun ShareDialog(
 ) = AlertDialog(
     modifier = Modifier.widthIn(max = 360.dp),
     onDismissRequest = onDismissRequest,
+    shape = dialogShape(),
     title = {
         val clipboard = LocalClipboard.current
         val scope = rememberCoroutineScope()

@@ -120,7 +120,7 @@ import org.yangdai.kori.domain.sort.NoteSortType
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.FoldersDialog
-import org.yangdai.kori.presentation.component.dialog.NoteSortOptionDialog
+import org.yangdai.kori.presentation.component.dialog.NoteSortOptionBottomSheet
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.util.isScreenWidthExpanded
@@ -688,7 +688,7 @@ fun MainScreenContent(
     }
 
     if (showSortDialog)
-        NoteSortOptionDialog(
+        NoteSortOptionBottomSheet(
             oNoteSortType = viewModel.noteSortType,
             onDismissRequest = { showSortDialog = false },
             onSortTypeSelected = {

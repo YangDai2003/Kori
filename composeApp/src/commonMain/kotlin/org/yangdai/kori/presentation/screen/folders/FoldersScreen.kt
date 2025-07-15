@@ -84,7 +84,7 @@ import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationI
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.VerticalScrollbar
-import org.yangdai.kori.presentation.component.dialog.FolderSortOptionDialog
+import org.yangdai.kori.presentation.component.dialog.FolderSortOptionBottomSheet
 import org.yangdai.kori.presentation.component.dialog.ModifyFolderDialog
 import org.yangdai.kori.presentation.component.dialog.WarningDialog
 import org.yangdai.kori.presentation.component.rememberPlatformStyleTopAppBarState
@@ -258,7 +258,7 @@ fun FoldersScreen(
             )
 
         if (showSortDialog)
-            FolderSortOptionDialog(
+            FolderSortOptionBottomSheet(
                 oFolderSortType = viewModel.folderSortType,
                 onDismissRequest = { showSortDialog = false },
                 onSortTypeSelected = { viewModel.setFolderSorting(it) }

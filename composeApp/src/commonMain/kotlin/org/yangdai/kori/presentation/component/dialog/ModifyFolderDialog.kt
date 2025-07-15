@@ -35,7 +35,6 @@ import androidx.compose.material.icons.outlined.FolderDelete
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.AlertDialogDefaults
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledIconToggleButton
@@ -46,7 +45,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -68,8 +66,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
-import kori.composeapp.generated.resources.cancel
-import kori.composeapp.generated.resources.confirm
 import kori.composeapp.generated.resources.modify
 import kori.composeapp.generated.resources.name
 import kotlinx.coroutines.launch
@@ -93,9 +89,7 @@ fun SharedTransitionScope.ModifyFolderDialog(
 ) = AnimatedContent(
     modifier = modifier,
     targetState = folder,
-    transitionSpec = {
-        fadeIn() togetherWith fadeOut()
-    }
+    transitionSpec = { fadeIn() togetherWith fadeOut() }
 ) { targetState ->
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -138,13 +132,13 @@ fun SharedTransitionScope.ModifyFolderDialog(
                     .sharedBounds(
                         sharedContentState = rememberSharedContentState(key = "${targetState.id}-bounds"),
                         animatedVisibilityScope = this@AnimatedContent,
-                        clipInOverlayDuringTransition = OverlayClip(AlertDialogDefaults.shape)
+                        clipInOverlayDuringTransition = OverlayClip(dialogShape())
                     )
                     .background(
                         color = AlertDialogDefaults.containerColor,
-                        shape = AlertDialogDefaults.shape
+                        shape = dialogShape()
                     )
-                    .clip(AlertDialogDefaults.shape)
+                    .clip(dialogShape())
                     .padding(horizontal = 24.dp)
                     .padding(bottom = 24.dp, top = 16.dp)
             ) {
@@ -263,32 +257,26 @@ fun SharedTransitionScope.ModifyFolderDialog(
                     else Spacer(Modifier.size(48.dp))
 
                     Row {
-                        TextButton(onDismissRequest) {
-                            Text(stringResource(Res.string.cancel))
-                        }
+                        DismissButton(onDismissRequest)
                         Spacer(Modifier.width(8.dp))
                         val haptic = LocalHapticFeedback.current
-                        Button(
-                            onClick = {
-                                if (textFieldState.text.isBlank()) {
-                                    isError = true
-                                    return@Button
-                                }
-
-                                haptic.performHapticFeedback(HapticFeedbackType.Confirm)
-
-                                onConfirm(
-                                    FolderEntity(
-                                        id = targetState.id,
-                                        name = textFieldState.text.toString(),
-                                        colorValue = color,
-                                        isStarred = isStarred,
-                                        createdAt = targetState.createdAt
-                                    )
-                                )
+                        ConfirmButton {
+                            if (textFieldState.text.isBlank()) {
+                                isError = true
+                                return@ConfirmButton
                             }
-                        ) {
-                            Text(stringResource(Res.string.confirm))
+
+                            haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+
+                            onConfirm(
+                                FolderEntity(
+                                    id = targetState.id,
+                                    name = textFieldState.text.toString(),
+                                    colorValue = color,
+                                    isStarred = isStarred,
+                                    createdAt = targetState.createdAt
+                                )
+                            )
                         }
                     }
                 }

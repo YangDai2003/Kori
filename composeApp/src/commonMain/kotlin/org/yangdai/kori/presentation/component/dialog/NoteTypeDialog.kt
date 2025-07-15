@@ -53,6 +53,7 @@ fun NoteTypeDialog(
     AlertDialog(
         modifier = Modifier.widthIn(max = 360.dp),
         onDismissRequest = onDismissRequest,
+        shape = dialogShape(),
         title = { Text(stringResource(Res.string.type)) },
         text = {
             Column(modifier = Modifier.fillMaxWidth().selectableGroup()) {

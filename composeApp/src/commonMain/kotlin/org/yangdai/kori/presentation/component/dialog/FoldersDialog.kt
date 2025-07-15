@@ -9,7 +9,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -17,7 +16,6 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,8 +34,6 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextOverflow
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.all_notes
-import kori.composeapp.generated.resources.cancel
-import kori.composeapp.generated.resources.confirm
 import kori.composeapp.generated.resources.destination_folder
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -63,6 +59,7 @@ fun FoldersDialog(
     }
 
     AlertDialog(
+        shape = dialogShape(),
         title = { Text(hint) },
         text = {
             Column {
@@ -137,16 +134,9 @@ fun FoldersDialog(
             }
         },
         onDismissRequest = onDismissRequest,
-        dismissButton = {
-            TextButton(onDismissRequest) {
-                Text(stringResource(Res.string.cancel))
-            }
-        },
-        confirmButton = {
-            Button(onClick = onConfirm) {
-                Text(stringResource(Res.string.confirm))
-            }
-        })
+        dismissButton = { DismissButton(onDismissRequest) },
+        confirmButton = { ConfirmButton(onClick = onConfirm) }
+    )
 }
 
 @Composable
