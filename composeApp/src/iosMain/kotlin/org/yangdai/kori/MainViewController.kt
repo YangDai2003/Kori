@@ -8,8 +8,10 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -56,53 +58,61 @@ fun MainViewController() = ComposeUIViewController(
         else stylePaneState.theme == AppTheme.DARK
     }
 
-    KoriTheme(
-        darkMode = darkMode,
-        color = stylePaneState.color,
-        amoledMode = stylePaneState.isAppInAmoledMode,
-        fontScale = stylePaneState.fontSize
+    CompositionLocalProvider(
+        LocalMinimumInteractiveComponentSize provides 44.dp
     ) {
-        Surface {
-            val showPassScreen by remember {
-                derivedStateOf {
-                    (securityPaneState.password.isNotEmpty() && !isUnlocked) ||
-                            securityPaneState.isCreatingPass
+        KoriTheme(
+            darkMode = darkMode,
+            color = stylePaneState.color,
+            amoledMode = stylePaneState.isAppInAmoledMode,
+            fontScale = stylePaneState.fontSize
+        ) {
+            Surface {
+                val showPassScreen by remember {
+                    derivedStateOf {
+                        (securityPaneState.password.isNotEmpty() && !isUnlocked) ||
+                                securityPaneState.isCreatingPass
+                    }
                 }
-            }
-            val blur by animateDpAsState(targetValue = if (showPassScreen) 16.dp else 0.dp)
-            AppNavHost(modifier = Modifier.blur(blur))
-            AnimatedVisibility(
-                visible = showPassScreen,
-                enter = slideInVertically(
-                    initialOffsetY = { fullHeight -> -fullHeight }
-                ) + fadeIn(),
-                exit = slideOutVertically(
-                    targetOffsetY = { fullHeight -> -fullHeight }
-                ) + fadeOut()
-            ) {
-                NumberLockScreen(
-                    modifier = Modifier.background(MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.25f)),
-                    storedPassword = securityPaneState.password,
-                    isCreatingPassword = securityPaneState.isCreatingPass,
-                    onCreatingCanceled = {
-                        settingsViewModel.putPreferenceValue(
-                            Constants.Preferences.IS_CREATING_PASSWORD,
-                            false
-                        )
-                    },
-                    onPassCreated = {
-                        settingsViewModel.putPreferenceValue(
-                            Constants.Preferences.PASSWORD,
-                            it
-                        )
-                        settingsViewModel.putPreferenceValue(
-                            Constants.Preferences.IS_CREATING_PASSWORD,
-                            false
-                        )
-                        appLockManager.unlock()
-                    },
-                    onAuthenticated = { appLockManager.unlock() }
-                )
+                val blur by animateDpAsState(targetValue = if (showPassScreen) 16.dp else 0.dp)
+                AppNavHost(modifier = Modifier.blur(blur))
+                AnimatedVisibility(
+                    visible = showPassScreen,
+                    enter = slideInVertically(
+                        initialOffsetY = { fullHeight -> -fullHeight }
+                    ) + fadeIn(),
+                    exit = slideOutVertically(
+                        targetOffsetY = { fullHeight -> -fullHeight }
+                    ) + fadeOut()
+                ) {
+                    NumberLockScreen(
+                        modifier = Modifier.background(
+                            MaterialTheme.colorScheme.surfaceDim.copy(
+                                alpha = 0.25f
+                            )
+                        ),
+                        storedPassword = securityPaneState.password,
+                        isCreatingPassword = securityPaneState.isCreatingPass,
+                        onCreatingCanceled = {
+                            settingsViewModel.putPreferenceValue(
+                                Constants.Preferences.IS_CREATING_PASSWORD,
+                                false
+                            )
+                        },
+                        onPassCreated = {
+                            settingsViewModel.putPreferenceValue(
+                                Constants.Preferences.PASSWORD,
+                                it
+                            )
+                            settingsViewModel.putPreferenceValue(
+                                Constants.Preferences.IS_CREATING_PASSWORD,
+                                false
+                            )
+                            appLockManager.unlock()
+                        },
+                        onAuthenticated = { appLockManager.unlock() }
+                    )
+                }
             }
         }
     }
