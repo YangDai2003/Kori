@@ -1,6 +1,7 @@
 package org.yangdai.kori.presentation.component.note.markdown
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -95,6 +96,7 @@ actual fun MarkdownView(
     SwingPanel(
         factory = { jfxPanel },
         modifier = modifier,
+        background = MaterialTheme.colorScheme.background,
         update = {
             webView?.let {
                 Platform.runLater {
