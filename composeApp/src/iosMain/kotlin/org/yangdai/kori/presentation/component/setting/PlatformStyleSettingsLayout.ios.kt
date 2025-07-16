@@ -1,7 +1,5 @@
 package org.yangdai.kori.presentation.component.setting
 
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.AnimatedPaneScope
@@ -35,19 +33,7 @@ actual fun PlatformStyleSettingsLayout(
         modifier = modifier,
         directive = navigator.scaffoldDirective,
         value = navigator.scaffoldValue,
-        listPane = {
-            AnimatedPane(
-                enterTransition = slideInHorizontally { -it },
-                exitTransition = slideOutHorizontally { -it },
-                content = listPaneContent
-            )
-        },
-        detailPane = {
-            AnimatedPane(
-                enterTransition = slideInHorizontally { it },
-                exitTransition = slideOutHorizontally { it },
-                content = detailPaneContent
-            )
-        }
+        listPane = { AnimatedPane { listPaneContent() } },
+        detailPane = { AnimatedPane { detailPaneContent() } }
     )
 }
