@@ -183,7 +183,7 @@ fun SharedTransitionScope.ModifyFolderDialog(
                     placeholder = { Text(stringResource(Res.string.name)) }
                 )
                 Box(
-                    Modifier.padding(vertical = 12.dp).fillMaxWidth().background(
+                    Modifier.padding(vertical = 8.dp).fillMaxWidth().background(
                         shape = MaterialTheme.shapes.medium,
                         color = MaterialTheme.colorScheme.surfaceContainer
                     )
@@ -191,8 +191,8 @@ fun SharedTransitionScope.ModifyFolderDialog(
                     val state = rememberLazyListState()
                     LazyRow(
                         state = state,
-                        contentPadding = PaddingValues(8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        contentPadding = PaddingValues(vertical = 4.dp, horizontal = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         items(folderColorOptions.size + 2) {
                             when (it) {
@@ -247,6 +247,7 @@ fun SharedTransitionScope.ModifyFolderDialog(
                                 containerColor = MaterialTheme.colorScheme.errorContainer,
                                 contentColor = MaterialTheme.colorScheme.onErrorContainer
                             ),
+                            shape = IconButtonDefaults.smallSquareShape,
                             onClick = onDeleteRequest,
                         ) {
                             Icon(
