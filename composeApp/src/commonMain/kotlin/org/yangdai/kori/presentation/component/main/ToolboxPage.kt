@@ -2,6 +2,7 @@ package org.yangdai.kori.presentation.component.main
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,7 +21,6 @@ import androidx.compose.material.icons.automirrored.filled.NoteAdd
 import androidx.compose.material.icons.automirrored.outlined.ArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -32,7 +32,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -56,8 +56,6 @@ import kfile.getPath
 import knet.DocumentService
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.add_sample_note
-import kori.composeapp.generated.resources.cancel
-import kori.composeapp.generated.resources.confirm
 import kori.composeapp.generated.resources.edit_local_file
 import kori.composeapp.generated.resources.fetch_file_from_url
 import kori.composeapp.generated.resources.markdown
@@ -65,7 +63,10 @@ import kori.composeapp.generated.resources.todo_text
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.NoteType
+import org.yangdai.kori.presentation.component.dialog.ConfirmButton
+import org.yangdai.kori.presentation.component.dialog.DismissButton
 import org.yangdai.kori.presentation.component.dialog.FilePickerDialog
+import org.yangdai.kori.presentation.component.dialog.dialogShape
 import org.yangdai.kori.presentation.navigation.Screen
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -147,10 +148,15 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
 
                     DropdownMenu(
                         expanded = checked,
+                        shape = MaterialTheme.shapes.small,
                         offset = DpOffset(x = 48.dp, y = 0.dp),
                         onDismissRequest = { checked = false }
                     ) {
                         DropdownMenuItem(
+                            modifier = Modifier.background(
+                                color = if (type == NoteType.MARKDOWN) MaterialTheme.colorScheme.secondaryContainer
+                                else Color.Transparent
+                            ),
                             text = { Text(stringResource(Res.string.markdown)) },
                             onClick = {
                                 type = NoteType.MARKDOWN
@@ -158,6 +164,10 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
                             }
                         )
                         DropdownMenuItem(
+                            modifier = Modifier.background(
+                                color = if (type == NoteType.TODO) MaterialTheme.colorScheme.secondaryContainer
+                                else Color.Transparent
+                            ),
                             text = { Text(stringResource(Res.string.todo_text)) },
                             onClick = {
                                 type = NoteType.TODO
@@ -212,6 +222,7 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
         var url by remember { mutableStateOf("") }
         var isError by remember { mutableStateOf(false) }
         AlertDialog(
+            shape = dialogShape(),
             onDismissRequest = { showURLDialog = false },
             text = {
                 Column {
@@ -257,48 +268,40 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
                 }
             },
             confirmButton = {
-                Button(
-                    onClick = {
-                        coroutineScope.launch {
-                            val result = documentService.fetchNetDocument(url)
-                            result.onSuccess { document ->
-                                showURLDialog = false
-                                navigateToScreen(
-                                    Screen.Note(
-                                        sharedContentTitle = Regex(
-                                            """([^/?#]+\.md|txt|json|markdown)""",
-                                            RegexOption.IGNORE_CASE
-                                        )
-                                            .find(url)?.value
-                                            ?: url.substringAfterLast('/').substringBefore('?')
-                                                .substringBefore('#').takeIf { it.isNotBlank() }
-                                            ?: url,
-                                        sharedContentText = document,
-                                        noteType = if (url.contains(".md", ignoreCase = true)
-                                            || url.contains("markdown", ignoreCase = true)
-                                        ) NoteType.MARKDOWN.ordinal else NoteType.PLAIN_TEXT.ordinal,
+                ConfirmButton {
+                    coroutineScope.launch {
+                        val result = documentService.fetchNetDocument(url)
+                        result.onSuccess { document ->
+                            showURLDialog = false
+                            navigateToScreen(
+                                Screen.Note(
+                                    sharedContentTitle = Regex(
+                                        """([^/?#]+\.md|txt|json|markdown)""",
+                                        RegexOption.IGNORE_CASE
                                     )
+                                        .find(url)?.value
+                                        ?: url.substringAfterLast('/').substringBefore('?')
+                                            .substringBefore('#').takeIf { it.isNotBlank() }
+                                        ?: url,
+                                    sharedContentText = document,
+                                    noteType = if (url.contains(".md", ignoreCase = true)
+                                        || url.contains("markdown", ignoreCase = true)
+                                    ) NoteType.MARKDOWN.ordinal else NoteType.PLAIN_TEXT.ordinal,
                                 )
-                            }.onFailure {
-                                isError = true
-                            }
+                            )
+                        }.onFailure {
+                            isError = true
                         }
                     }
-                ) {
-                    Text(stringResource(Res.string.confirm))
                 }
             },
-            dismissButton = {
-                TextButton(onClick = { showURLDialog = false }) {
-                    Text(stringResource(Res.string.cancel))
-                }
-            }
+            dismissButton = { DismissButton { showURLDialog = false } }
         )
     }
 }
 
 @Composable
-private fun LinkHintText(name: String, url: String, modifier: Modifier = Modifier) {
+private fun LinkHintText(name: String, url: String, modifier: Modifier = Modifier) =
     Text(
         modifier = modifier,
         text = buildAnnotatedString {
@@ -316,4 +319,3 @@ private fun LinkHintText(name: String, url: String, modifier: Modifier = Modifie
             }
         }
     )
-}
