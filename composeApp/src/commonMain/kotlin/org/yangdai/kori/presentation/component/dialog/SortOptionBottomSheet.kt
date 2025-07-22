@@ -1,8 +1,10 @@
 package org.yangdai.kori.presentation.component.dialog
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
@@ -13,6 +15,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -21,6 +24,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.sort_by
@@ -34,6 +39,17 @@ import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.domain.sort.FolderSortType
 import org.yangdai.kori.domain.sort.NoteSortType
 
+@Composable
+private fun DragHandle() = Surface(
+    modifier = Modifier.padding(vertical = 12.dp).semantics {
+        contentDescription = "Drag handle for sorting options"
+    },
+    color = MaterialTheme.colorScheme.outlineVariant,
+    shape = MaterialTheme.shapes.extraLarge,
+) {
+    Box(Modifier.size(width = 32.dp, height = 4.dp))
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteSortOptionBottomSheet(
@@ -43,6 +59,7 @@ fun NoteSortOptionBottomSheet(
 ) = ModalBottomSheet(
     onDismissRequest = onDismissRequest,
     sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+    dragHandle = { DragHandle() },
     sheetMaxWidth = 480.dp
 ) {
     val haptic = LocalHapticFeedback.current
@@ -99,6 +116,7 @@ fun FolderSortOptionBottomSheet(
 ) = ModalBottomSheet(
     onDismissRequest = onDismissRequest,
     sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+    dragHandle = { DragHandle() },
     sheetMaxWidth = 480.dp
 ) {
     val haptic = LocalHapticFeedback.current

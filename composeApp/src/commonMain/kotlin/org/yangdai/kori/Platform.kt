@@ -8,10 +8,6 @@ data class PlatformInfo(
 
 expect val currentPlatformInfo: PlatformInfo
 
-fun PlatformInfo.isMobile(): Boolean {
-    return operatingSystem == OS.IOS || operatingSystem == OS.ANDROID
-}
-
 fun PlatformInfo.isDesktop(): Boolean {
     return operatingSystem == OS.LINUX || operatingSystem == OS.MACOS || operatingSystem == OS.WINDOWS
 }
