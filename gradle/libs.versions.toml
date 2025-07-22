@@ -5,10 +5,11 @@ androidx-appcompat = "1.7.1"
 androidx-core-ktx = "1.16.0"
 androidx-espresso-core = "3.6.1"
 androidx-lifecycle = "2.9.1"
-androidx-navigation = "2.9.0-beta03"
+androidx-navigation = "2.9.0-beta04"
 androidx-test-junit = "1.2.1"
-compose-multiplatform = "1.9.0-alpha03"
-compose-adaptive = "1.2.0-alpha03"
+compose-multiplatform = "1.9.0-beta01"
+compose-adaptive = "1.2.0-alpha04"
+compose-material3 = "1.9.0-alpha04"
 junit = "4.13.2"
 kotlin = "2.2.0"
 kotlinx-coroutines = "1.10.2"
@@ -51,6 +52,7 @@ compose-backhandler = { group = "org.jetbrains.compose.ui", name = "ui-backhandl
 compose-adaptive = { group = "org.jetbrains.compose.material3.adaptive", name = "adaptive", version.ref = "compose-adaptive" }
 compose-adaptive-layout = { group = "org.jetbrains.compose.material3.adaptive", name = "adaptive-layout", version.ref = "compose-adaptive" }
 compose-adaptive-navigation = { group = "org.jetbrains.compose.material3.adaptive", name = "adaptive-navigation", version.ref = "compose-adaptive" }
+compose-material3 = { group = "org.jetbrains.compose.material3", name = "material3", version.ref = "compose-material3" }
 
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core" }
