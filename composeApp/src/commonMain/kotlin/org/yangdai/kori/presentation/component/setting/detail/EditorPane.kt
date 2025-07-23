@@ -19,9 +19,6 @@ import androidx.compose.material.icons.outlined.Spellcheck
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,6 +38,8 @@ import kori.composeapp.generated.resources.lint
 import kori.composeapp.generated.resources.lint_description
 import kori.composeapp.generated.resources.reading_view
 import org.jetbrains.compose.resources.stringResource
+import org.yangdai.kori.presentation.component.SegmentText
+import org.yangdai.kori.presentation.component.SegmentedControl
 import org.yangdai.kori.presentation.component.setting.DetailPaneItem
 import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import org.yangdai.kori.presentation.util.Constants
@@ -91,31 +90,19 @@ fun EditorPane(settingsViewModel: SettingsViewModel) {
                     stringResource(Res.string.reading_view)
                 )
 
-            SingleChoiceSegmentedButtonRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 16.dp)
-            ) {
-                viewOptions.forEachIndexed { index, option ->
-                    SegmentedButton(
-                        shape = SegmentedButtonDefaults.itemShape(
-                            index = index,
-                            count = viewOptions.size
-                        ),
-                        onClick = {
-                            hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                            settingsViewModel.putPreferenceValue(
-                                Constants.Preferences.IS_DEFAULT_READING_VIEW,
-                                index == 1
-                            )
-                        },
-                        selected = editorPaneState.isDefaultReadingView == (index == 1)
-                    ) {
-                        Text(option, maxLines = 1, modifier = Modifier.basicMarquee())
-                    }
-                }
-            }
+            SegmentedControl(
+                modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp),
+                segments = viewOptions,
+                selectedSegmentIndex = if (editorPaneState.isDefaultReadingView) 1 else 0,
+                onSegmentSelected = { index ->
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                    settingsViewModel.putPreferenceValue(
+                        Constants.Preferences.IS_DEFAULT_READING_VIEW,
+                        index == 1
+                    )
+                },
+                content = { SegmentText(it) }
+            )
         }
 
         DetailPaneItem(
