@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.horizontalDrag
@@ -48,12 +49,12 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextMotion
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.math.abs
 
 @Preview
 @Composable
@@ -171,6 +172,10 @@ fun <T : Any> SegmentedControl(
 
             if (downOnSelected) {
                 horizontalDrag(down.id) { change ->
+                    if (abs(change.position.y - change.previousPosition.y) > 0) {
+                        change.consume()
+                    }
+
                     state.pressedSegment = segmentIndex(change)
                     if (state.pressedSegment != state.selectedIndex) {
                         state.onSegmentSelected(state.pressedSegment)
@@ -223,16 +228,14 @@ fun <T : Any> SegmentedControl(
     }
 }
 
-
 @Composable
 fun SegmentText(text: String) =
     Text(
+        modifier = Modifier.basicMarquee(),
         text = text,
         maxLines = 1,
-        style = MaterialTheme.typography.labelMedium.copy(textMotion = TextMotion.Animated),
-        overflow = TextOverflow.Ellipsis
+        style = MaterialTheme.typography.labelMedium.copy(textMotion = TextMotion.Animated)
     )
-
 
 @Composable
 private fun Thumb(state: SegmentedControlState) =
@@ -244,7 +247,7 @@ private fun Thumb(state: SegmentedControlState) =
                 segment = state.selectedIndex,
                 segmentCount = state.segmentCount,
             )
-            .shadow(4.dp, THUMB_SHAPE)
+            .shadow(1.dp, THUMB_SHAPE)
             .background(MaterialTheme.colorScheme.surface, THUMB_SHAPE)
     )
 

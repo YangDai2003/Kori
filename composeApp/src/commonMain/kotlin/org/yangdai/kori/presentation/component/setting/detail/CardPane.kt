@@ -1,7 +1,6 @@
 package org.yangdai.kori.presentation.component.setting.detail
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,9 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,6 +31,8 @@ import kori.composeapp.generated.resources.title_only
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
+import org.yangdai.kori.presentation.component.SegmentText
+import org.yangdai.kori.presentation.component.SegmentedControl
 import org.yangdai.kori.presentation.component.main.NoteItemProperties
 import org.yangdai.kori.presentation.component.main.Page
 import org.yangdai.kori.presentation.screen.settings.CardSize.Companion.toInt
@@ -64,27 +62,17 @@ fun CardPane(settingsViewModel: SettingsViewModel) {
 
         Card(
             modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding().fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            shape = MaterialTheme.shapes.extraLarge,
+                .padding(horizontal = 8.dp),
+            shape = MaterialTheme.shapes.medium,
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.6f)
+                containerColor = MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.4f)
             )
         ) {
-            val overflowStyles = listOf(
-                stringResource(Res.string.ellipsis),
-                stringResource(Res.string.clip)
-            )
-            val sizeStyles = listOf(
-                stringResource(Res.string.default_size),
-                stringResource(Res.string.title_only),
-                stringResource(Res.string.compact)
-            )
-
             Column(
                 Modifier.fillMaxWidth().padding(8.dp)
                     .background(
-                        color = MaterialTheme.colorScheme.surfaceBright.copy(alpha = 0.6f),
-                        shape = MaterialTheme.shapes.extraLarge
+                        color = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.8f),
+                        shape = MaterialTheme.shapes.medium
                     )
             ) {
                 Text(
@@ -93,38 +81,29 @@ fun CardPane(settingsViewModel: SettingsViewModel) {
                     style = MaterialTheme.typography.labelLarge,
                     maxLines = 1
                 )
-                SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(8.dp)) {
-                    overflowStyles.forEachIndexed { index, label ->
-                        SegmentedButton(
-                            shape = SegmentedButtonDefaults.itemShape(
-                                index = index,
-                                count = overflowStyles.size
-                            ),
-                            onClick = {
-                                hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                                settingsViewModel.putPreferenceValue(
-                                    Constants.Preferences.CLIP_OVERFLOW_TEXT,
-                                    index == 1
-                                )
-                            },
-                            selected = if (cardPaneState.clipOverflow) 1 == index else 0 == index,
-                            label = {
-                                Text(
-                                    label,
-                                    maxLines = 1,
-                                    modifier = Modifier.basicMarquee()
-                                )
-                            }
+                SegmentedControl(
+                    modifier = Modifier.fillMaxWidth().padding(8.dp),
+                    segments = listOf(
+                        stringResource(Res.string.ellipsis),
+                        stringResource(Res.string.clip)
+                    ),
+                    selectedSegmentIndex = if (cardPaneState.clipOverflow) 1 else 0,
+                    onSegmentSelected = { index ->
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                        settingsViewModel.putPreferenceValue(
+                            Constants.Preferences.CLIP_OVERFLOW_TEXT,
+                            index == 1
                         )
-                    }
-                }
+                    },
+                    content = { SegmentText(it) }
+                )
             }
 
             Column(
                 Modifier.fillMaxWidth().padding(horizontal = 8.dp).padding(bottom = 8.dp)
                     .background(
-                        color = MaterialTheme.colorScheme.surfaceBright.copy(alpha = 0.6f),
-                        shape = MaterialTheme.shapes.extraLarge
+                        color = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.8f),
+                        shape = MaterialTheme.shapes.medium
                     )
             ) {
                 Text(
@@ -133,31 +112,23 @@ fun CardPane(settingsViewModel: SettingsViewModel) {
                     style = MaterialTheme.typography.labelLarge,
                     maxLines = 1
                 )
-                SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(8.dp)) {
-                    sizeStyles.forEachIndexed { index, label ->
-                        SegmentedButton(
-                            shape = SegmentedButtonDefaults.itemShape(
-                                index = index,
-                                count = sizeStyles.size
-                            ),
-                            onClick = {
-                                hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                                settingsViewModel.putPreferenceValue(
-                                    Constants.Preferences.CARD_SIZE,
-                                    index
-                                )
-                            },
-                            selected = index == cardPaneState.cardSize.toInt(),
-                            label = {
-                                Text(
-                                    label,
-                                    maxLines = 1,
-                                    modifier = Modifier.basicMarquee()
-                                )
-                            }
+                SegmentedControl(
+                    modifier = Modifier.fillMaxWidth().padding(8.dp),
+                    segments = listOf(
+                        stringResource(Res.string.default_size),
+                        stringResource(Res.string.title_only),
+                        stringResource(Res.string.compact)
+                    ),
+                    selectedSegmentIndex = cardPaneState.cardSize.toInt(),
+                    onSegmentSelected = { index ->
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                        settingsViewModel.putPreferenceValue(
+                            Constants.Preferences.CARD_SIZE,
+                            index
                         )
-                    }
-                }
+                    },
+                    content = { SegmentText(it) }
+                )
             }
         }
     }
