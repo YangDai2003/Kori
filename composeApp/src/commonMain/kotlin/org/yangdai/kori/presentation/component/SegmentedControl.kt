@@ -134,7 +134,6 @@ private class SegmentedControlState {
     }
 }
 
-
 @Composable
 fun <T : Any> SegmentedControl(
     segments: List<T>,
@@ -250,7 +249,6 @@ private fun Thumb(state: SegmentedControlState) =
             .shadow(1.dp, THUMB_SHAPE)
             .background(MaterialTheme.colorScheme.surface, THUMB_SHAPE)
     )
-
 
 @Composable
 private fun Dividers(state: SegmentedControlState) {

@@ -71,7 +71,7 @@ fun CardPane(settingsViewModel: SettingsViewModel) {
             Column(
                 Modifier.fillMaxWidth().padding(8.dp)
                     .background(
-                        color = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.8f),
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
                         shape = MaterialTheme.shapes.medium
                     )
             ) {
@@ -102,7 +102,7 @@ fun CardPane(settingsViewModel: SettingsViewModel) {
             Column(
                 Modifier.fillMaxWidth().padding(horizontal = 8.dp).padding(bottom = 8.dp)
                     .background(
-                        color = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.8f),
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
                         shape = MaterialTheme.shapes.medium
                     )
             ) {
