@@ -2,12 +2,12 @@ package org.yangdai.kori.presentation.component.main
 
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridItemScope
@@ -63,7 +63,10 @@ fun LazyStaggeredGridItemScope.NoteItem(
     border = if (isSelected) CardDefaults.outlinedCardBorder() else null
 ) {
     Box(Modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick)) {
-        Column(Modifier.fillMaxWidth().padding(12.dp)) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
             val title = note.title
             if (title.isNotBlank()) {
                 val annotatedString = buildAnnotatedString {
@@ -93,7 +96,6 @@ fun LazyStaggeredGridItemScope.NoteItem(
                     maxLines = 1,
                     modifier = Modifier.basicMarquee()
                 )
-                Spacer(Modifier.height(6.dp))
             }
 
             // 内容预览
@@ -106,11 +108,7 @@ fun LazyStaggeredGridItemScope.NoteItem(
                 )
 
             // 底部行：笔记类型和更新时间信息
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 12.dp)
-            ) {
-
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 if (note.isPinned)
                     Icon(
                         modifier = Modifier.padding(end = 8.dp).size(16.dp),
