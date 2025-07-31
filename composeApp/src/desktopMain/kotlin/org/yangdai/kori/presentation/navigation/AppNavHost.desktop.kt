@@ -1,6 +1,7 @@
 package org.yangdai.kori.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -13,6 +14,7 @@ import org.yangdai.kori.presentation.screen.main.MainScreen
 import org.yangdai.kori.presentation.screen.note.NoteScreen
 import org.yangdai.kori.presentation.screen.settings.SettingsScreen
 import org.yangdai.kori.presentation.screen.template.TemplateScreen
+import org.yangdai.kori.presentation.util.ExternalUriHandler
 import java.io.File
 
 @Composable
@@ -27,6 +29,14 @@ actual fun AppNavHost(
     composable<Screen.Main> {
         MainScreen { screen ->
             navHostController.navigate(screen)
+        }
+        DisposableEffect(Unit) {
+            ExternalUriHandler.listener = { uri ->
+                navHostController.navigate(Screen.File(path = uri))
+            }
+            onDispose {
+                ExternalUriHandler.listener = null
+            }
         }
     }
 

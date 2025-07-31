@@ -40,6 +40,8 @@ import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import org.yangdai.kori.presentation.theme.KoriTheme
 import org.yangdai.kori.presentation.util.AppLockManager
 import org.yangdai.kori.presentation.util.Constants
+import org.yangdai.kori.presentation.util.ExternalUriHandler
+import java.awt.Desktop
 import java.awt.Dimension
 
 @Suppress("unused")
@@ -49,6 +51,11 @@ fun main() {
     System.setProperty("compose.interop.blending", "true")
     System.setProperty("compose.swing.render.on.graphics", "true")
     KoinInitializer.init()
+    if (System.getProperty("os.name").indexOf("Mac") > -1) {
+        Desktop.getDesktop().setOpenURIHandler { uri ->
+            ExternalUriHandler.onNewUri(uri.uri.toString())
+        }
+    }
     application {
         val state = rememberWindowState()
         Window(
