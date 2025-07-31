@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipEntry
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.datetime.toNSDate
@@ -23,6 +24,7 @@ import platform.Foundation.writeToURL
 import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
 import platform.UIKit.UIApplicationOpenSettingsURLString
+import platform.UIKit.UIColor
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -99,4 +101,21 @@ actual fun Modifier.clickToLanguageSetting(): Modifier {
             UIApplication.sharedApplication.openURL(settingsUrl, mapOf<Any?, Any?>(), null)
         }
     }
+}
+
+fun Color.toUIColor(): UIColor {
+    return UIColor.colorWithRed(
+        red = red.toDouble(),
+        green = green.toDouble(),
+        blue = blue.toDouble(),
+        alpha = alpha.toDouble()
+    )
+}
+
+fun Int.toUIColor(): UIColor {
+    val red = (this shr 16 and 0xFF) / 255.0
+    val green = (this shr 8 and 0xFF) / 255.0
+    val blue = (this and 0xFF) / 255.0
+    val alpha = (this shr 24 and 0xFF) / 255.0
+    return UIColor.colorWithRed(red, green, blue, alpha)
 }

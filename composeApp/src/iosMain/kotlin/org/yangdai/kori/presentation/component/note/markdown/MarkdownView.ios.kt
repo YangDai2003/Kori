@@ -11,11 +11,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.UIKitView
 import kotlinx.cinterop.ExperimentalForeignApi
+import org.yangdai.kori.presentation.util.toUIColor
 import platform.CoreGraphics.CGRectMake
 import platform.Foundation.NSBundle
 import platform.Foundation.NSError
 import platform.UIKit.UIApplication
-import platform.UIKit.UIColor
 import platform.UIKit.UIPrintInfo
 import platform.UIKit.UIPrintInfoOutputType
 import platform.UIKit.UIPrintInteractionController
@@ -53,14 +53,10 @@ actual fun MarkdownView(
 
             WKWebView(frame = CGRectMake(0.0, 0.0, 0.0, 0.0), configuration = config).apply {
                 this.opaque = false // To stop 'white flash'
-                this.scrollView.backgroundColor =
-                    UIColor.clearColor // Ensure scroll view is also transparent
-
+                this.backgroundColor = styles.backgroundColor.toUIColor()
                 this.navigationDelegate = navigationDelegate // Handle link clicks
-
                 this.scrollView.showsVerticalScrollIndicator = true
                 this.scrollView.showsHorizontalScrollIndicator = false
-                this.scrollView.bounces = false // Disable bounce effect
             }.also { webView = it }
         },
         modifier = modifier, // Apply Compose modifiers
@@ -151,4 +147,3 @@ private class NavigationDelegate : NSObject(), WKNavigationDelegateProtocol {
         decisionHandler(WKNavigationActionPolicy.WKNavigationActionPolicyAllow) // Use WKNavigationActionPolicyAllow constant
     }
 }
-

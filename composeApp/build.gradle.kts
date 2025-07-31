@@ -105,7 +105,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.okhttp)
-            val javafxVersion = "21.0.7"
+            val javafxVersion = "21.0.8"
             implementation("org.openjfx:javafx-base:$javafxVersion:$platform")
             implementation("org.openjfx:javafx-graphics:$javafxVersion:$platform")
             implementation("org.openjfx:javafx-controls:$javafxVersion:$platform")
