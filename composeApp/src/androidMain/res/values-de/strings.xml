@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="compose">Erstellen</string>
-
+    <string name="compose">Neue Notiz</string>
     <string name="unlock_to_use">Freischalten, um Kori zu verwenden</string>
     <string name="dynamic_only_android_12">Dynamische Farbe</string>
     <string name="screen_protection">Bildschirmschutz</string>
     <string name="screen_protection_detail">Wenn diese Funktion aktiviert ist, können App-Inhalte nicht erfasst oder aufgezeichnet werden und die Inhalte werden nicht in der App-Liste im Hintergrund angezeigt.</string>
     <string name="biometric">Entsperren mit Biometrie</string>
     <string name="no_password_set">Bitte legen Sie zuerst das Passwort für den Sperrbildschirm des Systems fest.</string>
+    <string name="settings">Einstellungen</string>
+    <string name="folders">Ordner</string>
+    <string name="template">Neue Vorlage</string>
 </resources>

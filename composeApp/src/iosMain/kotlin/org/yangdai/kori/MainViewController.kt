@@ -22,7 +22,6 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ComposeUIViewController
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.data.di.KoinInitializer
 import org.yangdai.kori.presentation.component.login.NumberLockScreen
@@ -43,8 +42,7 @@ fun MainViewController() = ComposeUIViewController(
     val settingsViewModel: SettingsViewModel = koinViewModel<SettingsViewModel>()
     val stylePaneState by settingsViewModel.stylePaneState.collectAsStateWithLifecycle()
     val securityPaneState by settingsViewModel.securityPaneState.collectAsStateWithLifecycle()
-    val appLockManager = koinInject<AppLockManager>()
-    val isUnlocked by appLockManager.isUnlocked.collectAsStateWithLifecycle()
+    val isUnlocked by AppLockManager.isUnlocked.collectAsStateWithLifecycle()
 
     LaunchedEffect(securityPaneState.keepScreenOn) {
         // iOS 屏幕常亮设置
@@ -108,9 +106,9 @@ fun MainViewController() = ComposeUIViewController(
                                 Constants.Preferences.IS_CREATING_PASSWORD,
                                 false
                             )
-                            appLockManager.unlock()
+                            AppLockManager.unlock()
                         },
-                        onAuthenticated = { appLockManager.unlock() }
+                        onAuthenticated = { AppLockManager.unlock() }
                     )
                 }
             }

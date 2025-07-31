@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="compose">撰写</string>
-
+    <string name="compose">新建笔记</string>
     <string name="unlock_to_use">解锁以使用 Kori</string>
     <string name="dynamic_only_android_12">动态颜色</string>
     <string name="screen_protection_detail">开启后，应用内容无法被截屏或录制，在后台应用列表中也不会显示内容。</string>
     <string name="screen_protection">屏幕隐私保护</string>
     <string name="biometric">使用生物识别解锁</string>
     <string name="no_password_set">请先设置系统锁屏密码</string>
+    <string name="settings">应用设置</string>
+    <string name="folders">管理文件夹</string>
+    <string name="template">新建模版</string>
 </resources>

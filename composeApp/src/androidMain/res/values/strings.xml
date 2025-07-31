@@ -1,11 +1,13 @@
 <resources>
     <string name="app_name" translatable="false">Kori</string>
-    <string name="compose">Compose</string>
-
+    <string name="compose">New Note</string>
     <string name="unlock_to_use">Unlock to use Kori</string>
     <string name="dynamic_only_android_12">Dynamic color</string>
     <string name="screen_protection">Screen protection</string>
     <string name="screen_protection_detail">When this feature is turned on, app content cannot be captured or recorded, and the content will not be displayed in the background app list.</string>
     <string name="biometric">Unlock with biometrics</string>
     <string name="no_password_set">Please set the system lock screen password first</string>
+    <string name="settings">Settings</string>
+    <string name="folders">Folders</string>
+    <string name="template">New Template</string>
 </resources>

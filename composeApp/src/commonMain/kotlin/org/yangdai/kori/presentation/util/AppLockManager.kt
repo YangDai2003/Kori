@@ -10,7 +10,7 @@ import kotlin.time.ExperimentalTime
 /**
  * 管理应用锁解锁状态的全局单例类
  */
-class AppLockManager {
+object AppLockManager {
 
     // 当前应用锁解锁状态
     private val _isUnlocked = MutableStateFlow(false)

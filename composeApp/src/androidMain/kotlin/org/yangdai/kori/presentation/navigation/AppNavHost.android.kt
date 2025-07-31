@@ -78,7 +78,7 @@ actual fun AppNavHost(
         }
     }
 
-    composable<Screen.Note>(deepLinks = listOf(navDeepLink<Screen.Note>(basePath = "${Constants.DEEP_LINK}/note"))) {
+    composable<Screen.Note>(deepLinks = listOf(navDeepLink<Screen.Note>(basePath = "${Constants.DEEP_LINK_ANDROID}/note"))) {
         NoteScreen(navigateToScreen = { navHostController.navigate(it) }) {
             navHostController.navigateUp()
         }
@@ -95,19 +95,19 @@ actual fun AppNavHost(
         }
     }
 
-    composable<Screen.Template> {
+    composable<Screen.Template>(deepLinks = listOf(navDeepLink<Screen.Template>(basePath = "${Constants.DEEP_LINK_ANDROID}/template"))) {
         TemplateScreen(navigateToScreen = { navHostController.navigate(it) }) {
             navHostController.navigateUp()
         }
     }
 
-    composable<Screen.Settings> {
+    composable<Screen.Settings>(deepLinks = listOf(navDeepLink<Screen.Settings>(basePath = "${Constants.DEEP_LINK_ANDROID}/settings"))) {
         SettingsScreen {
             navHostController.navigateUp()
         }
     }
 
-    composable<Screen.Folders> {
+    composable<Screen.Folders>(deepLinks = listOf(navDeepLink<Screen.Folders>(basePath = "${Constants.DEEP_LINK_ANDROID}/folders"))) {
         FoldersScreen {
             navHostController.navigateUp()
         }

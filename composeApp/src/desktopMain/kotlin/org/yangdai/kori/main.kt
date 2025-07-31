@@ -30,7 +30,6 @@ import kori.composeapp.generated.resources.app_name
 import kori.composeapp.generated.resources.compose_multiplatform
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.data.di.KoinInitializer
 import org.yangdai.kori.presentation.component.login.NumberLockScreen
@@ -68,8 +67,7 @@ fun main() {
             val settingsViewModel: SettingsViewModel = koinViewModel<SettingsViewModel>()
             val stylePaneState by settingsViewModel.stylePaneState.collectAsStateWithLifecycle()
             val securityPaneState by settingsViewModel.securityPaneState.collectAsStateWithLifecycle()
-            val appLockManager = koinInject<AppLockManager>()
-            val isUnlocked by appLockManager.isUnlocked.collectAsStateWithLifecycle()
+            val isUnlocked by AppLockManager.isUnlocked.collectAsStateWithLifecycle()
             val isSystemInDarkTheme = isSystemInDarkTheme()
 
             val darkMode = remember(isSystemInDarkTheme, stylePaneState.theme) {
@@ -124,9 +122,9 @@ fun main() {
                                         Constants.Preferences.IS_CREATING_PASSWORD,
                                         false
                                     )
-                                    appLockManager.unlock()
+                                    AppLockManager.unlock()
                                 },
-                                onAuthenticated = { appLockManager.unlock() }
+                                onAuthenticated = { AppLockManager.unlock() }
                             )
                         }
                     }

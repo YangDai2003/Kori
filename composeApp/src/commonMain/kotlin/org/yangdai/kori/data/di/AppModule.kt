@@ -3,7 +3,6 @@ package org.yangdai.kori.data.di
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
@@ -20,7 +19,6 @@ import org.yangdai.kori.presentation.screen.note.NoteViewModel
 import org.yangdai.kori.presentation.screen.settings.DataViewModel
 import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import org.yangdai.kori.presentation.screen.template.TemplateViewModel
-import org.yangdai.kori.presentation.util.AppLockManager
 
 expect fun databaseModule(): Module
 
@@ -28,7 +26,6 @@ fun appModule() = module {
     single<FolderRepository> { FolderRepositoryImpl(get()) }
     single<NoteRepository> { NoteRepositoryImpl(get()) }
     single<DataStoreRepository> { DataStoreRepositoryImpl(get()) }
-    singleOf(::AppLockManager)
     viewModelOf(::MainViewModel)
     viewModelOf(::FoldersViewModel)
     viewModelOf(::NoteViewModel)

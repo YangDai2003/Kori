@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.presentation.navigation.AppNavHost
 import org.yangdai.kori.presentation.screen.LoginOverlayScreen
@@ -39,8 +38,7 @@ class MainActivity : AppCompatActivity() {
             val settingsViewModel: SettingsViewModel = koinViewModel<SettingsViewModel>()
             val stylePaneState by settingsViewModel.stylePaneState.collectAsStateWithLifecycle()
             val securityPaneState by settingsViewModel.securityPaneState.collectAsStateWithLifecycle()
-            val appLockManager = koinInject<AppLockManager>()
-            val isUnlocked by appLockManager.isUnlocked.collectAsStateWithLifecycle()
+            val isUnlocked by AppLockManager.isUnlocked.collectAsStateWithLifecycle()
 
             LaunchedEffect(securityPaneState.isScreenProtected) {
                 window.let { window ->
@@ -111,10 +109,10 @@ class MainActivity : AppCompatActivity() {
                                     Constants.Preferences.IS_CREATING_PASSWORD,
                                     false
                                 )
-                                appLockManager.unlock()
+                                AppLockManager.unlock()
                             },
                             onAuthenticated = {
-                                appLockManager.unlock()
+                                AppLockManager.unlock()
                             },
                             onAuthenticationNotEnrolled = {
                                 settingsViewModel.putPreferenceValue(

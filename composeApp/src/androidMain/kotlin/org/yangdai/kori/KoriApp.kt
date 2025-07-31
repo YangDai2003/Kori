@@ -17,17 +17,77 @@ class KoriApp : Application() {
             androidContext(this@KoriApp)
         }
 
-        val shortcut = ShortcutInfoCompat.Builder(applicationContext, "id1")
+        // Note shortcut
+        val noteShortcut = ShortcutInfoCompat.Builder(applicationContext, "id1")
             .setShortLabel(getString(R.string.compose))
-            .setLongLabel(getString(R.string.compose))
-            .setIcon(IconCompat.createWithResource(applicationContext, R.drawable.compose))
+            .setIcon(
+                IconCompat.createWithResource(
+                    applicationContext,
+                    R.drawable.outline_note_add_24
+                )
+            )
             .setIntent(
                 Intent(applicationContext, MainActivity::class.java).apply {
                     action = Intent.ACTION_VIEW
-                    data = ("${Constants.DEEP_LINK}/note").toUri()
+                    data = ("${Constants.DEEP_LINK_ANDROID}/note").toUri()
                 }
             )
             .build()
-        ShortcutManagerCompat.pushDynamicShortcut(applicationContext, shortcut)
+
+        // Settings shortcut
+        val settingsShortcut = ShortcutInfoCompat.Builder(applicationContext, "id_settings")
+            .setShortLabel(getString(R.string.settings))
+            .setIcon(
+                IconCompat.createWithResource(
+                    applicationContext,
+                    R.drawable.outline_settings_24
+                )
+            )
+            .setIntent(
+                Intent(applicationContext, MainActivity::class.java).apply {
+                    action = Intent.ACTION_VIEW
+                    data = ("${Constants.DEEP_LINK_ANDROID}/settings").toUri()
+                }
+            )
+            .build()
+
+        // Folders shortcut
+        val foldersShortcut = ShortcutInfoCompat.Builder(applicationContext, "id_folders")
+            .setShortLabel(getString(R.string.folders))
+            .setIcon(
+                IconCompat.createWithResource(
+                    applicationContext,
+                    R.drawable.outline_folders_24
+                )
+            )
+            .setIntent(
+                Intent(applicationContext, MainActivity::class.java).apply {
+                    action = Intent.ACTION_VIEW
+                    data = ("${Constants.DEEP_LINK_ANDROID}/folders").toUri()
+                }
+            )
+            .build()
+
+        // Template shortcut
+        val templateShortcut = ShortcutInfoCompat.Builder(applicationContext, "id_template")
+            .setShortLabel(getString(R.string.template))
+            .setIcon(
+                IconCompat.createWithResource(
+                    applicationContext,
+                    R.drawable.outline_add_template_24
+                )
+            )
+            .setIntent(
+                Intent(applicationContext, MainActivity::class.java).apply {
+                    action = Intent.ACTION_VIEW
+                    data = ("${Constants.DEEP_LINK_ANDROID}/template").toUri()
+                }
+            )
+            .build()
+
+        ShortcutManagerCompat.pushDynamicShortcut(applicationContext, noteShortcut)
+        ShortcutManagerCompat.pushDynamicShortcut(applicationContext, templateShortcut)
+        ShortcutManagerCompat.pushDynamicShortcut(applicationContext, settingsShortcut)
+        ShortcutManagerCompat.pushDynamicShortcut(applicationContext, foldersShortcut)
     }
 }
