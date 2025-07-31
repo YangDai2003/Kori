@@ -144,8 +144,7 @@ actual fun PhotosPickerDialog(onPhotosPicked: (List<String>) -> Unit) {
 
     val savedNames = mutableListOf<String>()
     if (fileDialog.files != null) {
-        val userHome: String =
-            System.getProperty("user.home") ?: System.getProperty("java.io.tmpdir")
+        val userHome: String = System.getProperty("user.home")
         val imagesDir = File(File(userHome, ".kori"), "images")
         if (!imagesDir.exists()) imagesDir.mkdirs()
         for (file in fileDialog.files) {

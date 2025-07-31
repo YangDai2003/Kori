@@ -7,6 +7,7 @@ import android.print.PrintAttributes
 import android.print.PrintManager
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.JavascriptInterface
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebView.enableSlowWholeDocumentDraw
@@ -24,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
+import org.yangdai.kori.presentation.component.dialog.ImageViewerDialog
 import org.yangdai.kori.presentation.util.rememberCustomTabsIntent
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -40,6 +42,8 @@ actual fun MarkdownView(
     val customTabsIntent = rememberCustomTabsIntent()
     val activity = LocalActivity.current
     var webView by remember { mutableStateOf<WebView?>(null) }
+    var showDialog by remember { mutableStateOf(false) }
+    var clickedImageUrl by remember { mutableStateOf("") }
 
     val data =
         remember(html, styles, isAppInDarkTheme) { processHtml(html, styles, isAppInDarkTheme) }
@@ -70,6 +74,17 @@ actual fun MarkdownView(
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
                 this.webViewClient = webViewClient
+                addJavascriptInterface(
+                    object {
+                        @Suppress("unused")
+                        @JavascriptInterface
+                        fun onImageClick(urlStr: String) {
+                            clickedImageUrl = urlStr
+                            showDialog = true
+                        }
+                    },
+                    "imageInterface"
+                )
                 settings.allowFileAccess = true
                 settings.allowContentAccess = true
                 settings.allowFileAccessFromFileURLs = true
@@ -140,6 +155,12 @@ actual fun MarkdownView(
         webView?.let { createWebPrintJob(it, activity) }
         printTrigger.value = false
     }
+
+    if (showDialog)
+        ImageViewerDialog(
+            onDismissRequest = { showDialog = false },
+            imageUrl = clickedImageUrl,
+        )
 }
 
 private fun createWebPrintJob(webView: WebView, activity: Activity?) {

@@ -303,6 +303,33 @@
         processMediaItems: () => {
             handlers.processCheckboxLists();
             handlers.processAlerts();
+            handlers.processImages();
+        },
+
+        processImages: () => {
+            document.querySelectorAll('img').forEach((img, index) => {
+                const imageName = img.getAttribute('src');
+                const id = 'img_' + index;
+                img.setAttribute('data-id', id);
+                img.setAttribute('loading', 'lazy');
+<!--                window.mediaPathHandler.processMedia(imageName, id, "image");-->
+
+                let touchStartTime;
+
+                img.onclick = () => window.imageInterface.onImageClick(img.src);
+                img.oncontextmenu = e => { e.preventDefault(); return false; };
+                img.draggable = false;
+
+                img.addEventListener('touchstart', () => {
+                    touchStartTime = Date.now();
+                });
+
+                img.addEventListener('touchend', e => {
+                    if (Date.now() - touchStartTime >= 500) {
+                        e.preventDefault();
+                    }
+                });
+            });
         },
 
         processCheckboxLists: () => {

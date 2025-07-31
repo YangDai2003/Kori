@@ -8,8 +8,7 @@ import java.io.File
 
 fun createDataStore(): DataStore<Preferences> = createDataStore(
     producePath = {
-        val userHome: String =
-            System.getProperty("user.home") ?: System.getProperty("java.io.tmpdir")
+        val userHome: String = System.getProperty("user.home")
         val koriDir = File(userHome, ".kori")
         if (!koriDir.exists()) koriDir.mkdirs()
         val dsFile = File(koriDir, dataStoreFileName)
