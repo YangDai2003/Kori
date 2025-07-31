@@ -463,16 +463,12 @@ fun TemplateScreen(
                             contentDescription = null
                         )
                     }
-                    if (
-                        currentPlatformInfo.operatingSystem == OS.IOS || currentPlatformInfo.operatingSystem == OS.ANDROID
-                        || currentPlatformInfo.operatingSystem == OS.WINDOWS
-                    )
-                        IconButton(onClick = { printTrigger.value = true }) {
-                            Icon(
-                                imageVector = Icons.Outlined.Print,
-                                contentDescription = null
-                            )
-                        }
+                    IconButton(onClick = { printTrigger.value = true }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Print,
+                            contentDescription = null
+                        )
+                    }
                 }
             }
         },
