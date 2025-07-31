@@ -113,7 +113,7 @@ fun SharedTransitionScope.ModifyFolderDialog(
             }
             val custom by remember {
                 derivedStateOf {
-                    !folderColorOptions.contains(Color(color))
+                    !folderColorOptions.contains(Color(color)) && color != defaultFolderColor
                 }
             }
 
@@ -301,33 +301,39 @@ fun SharedTransitionScope.ModifyFolderDialog(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun OutlinedCircle(
     color: Color,
     selected: Boolean,
     onClick: () -> Unit
 ) = OutlinedIconButton(
+    shape = if (selected) IconButtonDefaults.smallSquareShape else IconButtonDefaults.smallRoundShape,
     colors = IconButtonDefaults.outlinedIconButtonVibrantColors(containerColor = color),
     border = if (selected) BorderStroke(2.dp, MaterialTheme.colorScheme.outline) else null,
     onClick = onClick
 ) { }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun OutlinedCustomCircle(
     color: Color,
     selected: Boolean,
     onClick: () -> Unit
 ) = OutlinedIconButton(
+    shape = if (selected) IconButtonDefaults.smallSquareShape else IconButtonDefaults.smallRoundShape,
     colors = IconButtonDefaults.outlinedIconButtonVibrantColors(containerColor = color),
     border = if (selected) BorderStroke(2.dp, MaterialTheme.colorScheme.outline) else null,
     onClick = onClick
 ) { Icon(imageVector = Icons.Outlined.Colorize, contentDescription = null) }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun OutlinedTextCircle(
     selected: Boolean,
     onClick: () -> Unit
 ) = OutlinedIconButton(
+    shape = if (selected) IconButtonDefaults.smallSquareShape else IconButtonDefaults.smallRoundShape,
     colors = IconButtonDefaults.outlinedIconButtonVibrantColors(
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary
