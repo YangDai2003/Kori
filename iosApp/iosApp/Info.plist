@@ -9,7 +9,7 @@
 			<string>Viewer</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.kori</string>
+				<string>kori</string>
 			</array>
 		</dict>
 		<dict>
@@ -17,7 +17,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.kori</string>
+				<string>kori</string>
 			</array>
 		</dict>
 	</array>

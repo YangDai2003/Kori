@@ -29,7 +29,7 @@ class KoriApp : Application() {
             .setIntent(
                 Intent(applicationContext, MainActivity::class.java).apply {
                     action = Intent.ACTION_VIEW
-                    data = ("${Constants.DEEP_LINK_ANDROID}/note").toUri()
+                    data = ("${Constants.DEEP_LINK}/note").toUri()
                 }
             )
             .build()
@@ -46,7 +46,7 @@ class KoriApp : Application() {
             .setIntent(
                 Intent(applicationContext, MainActivity::class.java).apply {
                     action = Intent.ACTION_VIEW
-                    data = ("${Constants.DEEP_LINK_ANDROID}/settings").toUri()
+                    data = ("${Constants.DEEP_LINK}/settings").toUri()
                 }
             )
             .build()
@@ -63,7 +63,7 @@ class KoriApp : Application() {
             .setIntent(
                 Intent(applicationContext, MainActivity::class.java).apply {
                     action = Intent.ACTION_VIEW
-                    data = ("${Constants.DEEP_LINK_ANDROID}/folders").toUri()
+                    data = ("${Constants.DEEP_LINK}/folders").toUri()
                 }
             )
             .build()
@@ -80,7 +80,7 @@ class KoriApp : Application() {
             .setIntent(
                 Intent(applicationContext, MainActivity::class.java).apply {
                     action = Intent.ACTION_VIEW
-                    data = ("${Constants.DEEP_LINK_ANDROID}/template").toUri()
+                    data = ("${Constants.DEEP_LINK}/template").toUri()
                 }
             )
             .build()

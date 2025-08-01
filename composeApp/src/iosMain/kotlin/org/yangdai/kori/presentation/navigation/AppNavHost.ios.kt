@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavUri
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
@@ -34,18 +35,7 @@ actual fun AppNavHost(
         }
         DisposableEffect(Unit) {
             ExternalUriHandler.listener = { uri ->
-                if (uri.contains("settings")) {
-                    navHostController.navigate(Screen.Settings)
-                } else if (uri.contains("folders")) {
-                    navHostController.navigate(Screen.Folders)
-                } else if (uri.contains("note")) {
-//                    val noteId = uri.substringAfterLast("/").toLongOrNull()
-//                    if (noteId != null) {
-//                        navHostController.navigate(Screen.Note(noteId))
-//                    }
-                } else if (uri.contains("template")) {
-                    navHostController.navigate(Screen.Template)
-                }
+                navHostController.navigate(NavUri(uri))
             }
             onDispose {
                 ExternalUriHandler.listener = null
@@ -53,7 +43,7 @@ actual fun AppNavHost(
         }
     }
 
-    composable<Screen.Note>(deepLinks = listOf(navDeepLink<Screen.Note>(basePath = "${Constants.DEEP_LINK_IOS}://note"))) {
+    composable<Screen.Note>(deepLinks = listOf(navDeepLink<Screen.Note>(basePath = "${Constants.DEEP_LINK}/note"))) {
         NoteScreen(navigateToScreen = { navHostController.navigate(it) }) {
             navHostController.navigateUp()
         }
@@ -70,19 +60,31 @@ actual fun AppNavHost(
         }
     }
 
-    composable<Screen.Template>(deepLinks = listOf(navDeepLink<Screen.Template>(basePath = "${Constants.DEEP_LINK_IOS}://template"))) {
+    composable<Screen.Template>(
+        deepLinks = listOf(
+            navDeepLink { uriPattern = "${Constants.DEEP_LINK}/template" }
+        )
+    ) {
         TemplateScreen(navigateToScreen = { navHostController.navigate(it) }) {
             navHostController.navigateUp()
         }
     }
 
-    composable<Screen.Settings>(deepLinks = listOf(navDeepLink<Screen.Settings>(basePath = "${Constants.DEEP_LINK_IOS}://settings"))) {
+    composable<Screen.Settings>(
+        deepLinks = listOf(
+            navDeepLink { uriPattern = "${Constants.DEEP_LINK}/settings" }
+        )
+    ) {
         SettingsScreen {
             navHostController.navigateUp()
         }
     }
 
-    composable<Screen.Folders>(deepLinks = listOf(navDeepLink<Screen.Folders>(basePath = "${Constants.DEEP_LINK_IOS}://folders"))) {
+    composable<Screen.Folders>(
+        deepLinks = listOf(
+            navDeepLink { uriPattern = "${Constants.DEEP_LINK}/folders" }
+        )
+    ) {
         FoldersScreen {
             navHostController.navigateUp()
         }

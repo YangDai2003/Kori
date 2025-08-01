@@ -1,9 +1,7 @@
 package org.yangdai.kori.presentation.util
 
 object Constants {
-
-    const val DEEP_LINK_ANDROID = "https://www.kori_cmp.com"
-    const val DEEP_LINK_IOS = "com.kori"
+    const val DEEP_LINK = "kori://screen"
 
     object Preferences {
         const val FOLDER_SORT_TYPE = "folder_sort_type"
