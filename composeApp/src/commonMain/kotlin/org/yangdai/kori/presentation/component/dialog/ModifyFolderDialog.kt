@@ -128,7 +128,7 @@ fun SharedTransitionScope.ModifyFolderDialog(
                     .verticalScroll(rememberScrollState())
                     .imePadding()
                     .padding(16.dp)
-                    .sizeIn(minWidth = 280.dp, maxWidth = 560.dp)
+                    .sizeIn(minWidth = 280.dp, maxWidth = 528.dp)
                     .sharedBounds(
                         sharedContentState = rememberSharedContentState(key = "${targetState.id}-bounds"),
                         animatedVisibilityScope = this@AnimatedContent,
