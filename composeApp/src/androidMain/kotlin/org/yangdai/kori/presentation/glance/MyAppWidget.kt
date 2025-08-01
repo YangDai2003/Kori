@@ -10,9 +10,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.glance.ColorFilter
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
+import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
 import androidx.glance.LocalSize
@@ -56,15 +58,17 @@ import org.yangdai.kori.presentation.component.note.markdown.Properties.splitPro
 
 class MyAppWidget : GlanceAppWidget() {
 
-    companion object { // assume the following specifications: A grid cell is 30 dp wide and 50 dp tall.
-        private val SMALL = DpSize(60.dp, 50.dp)
-        private val MEDIUM = DpSize(120.dp, 100.dp)
-        private val LARGE = DpSize(150.dp, 200.dp)
+    companion object {
+        private val EXTRA_SMALL = DpSize(48.dp, 48.dp) // 仅显示创建按钮
+        private val SMALL = DpSize(128.dp, 72.dp) // 显示应用名和创建按钮
+        private val MEDIUM = DpSize(128.dp, 128.dp) // 无标题栏
+        private val LARGE = DpSize(150.dp, 250.dp) // 显示标题栏
     }
 
-    override val previewSizeMode: PreviewSizeMode = SizeMode.Responsive(setOf(SMALL, MEDIUM, LARGE))
+    override val previewSizeMode: PreviewSizeMode =
+        SizeMode.Responsive(setOf(EXTRA_SMALL, SMALL, MEDIUM, LARGE))
 
-    override val sizeMode = SizeMode.Responsive(setOf(SMALL, MEDIUM, LARGE))
+    override val sizeMode = SizeMode.Responsive(setOf(EXTRA_SMALL, SMALL, MEDIUM, LARGE))
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
 
@@ -115,6 +119,7 @@ class MyAppWidget : GlanceAppWidget() {
                         ) {
                             Text(
                                 text = "Kori" + if (notes.isNotEmpty()) " " else "",
+                                maxLines = 1,
                                 style = TextStyle(
                                     color = GlanceTheme.colors.onBackground,
                                     fontSize = 20.sp,
@@ -125,6 +130,7 @@ class MyAppWidget : GlanceAppWidget() {
                             val notesCount = if (notes.size > 99) "99+" else notes.size.toString()
                             Text(
                                 text = if (notes.isNotEmpty()) "($notesCount)" else "",
+                                maxLines = 1,
                                 style = TextStyle(
                                     color = GlanceTheme.colors.onBackground,
                                     fontSize = 20.sp,
@@ -167,31 +173,50 @@ class MyAppWidget : GlanceAppWidget() {
                     }
                 }
             } else {
-                Scaffold {
-                    Row(
-                        modifier = GlanceModifier.fillMaxSize(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Kori",
-                            style = TextStyle(
-                                color = GlanceTheme.colors.onBackground,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Medium,
-                                fontFamily = FontFamily.Serif
+                if (size.width < SMALL.width)
+                    Scaffold(backgroundColor = GlanceTheme.colors.secondaryContainer) {
+                        Box(
+                            modifier = GlanceModifier.fillMaxSize().clickable(
+                                actionStartActivity<MainActivity>(
+                                    actionParametersOf(destinationKey to "note/")
+                                )
+                            ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                provider = ImageProvider(R.drawable.outline_compose_24),
+                                contentDescription = "Add Note",
+                                colorFilter = ColorFilter.tint(GlanceTheme.colors.onSecondaryContainer)
                             )
-                        )
-                        Spacer(modifier = GlanceModifier.defaultWeight())
-                        SquareIconButton(
-                            modifier = GlanceModifier.size(48.dp),
-                            imageProvider = ImageProvider(R.drawable.outline_compose_24),
-                            contentDescription = "Add Note",
-                            onClick = actionStartActivity<MainActivity>(
-                                actionParametersOf(destinationKey to "note/")
-                            )
-                        )
+                        }
                     }
-                }
+                else
+                    Scaffold {
+                        Row(
+                            modifier = GlanceModifier.fillMaxSize(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Kori",
+                                maxLines = 1,
+                                style = TextStyle(
+                                    color = GlanceTheme.colors.onBackground,
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    fontFamily = FontFamily.Serif
+                                )
+                            )
+                            Spacer(modifier = GlanceModifier.defaultWeight())
+                            SquareIconButton(
+                                modifier = GlanceModifier.size(48.dp),
+                                imageProvider = ImageProvider(R.drawable.outline_compose_24),
+                                contentDescription = "Add Note",
+                                onClick = actionStartActivity<MainActivity>(
+                                    actionParametersOf(destinationKey to "note/")
+                                )
+                            )
+                        }
+                    }
             }
         }
     }
@@ -240,7 +265,7 @@ class MyAppWidget : GlanceAppWidget() {
                             maxLines = 3
                         )
                     }
-                    Spacer(modifier = GlanceModifier.height(4.dp))
+                    Spacer(GlanceModifier.height(4.dp))
                 }
             }
             item {
@@ -249,6 +274,7 @@ class MyAppWidget : GlanceAppWidget() {
                         .padding(top = 16.dp, bottom = 24.dp)
                         .clickable(actionStartActivity<MainActivity>()),
                     text = LocalContext.current.getString(R.string.view_all_notes),
+                    maxLines = 1,
                     style = TextStyle(
                         color = GlanceTheme.colors.primary,
                         textAlign = TextAlign.Center,
