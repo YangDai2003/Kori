@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -54,7 +55,6 @@ expect fun VerticalScrollbar(modifier: Modifier, state: ScrollState)
  * @param thumbMinHeight 滚动条滑块的最小高度，以确保可见性和可操作性。
  * @param thumbColor 滚动条滑块的颜色。
  * @param trackColor 滚动条轨道的颜色（如果需要）。
- * @param autoHide 是否在滚动停止后自动隐藏。
  * @param hideDelayMillis 自动隐藏的延迟时间（毫秒）。
  */
 @Composable
@@ -65,7 +65,6 @@ fun Scrollbar(
     thumbMinHeight: Dp = 44.dp,
     thumbColor: Color = MaterialTheme.colorScheme.outline,
     trackColor: Color = Color.Transparent,
-    autoHide: Boolean = true,
     hideDelayMillis: Long = 800L
 ) {
     // 如果没有可滚动的内容，则不显示滚动条
@@ -75,29 +74,17 @@ fun Scrollbar(
     val density = LocalDensity.current
 
     // 控制滚动条的可见性
-    var isVisible by remember { mutableStateOf(!autoHide) }
+    var isVisible by remember { mutableStateOf(false) }
     // 标记是否正在拖动
     var isDragging by remember { mutableStateOf(false) }
 
-    // 动画化透明度以实现平滑的淡入淡出效果
-    val alpha by animateFloatAsState(
-        targetValue = if (isVisible || isDragging) 1f else 0f,
-        label = "AlphaAnimation"
-    )
-
-    val width by animateDpAsState(
-        targetValue = if (isDragging) thumbWidth / 2 else thumbWidth,
-        label = "ThumbWidthAnimation"
-    )
+    // 动画化透明度和宽度以实现平滑的淡入淡出效果
+    val alpha by animateFloatAsState(if (isVisible) 1f else 0f)
+    val width by animateDpAsState(if (isDragging) thumbWidth / 2 else thumbWidth)
 
     // 使用 LaunchedEffect 监听滚动状态以控制可见性
-    LaunchedEffect(state.isScrollInProgress, autoHide) {
-        if (!autoHide) {
-            isVisible = true
-            return@LaunchedEffect
-        }
-
-        if (state.isScrollInProgress) {
+    LaunchedEffect(state.isScrollInProgress, isDragging) {
+        if (state.isScrollInProgress || isDragging) {
             isVisible = true
         } else {
             delay(hideDelayMillis)
@@ -109,7 +96,7 @@ fun Scrollbar(
         modifier = modifier
             .width(thumbWidth + 8.dp) // 增加热区，方便点击
             .background(color = trackColor)
-            .pointerInput(state) {
+            .pointerInput(Unit) {
                 detectTapGestures { offset ->
                     scope.launch {
                         val containerHeightPx = size.height.toFloat()
@@ -148,7 +135,7 @@ fun Scrollbar(
                 .align(Alignment.TopCenter)
                 .width(width)
                 .height(with(density) { thumbHeightPx.toDp() })
-                .offset(y = with(density) { thumbOffsetYPx.toDp() })
+                .offset { IntOffset(x = 0, y = thumbOffsetYPx.toInt()) }
                 .background(
                     color = thumbColor.copy(alpha = alpha),
                     shape = RoundedCornerShape(width / 2)
