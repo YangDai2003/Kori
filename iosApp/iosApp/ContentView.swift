@@ -19,5 +19,10 @@ struct ContentView: View {
                 // Sends the full URI on to the singleton
                 ExternalUriHandler.shared.onNewUri(uri: url.absoluteString)
             })
+            .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ShortcutUri"))) { notification in
+                if let uri = notification.object as? String {
+                    ExternalUriHandler.shared.onNewUri(uri: uri)
+                }
+            }
     }
 }

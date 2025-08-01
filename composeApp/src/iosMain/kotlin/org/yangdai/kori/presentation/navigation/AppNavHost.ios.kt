@@ -35,7 +35,8 @@ actual fun AppNavHost(
         }
         DisposableEffect(Unit) {
             ExternalUriHandler.listener = { uri ->
-                navHostController.navigate(NavUri(uri))
+                if (uri.startsWith("file://")) navHostController.navigate(Screen.File(uri))
+                else navHostController.navigate(NavUri(uri))
             }
             onDispose {
                 ExternalUriHandler.listener = null
