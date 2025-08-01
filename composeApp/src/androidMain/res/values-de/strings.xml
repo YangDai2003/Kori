@@ -11,4 +11,5 @@
     <string name="folders">Ordner</string>
     <string name="template">Neue Vorlage</string>
     <string name="view_all_notes">Alle Notizen anzeigen</string>
+    <string name="home_widget">Widget zum Startbildschirm hinzufügen</string>
 </resources>

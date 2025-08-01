@@ -1,17 +1,40 @@
 package org.yangdai.kori.presentation.component.main
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.VerticalAlignTop
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import org.yangdai.kori.data.local.entity.NoteEntity
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun Page(
     notes: List<NoteEntity>,
@@ -21,10 +44,18 @@ fun Page(
     selectedNotes: MutableSet<String>,
     keyword: String = "",
     navigateToNote: (String) -> Unit = { _ -> }
-) {
+) = Box {
+
     val state = rememberLazyStaggeredGridState()
+    val scope = rememberCoroutineScope()
+    val showScrollToTopButton by remember {
+        derivedStateOf {
+            state.firstVisibleItemIndex > 0 && !isSelectionMode && state.lastScrolledBackward
+        }
+    }
+
     LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Adaptive(minSize = 360.dp),
+        columns = StaggeredGridCells.Adaptive(minSize = 320.dp),
         modifier = Modifier.fillMaxSize(),
         state = state,
         contentPadding = contentPadding,
@@ -57,6 +88,32 @@ fun Page(
                         selectedNotes.add(note.id)
                     }
                 }
+            )
+        }
+    }
+
+    AnimatedVisibility(
+        visible = showScrollToTopButton,
+        enter = fadeIn() + slideInVertically { it / 2 },
+        exit = fadeOut() + slideOutVertically { it / 2 },
+        modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .navigationBarsPadding()
+            .padding(bottom = 16.dp)
+    ) {
+        OutlinedIconButton(
+            modifier = Modifier.size(IconButtonDefaults.extraSmallContainerSize(widthOption = IconButtonDefaults.IconButtonWidthOption.Uniform)),
+            colors = IconButtonDefaults.outlinedIconButtonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
+            onClick = {
+                scope.launch {
+                    state.animateScrollToItem(0)
+                }
+            }
+        ) {
+            Icon(
+                Icons.Default.VerticalAlignTop,
+                contentDescription = "Scroll to top",
+                modifier = Modifier.size(IconButtonDefaults.extraSmallIconSize)
             )
         }
     }

@@ -108,11 +108,17 @@ kotlin {
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.okhttp)
             val javafxVersion = "21.0.8"
+            //noinspection UseTomlInstead,NewerVersionAvailable
             implementation("org.openjfx:javafx-base:$javafxVersion:$platform")
+            //noinspection NewerVersionAvailable,UseTomlInstead
             implementation("org.openjfx:javafx-graphics:$javafxVersion:$platform")
+            //noinspection NewerVersionAvailable,UseTomlInstead
             implementation("org.openjfx:javafx-controls:$javafxVersion:$platform")
+            //noinspection NewerVersionAvailable,UseTomlInstead
             implementation("org.openjfx:javafx-media:$javafxVersion:$platform")
+            //noinspection NewerVersionAvailable,UseTomlInstead
             implementation("org.openjfx:javafx-web:$javafxVersion:$platform")
+            //noinspection NewerVersionAvailable,UseTomlInstead
             implementation("org.openjfx:javafx-swing:$javafxVersion:$platform")
         }
     }

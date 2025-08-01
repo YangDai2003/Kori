@@ -11,4 +11,5 @@
     <string name="folders">Folders</string>
     <string name="template">New Template</string>
     <string name="view_all_notes">View all notes</string>
+    <string name="home_widget">Add Widget to Home Screen</string>
 </resources>

@@ -11,11 +11,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.NoteAdd
 import androidx.compose.material.icons.automirrored.outlined.ArrowRight
@@ -82,7 +85,10 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.TopCenter
     ) {
-        Column(Modifier.widthIn(max = 600.dp).padding(horizontal = 16.dp)) {
+        Column(
+            Modifier.widthIn(max = 600.dp).padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
 
             Spacer(Modifier.height(16.dp))
 
@@ -179,13 +185,9 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
             )
 
             ListItem(
-                modifier = Modifier
-                    .padding(bottom = 8.dp)
-                    .clip(CardDefaults.shape)
+                modifier = Modifier.padding(bottom = 8.dp).clip(CardDefaults.shape)
                     .clickable { showFilePickerDialog = true },
-                headlineContent = {
-                    Text(stringResource(Res.string.edit_local_file))
-                },
+                headlineContent = { Text(stringResource(Res.string.edit_local_file)) },
                 trailingContent = {
                     Icon(
                         imageVector = Icons.AutoMirrored.Outlined.ArrowRight,
@@ -195,11 +197,9 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
             )
 
             ListItem(
-                modifier = Modifier.clip(CardDefaults.shape)
+                modifier = Modifier.padding(bottom = 8.dp).clip(CardDefaults.shape)
                     .clickable { showURLDialog = true },
-                headlineContent = {
-                    Text(stringResource(Res.string.fetch_file_from_url))
-                },
+                headlineContent = { Text(stringResource(Res.string.fetch_file_from_url)) },
                 trailingContent = {
                     Icon(
                         imageVector = Icons.AutoMirrored.Outlined.ArrowRight,
@@ -207,6 +207,10 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
                     )
                 }
             )
+
+            WidgetListItem()
+
+            Spacer(Modifier.navigationBarsPadding())
         }
     }
 
@@ -299,6 +303,9 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
         )
     }
 }
+
+@Composable
+expect fun WidgetListItem()
 
 @Composable
 private fun LinkHintText(name: String, url: String, modifier: Modifier = Modifier) =

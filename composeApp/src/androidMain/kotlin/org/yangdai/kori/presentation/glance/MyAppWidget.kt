@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
@@ -20,6 +21,7 @@ import androidx.glance.action.actionParametersOf
 import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
+import androidx.glance.appwidget.PreviewSizeMode
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.components.CircleIconButton
 import androidx.glance.appwidget.components.Scaffold
@@ -54,7 +56,15 @@ import org.yangdai.kori.presentation.component.note.markdown.Properties.splitPro
 
 class MyAppWidget : GlanceAppWidget() {
 
-    override val sizeMode: SizeMode = SizeMode.Exact
+    companion object { // assume the following specifications: A grid cell is 30 dp wide and 50 dp tall.
+        private val SMALL = DpSize(60.dp, 50.dp)
+        private val MEDIUM = DpSize(120.dp, 100.dp)
+        private val LARGE = DpSize(150.dp, 200.dp)
+    }
+
+    override val previewSizeMode: PreviewSizeMode = SizeMode.Responsive(setOf(SMALL, MEDIUM, LARGE))
+
+    override val sizeMode = SizeMode.Responsive(setOf(SMALL, MEDIUM, LARGE))
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
 
@@ -79,6 +89,11 @@ class MyAppWidget : GlanceAppWidget() {
                     id = "2",
                     title = "Sample Note 2",
                     content = "This is another sample note content with properties."
+                ),
+                NoteEntity(
+                    id = "3",
+                    title = "Sample Note 3",
+                    content = "This is a third sample note content with properties."
                 )
             )
             Content(notes)
@@ -88,15 +103,14 @@ class MyAppWidget : GlanceAppWidget() {
     @Composable
     private fun Content(notes: List<NoteEntity>) {
         val size = LocalSize.current
-        val padding = if (size.width > 210.dp) 12.dp else 4.dp
         GlanceTheme {
-            if (size.height > 300.dp) {
+            if (size.height >= LARGE.height) {
                 Scaffold(
                     titleBar = {
                         Row(
                             modifier = GlanceModifier.fillMaxWidth()
-                                .padding(bottom = 8.dp, top = padding)
-                                .padding(horizontal = padding),
+                                .padding(bottom = 8.dp, top = 12.dp)
+                                .padding(horizontal = 12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
@@ -129,18 +143,17 @@ class MyAppWidget : GlanceAppWidget() {
                                 )
                             )
                         }
-                    },
-                    horizontalPadding = padding
+                    }
                 ) {
                     NoteList(notes)
                 }
-            } else if (size.height > 100.dp) {
-                Scaffold(horizontalPadding = padding) {
+            } else if (size.height >= MEDIUM.height) {
+                Scaffold {
+                    NoteList(notes)
                     Box(
-                        modifier = GlanceModifier.fillMaxSize().padding(bottom = padding),
+                        modifier = GlanceModifier.fillMaxSize().padding(bottom = 12.dp),
                         contentAlignment = Alignment.BottomEnd
                     ) {
-                        NoteList(notes)
                         CircleIconButton(
                             modifier = GlanceModifier.size(48.dp),
                             imageProvider = ImageProvider(R.drawable.outline_compose_24),
@@ -186,8 +199,8 @@ class MyAppWidget : GlanceAppWidget() {
     @Composable
     private fun NoteList(notes: List<NoteEntity>) {
         val size = LocalSize.current
-        val spacerHeight = if (size.width > 210.dp && size.height < 300.dp) 12.dp else 0.dp
-        val padding = if (size.width > 210.dp) 12.dp else 4.dp
+        val spacerHeight =
+            if (size.width >= MEDIUM.width && size.height < LARGE.height) 12.dp else 0.dp
         LazyColumn(GlanceModifier.fillMaxSize()) {
             item {
                 Spacer(GlanceModifier.height(spacerHeight))
@@ -198,7 +211,7 @@ class MyAppWidget : GlanceAppWidget() {
                         modifier = GlanceModifier
                             .fillMaxWidth()
                             .background(GlanceTheme.colors.secondaryContainer)
-                            .appWidgetInnerCornerRadius(padding)
+                            .appWidgetInnerCornerRadius(12.dp)
                             .padding(vertical = 4.dp, horizontal = 8.dp)
                             .clickable(
                                 actionStartActivity<MainActivity>(
