@@ -88,9 +88,9 @@ class MyAppWidget : GlanceAppWidget() {
     @Composable
     private fun Content(notes: List<NoteEntity>) {
         val size = LocalSize.current
-        val padding = if (size.width > 250.dp) 12.dp else 4.dp
+        val padding = if (size.width > 210.dp) 12.dp else 4.dp
         GlanceTheme {
-            if (size.height > 400.dp) {
+            if (size.height > 300.dp) {
                 Scaffold(
                     titleBar = {
                         Row(
@@ -134,13 +134,13 @@ class MyAppWidget : GlanceAppWidget() {
                 ) {
                     NoteList(notes)
                 }
-            } else if (size.height > 200.dp) {
+            } else if (size.height > 100.dp) {
                 Scaffold(horizontalPadding = padding) {
-                    NoteList(notes)
                     Box(
                         modifier = GlanceModifier.fillMaxSize().padding(bottom = padding),
                         contentAlignment = Alignment.BottomEnd
                     ) {
+                        NoteList(notes)
                         CircleIconButton(
                             modifier = GlanceModifier.size(48.dp),
                             imageProvider = ImageProvider(R.drawable.outline_compose_24),
@@ -186,9 +186,9 @@ class MyAppWidget : GlanceAppWidget() {
     @Composable
     private fun NoteList(notes: List<NoteEntity>) {
         val size = LocalSize.current
-        val spacerHeight = if (size.width > 250.dp && size.height < 400.dp) 12.dp else 4.dp
-        val padding = if (size.width > 250.dp) 12.dp else 4.dp
-        LazyColumn {
+        val spacerHeight = if (size.width > 210.dp && size.height < 300.dp) 12.dp else 0.dp
+        val padding = if (size.width > 210.dp) 12.dp else 4.dp
+        LazyColumn(GlanceModifier.fillMaxSize()) {
             item {
                 Spacer(GlanceModifier.height(spacerHeight))
             }
@@ -252,7 +252,7 @@ private val destinationKey = ActionParameters.Key<String>("KEY_DESTINATION")
 @SuppressLint("LocalContextResourcesRead")
 @Composable
 private fun GlanceModifier.appWidgetInnerCornerRadius(widgetPadding: Dp): GlanceModifier {
-    if (Build.VERSION.SDK_INT < 31) return this.cornerRadius(8.dp)
+    if (Build.VERSION.SDK_INT < 31) return this
     val resources = LocalContext.current.resources
     val px = resources.getDimension(android.R.dimen.system_app_widget_background_radius)
     val widgetBackgroundRadiusDpValue = px / resources.displayMetrics.density
