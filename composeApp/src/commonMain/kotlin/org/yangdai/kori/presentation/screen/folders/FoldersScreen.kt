@@ -175,7 +175,7 @@ fun FoldersScreen(
                     )
             ) {
                 LazyVerticalGrid(
-                    columns = GridCells.Adaptive(380.dp),
+                    columns = GridCells.Adaptive(320.dp),
                     state = state,
                     contentPadding = PaddingValues(
                         top = 16.dp,
@@ -226,7 +226,7 @@ fun FoldersScreen(
                     }
                 }
                 VerticalScrollbar(
-                    modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+                    modifier = Modifier.align(Alignment.TopEnd).fillMaxHeight(),
                     state = state
                 )
             }

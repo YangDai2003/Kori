@@ -3,6 +3,7 @@ package org.yangdai.kori.presentation.component.dialog
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -72,6 +73,7 @@ fun NoteSortOptionBottomSheet(
         NoteSortType.entries.forEach { sortType ->
             ListItem(
                 modifier = Modifier
+                    .height(48.dp)
                     .fillMaxWidth()
                     .selectable(
                         selected = (sortType == oNoteSortType),
@@ -129,6 +131,7 @@ fun FolderSortOptionBottomSheet(
         FolderSortType.entries.forEach { sortType ->
             ListItem(
                 modifier = Modifier
+                    .height(48.dp)
                     .fillMaxWidth()
                     .selectable(
                         selected = (sortType == oFolderSortType),

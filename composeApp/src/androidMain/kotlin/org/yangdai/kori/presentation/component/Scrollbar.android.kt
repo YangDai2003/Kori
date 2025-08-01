@@ -7,21 +7,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-actual fun VerticalScrollbar(
-    modifier: Modifier, state: LazyGridState
-) {
+actual fun VerticalScrollbar(modifier: Modifier, state: LazyGridState) {
 }
 
 @Composable
-actual fun HorizontalScrollbar(
-    modifier: Modifier,
-    state: LazyListState
-) {
+actual fun HorizontalScrollbar(modifier: Modifier, state: LazyListState) {
 }
 
 @Composable
-actual fun VerticalScrollbar(
-    modifier: Modifier,
-    state: ScrollState
-) {
-}
+actual fun VerticalScrollbar(modifier: Modifier, state: ScrollState) = Scrollbar(modifier, state)

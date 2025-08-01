@@ -12,10 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-actual fun VerticalScrollbar(
-    modifier: Modifier,
-    state: LazyGridState
-) {
+actual fun VerticalScrollbar(modifier: Modifier, state: LazyGridState) =
     VerticalScrollbar(
         modifier = modifier,
         adapter = rememberScrollbarAdapter(state),
@@ -25,13 +22,9 @@ actual fun VerticalScrollbar(
                 hoverColor = MaterialTheme.colorScheme.outline
             )
     )
-}
 
 @Composable
-actual fun HorizontalScrollbar(
-    modifier: Modifier,
-    state: LazyListState
-) {
+actual fun HorizontalScrollbar(modifier: Modifier, state: LazyListState) =
     HorizontalScrollbar(
         modifier = modifier,
         adapter = rememberScrollbarAdapter(state),
@@ -41,13 +34,9 @@ actual fun HorizontalScrollbar(
                 hoverColor = MaterialTheme.colorScheme.outline
             )
     )
-}
 
 @Composable
-actual fun VerticalScrollbar(
-    modifier: Modifier,
-    state: ScrollState
-) {
+actual fun VerticalScrollbar(modifier: Modifier, state: ScrollState) =
     VerticalScrollbar(
         modifier = modifier,
         adapter = rememberScrollbarAdapter(state),
@@ -57,4 +46,3 @@ actual fun VerticalScrollbar(
                 hoverColor = MaterialTheme.colorScheme.outline
             )
     )
-}

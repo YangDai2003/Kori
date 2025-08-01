@@ -333,7 +333,7 @@ fun TextEditor(
             )
             if (!isScreenWidthExpanded()) {
                 VerticalScrollbar(
-                    modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+                    modifier = Modifier.align(Alignment.TopEnd).fillMaxHeight(),
                     state = scrollState
                 )
             }
