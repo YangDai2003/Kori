@@ -10,4 +10,5 @@
     <string name="settings">Einstellungen</string>
     <string name="folders">Ordner</string>
     <string name="template">Neue Vorlage</string>
+    <string name="view_all_notes">Alle Notizen anzeigen</string>
 </resources>

@@ -50,31 +50,37 @@ actual fun AppNavHost(
         val activity = LocalActivity.current
         val context = LocalContext.current.applicationContext
         SideEffect {
-            activity?.intent?.apply {
-                when (action) {
-                    Intent.ACTION_SEND, Intent.ACTION_VIEW, Intent.ACTION_EDIT -> {
-                        val sharedContent = parseSharedContent(context)
-                        if (sharedContent.uri != null) {
-                            navHostController.navigate(Screen.File(path = sharedContent.uri.toString()))
-                        } else if (sharedContent.title.isNotEmpty() || sharedContent.text.isNotEmpty()) {
-                            navHostController.navigate(
-                                Screen.Note(
-                                    sharedContentTitle = sharedContent.title,
-                                    sharedContentText = sharedContent.text,
-                                    noteType = sharedContent.type.ordinal
+            if (activity == null || activity.intent == null) return@SideEffect
+            val destination = activity.intent.extras?.getString("KEY_DESTINATION")
+            if (destination != null) {
+                navHostController.navigate(Screen.Note(id = destination.removePrefix("note/")))
+            } else {
+                activity.intent.apply {
+                    when (action) {
+                        Intent.ACTION_SEND, Intent.ACTION_VIEW, Intent.ACTION_EDIT -> {
+                            val sharedContent = parseSharedContent(context)
+                            if (sharedContent.uri != null) {
+                                navHostController.navigate(Screen.File(path = sharedContent.uri.toString()))
+                            } else if (sharedContent.title.isNotEmpty() || sharedContent.text.isNotEmpty()) {
+                                navHostController.navigate(
+                                    Screen.Note(
+                                        sharedContentTitle = sharedContent.title,
+                                        sharedContentText = sharedContent.text,
+                                        noteType = sharedContent.type.ordinal
+                                    )
                                 )
-                            )
+                            }
                         }
-                    }
 
-                    Intent.ACTION_CREATE_NOTE, "com.google.android.gms.actions.CREATE_NOTE" -> {
-                        navHostController.navigate(Screen.Note())
-                    }
+                        Intent.ACTION_CREATE_NOTE, "com.google.android.gms.actions.CREATE_NOTE" -> {
+                            navHostController.navigate(Screen.Note())
+                        }
 
-                    else -> {}
+                        else -> {}
+                    }
                 }
             }
-            activity?.intent?.action = null
+            activity.intent = null
         }
     }
 

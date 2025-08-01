@@ -18,9 +18,10 @@ ksp = "2.2.0-2.0.2"
 kotlinxSerializationJson = "1.9.0"
 koin = "4.1.0"
 ktor = "3.2.3"
-biometricVersion = "1.4.0-alpha04"
-documentfile = "1.1.0"
-browser = "1.9.0"
+androidx-biometric = "1.4.0-alpha04"
+androidx-documentfile = "1.1.0"
+androidx-browser = "1.9.0"
+androidx-glance = "1.2.0-alpha01"
 
 [libraries]
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
@@ -59,9 +60,11 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activityCompose" }
-androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometricVersion" }
-androidx-documentfile = { module = "androidx.documentfile:documentfile", version.ref = "documentfile" }
-androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
+androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "androidx-biometric" }
+androidx-documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "androidx-documentfile" }
+androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "androidx-browser" }
+androidx-glance = { group = "androidx.glance", name = "glance", version.ref = "androidx-glance" }
+androidx-glance-appwidget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "androidx-glance" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

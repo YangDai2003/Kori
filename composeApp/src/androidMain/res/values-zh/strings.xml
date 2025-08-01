@@ -10,4 +10,5 @@
     <string name="settings">应用设置</string>
     <string name="folders">管理文件夹</string>
     <string name="template">新建模版</string>
+    <string name="view_all_notes">查看所有笔记</string>
 </resources>
