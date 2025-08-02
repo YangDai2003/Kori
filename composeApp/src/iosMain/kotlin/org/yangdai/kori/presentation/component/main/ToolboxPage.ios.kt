@@ -5,3 +5,7 @@ import androidx.compose.runtime.Composable
 @Composable
 actual fun WidgetListItem() {
 }
+
+@Composable
+actual fun InkListItem() {
+}

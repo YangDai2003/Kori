@@ -210,6 +210,8 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
 
             WidgetListItem()
 
+            InkListItem()
+
             Spacer(Modifier.navigationBarsPadding())
         }
     }
@@ -306,6 +308,9 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
 
 @Composable
 expect fun WidgetListItem()
+
+@Composable
+expect fun InkListItem()
 
 @Composable
 private fun LinkHintText(name: String, url: String, modifier: Modifier = Modifier) =

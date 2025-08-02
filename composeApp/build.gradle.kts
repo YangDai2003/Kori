@@ -66,6 +66,13 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.androidx.glance)
             implementation(libs.androidx.glance.appwidget)
+            implementation("androidx.ink:ink-authoring:1.0.0-alpha05")
+            implementation("androidx.ink:ink-brush:1.0.0-alpha05")
+            implementation("androidx.ink:ink-geometry:1.0.0-alpha05")
+            implementation("androidx.ink:ink-nativeloader:1.0.0-alpha05")
+            implementation("androidx.ink:ink-rendering:1.0.0-alpha05")
+            implementation("androidx.ink:ink-strokes:1.0.0-alpha05")
+            implementation("androidx.input:input-motionprediction:1.0.0-beta05")
         }
         commonMain.dependencies {
             implementation(compose.runtime)

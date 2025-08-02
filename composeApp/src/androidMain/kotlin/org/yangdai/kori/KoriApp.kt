@@ -9,10 +9,12 @@ import androidx.core.net.toUri
 import org.koin.android.ext.koin.androidContext
 import org.yangdai.kori.data.di.KoinInitializer
 import org.yangdai.kori.presentation.util.Constants
+import org.yangdai.kori.presentation.util.SplitManager
 
 class KoriApp : Application() {
     override fun onCreate() {
         super.onCreate()
+        SplitManager.createSplit(this)
         KoinInitializer.init {
             androidContext(this@KoriApp)
         }
