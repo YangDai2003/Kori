@@ -386,7 +386,7 @@ private fun createTouchListener(
             Mode.Eraser -> {
                 when (transformedEvent.actionMasked) {
                     MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
-                        val eraserSize = 40f / scale // 橡皮擦在缩放时保持视觉大小一致
+                        val eraserSize = 25f / scale // 橡皮擦在缩放时保持视觉大小一致
                         val eraserBox = ImmutableBox.fromCenterAndDimensions(
                             ImmutableVec(transformedEvent.x, transformedEvent.y),
                             eraserSize,

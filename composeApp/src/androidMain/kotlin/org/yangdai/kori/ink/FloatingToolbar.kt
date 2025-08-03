@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -93,8 +94,8 @@ private class FloatingToolbarScopeImpl(
         Box {
             IconButton(
                 colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = if (checked) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent,
-                    contentColor = if (checked) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurface
+                    containerColor = if (checked) MaterialTheme.colorScheme.surfaceContainer else Color.Transparent,
+                    contentColor = if (checked) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onPrimaryContainer
                 ),
                 onClick = {
                     if (checked) showPopup.value = !showPopup.value
@@ -248,6 +249,7 @@ fun FloatingToolbar(
                 HorizontalFloatingToolbar(
                     modifier = Modifier.height(48.dp),
                     expanded = expanded,
+                    colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
                     contentPadding = PaddingValues(0.dp),
                     leadingContent = { scope.leadingContent() },
                     trailingContent = { scope.trailingContent() },
@@ -280,6 +282,7 @@ fun FloatingToolbar(
                 VerticalFloatingToolbar(
                     modifier = Modifier.width(48.dp),
                     expanded = expanded,
+                    colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
                     contentPadding = PaddingValues(0.dp),
                     leadingContent = { scope.leadingContent() },
                     trailingContent = { scope.trailingContent() },
