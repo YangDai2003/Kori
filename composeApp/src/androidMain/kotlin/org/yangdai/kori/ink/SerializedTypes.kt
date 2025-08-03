@@ -3,6 +3,12 @@ package org.yangdai.kori.ink
 import kotlinx.serialization.Serializable
 
 @Serializable
+enum class Mode {
+    Brush,
+    Eraser
+}
+
+@Serializable
 data class SerializedStroke(
     val inputs: SerializedStrokeInputBatch,
     val brush: SerializedBrush

@@ -46,6 +46,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,14 +63,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
-import kotlinx.serialization.Serializable
 import kotlin.math.roundToInt
-
-@Serializable
-enum class Mode {
-    Brush,
-    Eraser
-}
 
 interface FloatingToolbarScope {
     @Composable
@@ -168,7 +162,7 @@ fun FloatingToolbar(
     leadingContent: @Composable FloatingToolbarScope.() -> Unit,
     trailingContent: @Composable FloatingToolbarScope.() -> Unit
 ) = BoxWithConstraints(Modifier.fillMaxSize()) {
-    var expanded by remember { mutableStateOf(true) }
+    var expanded by rememberSaveable { mutableStateOf(true) }
     var offset by remember { mutableStateOf(Offset.Zero) }
     // 当前工具栏的最终对齐位置
     var alignment by remember { mutableStateOf(Alignment.CenterStart) }
