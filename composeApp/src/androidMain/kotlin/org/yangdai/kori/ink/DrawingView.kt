@@ -9,7 +9,10 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -46,7 +49,7 @@ import org.yangdai.kori.R
 
 @SuppressLint("ClickableViewAccessibility")
 @Composable
-fun DrawingView() {
+fun DrawingView(onExit: () -> Unit) {
     val canvasStrokeRenderer = remember { CanvasStrokeRenderer.create() }
     var inProgressStrokesView by remember { mutableStateOf<InProgressStrokesView?>(null) }
     val finishedStrokesState =
@@ -143,7 +146,7 @@ fun DrawingView() {
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.stylus_fountain_pen_24px),
-                            contentDescription = "brush"
+                            contentDescription = "pressurePen"
                         )
                     }
                     ToolbarButton(
@@ -160,7 +163,7 @@ fun DrawingView() {
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.stylus_pen_24px),
-                            contentDescription = "brush"
+                            contentDescription = "marker"
                         )
                     }
                     ToolbarButton(
@@ -177,7 +180,7 @@ fun DrawingView() {
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.stylus_highlighter_24px),
-                            contentDescription = "brush"
+                            contentDescription = "highlighter"
                         )
                     }
                 },
@@ -195,6 +198,12 @@ fun DrawingView() {
                         Icon(
                             painter = painterResource(R.drawable.ink_eraser_24px),
                             contentDescription = "eraser"
+                        )
+                    }
+                    IconButton(onClick = onExit) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.ExitToApp,
+                            contentDescription = "exit"
                         )
                     }
                 }

@@ -13,7 +13,9 @@ class InkActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             KoriTheme {
-                DrawingView()
+                DrawingView {
+                    finish()
+                }
             }
         }
     }
