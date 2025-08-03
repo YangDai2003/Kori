@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.ink.brush.Brush
+import androidx.ink.brush.BrushFamily
 import androidx.ink.brush.InputToolType
 import androidx.ink.brush.StockBrushes
 import androidx.ink.strokes.MutableStrokeInputBatch
@@ -11,22 +12,18 @@ import androidx.ink.strokes.Stroke
 import androidx.ink.strokes.StrokeInput
 import androidx.ink.strokes.StrokeInputBatch
 import kotlinx.serialization.json.Json
-import kotlin.collections.associate
-import kotlin.collections.forEach
-import kotlin.ranges.until
-import kotlin.to
 
 class Converters {
 
     companion object {
-        private val stockBrushToEnumValues =
+        val stockBrushToEnumValues =
             mapOf(
-                StockBrushes.markerV1 to SerializedStockBrush.MARKER_V1,
-                StockBrushes.pressurePenV1 to SerializedStockBrush.PRESSURE_PEN_V1,
-                StockBrushes.highlighterV1 to SerializedStockBrush.HIGHLIGHTER_V1,
+                StockBrushes.markerLatest to SerializedStockBrush.MARKER,
+                StockBrushes.pressurePenLatest to SerializedStockBrush.PRESSURE_PEN,
+                StockBrushes.highlighterLatest to SerializedStockBrush.HIGHLIGHTER,
             )
 
-        private val enumToStockBrush =
+        val enumToStockBrush =
             stockBrushToEnumValues.entries.associate { (key, value) -> value to key }
     }
 
@@ -35,7 +32,7 @@ class Converters {
             size = brush.size,
             color = brush.colorLong,
             epsilon = brush.epsilon,
-            stockBrush = stockBrushToEnumValues[brush.family] ?: SerializedStockBrush.MARKER_V1,
+            stockBrush = stockBrushToEnumValues[brush.family] ?: SerializedStockBrush.PRESSURE_PEN,
         )
     }
 
@@ -73,14 +70,15 @@ class Converters {
         )
     }
 
-    private fun deserializeStroke(serializedStroke: SerializedStroke): Stroke? {
+    private fun deserializeStroke(serializedStroke: SerializedStroke): Stroke {
         val inputs = deserializeStrokeInputBatch(serializedStroke.inputs)
         val brush = deserializeBrush(serializedStroke.brush)
         return Stroke(brush = brush, inputs = inputs)
     }
 
     private fun deserializeBrush(serializedBrush: SerializedBrush): Brush {
-        val stockBrushFamily = enumToStockBrush[serializedBrush.stockBrush] ?: StockBrushes.markerV1
+        val stockBrushFamily =
+            enumToStockBrush[serializedBrush.stockBrush] ?: StockBrushes.pressurePenLatest
 
         return Brush.createWithColorLong(
             family = stockBrushFamily,
@@ -118,54 +116,54 @@ class Converters {
         return batch
     }
 
-//    fun serializeStrokeToEntity(stroke: Stroke): StrokeEntity {
-//        val serializedBrush = serializeBrush(stroke.brush)
-//        val serializedInputs = serializeStrokeInputBatch(stroke.inputs)
-//        return StrokeEntity(
-//            brushSize = serializedBrush.size,
-//            brushColor = serializedBrush.color,
-//            brushEpsilon = serializedBrush.epsilon,
-//            stockBrush = serializedBrush.stockBrush,
-//            strokeInputs = gson.toJson(serializedInputs),
-//        )
-//    }
-//
-//    fun deserializeEntityToStroke(entity: StrokeEntity): Stroke {
-//        val serializedBrush =
-//            SerializedBrush(
-//                size = entity.brushSize,
-//                color = entity.brushColor,
-//                epsilon = entity.brushEpsilon,
-//                stockBrush = entity.stockBrush,
-//            )
-//
-//        val serializedInputs =
-//            gson.fromJson(entity.strokeInputs, SerializedStrokeInputBatch::class.java)
-//
-//        val brush = deserializeBrush(serializedBrush)
-//        val inputs = deserializeStrokeInputBatch(serializedInputs)
-//
-//        return Stroke(brush = brush, inputs = inputs)
-//    }
-
-    fun brushToString(brush: Brush): String {
-        val serializedBrush = serializeBrush(brush)
-        return Json.encodeToString(serializedBrush)
+    fun serializeStrokeToString(stroke: Stroke): Pair<String, String> {
+        val serializedBrush = serializeBrush(stroke.brush)
+        val serializedInputs = serializeStrokeInputBatch(stroke.inputs)
+        return Pair(
+            first = Json.encodeToString(serializedBrush),
+            second = Json.encodeToString(serializedInputs),
+        )
     }
 
-    fun stringToBrush(jsonString: String): Brush {
-        val serializedBrush = Json.decodeFromString<SerializedBrush>(jsonString)
-        return deserializeBrush(serializedBrush)
-    }
+    fun deserializeStringToStroke(pair: Pair<String, String>): Stroke {
+        val serializedBrush = pair.first.let {
+            Json.decodeFromString<SerializedBrush>(it)
+        }
+        val serializedInputs = pair.second.let {
+            Json.decodeFromString<SerializedStrokeInputBatch>(it)
+        }
 
+        val serializedStroke = SerializedStroke(serializedInputs, serializedBrush)
+        return deserializeStroke(serializedStroke)
+    }
 }
 
-fun brushStateSaver(converters: Converters): Saver<MutableState<Brush>, String> = Saver(
+fun strokeSetSaver(): Saver<MutableState<Set<Stroke>>, String> = Saver(
     save = { state ->
-        converters.brushToString(state.value)
+        val strokes = state.value.map {
+            Converters().serializeStrokeToString(it)
+        }
+        Json.encodeToString(strokes)
     },
-    restore = { jsonString ->
-        val brush = converters.stringToBrush(jsonString)
-        mutableStateOf(brush)
+    restore = {
+        val strokes = Json.decodeFromString<List<Pair<String, String>>>(it)
+        mutableStateOf(strokes.map { stroke ->
+            Converters().deserializeStringToStroke(stroke)
+        }.toMutableSet())
+    }
+)
+
+fun brushFamilySaver(): Saver<MutableState<BrushFamily>, Int> = Saver(
+    save = { state ->
+        val serializedStockBrush =
+            Converters.stockBrushToEnumValues[state.value] ?: SerializedStockBrush.PRESSURE_PEN
+        serializedStockBrush.ordinal
+    },
+    restore = { ordinal ->
+        val serializedStockBrush = SerializedStockBrush.entries.find { it.ordinal == ordinal }
+            ?: SerializedStockBrush.PRESSURE_PEN
+        val stockBrush =
+            Converters.enumToStockBrush[serializedStockBrush] ?: StockBrushes.pressurePenLatest
+        mutableStateOf(stockBrush)
     }
 )

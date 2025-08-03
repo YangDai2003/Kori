@@ -1,0 +1,413 @@
+package org.yangdai.kori.ink
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Compress
+import androidx.compose.material.icons.filled.Expand
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.HorizontalFloatingToolbar
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalFloatingToolbar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toColorLong
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
+import kotlinx.serialization.Serializable
+import kotlin.math.roundToInt
+
+@Serializable
+enum class Mode {
+    Brush,
+    Eraser
+}
+
+interface FloatingToolbarScope {
+    @Composable
+    fun ToolbarButton(
+        checked: Boolean,
+        onCheckedChange: (Boolean) -> Unit,
+        popupContent: @Composable () -> Unit = {},
+        content: @Composable () -> Unit
+    )
+}
+
+private class FloatingToolbarScopeImpl(
+    private val toolbarAlignment: Alignment
+) : FloatingToolbarScope {
+
+    @Composable
+    override fun ToolbarButton(
+        checked: Boolean,
+        onCheckedChange: (Boolean) -> Unit,
+        popupContent: @Composable () -> Unit,
+        content: @Composable () -> Unit
+    ) {
+        var showPopup by remember { mutableStateOf(false) }
+
+        Box {
+            IconButton(
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = if (checked) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent,
+                    contentColor = if (checked) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurface
+                ),
+                onClick = {
+                    if (checked) showPopup = !showPopup
+                    else onCheckedChange(true)
+                },
+                content = content
+            )
+
+            LaunchedEffect(checked) {
+                if (!checked) showPopup = false
+            }
+
+            if (showPopup) {
+                val popupAlignment: Alignment
+                val popupOffset: IntOffset
+
+                when (toolbarAlignment) {
+                    Alignment.TopCenter -> {
+                        popupAlignment = Alignment.TopCenter
+                        popupOffset = IntOffset(0, 120)
+                    }
+
+                    Alignment.BottomCenter -> {
+                        popupAlignment = Alignment.BottomCenter
+                        popupOffset = IntOffset(0, -120)
+                    }
+
+                    Alignment.CenterStart -> {
+                        popupAlignment = Alignment.CenterStart
+                        popupOffset = IntOffset(120, 0)
+                    }
+
+                    Alignment.CenterEnd -> {
+                        popupAlignment = Alignment.CenterEnd
+                        popupOffset = IntOffset(-120, 0)
+                    }
+
+                    else -> {
+                        popupAlignment = Alignment.Center
+                        popupOffset = IntOffset(0, 0)
+                    }
+                }
+
+                Popup(
+                    alignment = popupAlignment,
+                    offset = popupOffset,
+                    properties = PopupProperties(dismissOnClickOutside = false),
+                    onDismissRequest = { showPopup = false }
+                ) {
+                    Surface(
+                        shape = MaterialTheme.shapes.large,
+                        color = MaterialTheme.colorScheme.surfaceContainer,
+                        shadowElevation = 4.dp
+                    ) {
+                        popupContent()
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun FloatingToolbar(
+    leadingContent: @Composable FloatingToolbarScope.() -> Unit,
+    trailingContent: @Composable FloatingToolbarScope.() -> Unit
+) = BoxWithConstraints(Modifier.fillMaxSize()) {
+    var expanded by remember { mutableStateOf(true) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+    // 当前工具栏的最终对齐位置
+    var alignment by remember { mutableStateOf(Alignment.CenterStart) }
+    // 在拖拽过程中，预测的对齐位置
+    var predictedAlignment by remember { mutableStateOf<Alignment?>(null) }
+    val density = LocalDensity.current
+
+    val maxWidthPx = with(density) { maxWidth.toPx() }
+    val maxHeightPx = with(density) { maxHeight.toPx() }
+
+    // 将锚点位置缓存起来，避免重复计算
+    val anchorPoints = remember(maxWidthPx, maxHeightPx) {
+        mapOf(
+            Alignment.TopCenter to Offset(maxWidthPx / 2, 0f),
+            Alignment.BottomCenter to Offset(maxWidthPx / 2, maxHeightPx),
+            Alignment.CenterStart to Offset(0f, maxHeightPx / 2),
+            Alignment.CenterEnd to Offset(maxWidthPx, maxHeightPx / 2)
+        )
+    }
+
+    // 绘制吸附位置的预览 (仅在拖拽时显示)
+    predictedAlignment?.let { snapAlignment ->
+        val isHorizontal =
+            snapAlignment == Alignment.TopCenter || snapAlignment == Alignment.BottomCenter
+        // 预览占位符
+        Spacer(
+            Modifier
+                .align(snapAlignment)
+                .padding(16.dp)
+                // 使用一个近似的尺寸来模拟工具栏的大小
+                .size(
+                    width = if (isHorizontal) 220.dp else 48.dp,
+                    height = if (isHorizontal) 48.dp else 220.dp
+                )
+                .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.4f), CircleShape)
+        )
+    }
+
+    val scope = remember(alignment) { FloatingToolbarScopeImpl(alignment) }
+
+    Box(
+        modifier = Modifier
+            .align(alignment)
+            .padding(16.dp)
+            .offset { IntOffset(offset.x.roundToInt(), offset.y.roundToInt()) }
+            .pointerInput(Unit) {
+                detectDragGestures(
+                    onDragEnd = {
+                        // 拖拽结束，将最终位置确定为预测的位置
+                        predictedAlignment?.let {
+                            alignment = it
+                        }
+                        // 重置偏移量和预测状态
+                        offset = Offset.Zero
+                        predictedAlignment = null
+                    }
+                ) { change, dragAmount ->
+                    change.consume()
+                    offset += dragAmount
+
+                    // 拖拽过程中，实时计算预测的吸附位置
+                    val startCenter = anchorPoints[alignment]
+                        ?: Offset(maxWidthPx / 2, maxHeightPx / 2)
+                    val currentDragPosition = startCenter + offset
+
+                    predictedAlignment = anchorPoints.minByOrNull {
+                        (currentDragPosition - it.value).getDistanceSquared()
+                    }?.key
+                }
+            }
+    ) {
+        when (alignment) {
+            Alignment.TopCenter, Alignment.BottomCenter -> {
+                HorizontalFloatingToolbar(
+                    modifier = Modifier.height(48.dp),
+                    expanded = expanded,
+                    contentPadding = PaddingValues(0.dp),
+                    leadingContent = { scope.leadingContent() },
+                    trailingContent = { scope.trailingContent() },
+                    expandedShadowElevation = 4.dp,
+                    collapsedShadowElevation = 4.dp,
+                    content = {
+                        FilledIconButton(onClick = { expanded = !expanded }) {
+                            Icon(
+                                modifier = Modifier
+                                    .size(IconButtonDefaults.extraSmallIconSize)
+                                    .rotate(90f),
+                                imageVector = if (expanded) Icons.Default.Compress else Icons.Default.Expand,
+                                contentDescription = null
+                            )
+                        }
+                    }
+                )
+            }
+
+            else -> { // CenterStart, CenterEnd
+                VerticalFloatingToolbar(
+                    modifier = Modifier.width(48.dp),
+                    expanded = expanded,
+                    contentPadding = PaddingValues(0.dp),
+                    leadingContent = { scope.leadingContent() },
+                    trailingContent = { scope.trailingContent() },
+                    expandedShadowElevation = 4.dp,
+                    collapsedShadowElevation = 4.dp,
+                    content = {
+                        FilledIconButton(onClick = { expanded = !expanded }) {
+                            Icon(
+                                modifier = Modifier.size(IconButtonDefaults.extraSmallIconSize),
+                                imageVector = if (expanded) Icons.Default.Compress else Icons.Default.Expand,
+                                contentDescription = null
+                            )
+                        }
+                    }
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BrushStylus(currentBrushSize: MutableState<Float>, currentBrushColor: MutableState<Long>) {
+    Column(
+        Modifier
+            .width(IntrinsicSize.Min)
+            .padding(4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                "Brush Size:",
+                style = MaterialTheme.typography.labelMedium
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    modifier = Modifier.clickable {
+                        currentBrushSize.value =
+                            currentBrushSize.value.minus(1).coerceAtLeast(1f)
+                    },
+                    imageVector = Icons.Default.Remove,
+                    contentDescription = "reduce"
+                )
+                Text(
+                    "${currentBrushSize.value.roundToInt()}",
+                    style = MaterialTheme.typography.labelMedium
+                )
+                Icon(
+                    modifier = Modifier.clickable {
+                        currentBrushSize.value =
+                            currentBrushSize.value.plus(1).coerceAtMost(100f)
+                    },
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "increase"
+                )
+            }
+        }
+        Row(Modifier.fillMaxWidth()) {
+            val interactionSource = remember { MutableInteractionSource() }
+            Slider(
+                modifier = Modifier
+                    .height(24.dp)
+                    .padding(horizontal = 4.dp),
+                value = currentBrushSize.value,
+                onValueChange = {
+                    currentBrushSize.value = it.roundToInt().toFloat()
+                },
+                valueRange = 1f..100f,
+                steps = 99,
+                interactionSource = interactionSource,
+                thumb = {
+                    SliderDefaults.Thumb(
+                        interactionSource = interactionSource,
+                        thumbSize = DpSize(4.dp, 24.dp)
+                    )
+                },
+                track = { sliderState ->
+                    SliderDefaults.Track(
+                        modifier = Modifier.height(8.dp),
+                        sliderState = sliderState,
+                        drawStopIndicator = {},
+                        drawTick = { _, _ -> },
+                        thumbTrackGapSize = 4.dp
+                    )
+                }
+            )
+        }
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 4.dp)
+                .padding(top = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                "Brush Color:",
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val colors = listOf(
+                Color.Black,
+                Color.White,
+                Color.Red,
+                Color.Blue,
+                Color.Green,
+                Color.Yellow,
+                Color.Gray
+            )
+            colors.forEach { color ->
+                Box(
+                    modifier = Modifier
+                        .height(24.dp)
+                        .aspectRatio(1f)
+                        .clip(CircleShape)
+                        .background(color)
+                        .clickable(role = Role.RadioButton) {
+                            currentBrushColor.value = color.toColorLong()
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (currentBrushColor.value == color.toColorLong()) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Selected",
+                            tint = if (color == Color.Black) Color.White else Color.Black
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
