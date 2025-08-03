@@ -5,7 +5,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 enum class Mode {
     Brush,
-    Eraser
+    Eraser,
+    View
 }
 
 @Serializable

@@ -40,6 +40,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalFloatingToolbar
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -70,7 +71,7 @@ interface FloatingToolbarScope {
     fun ToolbarButton(
         checked: Boolean,
         onCheckedChange: (Boolean) -> Unit,
-        popupContent: @Composable () -> Unit = {},
+        popupContent: @Composable (MutableState<Boolean>) -> Unit = {},
         content: @Composable () -> Unit
     )
 }
@@ -83,10 +84,11 @@ private class FloatingToolbarScopeImpl(
     override fun ToolbarButton(
         checked: Boolean,
         onCheckedChange: (Boolean) -> Unit,
-        popupContent: @Composable () -> Unit,
+        popupContent: @Composable (MutableState<Boolean>) -> Unit,
         content: @Composable () -> Unit
     ) {
-        var showPopup by remember { mutableStateOf(false) }
+        val showPopup = remember { mutableStateOf(false) }
+        val density = LocalDensity.current
 
         Box {
             IconButton(
@@ -95,39 +97,40 @@ private class FloatingToolbarScopeImpl(
                     contentColor = if (checked) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurface
                 ),
                 onClick = {
-                    if (checked) showPopup = !showPopup
+                    if (checked) showPopup.value = !showPopup.value
                     else onCheckedChange(true)
                 },
                 content = content
             )
 
             LaunchedEffect(checked) {
-                if (!checked) showPopup = false
+                if (!checked) showPopup.value = false
             }
 
-            if (showPopup) {
+            if (showPopup.value) {
+                val offset = with(density) { 56.dp.toPx().roundToInt() }
                 val popupAlignment: Alignment
                 val popupOffset: IntOffset
 
                 when (toolbarAlignment) {
                     Alignment.TopCenter -> {
                         popupAlignment = Alignment.TopCenter
-                        popupOffset = IntOffset(0, 120)
+                        popupOffset = IntOffset(0, offset)
                     }
 
                     Alignment.BottomCenter -> {
                         popupAlignment = Alignment.BottomCenter
-                        popupOffset = IntOffset(0, -120)
+                        popupOffset = IntOffset(0, -offset)
                     }
 
                     Alignment.CenterStart -> {
                         popupAlignment = Alignment.CenterStart
-                        popupOffset = IntOffset(120, 0)
+                        popupOffset = IntOffset(offset, 0)
                     }
 
                     Alignment.CenterEnd -> {
                         popupAlignment = Alignment.CenterEnd
-                        popupOffset = IntOffset(-120, 0)
+                        popupOffset = IntOffset(-offset, 0)
                     }
 
                     else -> {
@@ -140,14 +143,14 @@ private class FloatingToolbarScopeImpl(
                     alignment = popupAlignment,
                     offset = popupOffset,
                     properties = PopupProperties(dismissOnClickOutside = false),
-                    onDismissRequest = { showPopup = false }
+                    onDismissRequest = { showPopup.value = false }
                 ) {
                     Surface(
                         shape = MaterialTheme.shapes.large,
                         color = MaterialTheme.colorScheme.surfaceContainer,
                         shadowElevation = 4.dp
                     ) {
-                        popupContent()
+                        popupContent(showPopup)
                     }
                 }
             }
@@ -159,13 +162,19 @@ private class FloatingToolbarScopeImpl(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FloatingToolbar(
+    innerPadding: PaddingValues,
     leadingContent: @Composable FloatingToolbarScope.() -> Unit,
     trailingContent: @Composable FloatingToolbarScope.() -> Unit
-) = BoxWithConstraints(Modifier.fillMaxSize()) {
+) = BoxWithConstraints(
+    Modifier
+        .fillMaxSize()
+        .padding(innerPadding)
+) {
     var expanded by rememberSaveable { mutableStateOf(true) }
     var offset by remember { mutableStateOf(Offset.Zero) }
     // 当前工具栏的最终对齐位置
-    var alignment by remember { mutableStateOf(Alignment.CenterStart) }
+    val initAlignment = if (maxWidth > maxHeight) Alignment.CenterStart else Alignment.TopCenter
+    var alignment by remember { mutableStateOf(initAlignment) }
     // 在拖拽过程中，预测的对齐位置
     var predictedAlignment by remember { mutableStateOf<Alignment?>(null) }
     val density = LocalDensity.current
@@ -245,7 +254,16 @@ fun FloatingToolbar(
                     expandedShadowElevation = 4.dp,
                     collapsedShadowElevation = 4.dp,
                     content = {
-                        FilledIconButton(onClick = { expanded = !expanded }) {
+                        FilledIconButton(
+                            modifier = Modifier
+                                .minimumInteractiveComponentSize()
+                                .size(
+                                    IconButtonDefaults.extraSmallContainerSize(
+                                        widthOption = IconButtonDefaults.IconButtonWidthOption.Wide
+                                    )
+                                ),
+                            onClick = { expanded = !expanded }
+                        ) {
                             Icon(
                                 modifier = Modifier
                                     .size(IconButtonDefaults.extraSmallIconSize)
@@ -268,7 +286,16 @@ fun FloatingToolbar(
                     expandedShadowElevation = 4.dp,
                     collapsedShadowElevation = 4.dp,
                     content = {
-                        FilledIconButton(onClick = { expanded = !expanded }) {
+                        FilledIconButton(
+                            modifier = Modifier
+                                .minimumInteractiveComponentSize()
+                                .size(
+                                    IconButtonDefaults.extraSmallContainerSize(
+                                        widthOption = IconButtonDefaults.IconButtonWidthOption.Narrow
+                                    )
+                                ),
+                            onClick = { expanded = !expanded }
+                        ) {
                             Icon(
                                 modifier = Modifier.size(IconButtonDefaults.extraSmallIconSize),
                                 imageVector = if (expanded) Icons.Default.Compress else Icons.Default.Expand,

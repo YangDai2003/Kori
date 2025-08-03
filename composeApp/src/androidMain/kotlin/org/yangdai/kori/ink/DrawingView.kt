@@ -6,13 +6,16 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
+import androidx.compose.material.icons.outlined.Pinch
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -26,12 +29,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.fromColorLong
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.toColorLong
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.ink.authoring.InProgressStrokeId
@@ -52,8 +58,7 @@ import org.yangdai.kori.R
 fun DrawingView(onExit: () -> Unit) {
     val canvasStrokeRenderer = remember { CanvasStrokeRenderer.create() }
     var inProgressStrokesView by remember { mutableStateOf<InProgressStrokesView?>(null) }
-    val finishedStrokesState =
-        rememberSaveable(saver = strokeSetSaver()) { mutableStateOf(setOf()) }
+    val finishedStrokesState = remember { mutableStateOf(setOf<Stroke>()) }
 
     var currentMode by rememberSaveable { mutableStateOf(Mode.Brush) }
     var currentBrushFamily by rememberSaveable(saver = brushFamilySaver()) {
@@ -61,10 +66,10 @@ fun DrawingView(onExit: () -> Unit) {
     }
     val penColor = rememberSaveable { mutableLongStateOf(Color.Black.toColorLong()) }
     val penSize = rememberSaveable { mutableFloatStateOf(15f) }
-    val markerColor = rememberSaveable { mutableLongStateOf(Color.Black.toColorLong()) }
-    val markerSize = rememberSaveable { mutableFloatStateOf(15f) }
-    val highlighterColor = rememberSaveable { mutableLongStateOf(Color.Black.toColorLong()) }
-    val highlighterSize = rememberSaveable { mutableFloatStateOf(15f) }
+    val markerColor = rememberSaveable { mutableLongStateOf(Color.Green.toColorLong()) }
+    val markerSize = rememberSaveable { mutableFloatStateOf(25f) }
+    val highlighterColor = rememberSaveable { mutableLongStateOf(Color.Yellow.toColorLong()) }
+    val highlighterSize = rememberSaveable { mutableFloatStateOf(35f) }
 
     val currentBrushColor = when (currentBrushFamily) {
         StockBrushes.pressurePenLatest -> penColor.longValue
@@ -88,49 +93,91 @@ fun DrawingView(onExit: () -> Unit) {
         )
     }
 
-    Scaffold { innerPadding ->
-        Box(Modifier.padding(innerPadding)) {
-            AndroidView(
-                modifier = Modifier.fillMaxSize(),
-                factory = { context ->
-                    val rootView = FrameLayout(context)
-                    inProgressStrokesView = InProgressStrokesView(context).apply {
-                        eagerInit()
-                        addFinishedStrokesListener(object : InProgressStrokesFinishedListener {
-                            override fun onStrokesFinished(strokes: Map<InProgressStrokeId, Stroke>) {
-                                finishedStrokesState.value += strokes.values
-                                removeFinishedStrokes(strokes.keys)
-                            }
-                        })
+    var scale by remember { mutableFloatStateOf(1f) }
+    var offsetX by remember { mutableFloatStateOf(0f) }
+    var offsetY by remember { mutableFloatStateOf(0f) }
+
+    Scaffold(containerColor = MaterialTheme.colorScheme.surfaceContainer) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(currentMode) {
+                    if (currentMode == Mode.View) {
+                        detectTransformGestures { _, pan, gestureZoom, _ ->
+                            scale = (scale * gestureZoom).coerceIn(0.8f, 1.5f)
+                            val offsetXMax = size.width / 2f
+                            val offsetYMax = size.height / 2f
+                            offsetX = (offsetX + pan.x).coerceIn(-offsetXMax, offsetXMax)
+                            offsetY = (offsetY + pan.y).coerceIn(-offsetYMax, offsetYMax)
+                        }
                     }
-                    rootView.addView(inProgressStrokesView)
-                    rootView
                 },
-                update = { rootView ->
-                    val touchListener = createTouchListener(
-                        rootView = rootView,
-                        inProgressStrokesView = inProgressStrokesView!!,
-                        finishedStrokesState = finishedStrokesState,
-                        currentMode = currentMode,
-                        currentBrush = currentBrush
-                    )
-                    rootView.setOnTouchListener(touchListener)
-                }
-            )
+            contentAlignment = Alignment.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        clip = true
+                        scaleX = scale
+                        scaleY = scale
+                        translationX = offsetX
+                        translationY = offsetY
+                        shadowElevation = 1f
+                    }
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+                AndroidView(
+                    modifier = Modifier.matchParentSize(),
+                    factory = { context ->
+                        val rootView = FrameLayout(context)
+                        inProgressStrokesView = InProgressStrokesView(context).apply {
+                            layoutParams =
+                                FrameLayout.LayoutParams(
+                                    FrameLayout.LayoutParams.MATCH_PARENT,
+                                    FrameLayout.LayoutParams.MATCH_PARENT,
+                                )
+                            eagerInit()
+                            addFinishedStrokesListener(object : InProgressStrokesFinishedListener {
+                                override fun onStrokesFinished(strokes: Map<InProgressStrokeId, Stroke>) {
+                                    finishedStrokesState.value += strokes.values
+                                    removeFinishedStrokes(strokes.keys)
+                                }
+                            })
+                        }
+                        rootView.addView(inProgressStrokesView)
+                        rootView
+                    },
+                    update = { rootView ->
+                        val touchListener = createTouchListener(
+                            rootView = rootView,
+                            inProgressStrokesView = inProgressStrokesView!!,
+                            finishedStrokesState = finishedStrokesState,
+                            currentMode = currentMode,
+                            currentBrush = currentBrush,
+                            scale = scale
+                        )
+                        rootView.setOnTouchListener(touchListener)
+                    }
+                )
 
-            Canvas(modifier = Modifier) {
-                val canvasTransform = Matrix()
-                drawContext.canvas.nativeCanvas.concat(canvasTransform)
-                val canvas = drawContext.canvas.nativeCanvas
+                Canvas(modifier = Modifier.matchParentSize()) {
+                    val canvasTransform = Matrix()
+                    drawContext.canvas.nativeCanvas.concat(canvasTransform)
+                    val canvas = drawContext.canvas.nativeCanvas
 
-                finishedStrokesState.value.forEach { stroke ->
-                    canvasStrokeRenderer.draw(
-                        stroke = stroke, canvas = canvas, strokeToScreenTransform = canvasTransform
-                    )
+                    finishedStrokesState.value.forEach { stroke ->
+                        canvasStrokeRenderer.draw(
+                            stroke = stroke,
+                            canvas = canvas,
+                            strokeToScreenTransform = canvasTransform
+                        )
+                    }
                 }
             }
 
             FloatingToolbar(
+                innerPadding = innerPadding,
                 leadingContent = {
                     ToolbarButton(
                         checked = currentBrushFamily == StockBrushes.pressurePenLatest && currentMode == Mode.Brush,
@@ -146,7 +193,8 @@ fun DrawingView(onExit: () -> Unit) {
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.stylus_fountain_pen_24px),
-                            contentDescription = "pressurePen"
+                            contentDescription = "pressurePen",
+                            tint = Color.fromColorLong(penColor.longValue)
                         )
                     }
                     ToolbarButton(
@@ -163,7 +211,8 @@ fun DrawingView(onExit: () -> Unit) {
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.stylus_pen_24px),
-                            contentDescription = "marker"
+                            contentDescription = "marker",
+                            tint = Color.fromColorLong(markerColor.longValue)
                         )
                     }
                     ToolbarButton(
@@ -180,7 +229,8 @@ fun DrawingView(onExit: () -> Unit) {
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.stylus_highlighter_24px),
-                            contentDescription = "highlighter"
+                            contentDescription = "highlighter",
+                            tint = Color.fromColorLong(highlighterColor.longValue)
                         )
                     }
                 },
@@ -188,9 +238,13 @@ fun DrawingView(onExit: () -> Unit) {
                     ToolbarButton(
                         checked = currentMode == Mode.Eraser,
                         onCheckedChange = { if (it) currentMode = Mode.Eraser },
-                        popupContent = {
+                        popupContent = { showPopup ->
                             TextButton(
-                                onClick = { eraseStrokesInBox(finishedStrokesState) }) {
+                                onClick = {
+                                    eraseStrokesInBox(finishedStrokesState)
+                                    showPopup.value = false
+                                }
+                            ) {
                                 Text("Erase Whole Strokes")
                             }
                         }
@@ -198,6 +252,27 @@ fun DrawingView(onExit: () -> Unit) {
                         Icon(
                             painter = painterResource(R.drawable.ink_eraser_24px),
                             contentDescription = "eraser"
+                        )
+                    }
+                    ToolbarButton(
+                        checked = currentMode == Mode.View,
+                        onCheckedChange = { if (it) currentMode = Mode.View },
+                        popupContent = { showPopup ->
+                            TextButton(
+                                onClick = {
+                                    scale = 1f
+                                    offsetX = 0f
+                                    offsetY = 0f
+                                    showPopup.value = false
+                                }
+                            ) {
+                                Text("Reset Canvas")
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Pinch,
+                            contentDescription = "pinch"
                         )
                     }
                     IconButton(onClick = onExit) {
@@ -217,25 +292,44 @@ private fun createTouchListener(
     inProgressStrokesView: InProgressStrokesView,
     finishedStrokesState: MutableState<Set<Stroke>>,
     currentMode: Mode,
-    currentBrush: Brush
+    currentBrush: Brush,
+    scale: Float
 ): View.OnTouchListener {
     val predictor = MotionEventPredictor.newInstance(rootView)
     var currentPointerId: Int? = null
     var currentStrokeId: InProgressStrokeId? = null
 
+    // 创建一个矩阵来表示 graphicsLayer 的变换
+    val transformMatrix = Matrix().apply {
+        postScale(scale, scale)
+    }
+
+    // 计算逆矩阵，用于将屏幕坐标转换回画布坐标
+    val inverseMatrix = Matrix()
+    transformMatrix.invert(inverseMatrix)
+
     return View.OnTouchListener { view, event ->
+        val transformedEvent = MotionEvent.obtain(event)
+        transformedEvent.transform(inverseMatrix)
+
         when (currentMode) {
             Mode.Brush -> {
-                val predictedEvent = predictor.predict()
+                val predictedEvent = predictor.predict()?.also {
+                    it.transform(inverseMatrix)
+                }
+
                 try {
-                    when (event.actionMasked) {
+                    when (transformedEvent.actionMasked) {
                         MotionEvent.ACTION_DOWN -> {
-                            view.requestUnbufferedDispatch(event)
-                            val pointerIndex = event.actionIndex
-                            val pointerId = event.getPointerId(pointerIndex)
+                            view.requestUnbufferedDispatch(transformedEvent)
+                            val pointerIndex = transformedEvent.actionIndex
+                            val pointerId = transformedEvent.getPointerId(pointerIndex)
                             currentPointerId = pointerId
+                            // 使用变换后的事件
                             currentStrokeId = inProgressStrokesView.startStroke(
-                                event = event, pointerId = pointerId, brush = currentBrush
+                                event = transformedEvent,
+                                pointerId = pointerId,
+                                brush = currentBrush
                             )
                             true
                         }
@@ -244,33 +338,41 @@ private fun createTouchListener(
                             val pointerId = checkNotNull(currentPointerId)
                             val strokeId = checkNotNull(currentStrokeId)
 
-                            for (pointerIndex in 0 until event.pointerCount) {
-                                if (event.getPointerId(pointerIndex) != pointerId) continue
+                            for (pointerIndex in 0 until transformedEvent.pointerCount) {
+                                if (transformedEvent.getPointerId(pointerIndex) != pointerId) continue
+                                // 使用变换后的事件
                                 inProgressStrokesView.addToStroke(
-                                    event, pointerId, strokeId, predictedEvent
+                                    transformedEvent, pointerId, strokeId, predictedEvent
                                 )
                             }
                             true
                         }
 
                         MotionEvent.ACTION_UP -> {
-                            val pointerIndex = event.actionIndex
-                            val pointerId = event.getPointerId(pointerIndex)
-//                                        check(pointerId == currentPointerId.value)
-                            val currentStrokeId = checkNotNull(currentStrokeId)
-                            inProgressStrokesView.finishStroke(
-                                event, pointerId, currentStrokeId
-                            )
-                            view.performClick()
+                            val pointerIndex = transformedEvent.actionIndex
+                            val pointerId = transformedEvent.getPointerId(pointerIndex)
+                            if (pointerId == currentPointerId) {
+                                val currentStrokeId = checkNotNull(currentStrokeId)
+                                // 使用变换后的事件
+                                inProgressStrokesView.finishStroke(
+                                    transformedEvent, pointerId, currentStrokeId
+                                )
+                                view.performClick()
+                            }
                             true
                         }
 
                         MotionEvent.ACTION_CANCEL -> {
-                            val pointerIndex = event.actionIndex
-                            val pointerId = event.getPointerId(pointerIndex)
-                            check(pointerId == currentPointerId)
-                            val currentStrokeId = checkNotNull(currentStrokeId)
-                            inProgressStrokesView.cancelStroke(currentStrokeId, event)
+                            val pointerIndex = transformedEvent.actionIndex
+                            val pointerId = transformedEvent.getPointerId(pointerIndex)
+                            if (pointerId == currentPointerId) {
+                                val currentStrokeId = checkNotNull(currentStrokeId)
+                                // 使用变换后的事件
+                                inProgressStrokesView.cancelStroke(
+                                    currentStrokeId,
+                                    transformedEvent
+                                )
+                            }
                             true
                         }
 
@@ -282,13 +384,13 @@ private fun createTouchListener(
             }
 
             Mode.Eraser -> {
-                when (event.actionMasked) {
+                when (transformedEvent.actionMasked) {
                     MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
-                        // For stroke-by-stroke eraser, create a small box around the pointer
-                        // and erase any intersecting strokes.
-                        val eraserSize = 40f // Define the size of the eraser tip
+                        val eraserSize = 40f / scale // 橡皮擦在缩放时保持视觉大小一致
                         val eraserBox = ImmutableBox.fromCenterAndDimensions(
-                            ImmutableVec(event.x, event.y), eraserSize, eraserSize
+                            ImmutableVec(transformedEvent.x, transformedEvent.y),
+                            eraserSize,
+                            eraserSize
                         )
                         eraseStrokesInBox(finishedStrokesState, eraserBox)
                         true
@@ -302,6 +404,10 @@ private fun createTouchListener(
                     else -> false
                 }
             }
+
+            Mode.View -> {
+                false
+            }
         }
     }
 }
@@ -313,7 +419,7 @@ private fun eraseStrokesInBox(
     )
 ) {
     // A stroke is considered for erasing if even a small part of it is in the box.
-    val threshold = 0.1f
+    val threshold = 0.01f
 
     val strokesToErase = finishedStrokesState.value.filter { stroke ->
         stroke.shape.computeCoverageIsGreaterThan(

@@ -138,21 +138,6 @@ class Converters {
     }
 }
 
-fun strokeSetSaver(): Saver<MutableState<Set<Stroke>>, String> = Saver(
-    save = { state ->
-        val strokes = state.value.map {
-            Converters().serializeStrokeToString(it)
-        }
-        Json.encodeToString(strokes)
-    },
-    restore = {
-        val strokes = Json.decodeFromString<List<Pair<String, String>>>(it)
-        mutableStateOf(strokes.map { stroke ->
-            Converters().deserializeStringToStroke(stroke)
-        }.toMutableSet())
-    }
-)
-
 fun brushFamilySaver(): Saver<MutableState<BrushFamily>, Int> = Saver(
     save = { state ->
         val serializedStockBrush =
