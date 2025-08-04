@@ -12,9 +12,9 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.TextStyle
@@ -26,9 +26,13 @@ private const val COLOR_ANIMATION_DURATION = 700
 // 通过对象而不是变量来跟踪首次启动状态，避免多处状态不一致
 private var isFirstLaunch = true
 
-data class AppMode(val darkMode: Boolean = false, val amoledMode: Boolean = false)
+data class AppConfig(
+    val darkMode: Boolean = false,
+    val amoledMode: Boolean = false,
+    val fontScale: Float = 1f
+)
 
-val LocalAppMode = compositionLocalOf { AppMode() }
+val LocalAppConfig = staticCompositionLocalOf { AppConfig() }
 
 /**
  * 使颜色变暗的辅助函数
@@ -201,7 +205,7 @@ fun ExpressiveTheme(
     // 获取缩放后的排版
     val koriTypography = remember(fontScale) { Typography.withScaledFontSizes(fontScale) }
 
-    CompositionLocalProvider(LocalAppMode provides AppMode(darkMode, amoledMode)) {
+    CompositionLocalProvider(LocalAppConfig provides AppConfig(darkMode, amoledMode, fontScale)) {
         MaterialExpressiveTheme(
             colorScheme = finalColorScheme, typography = koriTypography, content = content
         )
