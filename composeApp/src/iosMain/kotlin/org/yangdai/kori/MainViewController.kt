@@ -78,9 +78,11 @@ fun MainViewController() = ComposeUIViewController(
                 val semanticsModifier =
                     if (showPassScreen) Modifier.semantics(mergeDescendants = true) { hideFromAccessibility() }
                     else Modifier
-                AppNavHost(modifier = Modifier
-                    .blur(blur)
-                    .then(semanticsModifier))
+                AppNavHost(
+                    modifier = Modifier
+                        .blur(blur)
+                        .then(semanticsModifier)
+                )
                 AnimatedVisibility(
                     visible = showPassScreen,
                     enter = slideInVertically(

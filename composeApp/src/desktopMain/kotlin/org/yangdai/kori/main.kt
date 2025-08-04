@@ -52,10 +52,12 @@ fun main() {
     System.setProperty("compose.interop.blending", "true")
     System.setProperty("compose.swing.render.on.graphics", "true")
     KoinInitializer.init()
-    if (System.getProperty("os.name").indexOf("Mac") > -1) {
-        Desktop.getDesktop().setOpenURIHandler { uri ->
-            ExternalUriHandler.onNewUri(uri.uri.toString())
+    try {
+        Desktop.getDesktop().setOpenURIHandler { event ->
+            ExternalUriHandler.onNewUri(event.uri.toString())
         }
+    } catch (_: UnsupportedOperationException) {
+        println("setOpenURIHandler is unsupported")
     }
     application {
         val state = rememberWindowState()
@@ -100,9 +102,11 @@ fun main() {
                         val semanticsModifier =
                             if (showPassScreen) Modifier.semantics(mergeDescendants = true) { hideFromAccessibility() }
                             else Modifier
-                        AppNavHost(modifier = Modifier
-                            .blur(blur)
-                            .then(semanticsModifier))
+                        AppNavHost(
+                            modifier = Modifier
+                                .blur(blur)
+                                .then(semanticsModifier)
+                        )
                         AnimatedVisibility(
                             visible = showPassScreen,
                             enter = scaleIn(initialScale = 0.92f) + fadeIn(),

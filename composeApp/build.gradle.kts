@@ -251,7 +251,7 @@ val macExtraPlistKeys: String
     <array>
         <dict>
             <key>CFBundleURLName</key>
-            <string>deep link</string>
+            <string>Kori deep link</string>
             <key>CFBundleURLSchemes</key>
             <array>
                 <string>kori</string>
