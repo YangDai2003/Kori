@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -35,14 +34,13 @@ import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.presentation.component.note.HeaderNode
+import org.yangdai.kori.presentation.component.note.markdown.Properties.getPropertiesLineRange
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.screen.note.NoteEditingState
 import org.yangdai.kori.presentation.screen.note.TextState
-import org.yangdai.kori.presentation.screen.settings.AppTheme
 import org.yangdai.kori.presentation.screen.settings.EditorPaneState
 import org.yangdai.kori.presentation.util.Constants
-import org.yangdai.kori.presentation.component.note.markdown.Properties.getPropertiesLineRange
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
@@ -123,10 +121,6 @@ class TemplateViewModel(
             started = SharingStarted.Companion.WhileSubscribed(5_000L),
             initialValue = TextState()
         )
-
-    val appTheme = dataStoreRepository.intFlow(Constants.Preferences.APP_THEME)
-        .map { AppTheme.fromInt(it) }
-        .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), AppTheme.SYSTEM)
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     private val contentAndTreeFlow = contentSnapshotFlow.debounce(100).distinctUntilChanged()

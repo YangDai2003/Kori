@@ -1,7 +1,6 @@
 package org.yangdai.kori.presentation.component.note
 
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -17,7 +16,6 @@ fun AdaptiveView(
     noteType: NoteType,
     contentString: String,
     scrollState: ScrollState,
-    isAppInDarkTheme: Boolean = isSystemInDarkTheme(),
     isSheetVisible: Boolean = false,
     printTrigger: MutableState<Boolean> = remember { mutableStateOf(false) }
 ) = when (noteType) {
@@ -26,7 +24,6 @@ fun AdaptiveView(
         modifier = modifier,
         html = contentString,
         scrollState = scrollState,
-        isAppInDarkTheme = isAppInDarkTheme,
         isSheetVisible = isSheetVisible,
         printTrigger = printTrigger
     )

@@ -26,6 +26,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
 import org.yangdai.kori.presentation.component.dialog.ImageViewerDialog
+import org.yangdai.kori.presentation.theme.LocalAppMode
 import org.yangdai.kori.presentation.util.rememberCustomTabsIntent
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -34,7 +35,6 @@ actual fun MarkdownView(
     modifier: Modifier,
     html: String,
     scrollState: ScrollState,
-    isAppInDarkTheme: Boolean,
     styles: MarkdownStyles,
     isSheetVisible: Boolean,
     printTrigger: MutableState<Boolean>
@@ -44,7 +44,7 @@ actual fun MarkdownView(
     var webView by remember { mutableStateOf<WebView?>(null) }
     var showDialog by remember { mutableStateOf(false) }
     var clickedImageUrl by remember { mutableStateOf("") }
-
+    val isAppInDarkTheme = LocalAppMode.current.darkMode
     val data =
         remember(html, styles, isAppInDarkTheme) { processHtml(html, styles, isAppInDarkTheme) }
 

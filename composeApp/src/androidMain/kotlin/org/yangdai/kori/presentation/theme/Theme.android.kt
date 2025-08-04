@@ -3,7 +3,6 @@ package org.yangdai.kori.presentation.theme
 import android.app.Activity
 import android.os.Build
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -41,15 +40,6 @@ actual fun KoriTheme(
         }
     }
 
-    // 获取带动画的颜色方案（首次启动时无动画）
-    val colorScheme = getColorSchemeWithAnimation(targetColorScheme)
-
-    // 处理AMOLED模式
-    val finalColorScheme = processAmoledMode(darkMode, amoledMode, colorScheme)
-
-    // 获取缩放后的排版
-    val koriTypography = getScaledTypography(fontScale)
-
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
@@ -58,9 +48,11 @@ actual fun KoriTheme(
         }
     }
 
-    MaterialExpressiveTheme(
-        colorScheme = finalColorScheme,
-        typography = koriTypography,
+    ExpressiveTheme(
+        darkMode = darkMode,
+        amoledMode = amoledMode,
+        targetColorScheme = targetColorScheme,
+        fontScale = fontScale,
         content = content
     )
 }

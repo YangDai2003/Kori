@@ -6,13 +6,18 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialExpressiveTheme
+import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.text.TextStyle
 import org.yangdai.kori.presentation.screen.settings.AppColor
 
 // 色彩过渡动画时长常量（毫秒）
@@ -21,36 +26,30 @@ private const val COLOR_ANIMATION_DURATION = 700
 // 通过对象而不是变量来跟踪首次启动状态，避免多处状态不一致
 private var isFirstLaunch = true
 
+data class AppMode(val darkMode: Boolean = false, val amoledMode: Boolean = false)
+
+val LocalAppMode = compositionLocalOf { AppMode() }
+
 /**
  * 使颜色变暗的辅助函数
- * @param color 要变暗的颜色
- * @param factor 变暗因子，范围0-1
- * @return 变暗后的颜色
  */
-@Stable
-fun darkenColor(color: Color, factor: Float): Color = lerp(color, Color.Black, factor)
+private fun Color.darken(factor: Float): Color = lerp(this, Color.Black, factor)
 
 /**
  * 为颜色方案中的单个颜色创建动画
  */
 @Composable
 private fun animateColor(
-    targetValue: Color,
-    animationSpec: AnimationSpec<Color> = tween(COLOR_ANIMATION_DURATION)
-): Color {
-    return animateColorAsState(
-        targetValue = targetValue,
-        animationSpec = animationSpec
-    ).value
-}
+    targetValue: Color, animationSpec: AnimationSpec<Color> = tween(COLOR_ANIMATION_DURATION)
+): Color = animateColorAsState(targetValue = targetValue, animationSpec = animationSpec).value
 
 /**
- * 为颜色方案创建平滑过渡动画，优化实现减少重复代码
+ * 为颜色方案创建平滑过渡动画
  * @param targetColorScheme 目标颜色方案
  * @return 具有动画效果的颜色方案
  */
 @Composable
-fun animateColorSchemeAsState(targetColorScheme: ColorScheme): ColorScheme {
+private fun animateColorSchemeAsState(targetColorScheme: ColorScheme): ColorScheme {
     return ColorScheme(
         primary = animateColor(targetColorScheme.primary),
         onPrimary = animateColor(targetColorScheme.onPrimary),
@@ -104,110 +103,33 @@ fun animateColorSchemeAsState(targetColorScheme: ColorScheme): ColorScheme {
 }
 
 /**
- * 获取合适的颜色方案，处理首次启动时不使用动画
+ * 扩展函数：根据缩放因子调整排版中的所有字体大小。
  */
-@Composable
-fun getColorSchemeWithAnimation(targetColorScheme: ColorScheme): ColorScheme {
-    if (isFirstLaunch) {
-        LaunchedEffect(Unit) {
-            // 标记首次启动已完成
-            isFirstLaunch = false
-        }
-        // 首次启动，直接使用目标颜色方案，不使用动画
-        return targetColorScheme
-    }
-
-    // 非首次启动，使用动画过渡
-    return animateColorSchemeAsState(targetColorScheme)
+private fun Typography.withScaledFontSizes(scale: Float): Typography {
+    if (scale == 1f) return this // 如果没有缩放，直接返回原对象，避免不必要的对象创建
+    return this.copy(
+        displayLarge = displayLarge.scale(scale),
+        displayMedium = displayMedium.scale(scale),
+        displaySmall = displaySmall.scale(scale),
+        headlineLarge = headlineLarge.scale(scale),
+        headlineMedium = headlineMedium.scale(scale),
+        headlineSmall = headlineSmall.scale(scale),
+        titleLarge = titleLarge.scale(scale),
+        titleMedium = titleMedium.scale(scale),
+        titleSmall = titleSmall.scale(scale),
+        bodyLarge = bodyLarge.scale(scale),
+        bodyMedium = bodyMedium.scale(scale),
+        bodySmall = bodySmall.scale(scale),
+        labelLarge = labelLarge.scale(scale),
+        labelMedium = labelMedium.scale(scale),
+        labelSmall = labelSmall.scale(scale)
+    )
 }
 
 /**
- * 处理AMOLED模式的颜色调整
+ * 辅助函数，用于缩放单个 TextStyle
  */
-@Composable
-fun processAmoledMode(
-    darkMode: Boolean,
-    amoledMode: Boolean,
-    colorScheme: ColorScheme
-): ColorScheme {
-    // 仅在深色模式下处理AMOLED选项
-    if (!darkMode) return colorScheme
-
-    val contentTargetFactor = remember(amoledMode) { if (amoledMode) 0.1f else 0f }
-    val contentDimmingFactor by animateFloatAsState(
-        targetValue = contentTargetFactor,
-        animationSpec = tween(durationMillis = 1000),
-        label = "ContentDimming"
-    )
-
-    val backgroundTargetFactor = remember(amoledMode) { if (amoledMode) 1f else 0f }
-    val backgroundDimmingFactor by animateFloatAsState(
-        targetValue = backgroundTargetFactor,
-        animationSpec = tween(durationMillis = 1000),
-        label = "BackgroundDimming"
-    )
-
-    // 使用remember缓存转换结果，避免每次重组都创建新对象
-    return remember(colorScheme, contentDimmingFactor, backgroundDimmingFactor) {
-        colorScheme.copy(
-            background = darkenColor(colorScheme.background, backgroundDimmingFactor),
-            surface = darkenColor(colorScheme.surface, backgroundDimmingFactor),
-            surfaceContainer = darkenColor(colorScheme.surfaceContainer, backgroundDimmingFactor),
-            surfaceVariant = darkenColor(colorScheme.surfaceVariant, contentDimmingFactor),
-            surfaceContainerLowest = darkenColor(
-                colorScheme.surfaceContainerLowest,
-                contentDimmingFactor
-            ),
-            surfaceContainerLow = darkenColor(
-                colorScheme.surfaceContainerLow,
-                contentDimmingFactor
-            ),
-            surfaceContainerHigh = darkenColor(
-                colorScheme.surfaceContainerHigh,
-                contentDimmingFactor
-            ),
-            surfaceContainerHighest = darkenColor(
-                colorScheme.surfaceContainerHighest,
-                contentDimmingFactor
-            ),
-            surfaceDim = darkenColor(colorScheme.surfaceDim, contentDimmingFactor),
-            surfaceBright = darkenColor(colorScheme.surfaceBright, contentDimmingFactor),
-            scrim = darkenColor(colorScheme.scrim, contentDimmingFactor),
-            inverseSurface = darkenColor(colorScheme.inverseSurface, contentDimmingFactor),
-            errorContainer = darkenColor(colorScheme.errorContainer, contentDimmingFactor),
-            tertiaryContainer = darkenColor(colorScheme.tertiaryContainer, contentDimmingFactor),
-            secondaryContainer = darkenColor(colorScheme.secondaryContainer, contentDimmingFactor),
-            primaryContainer = darkenColor(colorScheme.primaryContainer, contentDimmingFactor)
-        )
-    }
-}
-
-/**
- * 根据fontScale调整Typography，使用缓存优化性能
- */
-@Composable
-fun getScaledTypography(fontScale: Float): androidx.compose.material3.Typography {
-    // 使用remember避免不必要的重组
-    return remember(fontScale) {
-        Typography.copy(
-            displayLarge = Typography.displayLarge.copy(fontSize = Typography.displayLarge.fontSize * fontScale),
-            displayMedium = Typography.displayMedium.copy(fontSize = Typography.displayMedium.fontSize * fontScale),
-            displaySmall = Typography.displaySmall.copy(fontSize = Typography.displaySmall.fontSize * fontScale),
-            headlineLarge = Typography.headlineLarge.copy(fontSize = Typography.headlineLarge.fontSize * fontScale),
-            headlineMedium = Typography.headlineMedium.copy(fontSize = Typography.headlineMedium.fontSize * fontScale),
-            headlineSmall = Typography.headlineSmall.copy(fontSize = Typography.headlineSmall.fontSize * fontScale),
-            titleLarge = Typography.titleLarge.copy(fontSize = Typography.titleLarge.fontSize * fontScale),
-            titleMedium = Typography.titleMedium.copy(fontSize = Typography.titleMedium.fontSize * fontScale),
-            titleSmall = Typography.titleSmall.copy(fontSize = Typography.titleSmall.fontSize * fontScale),
-            bodyLarge = Typography.bodyLarge.copy(fontSize = Typography.bodyLarge.fontSize * fontScale),
-            bodyMedium = Typography.bodyMedium.copy(fontSize = Typography.bodyMedium.fontSize * fontScale),
-            bodySmall = Typography.bodySmall.copy(fontSize = Typography.bodySmall.fontSize * fontScale),
-            labelLarge = Typography.labelLarge.copy(fontSize = Typography.labelLarge.fontSize * fontScale),
-            labelMedium = Typography.labelMedium.copy(fontSize = Typography.labelMedium.fontSize * fontScale),
-            labelSmall = Typography.labelSmall.copy(fontSize = Typography.labelSmall.fontSize * fontScale)
-        )
-    }
-}
+private fun TextStyle.scale(factor: Float): TextStyle = this.copy(fontSize = this.fontSize * factor)
 
 @Composable
 expect fun KoriTheme(
@@ -217,3 +139,71 @@ expect fun KoriTheme(
     fontScale: Float = 1f,
     content: @Composable () -> Unit
 )
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun ExpressiveTheme(
+    darkMode: Boolean,
+    amoledMode: Boolean,
+    targetColorScheme: ColorScheme,
+    fontScale: Float,
+    content: @Composable () -> Unit
+) {
+    // 首次启动，直接使用目标颜色方案，不使用动画
+    val colorScheme = if (isFirstLaunch) targetColorScheme
+    else animateColorSchemeAsState(targetColorScheme)
+
+    // 标记首次启动已完成
+    LaunchedEffect(Unit) { isFirstLaunch = false }
+
+    // 仅在深色模式下处理AMOLED选项
+    val finalColorScheme = if (darkMode) {
+        val contentDimmingFactor by animateFloatAsState(
+            targetValue = if (amoledMode) 0.1f else 0f,
+            animationSpec = tween(durationMillis = COLOR_ANIMATION_DURATION),
+            label = "ContentDimming"
+        )
+
+        val backgroundDimmingFactor by animateFloatAsState(
+            targetValue = if (amoledMode) 1f else 0f,
+            animationSpec = tween(durationMillis = COLOR_ANIMATION_DURATION),
+            label = "BackgroundDimming"
+        )
+
+        // 使用remember缓存转换结果，避免每次重组都创建新对象
+        remember(colorScheme, contentDimmingFactor, backgroundDimmingFactor) {
+            colorScheme.copy(
+                background = colorScheme.background.darken(backgroundDimmingFactor),
+                surface = colorScheme.surface.darken(backgroundDimmingFactor),
+                surfaceContainer = colorScheme.surfaceContainer.darken(backgroundDimmingFactor),
+                // 以下为内容相关颜色
+                surfaceVariant = colorScheme.surfaceVariant.darken(contentDimmingFactor),
+                surfaceContainerLowest = colorScheme.surfaceContainerLowest.darken(
+                    contentDimmingFactor
+                ),
+                surfaceContainerLow = colorScheme.surfaceContainerLow.darken(contentDimmingFactor),
+                surfaceContainerHigh = colorScheme.surfaceContainerHigh.darken(contentDimmingFactor),
+                surfaceContainerHighest = colorScheme.surfaceContainerHighest.darken(
+                    contentDimmingFactor
+                ),
+                surfaceDim = colorScheme.surfaceDim.darken(contentDimmingFactor),
+                surfaceBright = colorScheme.surfaceBright.darken(contentDimmingFactor),
+                scrim = colorScheme.scrim.darken(contentDimmingFactor),
+                inverseSurface = colorScheme.inverseSurface.darken(contentDimmingFactor),
+                primaryContainer = colorScheme.primaryContainer.darken(contentDimmingFactor),
+                secondaryContainer = colorScheme.secondaryContainer.darken(contentDimmingFactor),
+                tertiaryContainer = colorScheme.tertiaryContainer.darken(contentDimmingFactor),
+                errorContainer = colorScheme.errorContainer.darken(contentDimmingFactor),
+            )
+        }
+    } else colorScheme
+
+    // 获取缩放后的排版
+    val koriTypography = remember(fontScale) { Typography.withScaledFontSizes(fontScale) }
+
+    CompositionLocalProvider(LocalAppMode provides AppMode(darkMode, amoledMode)) {
+        MaterialExpressiveTheme(
+            colorScheme = finalColorScheme, typography = koriTypography, content = content
+        )
+    }
+}

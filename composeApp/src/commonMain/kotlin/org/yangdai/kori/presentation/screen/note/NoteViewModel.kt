@@ -44,13 +44,12 @@ import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.domain.sort.FolderSortType
 import org.yangdai.kori.presentation.component.note.HeaderNode
+import org.yangdai.kori.presentation.component.note.markdown.Properties.getPropertiesLineRange
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.navigation.UiEvent
-import org.yangdai.kori.presentation.screen.settings.AppTheme
 import org.yangdai.kori.presentation.screen.settings.EditorPaneState
 import org.yangdai.kori.presentation.screen.settings.TemplatePaneState
 import org.yangdai.kori.presentation.util.Constants
-import org.yangdai.kori.presentation.component.note.markdown.Properties.getPropertiesLineRange
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
@@ -115,10 +114,6 @@ class NoteViewModel(
                 }
         }
     }
-
-    val appTheme = dataStoreRepository.intFlow(Constants.Preferences.APP_THEME)
-        .map { AppTheme.fromInt(it) }
-        .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), AppTheme.SYSTEM)
 
     val formatterState = combine(
         dataStoreRepository.stringFlow(Constants.Preferences.DATE_FORMATTER),

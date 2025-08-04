@@ -81,7 +81,6 @@ expect fun MarkdownView(
     modifier: Modifier = Modifier,
     html: String,
     scrollState: ScrollState,
-    isAppInDarkTheme: Boolean,
     styles: MarkdownStyles = MarkdownStyles.fromColorScheme(MaterialTheme.colorScheme),
     isSheetVisible: Boolean,
     printTrigger: MutableState<Boolean>

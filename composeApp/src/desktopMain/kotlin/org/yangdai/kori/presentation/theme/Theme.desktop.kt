@@ -1,7 +1,6 @@
 package org.yangdai.kori.presentation.theme
 
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.expressiveLightColorScheme
 import androidx.compose.runtime.Composable
@@ -26,18 +25,11 @@ actual fun KoriTheme(
         else -> if (darkMode) darkColorScheme() else expressiveLightColorScheme()
     }
 
-    // 获取带动画的颜色方案（首次启动时无动画）
-    val colorScheme = getColorSchemeWithAnimation(targetColorScheme)
-
-    // 处理AMOLED模式
-    val finalColorScheme = processAmoledMode(darkMode, amoledMode, colorScheme)
-
-    // 获取缩放后的排版
-    val koriTypography = getScaledTypography(fontScale)
-
-    MaterialExpressiveTheme(
-        colorScheme = finalColorScheme,
-        typography = koriTypography,
+    ExpressiveTheme(
+        darkMode = darkMode,
+        amoledMode = amoledMode,
+        targetColorScheme = targetColorScheme,
+        fontScale = fontScale,
         content = content
     )
 }
