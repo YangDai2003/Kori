@@ -61,7 +61,7 @@ fun NoteSortOptionBottomSheet(
     onDismissRequest = onDismissRequest,
     sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     dragHandle = { DragHandle() },
-    sheetMaxWidth = 480.dp
+    sheetMaxWidth = DialogMaxWidth
 ) {
     val haptic = LocalHapticFeedback.current
     Text(
@@ -119,7 +119,7 @@ fun FolderSortOptionBottomSheet(
     onDismissRequest = onDismissRequest,
     sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     dragHandle = { DragHandle() },
-    sheetMaxWidth = 480.dp
+    sheetMaxWidth = DialogMaxWidth
 ) {
     val haptic = LocalHapticFeedback.current
     Text(

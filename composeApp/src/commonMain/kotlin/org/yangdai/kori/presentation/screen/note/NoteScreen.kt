@@ -42,7 +42,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.FileUpload
-import androidx.compose.material.icons.outlined.IosShare
 import androidx.compose.material.icons.outlined.Print
 import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.outlined.Share
@@ -688,8 +687,7 @@ fun NoteScreen(
             if (!currentPlatformInfo.isDesktop())
                 IconButton(onClick = { showShareDialog = true }) {
                     Icon(
-                        imageVector = if (currentPlatformInfo.operatingSystem == OS.ANDROID) Icons.Outlined.Share
-                        else Icons.Outlined.IosShare,
+                        imageVector = Icons.Outlined.Share,
                         contentDescription = null
                     )
                 }

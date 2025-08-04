@@ -21,7 +21,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboard
-import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.file
 import kori.composeapp.generated.resources.share_note_as
@@ -50,7 +49,7 @@ fun ShareDialog(
     noteEntity: NoteEntity,
     onDismissRequest: () -> Unit
 ) = AlertDialog(
-    modifier = Modifier.widthIn(max = 360.dp),
+    modifier = Modifier.widthIn(max = DialogMaxWidth),
     onDismissRequest = onDismissRequest,
     shape = dialogShape(),
     title = {

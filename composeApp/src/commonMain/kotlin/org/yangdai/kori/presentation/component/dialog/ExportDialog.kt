@@ -11,7 +11,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.export_as
 import org.jetbrains.compose.resources.stringResource
@@ -34,7 +33,7 @@ fun ExportDialog(
     var showSaveFileDialog by remember { mutableStateOf(false) }
     var exportType by remember { mutableStateOf(ExportType.TXT) }
     AlertDialog(
-        modifier = Modifier.widthIn(max = 360.dp),
+        modifier = Modifier.widthIn(max = DialogMaxWidth),
         shape = dialogShape(),
         title = { Text(stringResource(Res.string.export_as)) },
         text = {

@@ -3,6 +3,7 @@ package org.yangdai.kori.presentation.component.dialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -59,6 +60,7 @@ fun FoldersDialog(
     }
 
     AlertDialog(
+        modifier = Modifier.widthIn(max = DialogMaxWidth),
         shape = dialogShape(),
         title = { Text(hint) },
         text = {

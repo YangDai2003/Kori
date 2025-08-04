@@ -1,10 +1,12 @@
 package org.yangdai.kori.presentation.component.dialog
 
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import kori.composeapp.generated.resources.Res
@@ -28,6 +30,7 @@ fun WarningDialog(
     onDismissRequest: () -> Unit,
     onConfirm: () -> Unit
 ) = AlertDialog(
+    modifier = Modifier.widthIn(max = DialogMaxWidth),
     title = { Text(stringResource(Res.string.warning)) },
     text = { Text(message) },
     shape = dialogShape(),

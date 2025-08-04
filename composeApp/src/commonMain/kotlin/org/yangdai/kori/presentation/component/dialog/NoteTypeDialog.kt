@@ -51,7 +51,7 @@ fun NoteTypeDialog(
 ) {
     var selectedNoteType by remember { mutableStateOf(oNoteType) }
     AlertDialog(
-        modifier = Modifier.widthIn(max = 360.dp),
+        modifier = Modifier.widthIn(max = DialogMaxWidth),
         onDismissRequest = onDismissRequest,
         shape = dialogShape(),
         title = { Text(stringResource(Res.string.type)) },
