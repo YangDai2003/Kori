@@ -68,6 +68,7 @@ actual fun InkListItem() {
                 })
             },
         headlineContent = { Text("Ink Playground") },
+        supportingContent = { Text("This is an experimental feature and may be changed, presented in a different form, or even removed entirely.") },
         trailingContent = {
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.ArrowRight,
