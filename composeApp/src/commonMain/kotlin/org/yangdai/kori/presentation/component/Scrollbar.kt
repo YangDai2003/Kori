@@ -80,7 +80,7 @@ fun Scrollbar(
 
     // 动画化透明度和宽度以实现平滑的淡入淡出效果
     val alpha by animateFloatAsState(if (isVisible) 1f else 0f)
-    val width by animateDpAsState(if (isDragging) thumbWidth / 2 else thumbWidth)
+    val width by animateDpAsState(if (isDragging) thumbWidth else thumbWidth / 2)
 
     // 使用 LaunchedEffect 监听滚动状态以控制可见性
     LaunchedEffect(state.isScrollInProgress, isDragging) {
