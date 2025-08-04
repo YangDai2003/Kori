@@ -222,12 +222,12 @@ compose.desktop {
             windows {
                 shortcut = true
                 dirChooser = true
-//                iconFile.set(project.file("icon.ico"))
+                iconFile.set(project.file("icon.ico"))
             }
             linux {
                 debMaintainer = "https://github.com/YangDai2003"
                 appCategory = "Utility"
-//                iconFile.set(project.file("icon.png"))
+                iconFile.set(project.file("icon.png"))
             }
             targetFormats(
                 TargetFormat.Dmg,
