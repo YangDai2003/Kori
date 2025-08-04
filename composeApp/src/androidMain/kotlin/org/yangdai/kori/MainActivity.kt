@@ -18,6 +18,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
@@ -80,7 +82,12 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                     val blur by animateDpAsState(targetValue = if (showPassScreen) 16.dp else 0.dp)
-                    AppNavHost(modifier = Modifier.blur(blur))
+                    val semanticsModifier =
+                        if (showPassScreen) Modifier.semantics(mergeDescendants = true) { hideFromAccessibility() }
+                        else Modifier
+                    AppNavHost(modifier = Modifier
+                        .blur(blur)
+                        .then(semanticsModifier))
                     AnimatedVisibility(
                         visible = showPassScreen,
                         enter = slideInVertically(
