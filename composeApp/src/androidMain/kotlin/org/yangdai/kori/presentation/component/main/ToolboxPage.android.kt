@@ -63,7 +63,9 @@ actual fun InkListItem() {
             .padding(bottom = 8.dp)
             .clip(CardDefaults.shape)
             .clickable {
-                context.startActivity(Intent(context, InkActivity::class.java))
+                context.startActivity(Intent(context, InkActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT or Intent.FLAG_ACTIVITY_NEW_TASK)
+                })
             },
         headlineContent = { Text("Ink Playground") },
         trailingContent = {
