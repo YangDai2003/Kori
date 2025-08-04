@@ -89,9 +89,8 @@ actual fun MarkdownView(
         }
     }
 
-    val isAppInDarkTheme = LocalAppConfig.current.darkMode
-    val data =
-        remember(html, styles, isAppInDarkTheme) { processHtml(html, styles, isAppInDarkTheme) }
+    val appConfig = LocalAppConfig.current
+    val data = remember(html, styles, appConfig) { processHtml(html, styles, appConfig) }
 
     // Embed the JFXPanel using SwingPanel
     SwingPanel(

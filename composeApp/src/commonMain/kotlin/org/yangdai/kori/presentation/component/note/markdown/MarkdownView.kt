@@ -11,8 +11,10 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kotlinx.coroutines.runBlocking
+import org.yangdai.kori.presentation.theme.AppConfig
 import org.yangdai.kori.presentation.theme.linkColor
 import org.yangdai.kori.presentation.util.toHexColor
+import kotlin.math.roundToInt
 
 data class MarkdownStyles(
     val hexTextColor: String,
@@ -55,7 +57,7 @@ private object StaticUris {
 fun processHtml(
     html: String,
     markdownStyles: MarkdownStyles,
-    isAppInDarkMode: Boolean
+    appConfig: AppConfig
 ): String {
     return markdownHtmlTemplate
         .replace("{{TEXT_COLOR}}", markdownStyles.hexTextColor)
@@ -65,7 +67,7 @@ fun processHtml(
         .replace("{{QUOTE_BACKGROUND}}", markdownStyles.hexQuoteBackgroundColor)
         .replace("{{LINK_COLOR}}", markdownStyles.hexLinkColor)
         .replace("{{BORDER_COLOR}}", markdownStyles.hexBorderColor)
-        .replace("{{COLOR_SCHEME}}", if (isAppInDarkMode) "dark" else "light")
+        .replace("{{COLOR_SCHEME}}", if (appConfig.darkMode) "dark" else "light")
         .replace("{{MERMAID}}", StaticUris.MERMAID)
         .replace("{{KATEX}}", StaticUris.KATEX)
         .replace("{{KATEX-CSS}}", StaticUris.KATEX_CSS)
@@ -73,6 +75,7 @@ fun processHtml(
         .replace("{{PRISM}}", StaticUris.PRISM)
         .replace("{{PRISM-LIGHT-CSS}}", StaticUris.PRISM_LIGHT_CSS)
         .replace("{{PRISM-DARK-CSS}}", StaticUris.PRISM_DARK_CSS)
+        .replace("{{FONT_SCALE}}", "${(appConfig.fontScale * 100).roundToInt()}%")
         .replace("{{CONTENT}}", html)
 }
 

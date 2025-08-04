@@ -44,9 +44,8 @@ actual fun MarkdownView(
     var webView by remember { mutableStateOf<WebView?>(null) }
     var showDialog by remember { mutableStateOf(false) }
     var clickedImageUrl by remember { mutableStateOf("") }
-    val isAppInDarkTheme = LocalAppConfig.current.darkMode
-    val data =
-        remember(html, styles, isAppInDarkTheme) { processHtml(html, styles, isAppInDarkTheme) }
+    val appConfig = LocalAppConfig.current
+    val data = remember(html, styles, appConfig) { processHtml(html, styles, appConfig) }
 
     val webViewClient = remember {
         object : WebViewClient() {
