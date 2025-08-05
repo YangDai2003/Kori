@@ -2,8 +2,7 @@ package kink
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -23,9 +22,10 @@ import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
-import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.graphics.withSaveLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import kink.DrawAction.BrushStroke
 import kink.DrawAction.Erase
 import kotlin.math.PI
@@ -36,14 +36,13 @@ import kotlin.math.sqrt
 
 // 通过上下双Canvas分离职责，实现高性能画布
 @Composable
-fun BoxScope.DrawCanvas(state: DrawState, onProvideGraphicsLayer: (GraphicsLayer?) -> Unit) {
-    val backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest
-    val graphicsLayer = rememberGraphicsLayer()
+fun DrawCanvas(state: DrawState, graphicsLayer: GraphicsLayer) {
     // --- 底层画布 ---
     Canvas(
         Modifier
-            .matchParentSize()
+            .fillMaxSize()
             .graphicsLayer {
+                clip = true
                 translationX = state.offset.value.x
                 translationY = state.offset.value.y
                 scaleX = state.scale.value
@@ -59,10 +58,14 @@ fun BoxScope.DrawCanvas(state: DrawState, onProvideGraphicsLayer: (GraphicsLayer
                 }
                 // draw the graphics layer on the visible canvas
                 drawLayer(graphicsLayer)
-                onProvideGraphicsLayer(graphicsLayer)
             }
     ) {
-        drawRect(backgroundColor)
+        when (state.canvasGridType.value) {
+            GridType.None -> drawRect(state.canvasColor.value)
+            GridType.Square -> drawSquareGrid(state.canvasColor.value)
+            GridType.Rule -> drawRuleGrid(state.canvasColor.value)
+            GridType.Dot -> drawDotGrid(state.canvasColor.value)
+        }
         with(drawContext) {
             canvas.withSaveLayer(size.toRect(), Paint()) {
                 state.actions.forEach { action ->
@@ -75,7 +78,7 @@ fun BoxScope.DrawCanvas(state: DrawState, onProvideGraphicsLayer: (GraphicsLayer
     // --- 顶层画布 ---
     Canvas(
         Modifier
-            .matchParentSize()
+            .fillMaxSize()
             .pointerInput(state.toolMode.value) {
                 // 只有在非VIEWER模式下，才启用绘制/擦除手势
                 if (state.toolMode.value != ToolMode.VIEWER) {
@@ -105,7 +108,7 @@ fun BoxScope.DrawCanvas(state: DrawState, onProvideGraphicsLayer: (GraphicsLayer
                                         path = buildPathFromPoints(state.currentPathPoints),
                                         points = state.currentPathPoints.toList(),
                                         strokeWidth = state.eraserStrokeWidth.value,
-                                        color = backgroundColor
+                                        color = state.canvasColor.value
                                     )
                                 }
 
@@ -297,6 +300,95 @@ private fun checkAndRemoveEntirePath(state: DrawState, eraserPosition: Offset) {
         }
     }
     if (pathsToRemove.isNotEmpty()) {
+        state.undoActions.addAll(pathsToRemove)
         state.actions.removeAll(pathsToRemove)
+    }
+}
+
+// --- Grid Drawing Functions ---
+private val GRID_STROKE_WIDTH = 0.5.dp
+private val GRID_COLOR = Color.LightGray.copy(alpha = 0.5f)
+private val GRID_SPACING = 20.dp // Define a base spacing for grids
+
+fun DrawScope.drawSquareGrid(
+    backgroundColor: Color,
+    gridSpacing: Dp = GRID_SPACING,
+    gridColor: Color = GRID_COLOR,
+    strokeWidth: Dp = GRID_STROKE_WIDTH
+) {
+    drawRect(backgroundColor) // Draw background color first
+    val spacing = gridSpacing.toPx()
+    val stroke = strokeWidth.toPx()
+
+    // Draw vertical lines
+    var x = 0f
+    while (x < size.width) {
+        drawLine(
+            color = gridColor,
+            start = Offset(x, 0f),
+            end = Offset(x, size.height),
+            strokeWidth = stroke
+        )
+        x += spacing
+    }
+
+    // Draw horizontal lines
+    var y = 0f
+    while (y < size.height) {
+        drawLine(
+            color = gridColor,
+            start = Offset(0f, y),
+            end = Offset(size.width, y),
+            strokeWidth = stroke
+        )
+        y += spacing
+    }
+}
+
+fun DrawScope.drawRuleGrid(
+    backgroundColor: Color,
+    gridSpacing: Dp = GRID_SPACING,
+    gridColor: Color = GRID_COLOR,
+    strokeWidth: Dp = GRID_STROKE_WIDTH
+) {
+    drawRect(backgroundColor) // Draw background color first
+    val spacing = gridSpacing.toPx()
+    val stroke = strokeWidth.toPx()
+
+    // Draw horizontal lines
+    var y = spacing // Start from the first line, not the edge
+    while (y < size.height) {
+        drawLine(
+            color = gridColor,
+            start = Offset(0f, y),
+            end = Offset(size.width, y),
+            strokeWidth = stroke
+        )
+        y += spacing
+    }
+}
+
+fun DrawScope.drawDotGrid(
+    backgroundColor: Color,
+    gridSpacing: Dp = GRID_SPACING,
+    gridColor: Color = GRID_COLOR,
+    dotRadius: Dp = 1.dp // Radius of the dots
+) {
+    drawRect(backgroundColor) // Draw background color first
+    val spacing = gridSpacing.toPx()
+    val radius = dotRadius.toPx()
+
+    var x = spacing / 2
+    while (x < size.width) {
+        var y = spacing / 2
+        while (y < size.height) {
+            drawCircle(
+                color = gridColor,
+                radius = radius,
+                center = Offset(x, y)
+            )
+            y += spacing
+        }
+        x += spacing
     }
 }

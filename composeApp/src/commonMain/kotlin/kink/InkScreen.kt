@@ -18,27 +18,37 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Redo
+import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Pinch
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
@@ -55,14 +65,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.UiComposable
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.layer.GraphicsLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.isCtrlPressed
 import androidx.compose.ui.input.pointer.pointerInput
@@ -145,11 +160,13 @@ fun InkScreenBackground(
                 val y = initialY + (targetY - initialY) * anim.value
 
                 Box(
-                    modifier = Modifier.offset(x.dp, y.dp).size(size.dp).alpha(alpha).background(
+                    Modifier.offset(x.dp, y.dp).requiredSize(size.dp).background(
                         Brush.radialGradient(
                             colors = listOf(colors[index % colors.size], Color.Transparent),
                             radius = size / 2
-                        )
+                        ),
+                        CircleShape,
+                        alpha
                     )
                 )
             }
@@ -164,106 +181,268 @@ private fun Random.nextFloat(from: Float, until: Float): Float {
 
 @Composable
 fun InkScreen(drawState: DrawState = rememberDrawState()) {
-    var graphicsLayer by remember { mutableStateOf<GraphicsLayer?>(null) }
+    val graphicsLayer = rememberGraphicsLayer()
     val coroutineScope = rememberCoroutineScope()
     var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
-    Scaffold { innerPadding ->
-        InkScreenBackground {
-            Box(
-                modifier = Modifier.fillMaxSize()
-                    .pointerInput(drawState.toolMode.value) {
-                        if (drawState.toolMode.value == ToolMode.VIEWER) {
-                            detectTransformGestures { _, pan, zoom, gestureRotation ->
-                                val newScale = (drawState.scale.value * zoom).coerceIn(0.5f, 2f)
-                                val maxOffsetX = size.width * drawState.scale.value / 2f
-                                val maxOffsetY = size.height * drawState.scale.value / 2f
-                                drawState.offset.value = (drawState.offset.value + pan).let {
-                                    Offset(
-                                        it.x.coerceIn(-maxOffsetX, maxOffsetX),
-                                        it.y.coerceIn(-maxOffsetY, maxOffsetY)
-                                    )
-                                }
-                                drawState.scale.value = newScale
-                                drawState.rotation.value += gestureRotation
-                            }
+    Scaffold(
+        modifier = Modifier
+            .pointerInput(drawState.toolMode.value) {
+                if (drawState.toolMode.value == ToolMode.VIEWER) {
+                    detectTransformGestures { _, pan, zoom, gestureRotation ->
+                        val newScale = (drawState.scale.value * zoom).coerceIn(0.5f, 2f)
+                        val maxOffsetX = size.width * drawState.scale.value / 2f
+                        val maxOffsetY = size.height * drawState.scale.value / 2f
+                        drawState.offset.value = (drawState.offset.value + pan).let {
+                            Offset(
+                                it.x.coerceIn(-maxOffsetX, maxOffsetX),
+                                it.y.coerceIn(-maxOffsetY, maxOffsetY)
+                            )
                         }
+                        drawState.scale.value = newScale
+                        drawState.rotation.value += gestureRotation
                     }
-                    .pointerInput(Unit) {
-                        awaitPointerEventScope {
-                            while (true) {
-                                val event = awaitPointerEvent()
-                                if (event.keyboardModifiers.isCtrlPressed && event.type == PointerEventType.Scroll) {
-                                    drawState.scale.value =
-                                        (drawState.scale.value - event.changes.first().scrollDelta.y / 10f)
-                                            .coerceIn(0.5f, 2f)
-                                } else if (event.type == PointerEventType.Scroll) {
-                                    drawState.rotation.value -= event.changes.first().scrollDelta.y
-                                }
-                            }
-                        }
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                DrawCanvas(drawState) { graphicsLayer = it }
-                FloatingToolbar(
-                    innerPadding = innerPadding,
-                    leadingContent = {
-                        ToolbarButton(
-                            checked = drawState.toolMode.value == ToolMode.PEN,
-                            onCheckedChange = { if (it) drawState.toolMode.value = ToolMode.PEN },
-                            popupContent = { BrushStylusPane(drawState) }) {
-                            Icon(
-                                painter = painterResource(Res.drawable.draw_24px),
-                                contentDescription = "Pen"
-                            )
-                        }
-                        val lastSelectedEraserMode =
-                            remember { mutableStateOf(ToolMode.ERASER_ENTIRE) }
-                        ToolbarButton(
-                            checked = drawState.toolMode.value == ToolMode.ERASER_ENTIRE || drawState.toolMode.value == ToolMode.ERASER_PARTIAL,
-                            onCheckedChange = {
-                                if (it) drawState.toolMode.value = lastSelectedEraserMode.value
-                            },
-                            popupContent = { showPopup ->
-                                EraserStylusPane(lastSelectedEraserMode, drawState, showPopup)
-                            }) {
-                            Icon(
-                                painter = painterResource(Res.drawable.ink_eraser_24px),
-                                contentDescription = "Eraser"
-                            )
-                        }
-                    },
-                    trailingContent = {
-                        ToolbarButton(
-                            checked = drawState.toolMode.value == ToolMode.VIEWER,
-                            onCheckedChange = {
-                                if (it) drawState.toolMode.value = ToolMode.VIEWER
-                            },
-                            popupContent = { showPopup ->
-                                TextButton(
-                                    onClick = {
-                                        drawState.scale.value = 1f
-                                        drawState.offset.value = Offset.Zero
-                                        drawState.rotation.value = 0f
-                                        showPopup.value = false
-                                    }) {
-                                    Text("Reset canvas")
-                                }
-                            }) {
-                            Icon(imageVector = Icons.Outlined.Pinch, contentDescription = "pinch")
-                        }
-                        IconButton(onClick = {
-                            coroutineScope.launch {
-                                imageBitmap = graphicsLayer?.toImageBitmap()
-                            }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Outlined.Image, contentDescription = "Image"
-                            )
-                        }
-                    }
-                )
+                }
             }
+            .pointerInput(Unit) {
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent()
+                        if (event.keyboardModifiers.isCtrlPressed && event.type == PointerEventType.Scroll) {
+                            drawState.scale.value =
+                                (drawState.scale.value - event.changes.first().scrollDelta.y / 10f)
+                                    .coerceIn(0.5f, 2f)
+                        } else if (event.type == PointerEventType.Scroll) {
+                            drawState.rotation.value -= event.changes.first().scrollDelta.y
+                        }
+                    }
+                }
+            }
+            .onPreviewKeyEvent { keyEvent ->
+                if (keyEvent.isCtrlPressed && keyEvent.type == KeyEventType.KeyDown) {
+                    when (keyEvent.key) {
+                        Key.Z -> {
+                            if (drawState.actions.isNotEmpty()) {
+                                drawState.undoActions.add(drawState.actions.last())
+                                drawState.actions.removeLast()
+                            }
+                        }
+
+                        Key.Y -> {
+                            if (drawState.undoActions.isNotEmpty()) {
+                                drawState.actions.add(drawState.undoActions.last())
+                                drawState.undoActions.removeLast()
+                            }
+                        }
+
+                        else -> false
+                    }
+                }
+                false
+            },
+        topBar = {
+            Row(
+                modifier = Modifier.fillMaxWidth().safeContentPadding().padding(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedIconButton(
+                    colors = IconButtonDefaults.outlinedIconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceDim.copy(
+                            alpha = 0.3f
+                        )
+                    ),
+                    enabled = drawState.actions.isNotEmpty(),
+                    onClick = {
+                        drawState.undoActions.add(drawState.actions.last())
+                        drawState.actions.removeLast()
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.Undo, contentDescription = "Undo"
+                    )
+                }
+                OutlinedIconButton(
+                    colors = IconButtonDefaults.outlinedIconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceDim.copy(
+                            alpha = 0.3f
+                        )
+                    ),
+                    enabled = drawState.undoActions.isNotEmpty(),
+                    onClick = {
+                        drawState.actions.add(drawState.undoActions.last())
+                        drawState.undoActions.removeLast()
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.Redo, contentDescription = "Redo"
+                    )
+                }
+                Spacer(Modifier.weight(1f))
+                Box {
+                    var showMenu by remember { mutableStateOf(false) }
+                    OutlinedIconButton(
+                        colors = IconButtonDefaults.outlinedIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceDim.copy(
+                                alpha = 0.3f
+                            )
+                        ),
+                        onClick = { showMenu = !showMenu }
+                    ) {
+                        Icon(imageVector = Icons.Outlined.Palette, contentDescription = "Palette")
+                    }
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("White") },
+                            trailingIcon = {
+                                RadioButton(
+                                    selected = drawState.canvasColor.value == Color.White,
+                                    onClick = null
+                                )
+                            },
+                            onClick = {
+                                drawState.canvasColor.value = Color.White
+                                showMenu = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Black") },
+                            trailingIcon = {
+                                RadioButton(
+                                    selected = drawState.canvasColor.value == Color.Black,
+                                    onClick = null
+                                )
+                            },
+                            onClick = {
+                                drawState.canvasColor.value = Color.Black
+                                showMenu = false
+                            }
+                        )
+                        HorizontalDivider()
+                        DropdownMenuItem(
+                            text = { Text("None") },
+                            trailingIcon = {
+                                RadioButton(
+                                    selected = drawState.canvasGridType.value == GridType.None,
+                                    onClick = null
+                                )
+                            },
+                            onClick = {
+                                drawState.canvasGridType.value = GridType.None
+                                showMenu = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Square") },
+                            trailingIcon = {
+                                RadioButton(
+                                    selected = drawState.canvasGridType.value == GridType.Square,
+                                    onClick = null
+                                )
+                            },
+                            onClick = {
+                                drawState.canvasGridType.value = GridType.Square
+                                showMenu = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Rule") },
+                            trailingIcon = {
+                                RadioButton(
+                                    selected = drawState.canvasGridType.value == GridType.Rule,
+                                    onClick = null
+                                )
+                            },
+                            onClick = {
+                                drawState.canvasGridType.value = GridType.Rule
+                                showMenu = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Dot") },
+                            trailingIcon = {
+                                RadioButton(
+                                    selected = drawState.canvasGridType.value == GridType.Dot,
+                                    onClick = null
+                                )
+                            },
+                            onClick = {
+                                drawState.canvasGridType.value = GridType.Dot
+                                showMenu = false
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    ) { innerPadding ->
+        InkScreenBackground {
+            DrawCanvas(drawState, graphicsLayer)
+            FloatingToolbar(
+                innerPadding = innerPadding,
+                leadingContent = {
+                    ToolbarButton(
+                        checked = drawState.toolMode.value == ToolMode.PEN,
+                        onCheckedChange = { if (it) drawState.toolMode.value = ToolMode.PEN },
+                        popupContent = { BrushStylusPane(drawState) }
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.draw_24px),
+                            contentDescription = "Pen"
+                        )
+                    }
+                    val lastSelectedEraserMode =
+                        remember { mutableStateOf(ToolMode.ERASER_ENTIRE) }
+                    ToolbarButton(
+                        checked = drawState.toolMode.value == ToolMode.ERASER_ENTIRE || drawState.toolMode.value == ToolMode.ERASER_PARTIAL,
+                        onCheckedChange = {
+                            if (it) drawState.toolMode.value = lastSelectedEraserMode.value
+                        },
+                        popupContent = { showPopup ->
+                            EraserStylusPane(lastSelectedEraserMode, drawState, showPopup)
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.ink_eraser_24px),
+                            contentDescription = "Eraser"
+                        )
+                    }
+                },
+                trailingContent = {
+                    ToolbarButton(
+                        checked = drawState.toolMode.value == ToolMode.VIEWER,
+                        onCheckedChange = {
+                            if (it) drawState.toolMode.value = ToolMode.VIEWER
+                        },
+                        popupContent = { showPopup ->
+                            TextButton(
+                                onClick = {
+                                    drawState.scale.value = 1f
+                                    drawState.offset.value = Offset.Zero
+                                    drawState.rotation.value = 0f
+                                    showPopup.value = false
+                                }
+                            ) {
+                                Text("Reset canvas")
+                            }
+                        }
+                    ) {
+                        Icon(imageVector = Icons.Outlined.Pinch, contentDescription = "pinch")
+                    }
+                    IconButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                imageBitmap = graphicsLayer.toImageBitmap()
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Image, contentDescription = "Image"
+                        )
+                    }
+                }
+            )
         }
     }
     imageBitmap?.let {
@@ -271,7 +450,7 @@ fun InkScreen(drawState: DrawState = rememberDrawState()) {
             onDismissRequest = { imageBitmap = null },
             text = {
                 Image(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxWidth(),
                     bitmap = it,
                     contentDescription = "Saved image"
                 )
@@ -471,6 +650,7 @@ private fun EraserStylusPane(
     TextButton(
         onClick = {
             state.actions.clear()
+            state.undoActions.clear()
             showPopup.value = false
         }) {
         Text("Erase all strokes", maxLines = 1)

@@ -210,7 +210,7 @@ compose.desktop {
                 infoPlist {
                     extraKeysRawXml = macExtraPlistKeys
                 }
-//                iconFile.set(project.file("icon.icns"))
+                iconFile.set(project.file("icon.icns"))
             }
             windows {
                 shortcut = true

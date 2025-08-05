@@ -10,26 +10,44 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 
+// 工具模式：画笔、橡皮擦或查看器
+enum class ToolMode {
+    PEN,
+    ERASER_PARTIAL,
+    ERASER_ENTIRE,
+    VIEWER
+}
+
+enum class GridType {
+    None,
+    Square,
+    Rule,
+    Dot
+}
+
 class DrawState {
     val actions = mutableStateListOf<DrawAction>() // 存储所有已完成的绘制动作
-    var inProgressPath = mutableStateOf<DrawAction?>(null) // 当前正在绘制的路径
-    var toolMode = mutableStateOf(ToolMode.PEN) // 当前选择的工具模式
+    val undoActions = mutableStateListOf<DrawAction>() // 存储所有撤销的绘制动作
+    val inProgressPath = mutableStateOf<DrawAction?>(null) // 当前正在绘制的路径
+    val toolMode = mutableStateOf(ToolMode.PEN) // 当前选择的工具模式
 
-    var penColor = mutableStateOf(Color.Black)
-    var penStrokeWidth = mutableStateOf(10f)
-    var eraserStrokeWidth = mutableStateOf(25f)
+    val penColor = mutableStateOf(Color.Black)
+    val penStrokeWidth = mutableStateOf(10f)
+    val eraserStrokeWidth = mutableStateOf(25f)
 
     // 画布变换状态
-    var scale = mutableStateOf(1f)
-    var offset = mutableStateOf(Offset.Zero)
-    var rotation = mutableStateOf(0f)
+    val scale = mutableStateOf(1f)
+    val offset = mutableStateOf(Offset.Zero)
+    val rotation = mutableStateOf(0f)
+    val canvasColor = mutableStateOf(Color.White)
+    val canvasGridType = mutableStateOf(GridType.None)
 
     // 内部使用，用于平滑曲线
     internal var currentPathPoints = mutableListOf<Offset>()
     internal var lastDragPosition: Offset? = null
 
     // 在顶层画布上显示一个指示器
-    var indicatorPosition = mutableStateOf<Offset?>(null)
+    val indicatorPosition = mutableStateOf<Offset?>(null)
 
     companion object {
         private const val KEY_TYPE = "type"
