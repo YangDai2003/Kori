@@ -23,6 +23,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.isSecondaryPressed
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -62,7 +65,18 @@ fun LazyStaggeredGridItemScope.NoteItem(
     shape = CardDefaults.shape,
     border = if (isSelected) CardDefaults.outlinedCardBorder() else null
 ) {
-    Box(Modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick)) {
+    Box(
+        Modifier
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick)
+            .pointerInput(Unit) {
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent()
+                        if (event.type == PointerEventType.Press && event.buttons.isSecondaryPressed) onLongClick()
+                    }
+                }
+            }
+    ) {
         Column(
             modifier = Modifier.fillMaxWidth().padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)

@@ -18,7 +18,7 @@
         tools:targetApi="33">
 
         <activity
-            android:name=".ink.InkActivity"
+            android:name=".InkActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize" />
 

@@ -23,7 +23,7 @@ import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.setWidgetPreviews
 import kotlinx.coroutines.launch
 import org.yangdai.kori.R
-import org.yangdai.kori.ink.InkActivity
+import org.yangdai.kori.InkActivity
 import org.yangdai.kori.presentation.glance.MyAppWidgetReceiver
 
 @Composable

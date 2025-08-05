@@ -1,9 +1,10 @@
-package org.yangdai.kori.ink
+package org.yangdai.kori
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import kink.InkScreen
 import org.yangdai.kori.presentation.theme.KoriTheme
 
 class InkActivity : ComponentActivity() {
@@ -13,9 +14,7 @@ class InkActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             KoriTheme {
-                DrawingView {
-                    finish()
-                }
+                InkScreen()
             }
         }
     }

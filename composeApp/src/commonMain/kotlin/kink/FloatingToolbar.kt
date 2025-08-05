@@ -1,20 +1,12 @@
-package org.yangdai.kori.ink
+package kink
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -22,24 +14,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Compress
 import androidx.compose.material.icons.filled.Expand
-import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalFloatingToolbar
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
@@ -52,15 +36,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toColorLong
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
@@ -94,8 +74,8 @@ private class FloatingToolbarScopeImpl(
         Box {
             IconButton(
                 colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = if (checked) MaterialTheme.colorScheme.surfaceContainer else Color.Transparent,
-                    contentColor = if (checked) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onPrimaryContainer
+                    containerColor = if (checked) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent,
+                    contentColor = if (checked) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurface
                 ),
                 onClick = {
                     if (checked) showPopup.value = !showPopup.value
@@ -249,7 +229,6 @@ fun FloatingToolbar(
                 HorizontalFloatingToolbar(
                     modifier = Modifier.height(48.dp),
                     expanded = expanded,
-                    colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
                     contentPadding = PaddingValues(0.dp),
                     leadingContent = { scope.leadingContent() },
                     trailingContent = { scope.trailingContent() },
@@ -282,7 +261,6 @@ fun FloatingToolbar(
                 VerticalFloatingToolbar(
                     modifier = Modifier.width(48.dp),
                     expanded = expanded,
-                    colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
                     contentPadding = PaddingValues(0.dp),
                     leadingContent = { scope.leadingContent() },
                     trailingContent = { scope.trailingContent() },
@@ -307,130 +285,6 @@ fun FloatingToolbar(
                         }
                     }
                 )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun BrushStylus(currentBrushSize: MutableState<Float>, currentBrushColor: MutableState<Long>) {
-    Column(
-        Modifier
-            .width(IntrinsicSize.Min)
-            .padding(4.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                "Brush Size:",
-                style = MaterialTheme.typography.labelMedium
-            )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    modifier = Modifier.clickable {
-                        currentBrushSize.value =
-                            currentBrushSize.value.minus(1).coerceAtLeast(1f)
-                    },
-                    imageVector = Icons.Default.Remove,
-                    contentDescription = "reduce"
-                )
-                Text(
-                    "${currentBrushSize.value.roundToInt()}",
-                    style = MaterialTheme.typography.labelMedium
-                )
-                Icon(
-                    modifier = Modifier.clickable {
-                        currentBrushSize.value =
-                            currentBrushSize.value.plus(1).coerceAtMost(100f)
-                    },
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "increase"
-                )
-            }
-        }
-        Row(Modifier.fillMaxWidth()) {
-            val interactionSource = remember { MutableInteractionSource() }
-            Slider(
-                modifier = Modifier
-                    .height(24.dp)
-                    .padding(horizontal = 4.dp),
-                value = currentBrushSize.value,
-                onValueChange = {
-                    currentBrushSize.value = it.roundToInt().toFloat()
-                },
-                valueRange = 1f..100f,
-                steps = 99,
-                interactionSource = interactionSource,
-                thumb = {
-                    SliderDefaults.Thumb(
-                        interactionSource = interactionSource,
-                        thumbSize = DpSize(4.dp, 24.dp)
-                    )
-                },
-                track = { sliderState ->
-                    SliderDefaults.Track(
-                        modifier = Modifier.height(8.dp),
-                        sliderState = sliderState,
-                        drawStopIndicator = {},
-                        drawTick = { _, _ -> },
-                        thumbTrackGapSize = 4.dp
-                    )
-                }
-            )
-        }
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 4.dp)
-                .padding(top = 4.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                "Brush Color:",
-                style = MaterialTheme.typography.labelMedium
-            )
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(2.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            val colors = listOf(
-                Color.Black,
-                Color.White,
-                Color.Red,
-                Color.Blue,
-                Color.Green,
-                Color.Yellow,
-                Color.Gray
-            )
-            colors.forEach { color ->
-                Box(
-                    modifier = Modifier
-                        .height(24.dp)
-                        .aspectRatio(1f)
-                        .clip(CircleShape)
-                        .background(color)
-                        .clickable(role = Role.RadioButton) {
-                            currentBrushColor.value = color.toColorLong()
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (currentBrushColor.value == color.toColorLong()) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = "Selected",
-                            tint = if (color == Color.Black) Color.White else Color.Black
-                        )
-                    }
-                }
             }
         }
     }

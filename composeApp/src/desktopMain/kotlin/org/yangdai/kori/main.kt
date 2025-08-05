@@ -14,9 +14,13 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.semantics.hideFromAccessibility
@@ -24,9 +28,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import androidx.compose.ui.window.rememberWindowState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import javafx.embed.swing.JFXPanel
+import kink.InkScreen
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_name
 import kori.composeapp.generated.resources.icon
@@ -48,6 +52,10 @@ import java.awt.Dimension
 @Suppress("unused")
 val fakeJFXPanel = JFXPanel()
 
+class WindowState(val inkWindow: MutableState<Boolean> = mutableStateOf(false))
+
+val LocalWindowState = staticCompositionLocalOf { WindowState() }
+
 fun main() {
     System.setProperty("compose.interop.blending", "true")
     System.setProperty("compose.swing.render.on.graphics", "true")
@@ -60,10 +68,9 @@ fun main() {
         println("setOpenURIHandler is unsupported")
     }
     application {
-        val state = rememberWindowState()
+        val windowState by rememberSaveable { mutableStateOf(WindowState()) }
         Window(
             onCloseRequest = ::exitApplication,
-            state = state,
             title = stringResource(Res.string.app_name),
             icon = painterResource(Res.drawable.icon)
         ) {
@@ -83,7 +90,8 @@ fun main() {
                 if (darkMode) DarkDefaultContextMenuRepresentation else LightDefaultContextMenuRepresentation
 
             CompositionLocalProvider(
-                LocalContextMenuRepresentation provides contextMenuRepresentation
+                LocalContextMenuRepresentation provides contextMenuRepresentation,
+                LocalWindowState provides windowState
             ) {
                 KoriTheme(
                     darkMode = darkMode,
@@ -139,6 +147,19 @@ fun main() {
                             )
                         }
                     }
+                }
+            }
+        }
+
+        if (windowState.inkWindow.value) {
+            Window(
+                onCloseRequest = { windowState.inkWindow.value = false },
+                title = "Ink Playground",
+                resizable = false,
+                icon = painterResource(Res.drawable.icon)
+            ) {
+                KoriTheme {
+                    InkScreen()
                 }
             }
         }
