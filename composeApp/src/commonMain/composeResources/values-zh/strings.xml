@@ -6,6 +6,9 @@
     <string name="cancel">取消</string>
     <string name="confirm">确定</string>
     <string name="open_navigation_drawer">打开导航抽屉</string>
+    <string name="exit">退出</string>
+    <string name="new">新建</string>
+    <string name="open">打开</string>
 
     <string name="sort_by">排序依据</string>
     <string name="sort_name_a">文件名 (A - Z)</string>

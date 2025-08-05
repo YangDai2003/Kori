@@ -6,6 +6,9 @@
     <string name="cancel">Abbrechen</string>
     <string name="confirm">Bestätigen</string>
     <string name="open_navigation_drawer">Navigationsleiste öffnen</string>
+    <string name="exit">Beenden</string>
+    <string name="new">Neu</string>
+    <string name="open">Öffnen</string>
 
     <string name="sort_by">Sortieren nach</string>
     <string name="sort_name_a">Dateiname (A - Z)</string>

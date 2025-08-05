@@ -12,22 +12,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import org.yangdai.kori.LocalWindowState
+import org.yangdai.kori.WindowState
 
 @Composable
 actual fun WidgetListItem() {
 }
 
 @Composable
-actual fun InkListItem() {
-    val windowState = LocalWindowState.current
+actual fun InkListItem() =
     ListItem(
         modifier = Modifier
             .padding(bottom = 8.dp)
             .clip(CardDefaults.shape)
-            .clickable {
-                windowState.inkWindow.value = true
-            },
+            .clickable { WindowState.inkWindow.value = true },
         headlineContent = { Text("Ink Playground") },
         supportingContent = { Text("This is an experimental feature and may be changed, presented in a different form, or even removed entirely.") },
         trailingContent = {
@@ -37,4 +34,3 @@ actual fun InkListItem() {
             )
         }
     )
-}

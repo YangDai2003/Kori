@@ -7,6 +7,9 @@
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
     <string name="open_navigation_drawer">Open navigation drawer</string>
+    <string name="exit">Exit</string>
+    <string name="new">New</string>
+    <string name="open">Open</string>
 
     <string name="sort_by">Sort by</string>
     <string name="sort_name_a">File name (A - Z)</string>

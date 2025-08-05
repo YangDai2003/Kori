@@ -19,27 +19,37 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.compose.rememberNavController
 import javafx.embed.swing.JFXPanel
 import kink.InkScreen
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_name
+import kori.composeapp.generated.resources.exit
+import kori.composeapp.generated.resources.folders
 import kori.composeapp.generated.resources.icon
+import kori.composeapp.generated.resources.markdown
+import kori.composeapp.generated.resources.new
+import kori.composeapp.generated.resources.open
+import kori.composeapp.generated.resources.plain_text
+import kori.composeapp.generated.resources.settings
+import kori.composeapp.generated.resources.todo_text
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.data.di.KoinInitializer
+import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.component.login.NumberLockScreen
 import org.yangdai.kori.presentation.navigation.AppNavHost
+import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.screen.settings.AppTheme
 import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import org.yangdai.kori.presentation.theme.KoriTheme
@@ -52,9 +62,10 @@ import java.awt.Dimension
 @Suppress("unused")
 val fakeJFXPanel = JFXPanel()
 
-class WindowState(val inkWindow: MutableState<Boolean> = mutableStateOf(false))
-
-val LocalWindowState = staticCompositionLocalOf { WindowState() }
+object WindowState {
+    val inkWindow: MutableState<Boolean> = mutableStateOf(false)
+    val mainWindow: MutableState<Boolean> = mutableStateOf(true)
+}
 
 fun main() {
     System.setProperty("compose.interop.blending", "true")
@@ -68,9 +79,10 @@ fun main() {
         println("setOpenURIHandler is unsupported")
     }
     application {
-        val windowState by rememberSaveable { mutableStateOf(WindowState()) }
+        val navHostController = rememberNavController()
         Window(
-            onCloseRequest = ::exitApplication,
+            onCloseRequest = { WindowState.mainWindow.value = false },
+            visible = WindowState.mainWindow.value,
             title = stringResource(Res.string.app_name),
             icon = painterResource(Res.drawable.icon)
         ) {
@@ -89,10 +101,7 @@ fun main() {
             val contextMenuRepresentation =
                 if (darkMode) DarkDefaultContextMenuRepresentation else LightDefaultContextMenuRepresentation
 
-            CompositionLocalProvider(
-                LocalContextMenuRepresentation provides contextMenuRepresentation,
-                LocalWindowState provides windowState
-            ) {
+            CompositionLocalProvider(LocalContextMenuRepresentation provides contextMenuRepresentation) {
                 KoriTheme(
                     darkMode = darkMode,
                     color = stylePaneState.color,
@@ -113,7 +122,8 @@ fun main() {
                         AppNavHost(
                             modifier = Modifier
                                 .blur(blur)
-                                .then(semanticsModifier)
+                                .then(semanticsModifier),
+                            navHostController = navHostController
                         )
                         AnimatedVisibility(
                             visible = showPassScreen,
@@ -151,9 +161,70 @@ fun main() {
             }
         }
 
-        if (windowState.inkWindow.value) {
+        if (!WindowState.mainWindow.value) {
+            Tray(
+                icon = painterResource(Res.drawable.icon),
+                tooltip = stringResource(Res.string.app_name),
+                onAction = { WindowState.mainWindow.value = true },
+                menu = {
+                    Menu(stringResource(Res.string.new)) {
+                        Item(
+                            text = stringResource(Res.string.plain_text),
+                            onClick = {
+                                WindowState.mainWindow.value = true
+                                navHostController.navigate(Screen.Note(noteType = NoteType.PLAIN_TEXT.ordinal))
+                            }
+                        )
+                        Item(
+                            text = stringResource(Res.string.markdown),
+                            onClick = {
+                                WindowState.mainWindow.value = true
+                                navHostController.navigate(Screen.Note(noteType = NoteType.MARKDOWN.ordinal))
+                            }
+                        )
+                        Item(
+                            text = stringResource(Res.string.todo_text),
+                            onClick = {
+                                WindowState.mainWindow.value = true
+                                navHostController.navigate(Screen.Note(noteType = NoteType.TODO.ordinal))
+                            }
+                        )
+                    }
+                    Separator()
+                    Menu(stringResource(Res.string.open)) {
+                        Item(
+                            text = "Ink Playground",
+                            onClick = {
+                                WindowState.inkWindow.value = true
+                            }
+                        )
+                        Item(
+                            text = stringResource(Res.string.folders),
+                            onClick = {
+                                WindowState.mainWindow.value = true
+                                navHostController.navigate(Screen.Folders)
+                            }
+                        )
+                        Item(
+                            text = stringResource(Res.string.settings),
+                            onClick = {
+                                WindowState.mainWindow.value = true
+                                navHostController.navigate(Screen.Settings)
+                            }
+                        )
+                    }
+                    Separator()
+                    Item(
+                        text = stringResource(Res.string.exit) + " " + stringResource(Res.string.app_name),
+                        onClick = { exitApplication() }
+                    )
+                }
+            )
+        }
+
+        if (WindowState.inkWindow.value) {
             Window(
-                onCloseRequest = { windowState.inkWindow.value = false },
+                onCloseRequest = { WindowState.inkWindow.value = false },
                 title = "Ink Playground",
                 resizable = false,
                 icon = painterResource(Res.drawable.icon)
