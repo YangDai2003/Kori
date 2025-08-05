@@ -134,11 +134,11 @@ fun InkScreenBackground(
         // 模糊层 - 动态色块
         Box(Modifier.fillMaxSize().blur(radius = 120.dp)) {
             animations.forEachIndexed { index, anim ->
-                val initialX = remember { Random.nextFloat(-0.4f, 0.4f) * maxWidth }
-                val initialY = remember { Random.nextFloat(-0.4f, 0.4f) * maxHeight }
-                val targetX = remember { Random.nextFloat(-0.4f, 0.4f) * maxWidth }
-                val targetY = remember { Random.nextFloat(-0.4f, 0.4f) * maxHeight }
-                val size = remember { Random.nextFloat(0.8f, 1.4f) * maxWidth }
+                val initialX = remember(maxWidth) { Random.nextFloat(-0.4f, 0.4f) * maxWidth }
+                val initialY = remember(maxHeight) { Random.nextFloat(-0.4f, 0.4f) * maxHeight }
+                val targetX = remember(maxWidth) { Random.nextFloat(-0.4f, 0.4f) * maxWidth }
+                val targetY = remember(maxHeight) { Random.nextFloat(-0.4f, 0.4f) * maxHeight }
+                val size = remember(maxWidth) { Random.nextFloat(0.8f, 1.4f) * maxWidth }
                 val alpha = remember { Random.nextFloat(0.3f, 0.7f) }
 
                 val x = initialX + (targetX - initialX) * anim.value

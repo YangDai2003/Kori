@@ -26,7 +26,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import javafx.embed.swing.JFXPanel
@@ -225,6 +227,7 @@ fun main() {
         if (WindowState.inkWindow.value) {
             Window(
                 onCloseRequest = { WindowState.inkWindow.value = false },
+                state = rememberWindowState(placement = WindowPlacement.Maximized),
                 title = "Ink Playground",
                 resizable = false,
                 icon = painterResource(Res.drawable.icon)
