@@ -6,9 +6,11 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asSkiaBitmap
 import androidx.compose.ui.platform.ClipEntry
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.refTo
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.usePinned
 import kotlinx.datetime.toNSDate
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
@@ -150,18 +152,24 @@ fun UIView.applyTheme(dark: Boolean) {
     }
 }
 
-
 @OptIn(ExperimentalForeignApi::class)
 fun ImageBitmap.toUIImage(): UIImage? {
     val width = this.width
     val height = this.height
-    val buffer = IntArray(width * height)
-
-    this.readPixels(buffer)
+    val bytes = this.asSkiaBitmap().readPixels() ?: return null
+    // BGRA to RGBA
+    for (i in 0 until bytes.size step 4) {
+        val b = bytes[i]
+        val g = bytes[i + 1]
+        val r = bytes[i + 2]
+        bytes[i] = r
+        bytes[i + 1] = g
+        bytes[i + 2] = b
+    }
 
     val colorSpace = CGColorSpaceCreateDeviceRGB()
     val context = CGBitmapContextCreate(
-        data = buffer.refTo(0),
+        data = bytes.usePinned { it.addressOf(0) },
         width = width.toULong(),
         height = height.toULong(),
         bitsPerComponent = 8u,

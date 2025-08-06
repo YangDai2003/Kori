@@ -47,6 +47,136 @@ import org.yangdai.kori.presentation.component.note.markdown.MarkdownEditorRow
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditorRow
 import org.yangdai.kori.presentation.component.note.todo.TodoTextEditorRow
 
+interface EditorRowScope {
+    @Composable
+    fun EditorRowSection(content: @Composable RowScope.() -> Unit)
+
+    @Composable
+    fun EditorRowButton(
+        icon: ImageVector,
+        hint: String = "",
+        actionText: String = "",
+        enabled: Boolean = true,
+        onClick: () -> Unit
+    )
+
+    @Composable
+    fun EditorRowButton(
+        icon: Painter,
+        hint: String = "",
+        actionText: String = "",
+        enabled: Boolean = true,
+        onClick: () -> Unit
+    )
+}
+
+class EditorRowScopeImpl(val showElevation: Boolean) : EditorRowScope {
+    @Composable
+    override fun EditorRowSection(content: @Composable RowScope.() -> Unit) {
+        val color by animateColorAsState(
+            targetValue = if (showElevation) MaterialTheme.colorScheme.surface
+            else MaterialTheme.colorScheme.surfaceContainerLow,
+            label = "EditorRowSectionColorAnimation"
+        )
+        Surface(
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(vertical = 4.dp)
+                .focusProperties { canFocus = false },
+            shape = MaterialTheme.shapes.medium,
+            color = color
+        ) {
+            Row {
+                content()
+            }
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    override fun EditorRowButton(
+        icon: ImageVector,
+        hint: String,
+        actionText: String,
+        enabled: Boolean,
+        onClick: () -> Unit
+    ) = TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+        tooltip = {
+            if (actionText.isEmpty() && hint.isEmpty()) return@TooltipBox
+            PlainTooltip(
+                content = {
+                    val annotatedString = buildAnnotatedString {
+                        withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                            append(hint)
+                        }
+                        if (hint.isNotEmpty() && actionText.isNotEmpty()) append("\n")
+                        append(actionText)
+                    }
+                    Text(annotatedString, textAlign = TextAlign.Center)
+                }
+            )
+        },
+        state = rememberTooltipState(),
+        focusable = false,
+        enableUserInput = enabled
+    ) {
+        Box(
+            modifier = Modifier.fillMaxHeight().aspectRatio(1f)
+                .clickable(enabled = enabled, role = Role.Button) { onClick() },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = if (enabled) 1f else 0.3f),
+                contentDescription = null
+            )
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    override fun EditorRowButton(
+        icon: Painter,
+        hint: String,
+        actionText: String,
+        enabled: Boolean,
+        onClick: () -> Unit
+    ) = TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+        tooltip = {
+            if (actionText.isEmpty() && hint.isEmpty()) return@TooltipBox
+            PlainTooltip(
+                content = {
+                    val annotatedString = buildAnnotatedString {
+                        withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                            append(hint)
+                        }
+                        if (hint.isNotEmpty() && actionText.isNotEmpty()) append("\n")
+                        append(actionText)
+                    }
+                    Text(annotatedString, textAlign = TextAlign.Center)
+                }
+            )
+        },
+        state = rememberTooltipState(),
+        focusable = false,
+        enableUserInput = enabled
+    ) {
+        Box(
+            modifier = Modifier.fillMaxHeight().aspectRatio(1f)
+                .clickable(enabled = enabled, role = Role.Button) { onClick() },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = icon,
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = if (enabled) 1f else 0.3f),
+                contentDescription = null
+            )
+        }
+    }
+}
+
 /**
  * A composable function that renders an adaptive editor row based on the provided `NoteType`.
  *
@@ -78,23 +208,28 @@ fun AdaptiveEditorRow(
         else MaterialTheme.colorScheme.surface,
         label = "EditorRowColorAnimation"
     )
+
+    val scope = remember(showElevation) { EditorRowScopeImpl(showElevation) }
+
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = color
     ) {
         Column(Modifier.padding(bottom = bottomPadding)) {
             AnimatedVisibility(visible) {
-                when (type) {
-                    NoteType.PLAIN_TEXT -> {
-                        PlainTextEditorRow(isTemplate, textFieldState, onEditorRowAction)
-                    }
+                with(scope) {
+                    when (type) {
+                        NoteType.PLAIN_TEXT -> {
+                            PlainTextEditorRow(isTemplate, textFieldState, onEditorRowAction)
+                        }
 
-                    NoteType.MARKDOWN -> {
-                        MarkdownEditorRow(isTemplate, textFieldState, onEditorRowAction)
-                    }
+                        NoteType.MARKDOWN -> {
+                            MarkdownEditorRow(isTemplate, textFieldState, onEditorRowAction)
+                        }
 
-                    NoteType.TODO -> {
-                        TodoTextEditorRow(isTemplate, textFieldState, onEditorRowAction)
+                        NoteType.TODO -> {
+                            TodoTextEditorRow(isTemplate, textFieldState, onEditorRowAction)
+                        }
                     }
                 }
             }
@@ -107,105 +242,5 @@ sealed class EditorRowAction {
 }
 
 val platformKeyboardShortCut =
-    if (currentPlatformInfo.operatingSystem == OS.MACOS || currentPlatformInfo.operatingSystem == OS.IOS)
-        "Cmd"
+    if (currentPlatformInfo.operatingSystem == OS.MACOS || currentPlatformInfo.operatingSystem == OS.IOS) "⌘"
     else "Ctrl"
-
-@Composable
-fun EditorRowSection(content: @Composable RowScope.() -> Unit) =
-    Surface(
-        modifier = Modifier
-            .fillMaxHeight()
-            .padding(vertical = 4.dp)
-            .focusProperties { canFocus = false },
-        shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colorScheme.surfaceContainerLow
-    ) {
-        Row {
-            content()
-        }
-    }
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun EditorRowButton(
-    icon: ImageVector,
-    hint: String = "",
-    actionText: String = "",
-    enabled: Boolean = true,
-    onClick: () -> Unit
-) = TooltipBox(
-    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
-    tooltip = {
-        if (actionText.isEmpty() && hint.isEmpty()) return@TooltipBox
-        PlainTooltip(
-            content = {
-                val annotatedString = buildAnnotatedString {
-                    withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                        append(hint)
-                    }
-                    if (hint.isNotEmpty() && actionText.isNotEmpty()) append("\n")
-                    append(actionText)
-                }
-                Text(annotatedString, textAlign = TextAlign.Center)
-            }
-        )
-    },
-    state = rememberTooltipState(),
-    focusable = false,
-    enableUserInput = enabled
-) {
-    Box(
-        modifier = Modifier.fillMaxHeight().aspectRatio(1f)
-            .clickable(enabled = enabled, role = Role.Button) { onClick() },
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            imageVector = icon,
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = if (enabled) 1f else 0.3f),
-            contentDescription = null
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun EditorRowButton(
-    icon: Painter,
-    hint: String = "",
-    actionText: String = "",
-    enabled: Boolean = true,
-    onClick: () -> Unit
-) = TooltipBox(
-    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
-    tooltip = {
-        if (actionText.isEmpty() && hint.isEmpty()) return@TooltipBox
-        PlainTooltip(
-            content = {
-                val annotatedString = buildAnnotatedString {
-                    withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                        append(hint)
-                    }
-                    if (hint.isNotEmpty() && actionText.isNotEmpty()) append("\n")
-                    append(actionText)
-                }
-                Text(annotatedString, textAlign = TextAlign.Center)
-            }
-        )
-    },
-    state = rememberTooltipState(),
-    focusable = false,
-    enableUserInput = enabled
-) {
-    Box(
-        modifier = Modifier.fillMaxHeight().aspectRatio(1f)
-            .clickable(enabled = enabled, role = Role.Button) { onClick() },
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            painter = icon,
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = if (enabled) 1f else 0.3f),
-            contentDescription = null
-        )
-    }
-}

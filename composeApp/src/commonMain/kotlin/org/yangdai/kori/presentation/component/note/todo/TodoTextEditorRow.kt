@@ -33,8 +33,7 @@ import kori.composeapp.generated.resources.undo
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.note.EditorRowAction
-import org.yangdai.kori.presentation.component.note.EditorRowButton
-import org.yangdai.kori.presentation.component.note.EditorRowSection
+import org.yangdai.kori.presentation.component.note.EditorRowScope
 import org.yangdai.kori.presentation.component.note.addBeforeWithWhiteSpace
 import org.yangdai.kori.presentation.component.note.parentheses
 import org.yangdai.kori.presentation.component.note.platformKeyboardShortCut
@@ -42,7 +41,7 @@ import org.yangdai.kori.presentation.component.note.toggleLineStart
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TodoTextEditorRow(
+fun EditorRowScope.TodoTextEditorRow(
     isTemplate: Boolean,
     textFieldState: TextFieldState,
     onEditorRowAction: (EditorRowAction) -> Unit

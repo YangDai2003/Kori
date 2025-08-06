@@ -1,7 +1,7 @@
 package kink
 
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
 import org.yangdai.kori.presentation.util.toUIImage
@@ -16,15 +16,28 @@ actual fun ShareImageButton(imageBitmap: ImageBitmap) {
     Button(
         onClick = {
             imageBitmap.toUIImage()?.let { image ->
-                platform.UIKit.UIImagePNGRepresentation(image).let { imageData ->
+                platform.UIKit.UIImagePNGRepresentation(image)?.let { imageData ->
                     val tempDir = NSTemporaryDirectory()
+                    val tempDirURL = NSURL.fileURLWithPath(tempDir, isDirectory = true)
                     val fileName = "kori_ink_image.png"
-                    val path = "$tempDir/$fileName"
-                    imageData?.writeToFile(path, true)
-                    val fileURL = NSURL.fileURLWithPath(path)
-                    val activityViewController = UIActivityViewController(listOf(fileURL), null)
-                    UIApplication.sharedApplication.keyWindow?.rootViewController
-                        ?.presentViewController(activityViewController, true, null)
+                    tempDirURL.URLByAppendingPathComponent(fileName)?.path?.let { filePath ->
+                        imageData.writeToFile(filePath, true)
+                        NSURL.fileURLWithPath(filePath).let { fileURL ->
+                            val activityViewController =
+                                UIActivityViewController(listOf(fileURL), null)
+                            var currentViewController =
+                                UIApplication.sharedApplication.keyWindow?.rootViewController
+                            while (currentViewController?.presentedViewController != null) {
+                                currentViewController =
+                                    currentViewController.presentedViewController
+                            }
+                            currentViewController?.presentViewController(
+                                viewControllerToPresent = activityViewController,
+                                animated = true,
+                                completion = null
+                            )
+                        }
+                    }
                 }
             }
         }

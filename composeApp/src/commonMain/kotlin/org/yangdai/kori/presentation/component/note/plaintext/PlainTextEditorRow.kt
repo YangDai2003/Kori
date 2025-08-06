@@ -28,15 +28,14 @@ import kori.composeapp.generated.resources.templates
 import kori.composeapp.generated.resources.undo
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.note.EditorRowAction
-import org.yangdai.kori.presentation.component.note.EditorRowButton
-import org.yangdai.kori.presentation.component.note.EditorRowSection
+import org.yangdai.kori.presentation.component.note.EditorRowScope
 import org.yangdai.kori.presentation.component.note.platformKeyboardShortCut
 import org.yangdai.kori.presentation.component.note.tab
 import org.yangdai.kori.presentation.component.note.unTab
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun PlainTextEditorRow(
+fun EditorRowScope.PlainTextEditorRow(
     isTemplate: Boolean,
     textFieldState: TextFieldState,
     onEditorRowAction: (EditorRowAction) -> Unit
