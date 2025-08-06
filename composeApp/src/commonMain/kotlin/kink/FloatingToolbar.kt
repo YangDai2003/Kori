@@ -181,7 +181,7 @@ fun FloatingToolbar(
         Spacer(
             Modifier
                 .align(snapAlignment)
-                .padding(16.dp)
+                .padding(if (snapAlignment == Alignment.TopCenter) 0.dp else 16.dp)
                 // 使用一个近似的尺寸来模拟工具栏的大小
                 .size(
                     width = if (isHorizontal) 220.dp else 48.dp,
@@ -196,7 +196,7 @@ fun FloatingToolbar(
     Box(
         modifier = Modifier
             .align(alignment)
-            .padding(16.dp)
+            .padding(if (alignment == Alignment.TopCenter) 0.dp else 16.dp)
             .offset { IntOffset(offset.x.roundToInt(), offset.y.roundToInt()) }
             .pointerInput(Unit) {
                 detectDragGestures(

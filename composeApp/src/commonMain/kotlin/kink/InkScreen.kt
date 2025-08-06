@@ -26,7 +26,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
@@ -65,7 +65,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.UiComposable
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -104,12 +103,28 @@ private val darkBrandColor2 = Color(0xFF9B72CB)
 private val darkBrandColor3 = Color(0xFFD96570)
 private val darkBackgroundColor = Color(0xFF2B2D30)
 
+private data class BlobConfig(
+    val color: Color,
+    val initialX: Float,
+    val targetX: Float,
+    val initialY: Float,
+    val targetY: Float,
+    val initialSize: Float,
+    val targetSize: Float,
+    val xAnimDuration: Int,
+    val yAnimDuration: Int,
+    val sizeAnimDuration: Int,
+    val initialAlpha: Float
+)
+
 @Composable
 fun InkScreenBackground(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable @UiComposable BoxWithConstraintsScope.() -> Unit,
+    blobCount: Int = 5,
+    minBlobSizeRatio: Float = 1f,
+    maxBlobSizeRatio: Float = 4f,
+    content: @Composable @UiComposable BoxWithConstraintsScope.() -> Unit
 ) {
-    // --- 颜色选择 ---
     val colors = remember(isDarkTheme) {
         if (isDarkTheme) listOf(
             darkBrandColor1,
@@ -128,46 +143,87 @@ fun InkScreenBackground(
     }
     val backgroundColor = if (isDarkTheme) darkBackgroundColor else lightBackgroundColor
 
-    // --- 动画 ---
-    val infiniteTransition = rememberInfiniteTransition(label = "background_blobs_transition")
-    val animations = List(5) { index ->
-        val duration = remember { Random.nextInt(30000, 60000) }
-        infiniteTransition.animateFloat(
-            initialValue = Random.nextFloat(),
-            targetValue = Random.nextFloat(),
-            animationSpec = infiniteRepeatable(
-                animation = tween(duration, easing = LinearEasing), repeatMode = RepeatMode.Reverse
-            ),
-            label = "blob_anim_$index"
-        )
-    }
-
     BoxWithConstraints(Modifier.fillMaxSize().background(backgroundColor)) {
         val maxWidth = this.maxWidth.value
         val maxHeight = this.maxHeight.value
 
-        // 模糊层 - 动态色块
-        Box(Modifier.fillMaxSize().blur(radius = 120.dp)) {
-            animations.forEachIndexed { index, anim ->
-                val initialX = remember(maxWidth) { Random.nextFloat(-0.4f, 0.4f) * maxWidth }
-                val initialY = remember(maxHeight) { Random.nextFloat(-0.4f, 0.4f) * maxHeight }
-                val targetX = remember(maxWidth) { Random.nextFloat(-0.4f, 0.4f) * maxWidth }
-                val targetY = remember(maxHeight) { Random.nextFloat(-0.4f, 0.4f) * maxHeight }
-                val size = remember(maxWidth) { Random.nextFloat(0.8f, 1.4f) * maxWidth }
-                val alpha = remember { Random.nextFloat(0.3f, 0.7f) }
+        val blobConfigs = remember(maxWidth, maxHeight, blobCount, colors) {
+            List(blobCount) { index ->
+                val minSize = minBlobSizeRatio * maxWidth
+                val maxSize = maxBlobSizeRatio * maxWidth
+                BlobConfig(
+                    color = colors[index % colors.size],
+                    initialX = Random.nextFloat(-0.4f, 0.4f) * maxWidth,
+                    targetX = Random.nextFloat(-0.4f, 0.4f) * maxWidth,
+                    initialY = Random.nextFloat(-0.4f, 0.4f) * maxHeight,
+                    targetY = Random.nextFloat(-0.4f, 0.4f) * maxHeight,
+                    initialSize = Random.nextFloat(minSize, maxSize),
+                    targetSize = Random.nextFloat(minSize, maxSize),
+                    xAnimDuration = Random.nextInt(25000, 50000),
+                    yAnimDuration = Random.nextInt(25000, 50000),
+                    sizeAnimDuration = Random.nextInt(30000, 60000),
+                    initialAlpha = Random.nextFloat(0.1f, 0.4f)
+                )
+            }
+        }
 
-                val x = initialX + (targetX - initialX) * anim.value
-                val y = initialY + (targetY - initialY) * anim.value
+        val infiniteTransition = rememberInfiniteTransition(label = "background_blobs_transition")
+
+        // 模糊层 - 动态色块
+        Box(Modifier.fillMaxSize()) {
+            blobConfigs.forEachIndexed { index, config ->
+                // X 轴动画
+                val xAnim by infiniteTransition.animateFloat(
+                    initialValue = 0f,
+                    targetValue = 1f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(config.xAnimDuration, easing = LinearEasing),
+                        repeatMode = RepeatMode.Reverse
+                    ),
+                    label = "blob_x_anim_$index"
+                )
+                // Y 轴动画
+                val yAnim by infiniteTransition.animateFloat(
+                    initialValue = 0f,
+                    targetValue = 1f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(config.yAnimDuration, easing = LinearEasing),
+                        repeatMode = RepeatMode.Reverse
+                    ),
+                    label = "blob_y_anim_$index"
+                )
+                // 尺寸动画
+                val sizeAnim by infiniteTransition.animateFloat(
+                    initialValue = 0f,
+                    targetValue = 1f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(config.sizeAnimDuration, easing = LinearEasing),
+                        repeatMode = RepeatMode.Reverse
+                    ),
+                    label = "blob_size_anim_$index"
+                )
+
+                // 使用动画值计算当前状态
+                val x = config.initialX + (config.targetX - config.initialX) * xAnim
+                val y = config.initialY + (config.targetY - config.initialY) * yAnim
+                val size = config.initialSize + (config.targetSize - config.initialSize) * sizeAnim
 
                 Box(
-                    Modifier.offset(x.dp, y.dp).requiredSize(size.dp).background(
-                        Brush.radialGradient(
-                            colors = listOf(colors[index % colors.size], Color.Transparent),
-                            radius = size / 2
-                        ),
-                        CircleShape,
-                        alpha
-                    )
+                    Modifier
+                        .offset(x.dp, y.dp)
+                        .requiredSize(size.dp)
+                        .background(
+                            brush = Brush.radialGradient(
+                                colors = listOf(
+                                    config.color,
+                                    config.color.copy(alpha = 0.5f),
+                                    Color.Transparent
+                                ),
+                                radius = size / 2
+                            ),
+                            shape = CircleShape,
+                            alpha = config.initialAlpha
+                        )
                 )
             }
         }
@@ -241,7 +297,7 @@ fun InkScreen(drawState: DrawState = rememberDrawState()) {
             },
         topBar = {
             Row(
-                modifier = Modifier.fillMaxWidth().safeContentPadding().padding(4.dp),
+                modifier = Modifier.fillMaxWidth().statusBarsPadding().padding(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 OutlinedIconButton(
