@@ -89,13 +89,13 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
-import kori.composeapp.generated.resources.confirm
 import kori.composeapp.generated.resources.ink_eraser_24px
 import kori.composeapp.generated.resources.stylus_highlighter_24px
 import kori.composeapp.generated.resources.stylus_pen_24px
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
+import org.yangdai.kori.presentation.component.dialog.DismissButton
+import org.yangdai.kori.presentation.component.dialog.dialogShape
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
@@ -549,6 +549,7 @@ fun InkScreen(drawState: DrawState = rememberDrawState()) {
     }
     imageBitmap?.let {
         AlertDialog(
+            shape = dialogShape(),
             onDismissRequest = { imageBitmap = null },
             text = {
                 Image(
@@ -557,14 +558,14 @@ fun InkScreen(drawState: DrawState = rememberDrawState()) {
                     contentDescription = "Saved image"
                 )
             },
-            confirmButton = {
-                TextButton(onClick = { imageBitmap = null }) {
-                    Text(stringResource(Res.string.confirm))
-                }
-            }
+            confirmButton = { ShareImageButton(it) },
+            dismissButton = { DismissButton { imageBitmap = null } }
         )
     }
 }
+
+@Composable
+expect fun ShareImageButton(imageBitmap: ImageBitmap)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
