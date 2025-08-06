@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -587,13 +588,38 @@ private fun BrushStylusPane(state: DrawState) = Column(
             style = MaterialTheme.typography.labelMedium
         )
     }
-    Row(
+    FlowRow(
         modifier = Modifier.fillMaxWidth().padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(2.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+        maxItemsInEachRow = 7
     ) {
         val colors = listOf(
-            Color.Black, Color.White, Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Gray
+            // 基本色
+            Color.Black,
+            Color.White,
+            Color.Red,
+            Color.Yellow,
+            Color.Blue,
+            Color.Green,
+            Color.Gray,
+            Color.Magenta,
+            // 鲜艳色
+            Color(0xFFFFA500), // Orange
+            Color(0xFF800080), // Purple
+            Color(0xFFFFC0CB), // Pink
+            Color(0xFF00FFFF), // Cyan
+            Color(0xFFFA8072), // Salmon
+            Color(0xFFADFF2F), // GreenYellow
+            Color(0xFFFFD700), // Gold
+            // 柔和色
+            Color(0xFFADD8E6), // Light Blue
+            Color(0xFFFFFFE0), // Light Yellow
+            Color(0xFFE6E6FA), // Lavender
+            Color(0xFF90EE90), // LightGreen
+            // 暗色
+            Color(0xFF008000), // Dark Green
+            Color(0xFFA52A2A), // Brown
         )
         colors.forEach { color ->
             Box(
