@@ -3,10 +3,9 @@ package kink
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -142,14 +141,10 @@ private class FloatingToolbarScopeImpl(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun FloatingToolbar(
+fun BoxWithConstraintsScope.FloatingToolbar(
     innerPadding: PaddingValues,
     leadingContent: @Composable FloatingToolbarScope.() -> Unit,
     trailingContent: @Composable FloatingToolbarScope.() -> Unit
-) = BoxWithConstraints(
-    Modifier
-        .fillMaxSize()
-        .padding(innerPadding)
 ) {
     var expanded by rememberSaveable { mutableStateOf(true) }
     var offset by remember { mutableStateOf(Offset.Zero) }
@@ -181,6 +176,7 @@ fun FloatingToolbar(
         Spacer(
             Modifier
                 .align(snapAlignment)
+                .padding(innerPadding)
                 .padding(if (snapAlignment == Alignment.TopCenter) 0.dp else 16.dp)
                 // 使用一个近似的尺寸来模拟工具栏的大小
                 .size(
@@ -196,6 +192,7 @@ fun FloatingToolbar(
     Box(
         modifier = Modifier
             .align(alignment)
+            .padding(innerPadding)
             .padding(if (alignment == Alignment.TopCenter) 0.dp else 16.dp)
             .offset { IntOffset(offset.x.roundToInt(), offset.y.roundToInt()) }
             .pointerInput(Unit) {

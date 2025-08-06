@@ -124,7 +124,7 @@ private data class BlobConfig(
 )
 
 @Composable
-fun InkScreenBackground(
+private fun InkScreenBackground(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     blobCount: Int = 5,
     minBlobSizeRatio: Float = 1f,
