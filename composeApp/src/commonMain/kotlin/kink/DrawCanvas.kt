@@ -26,8 +26,6 @@ import androidx.compose.ui.graphics.withSaveLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import kink.DrawAction.BrushStroke
-import kink.DrawAction.Erase
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.pow
@@ -95,7 +93,7 @@ fun DrawCanvas(state: DrawState, graphicsLayer: GraphicsLayer) {
 
                             when (state.toolMode.value) {
                                 ToolMode.PEN -> {
-                                    state.inProgressPath.value = BrushStroke(
+                                    state.inProgressPath.value = DrawAction.PenStroke(
                                         path = buildPathFromPoints(state.currentPathPoints),
                                         points = state.currentPathPoints.toList(),
                                         color = state.penColor.value,
@@ -103,8 +101,17 @@ fun DrawCanvas(state: DrawState, graphicsLayer: GraphicsLayer) {
                                     )
                                 }
 
+                                ToolMode.HIGHLIGHTER -> {
+                                    state.inProgressPath.value = DrawAction.HighLighterStroke(
+                                        path = buildPathFromPoints(state.currentPathPoints),
+                                        points = state.currentPathPoints.toList(),
+                                        color = state.highlighterColor.value,
+                                        strokeWidth = state.highlighterStrokeWidth.value
+                                    )
+                                }
+
                                 ToolMode.ERASER_PARTIAL -> {
-                                    state.inProgressPath.value = Erase(
+                                    state.inProgressPath.value = DrawAction.Erase(
                                         path = buildPathFromPoints(state.currentPathPoints),
                                         points = state.currentPathPoints.toList(),
                                         strokeWidth = state.eraserStrokeWidth.value,
@@ -127,14 +134,21 @@ fun DrawCanvas(state: DrawState, graphicsLayer: GraphicsLayer) {
                             val newPath = buildPathFromPoints(state.currentPathPoints)
                             state.indicatorPosition.value = transformedPos
                             when (val currentAction = state.inProgressPath.value) {
-                                is BrushStroke -> {
+                                is DrawAction.PenStroke -> {
                                     state.inProgressPath.value = currentAction.copy(
                                         path = newPath,
                                         points = state.currentPathPoints.toList()
                                     )
                                 }
 
-                                is Erase -> {
+                                is DrawAction.Erase -> {
+                                    state.inProgressPath.value = currentAction.copy(
+                                        path = newPath,
+                                        points = state.currentPathPoints.toList()
+                                    )
+                                }
+
+                                is DrawAction.HighLighterStroke -> {
                                     state.inProgressPath.value = currentAction.copy(
                                         path = newPath,
                                         points = state.currentPathPoints.toList()
@@ -149,7 +163,11 @@ fun DrawCanvas(state: DrawState, graphicsLayer: GraphicsLayer) {
                         },
                         onDragEnd = {
                             state.inProgressPath.value?.let {
-                                if ((it is BrushStroke && it.points.size > 1) || (it is Erase && it.points.size > 1)) {
+                                if (
+                                    (it is DrawAction.PenStroke && it.points.size > 1)
+                                    || (it is DrawAction.Erase && it.points.size > 1)
+                                    || (it is DrawAction.HighLighterStroke && it.points.size > 1)
+                                ) {
                                     state.actions.add(it)
                                 }
                             }
@@ -254,7 +272,7 @@ fun buildPathFromPoints(points: List<Offset>): Path {
 // 绘制完成的函数
 private fun DrawScope.drawAction(action: DrawAction, done: Boolean = false) {
     when (action) {
-        is BrushStroke -> {
+        is DrawAction.PenStroke -> {
             drawPath(
                 path = action.path,
                 color = action.color,
@@ -266,7 +284,18 @@ private fun DrawScope.drawAction(action: DrawAction, done: Boolean = false) {
             )
         }
 
-        is Erase -> {
+        is DrawAction.HighLighterStroke -> {
+            drawPath(
+                path = action.path,
+                color = action.color.copy(alpha = 0.5f), // 半透明效果
+                style = Stroke(
+                    width = action.strokeWidth,
+                    cap = StrokeCap.Square // 方形笔头
+                )
+            )
+        }
+
+        is DrawAction.Erase -> {
             drawPath(
                 path = action.path,
                 color = action.color,
@@ -286,8 +315,9 @@ private fun checkAndRemoveEntirePath(state: DrawState, eraserPosition: Offset) {
     val pathsToRemove = mutableListOf<DrawAction>()
     state.actions.forEach { action ->
         val (pointsToCheck, strokeWidth) = when (action) {
-            is BrushStroke -> action.points to action.strokeWidth
-            is Erase -> action.points to action.strokeWidth
+            is DrawAction.PenStroke -> action.points to action.strokeWidth
+            is DrawAction.HighLighterStroke -> action.points to action.strokeWidth
+            is DrawAction.Erase -> action.points to action.strokeWidth
         }
 
         val collision = pointsToCheck.any { point ->
@@ -306,19 +336,16 @@ private fun checkAndRemoveEntirePath(state: DrawState, eraserPosition: Offset) {
 }
 
 // --- Grid Drawing Functions ---
-private val GRID_STROKE_WIDTH = 0.5.dp
 private val GRID_COLOR = Color.LightGray.copy(alpha = 0.5f)
 private val GRID_SPACING = 20.dp // Define a base spacing for grids
 
 fun DrawScope.drawSquareGrid(
     backgroundColor: Color,
     gridSpacing: Dp = GRID_SPACING,
-    gridColor: Color = GRID_COLOR,
-    strokeWidth: Dp = GRID_STROKE_WIDTH
+    gridColor: Color = GRID_COLOR
 ) {
     drawRect(backgroundColor) // Draw background color first
     val spacing = gridSpacing.toPx()
-    val stroke = strokeWidth.toPx()
 
     // Draw vertical lines
     var x = 0f
@@ -326,8 +353,7 @@ fun DrawScope.drawSquareGrid(
         drawLine(
             color = gridColor,
             start = Offset(x, 0f),
-            end = Offset(x, size.height),
-            strokeWidth = stroke
+            end = Offset(x, size.height)
         )
         x += spacing
     }
@@ -338,8 +364,7 @@ fun DrawScope.drawSquareGrid(
         drawLine(
             color = gridColor,
             start = Offset(0f, y),
-            end = Offset(size.width, y),
-            strokeWidth = stroke
+            end = Offset(size.width, y)
         )
         y += spacing
     }
@@ -348,12 +373,10 @@ fun DrawScope.drawSquareGrid(
 fun DrawScope.drawRuleGrid(
     backgroundColor: Color,
     gridSpacing: Dp = GRID_SPACING,
-    gridColor: Color = GRID_COLOR,
-    strokeWidth: Dp = GRID_STROKE_WIDTH
+    gridColor: Color = GRID_COLOR
 ) {
     drawRect(backgroundColor) // Draw background color first
     val spacing = gridSpacing.toPx()
-    val stroke = strokeWidth.toPx()
 
     // Draw horizontal lines
     var y = spacing // Start from the first line, not the edge
@@ -361,8 +384,7 @@ fun DrawScope.drawRuleGrid(
         drawLine(
             color = gridColor,
             start = Offset(0f, y),
-            end = Offset(size.width, y),
-            strokeWidth = stroke
+            end = Offset(size.width, y)
         )
         y += spacing
     }

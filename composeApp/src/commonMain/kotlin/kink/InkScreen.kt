@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
@@ -44,6 +45,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -54,8 +56,10 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -86,8 +90,9 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.confirm
-import kori.composeapp.generated.resources.draw_24px
 import kori.composeapp.generated.resources.ink_eraser_24px
+import kori.composeapp.generated.resources.stylus_highlighter_24px
+import kori.composeapp.generated.resources.stylus_pen_24px
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -236,6 +241,7 @@ private fun Random.nextFloat(from: Float, until: Float): Float {
     return from + nextFloat() * (until - from)
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun InkScreen(drawState: DrawState = rememberDrawState()) {
     val graphicsLayer = rememberGraphicsLayer()
@@ -298,48 +304,60 @@ fun InkScreen(drawState: DrawState = rememberDrawState()) {
             },
         topBar = {
             Row(
-                modifier = Modifier.fillMaxWidth().statusBarsPadding().padding(4.dp),
+                modifier = Modifier.statusBarsPadding().fillMaxWidth().height(52.dp)
+                    .padding(horizontal = 8.dp, vertical = 2.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                OutlinedIconButton(
-                    colors = IconButtonDefaults.outlinedIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceDim.copy(
-                            alpha = 0.3f
-                        )
-                    ),
-                    enabled = drawState.actions.isNotEmpty(),
-                    onClick = {
-                        drawState.undoActions.add(drawState.actions.last())
-                        drawState.actions.removeLast()
-                    }
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                    border = IconButtonDefaults.outlinedIconButtonBorder(true)
                 ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.Undo, contentDescription = "Undo"
-                    )
-                }
-                OutlinedIconButton(
-                    colors = IconButtonDefaults.outlinedIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceDim.copy(
-                            alpha = 0.3f
-                        )
-                    ),
-                    enabled = drawState.undoActions.isNotEmpty(),
-                    onClick = {
-                        drawState.actions.add(drawState.undoActions.last())
-                        drawState.undoActions.removeLast()
+                    Row(modifier = Modifier.height(40.dp)) {
+                        IconButton(
+                            modifier = Modifier.size(
+                                IconButtonDefaults.smallContainerSize(
+                                    widthOption = IconButtonDefaults.IconButtonWidthOption.Wide
+                                )
+                            ),
+                            enabled = drawState.actions.isNotEmpty(),
+                            onClick = {
+                                drawState.undoActions.add(drawState.actions.last())
+                                drawState.actions.removeLast()
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.Undo,
+                                contentDescription = "Undo"
+                            )
+                        }
+                        VerticalDivider(Modifier.padding(vertical = 4.dp))
+                        IconButton(
+                            modifier = Modifier.size(
+                                IconButtonDefaults.smallContainerSize(
+                                    widthOption = IconButtonDefaults.IconButtonWidthOption.Wide
+                                )
+                            ),
+                            enabled = drawState.undoActions.isNotEmpty(),
+                            onClick = {
+                                drawState.actions.add(drawState.undoActions.last())
+                                drawState.undoActions.removeLast()
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.Redo,
+                                contentDescription = "Redo"
+                            )
+                        }
                     }
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.Redo, contentDescription = "Redo"
-                    )
                 }
                 Spacer(Modifier.weight(1f))
                 Box {
                     var showMenu by remember { mutableStateOf(false) }
                     OutlinedIconButton(
                         colors = IconButtonDefaults.outlinedIconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceDim.copy(
-                                alpha = 0.3f
+                            containerColor = MaterialTheme.colorScheme.surface.copy(
+                                alpha = 0.5f
                             )
                         ),
                         onClick = { showMenu = !showMenu }
@@ -348,7 +366,9 @@ fun InkScreen(drawState: DrawState = rememberDrawState()) {
                     }
                     DropdownMenu(
                         expanded = showMenu,
-                        onDismissRequest = { showMenu = false }
+                        onDismissRequest = { showMenu = false },
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        tonalElevation = 0.dp
                     ) {
                         DropdownMenuItem(
                             text = { Text("White") },
@@ -431,6 +451,20 @@ fun InkScreen(drawState: DrawState = rememberDrawState()) {
                         )
                     }
                 }
+                OutlinedIconButton(
+                    colors = IconButtonDefaults.outlinedIconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                    ),
+                    onClick = {
+                        coroutineScope.launch {
+                            imageBitmap = graphicsLayer.toImageBitmap()
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Image, contentDescription = "Image"
+                    )
+                }
             }
         }
     ) { innerPadding ->
@@ -442,13 +476,37 @@ fun InkScreen(drawState: DrawState = rememberDrawState()) {
                     ToolbarButton(
                         checked = drawState.toolMode.value == ToolMode.PEN,
                         onCheckedChange = { if (it) drawState.toolMode.value = ToolMode.PEN },
-                        popupContent = { BrushStylusPane(drawState) }
+                        popupContent = {
+                            BrushStylusPane(
+                                drawState.penStrokeWidth,
+                                drawState.penColor
+                            )
+                        }
                     ) {
                         Icon(
-                            painter = painterResource(Res.drawable.draw_24px),
+                            painter = painterResource(Res.drawable.stylus_pen_24px),
                             contentDescription = "Pen"
                         )
                     }
+                    ToolbarButton(
+                        checked = drawState.toolMode.value == ToolMode.HIGHLIGHTER,
+                        onCheckedChange = {
+                            if (it) drawState.toolMode.value = ToolMode.HIGHLIGHTER
+                        },
+                        popupContent = {
+                            BrushStylusPane(
+                                drawState.highlighterStrokeWidth,
+                                drawState.highlighterColor
+                            )
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.stylus_highlighter_24px),
+                            contentDescription = "Highlighter"
+                        )
+                    }
+                },
+                trailingContent = {
                     val lastSelectedEraserMode =
                         remember { mutableStateOf(ToolMode.ERASER_ENTIRE) }
                     ToolbarButton(
@@ -465,8 +523,6 @@ fun InkScreen(drawState: DrawState = rememberDrawState()) {
                             contentDescription = "Eraser"
                         )
                     }
-                },
-                trailingContent = {
                     ToolbarButton(
                         checked = drawState.toolMode.value == ToolMode.VIEWER,
                         onCheckedChange = {
@@ -486,17 +542,6 @@ fun InkScreen(drawState: DrawState = rememberDrawState()) {
                         }
                     ) {
                         Icon(imageVector = Icons.Outlined.Pinch, contentDescription = "pinch")
-                    }
-                    IconButton(
-                        onClick = {
-                            coroutineScope.launch {
-                                imageBitmap = graphicsLayer.toImageBitmap()
-                            }
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Image, contentDescription = "Image"
-                        )
                     }
                 }
             )
@@ -523,122 +568,123 @@ fun InkScreen(drawState: DrawState = rememberDrawState()) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun BrushStylusPane(state: DrawState) = Column(
-    modifier = Modifier.width(200.dp).padding(4.dp),
-    horizontalAlignment = Alignment.CenterHorizontally
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth().height(36.dp).padding(horizontal = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+private fun BrushStylusPane(widthState: MutableState<Float>, colorState: MutableState<Color>) =
+    Column(
+        modifier = Modifier.width(200.dp).padding(4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            "Brush Size:", style = MaterialTheme.typography.labelMedium
-        )
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                modifier = Modifier.clickable {
-                    state.penStrokeWidth.value =
-                        state.penStrokeWidth.value.minus(1).coerceAtLeast(1f)
-                }, imageVector = Icons.Default.Remove, contentDescription = "reduce"
-            )
+        Row(
+            modifier = Modifier.fillMaxWidth().height(36.dp).padding(horizontal = 4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Brush Size:", style = MaterialTheme.typography.labelMedium)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    modifier = Modifier.clickable {
+                        widthState.value = widthState.value.minus(1).coerceAtLeast(1f)
+                    },
+                    imageVector = Icons.Default.Remove, contentDescription = "reduce"
+                )
+                Text(
+                    "${widthState.value.roundToInt()}",
+                    style = MaterialTheme.typography.labelMedium
+                )
+                Icon(
+                    modifier = Modifier.clickable {
+                        widthState.value = widthState.value.plus(1).coerceAtMost(100f)
+                    },
+                    imageVector = Icons.Default.Add, contentDescription = "increase"
+                )
+            }
+        }
+        val interactionSource = remember { MutableInteractionSource() }
+        Slider(
+            modifier = Modifier.fillMaxWidth().height(24.dp),
+            value = widthState.value,
+            onValueChange = {
+                widthState.value = it.roundToInt().toFloat()
+            },
+            valueRange = 1f..100f,
+            steps = 99,
+            interactionSource = interactionSource,
+            thumb = {
+                SliderDefaults.Thumb(
+                    interactionSource = interactionSource, thumbSize = DpSize(4.dp, 24.dp)
+                )
+            },
+            track = { sliderState ->
+                SliderDefaults.Track(
+                    modifier = Modifier.height(8.dp),
+                    sliderState = sliderState,
+                    drawStopIndicator = {},
+                    drawTick = { _, _ -> },
+                    thumbTrackGapSize = 4.dp
+                )
+            })
+        Row(
+            modifier = Modifier.padding(horizontal = 4.dp).padding(top = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
-                "${state.penStrokeWidth.value.roundToInt()}",
+                modifier = Modifier.fillMaxWidth(),
+                text = "Brush Color:",
                 style = MaterialTheme.typography.labelMedium
             )
-            Icon(
-                modifier = Modifier.clickable {
-                    state.penStrokeWidth.value =
-                        state.penStrokeWidth.value.plus(1).coerceAtMost(100f)
-                }, imageVector = Icons.Default.Add, contentDescription = "increase"
-            )
         }
-    }
-    val interactionSource = remember { MutableInteractionSource() }
-    Slider(
-        modifier = Modifier.fillMaxWidth().height(24.dp),
-        value = state.penStrokeWidth.value,
-        onValueChange = {
-            state.penStrokeWidth.value = it.roundToInt().toFloat()
-        },
-        valueRange = 1f..100f,
-        steps = 99,
-        interactionSource = interactionSource,
-        thumb = {
-            SliderDefaults.Thumb(
-                interactionSource = interactionSource, thumbSize = DpSize(4.dp, 24.dp)
+        FlowRow(
+            modifier = Modifier.fillMaxWidth().padding(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+            maxItemsInEachRow = 7
+        ) {
+            val colors = listOf(
+                // 基本色
+                Color.Black,
+                Color.White,
+                Color.Red,
+                Color.Yellow,
+                Color.Blue,
+                Color.Green,
+                Color.Gray,
+                Color.Magenta,
+                // 鲜艳色
+                Color(0xFFFFA500), // Orange
+                Color(0xFF800080), // Purple
+                Color(0xFFFFC0CB), // Pink
+                Color(0xFF00FFFF), // Cyan
+                Color(0xFFFA8072), // Salmon
+                Color(0xFFADFF2F), // GreenYellow
+                Color(0xFFFFD700), // Gold
+                // 柔和色
+                Color(0xFFADD8E6), // Light Blue
+                Color(0xFFFFFFE0), // Light Yellow
+                Color(0xFFE6E6FA), // Lavender
+                Color(0xFF90EE90), // LightGreen
+                // 暗色
+                Color(0xFF008000), // Dark Green
+                Color(0xFFA52A2A), // Brown
             )
-        },
-        track = { sliderState ->
-            SliderDefaults.Track(
-                modifier = Modifier.height(8.dp),
-                sliderState = sliderState,
-                drawStopIndicator = {},
-                drawTick = { _, _ -> },
-                thumbTrackGapSize = 4.dp
-            )
-        })
-    Row(
-        modifier = Modifier.padding(horizontal = 4.dp).padding(top = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = "Brush Color:",
-            style = MaterialTheme.typography.labelMedium
-        )
-    }
-    FlowRow(
-        modifier = Modifier.fillMaxWidth().padding(4.dp),
-        horizontalArrangement = Arrangement.spacedBy(2.dp),
-        verticalArrangement = Arrangement.spacedBy(2.dp),
-        maxItemsInEachRow = 7
-    ) {
-        val colors = listOf(
-            // 基本色
-            Color.Black,
-            Color.White,
-            Color.Red,
-            Color.Yellow,
-            Color.Blue,
-            Color.Green,
-            Color.Gray,
-            Color.Magenta,
-            // 鲜艳色
-            Color(0xFFFFA500), // Orange
-            Color(0xFF800080), // Purple
-            Color(0xFFFFC0CB), // Pink
-            Color(0xFF00FFFF), // Cyan
-            Color(0xFFFA8072), // Salmon
-            Color(0xFFADFF2F), // GreenYellow
-            Color(0xFFFFD700), // Gold
-            // 柔和色
-            Color(0xFFADD8E6), // Light Blue
-            Color(0xFFFFFFE0), // Light Yellow
-            Color(0xFFE6E6FA), // Lavender
-            Color(0xFF90EE90), // LightGreen
-            // 暗色
-            Color(0xFF008000), // Dark Green
-            Color(0xFFA52A2A), // Brown
-        )
-        colors.forEach { color ->
-            Box(
-                modifier = Modifier.height(24.dp).aspectRatio(1f).clip(CircleShape)
-                    .background(color).clickable(role = Role.RadioButton) {
-                        state.penColor.value = color
-                    }, contentAlignment = Alignment.Center
-            ) {
-                if (state.penColor.value == color) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = "Selected",
-                        tint = if (color == Color.Black) Color.White else Color.Black
-                    )
+            colors.forEach { color ->
+                Box(
+                    modifier = Modifier.height(24.dp).aspectRatio(1f).clip(CircleShape)
+                        .background(color)
+                        .clickable(role = Role.RadioButton) {
+                            colorState.value = color
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (colorState.value == color) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Selected",
+                            tint = if (color == Color.Black) Color.White else Color.Black
+                        )
+                    }
                 }
             }
         }
     }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

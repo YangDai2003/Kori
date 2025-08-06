@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.toArgb
 // 工具模式：画笔、橡皮擦或查看器
 enum class ToolMode {
     PEN,
+    HIGHLIGHTER,
     ERASER_PARTIAL,
     ERASER_ENTIRE,
     VIEWER
@@ -33,6 +34,8 @@ class DrawState {
 
     val penColor = mutableStateOf(Color.Black)
     val penStrokeWidth = mutableStateOf(10f)
+    val highlighterColor = mutableStateOf(Color.Yellow)
+    val highlighterStrokeWidth = mutableStateOf(20f)
     val eraserStrokeWidth = mutableStateOf(25f)
 
     // 画布变换状态
@@ -54,8 +57,9 @@ class DrawState {
         private const val KEY_POINTS = "points"
         private const val KEY_COLOR = "color"
         private const val KEY_STROKE_WIDTH = "width"
-        private const val TYPE_BRUSH = 0
+        private const val TYPE_PEN = 0
         private const val TYPE_ERASE = 1
+        private const val TYPE_HIGHLIGHTER = 2
         val Saver: Saver<DrawState, Any> = listSaver(
             save = { state ->
                 // 将所有状态属性分解到一个列表中
@@ -64,8 +68,15 @@ class DrawState {
                     state.actions.map { action ->
                         // 将每个 DrawAction 转换为一个可序列化的 Map
                         when (action) {
-                            is DrawAction.BrushStroke -> mapOf(
-                                KEY_TYPE to TYPE_BRUSH,
+                            is DrawAction.PenStroke -> mapOf(
+                                KEY_TYPE to TYPE_PEN,
+                                KEY_POINTS to action.points.flatMap { listOf(it.x, it.y) },
+                                KEY_COLOR to action.color.toArgb(),
+                                KEY_STROKE_WIDTH to action.strokeWidth
+                            )
+
+                            is DrawAction.HighLighterStroke -> mapOf(
+                                KEY_TYPE to TYPE_HIGHLIGHTER,
                                 KEY_POINTS to action.points.flatMap { listOf(it.x, it.y) },
                                 KEY_COLOR to action.color.toArgb(),
                                 KEY_STROKE_WIDTH to action.strokeWidth
@@ -86,7 +97,11 @@ class DrawState {
                     state.scale.value,
                     state.offset.value.x,
                     state.offset.value.y,
-                    state.rotation.value
+                    state.rotation.value,
+                    state.canvasColor.value.toArgb(),
+                    state.canvasGridType.value.name,
+                    state.highlighterColor.value.toArgb(),
+                    state.highlighterStrokeWidth.value
                 )
             },
             restore = { savedList ->
@@ -106,8 +121,15 @@ class DrawState {
                         val color = Color(actionMap[KEY_COLOR] as Int)
 
                         when (actionMap[KEY_TYPE] as Int) {
-                            TYPE_BRUSH -> DrawAction.BrushStroke(path, points, color, strokeWidth)
+                            TYPE_PEN -> DrawAction.PenStroke(path, points, color, strokeWidth)
                             TYPE_ERASE -> DrawAction.Erase(path, points, strokeWidth, color)
+                            TYPE_HIGHLIGHTER -> DrawAction.HighLighterStroke(
+                                path,
+                                points,
+                                color,
+                                strokeWidth
+                            )
+
                             else -> throw IllegalStateException("Unknown action type")
                         }
                     }
@@ -121,6 +143,10 @@ class DrawState {
                 restoredState.scale.value = savedList[5] as Float
                 restoredState.offset.value = Offset(savedList[6] as Float, savedList[7] as Float)
                 restoredState.rotation.value = savedList[8] as Float
+                restoredState.canvasColor.value = Color(savedList[9] as Int)
+                restoredState.canvasGridType.value = GridType.valueOf(savedList[10] as String)
+                restoredState.highlighterColor.value = Color(savedList[11] as Int)
+                restoredState.highlighterStrokeWidth.value = savedList[12] as Float
 
                 restoredState
             }
