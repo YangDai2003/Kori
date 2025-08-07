@@ -30,6 +30,7 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.outlined.Colorize
 import androidx.compose.material.icons.outlined.FolderDelete
 import androidx.compose.material.icons.outlined.Star
@@ -128,7 +129,7 @@ fun SharedTransitionScope.ModifyFolderDialog(
                     .verticalScroll(rememberScrollState())
                     .imePadding()
                     .padding(16.dp)
-                    .sizeIn(minWidth = 280.dp, maxWidth = 528.dp)
+                    .sizeIn(minWidth = 280.dp, maxWidth = 512.dp)
                     .sharedBounds(
                         sharedContentState = rememberSharedContentState(key = "${targetState.id}-bounds"),
                         animatedVisibilityScope = this@AnimatedContent,
@@ -192,7 +193,7 @@ fun SharedTransitionScope.ModifyFolderDialog(
                     LazyRow(
                         state = state,
                         contentPadding = PaddingValues(vertical = 4.dp, horizontal = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
                     ) {
                         items(folderColorOptions.size + 2) {
                             when (it) {
@@ -243,7 +244,7 @@ fun SharedTransitionScope.ModifyFolderDialog(
                 ) {
                     if (targetState.id.isNotEmpty())
                         IconButton(
-                            colors = IconButtonDefaults.outlinedIconButtonVibrantColors(
+                            colors = IconButtonDefaults.iconButtonColors(
                                 containerColor = MaterialTheme.colorScheme.errorContainer,
                                 contentColor = MaterialTheme.colorScheme.onErrorContainer
                             ),
@@ -308,11 +309,16 @@ private fun OutlinedCircle(
     selected: Boolean,
     onClick: () -> Unit
 ) = OutlinedIconButton(
-    shape = if (selected) IconButtonDefaults.smallSquareShape else IconButtonDefaults.smallRoundShape,
-    colors = IconButtonDefaults.outlinedIconButtonVibrantColors(containerColor = color),
-    border = if (selected) BorderStroke(2.dp, MaterialTheme.colorScheme.outline) else null,
+    border = if (selected) BorderStroke(2.dp, color) else null,
     onClick = onClick
-) { }
+) {
+    Icon(
+        modifier = Modifier.size(IconButtonDefaults.extraLargeIconSize),
+        imageVector = Icons.Default.Circle,
+        contentDescription = null,
+        tint = color
+    )
+}
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -321,11 +327,20 @@ private fun OutlinedCustomCircle(
     selected: Boolean,
     onClick: () -> Unit
 ) = OutlinedIconButton(
-    shape = if (selected) IconButtonDefaults.smallSquareShape else IconButtonDefaults.smallRoundShape,
-    colors = IconButtonDefaults.outlinedIconButtonVibrantColors(containerColor = color),
-    border = if (selected) BorderStroke(2.dp, MaterialTheme.colorScheme.outline) else null,
+    border = if (selected) BorderStroke(2.dp, color) else null,
     onClick = onClick
-) { Icon(imageVector = Icons.Outlined.Colorize, contentDescription = null) }
+) {
+    Icon(
+        modifier = Modifier.size(IconButtonDefaults.extraLargeIconSize),
+        imageVector = Icons.Default.Circle,
+        contentDescription = null,
+        tint = color
+    )
+    Icon(
+        imageVector = Icons.Outlined.Colorize,
+        contentDescription = null
+    )
+}
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -333,11 +348,14 @@ private fun OutlinedTextCircle(
     selected: Boolean,
     onClick: () -> Unit
 ) = OutlinedIconButton(
-    shape = if (selected) IconButtonDefaults.smallSquareShape else IconButtonDefaults.smallRoundShape,
-    colors = IconButtonDefaults.outlinedIconButtonVibrantColors(
-        containerColor = MaterialTheme.colorScheme.primary,
-        contentColor = MaterialTheme.colorScheme.onPrimary
-    ),
-    border = if (selected) BorderStroke(2.dp, MaterialTheme.colorScheme.outline) else null,
+    border = if (selected) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
     onClick = onClick
-) { Text("A") }
+) {
+    Icon(
+        modifier = Modifier.size(IconButtonDefaults.extraLargeIconSize),
+        imageVector = Icons.Default.Circle,
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.primary
+    )
+    Text("A", color = MaterialTheme.colorScheme.onPrimary)
+}

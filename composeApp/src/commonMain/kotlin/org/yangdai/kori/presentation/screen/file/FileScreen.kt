@@ -434,7 +434,7 @@ fun FileScreen(
                 }
             }
             AdaptiveEditorRow(
-                visible = !isReadView,
+                visible = !isReadView && !isSearching,
                 type = fileEditingState.fileType,
                 scrollState = scrollState,
                 bottomPadding = innerPadding.calculateBottomPadding(),

@@ -22,11 +22,11 @@
         <item quantity="one">%1$d Notiz</item>
         <item quantity="other">%1$d Notizen</item>
     </plurals>
-    <string name="pin">Pin</string>
-    <string name="pinned">Angepinnet</string>
+    <string name="pin">Anpinnen</string>
     <string name="starred">Starred</string>
     <string name="others">Sonstige</string>
     <string name="move">Verschieben</string>
+    <string name="duplicate">Duplizieren</string>
     <string name="all_notes">Alle Notizen</string>
     <string name="templates">Vorlagen</string>
     <string name="trash">Papierkorb</string>
@@ -35,7 +35,6 @@
     <string name="settings">Einstellungen</string>
     <string name="restore_all">Alle wiederherstellen</string>
     <string name="delete_all">Alle löschen</string>
-    <string name="checked">Ausgewählt: </string>
     <string name="modify">Bearbeiten</string>
     <string name="warning">Warnung</string>
     <string name="deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue">Wenn Sie einen Ordner löschen, werden auch alle darin enthaltenen Notizen gelöscht und können nicht wiederhergestellt werden. Möchten Sie fortfahren?</string>

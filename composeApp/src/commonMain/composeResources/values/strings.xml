@@ -24,10 +24,10 @@
         <item quantity="other">%1$d notes</item>
     </plurals>
     <string name="pin">Pin</string>
-    <string name="pinned">Pinned</string>
     <string name="starred">Starred</string>
     <string name="others">Others</string>
     <string name="move">Move</string>
+    <string name="duplicate">Duplicate</string>
     <string name="all_notes">All notes</string>
     <string name="templates">Templates</string>
     <string name="trash">Trash</string>
@@ -36,7 +36,6 @@
     <string name="settings">Settings</string>
     <string name="restore_all">All restore</string>
     <string name="delete_all">All delete</string>
-    <string name="checked">Selected: </string>
     <string name="modify">Modify</string>
     <string name="warning">Warning</string>
     <string name="deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue">Deleting a folder will also delete all the notes it contains and they cannot be restored. Do you want to continue?</string>

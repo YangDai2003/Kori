@@ -3,6 +3,7 @@ package org.yangdai.kori.presentation.screen.main
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -78,6 +79,7 @@ fun MainScreen(
                 if (!isLargeScreen) {
                     TooltipIconButton(
                         tipText = stringResource(Res.string.open_navigation_drawer),
+                        colors = IconButtonDefaults.iconButtonVibrantColors(),
                         icon = Icons.Default.Menu,
                         onClick = {
                             scope.launch {

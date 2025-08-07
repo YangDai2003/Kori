@@ -69,7 +69,7 @@ fun ShareDialog(
                         )
                     ),
                 shape = IconButtonDefaults.extraSmallSquareShape,
-                colors = IconButtonDefaults.iconButtonVibrantColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
                 onClick = {
                     scope.launch {
                         clipboard.setClipEntry(clipEntryOf(noteEntity.content))

@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 fun TooltipIconButton(
     buttonModifier: Modifier = Modifier,
     iconModifier: Modifier = Modifier,
-    colors: IconButtonColors = IconButtonDefaults.iconButtonVibrantColors(),
+    colors: IconButtonColors = IconButtonDefaults.iconButtonColors(),
     shape: Shape = IconButtonDefaults.standardShape,
     enabled: Boolean = true,
     tipText: String,
@@ -58,7 +58,7 @@ fun TooltipIconButton(
 fun TooltipIconButton(
     buttonModifier: Modifier = Modifier,
     iconModifier: Modifier = Modifier,
-    colors: IconButtonColors = IconButtonDefaults.iconButtonVibrantColors(),
+    colors: IconButtonColors = IconButtonDefaults.iconButtonColors(),
     shape: Shape = IconButtonDefaults.standardShape,
     enabled: Boolean = true,
     tipText: String,

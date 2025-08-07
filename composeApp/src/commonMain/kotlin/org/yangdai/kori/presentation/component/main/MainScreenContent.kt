@@ -1,12 +1,19 @@
 package org.yangdai.kori.presentation.component.main
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
@@ -88,9 +95,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.all_notes
-import kori.composeapp.generated.resources.checked
 import kori.composeapp.generated.resources.delete
 import kori.composeapp.generated.resources.delete_all
+import kori.composeapp.generated.resources.duplicate
+import kori.composeapp.generated.resources.duplicate_24px
 import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.move
 import kori.composeapp.generated.resources.pin
@@ -100,22 +108,22 @@ import kori.composeapp.generated.resources.restore
 import kori.composeapp.generated.resources.restore_all
 import kori.composeapp.generated.resources.search
 import kori.composeapp.generated.resources.search_history
+import kori.composeapp.generated.resources.snackbar_deleted_all
+import kori.composeapp.generated.resources.snackbar_deleted_forever
+import kori.composeapp.generated.resources.snackbar_moved_to_trash
+import kori.composeapp.generated.resources.snackbar_pinned
+import kori.composeapp.generated.resources.snackbar_restored
+import kori.composeapp.generated.resources.snackbar_restored_all
 import kori.composeapp.generated.resources.sort_by
 import kori.composeapp.generated.resources.templates
 import kori.composeapp.generated.resources.todo_text
 import kori.composeapp.generated.resources.toolbox
 import kori.composeapp.generated.resources.total
 import kori.composeapp.generated.resources.trash
-import kori.composeapp.generated.resources.snackbar_pinned
-import kori.composeapp.generated.resources.snackbar_moved_to_trash
-import kori.composeapp.generated.resources.snackbar_deleted_forever
-import kori.composeapp.generated.resources.snackbar_restored
-import kori.composeapp.generated.resources.snackbar_restored_all
-import kori.composeapp.generated.resources.snackbar_deleted_all
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.domain.sort.NoteSortType
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
 import org.yangdai.kori.presentation.component.TooltipIconButton
@@ -124,6 +132,26 @@ import org.yangdai.kori.presentation.component.dialog.NoteSortOptionBottomSheet
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.util.isScreenWidthExpanded
+
+data class Digit(val digitChar: Char, val fullNumber: Int, val place: Int) {
+    override fun equals(other: Any?): Boolean {
+        return when (other) {
+            is Digit -> digitChar == other.digitChar
+            else -> super.equals(other)
+        }
+    }
+
+    override fun hashCode(): Int {
+        var result = digitChar.hashCode()
+        result = 31 * result + fullNumber
+        result = 31 * result + place
+        return result
+    }
+}
+
+operator fun Digit.compareTo(other: Digit): Int {
+    return fullNumber.compareTo(other.fullNumber)
+}
 
 @OptIn(
     ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class,
@@ -214,14 +242,40 @@ fun MainScreenContent(
 
     Scaffold(
         topBar = {
-            AnimatedContent(targetState = isSelectionMode) {
-                if (it) {
+            AnimatedContent(targetState = isSelectionMode) { isSelecting ->
+                if (isSelecting) {
                     // 多选模式的顶部操作栏
                     TopAppBar(
-                        title = { PlatformStyleTopAppBarTitle("${stringResource(Res.string.checked)}${selectedNotes.size}") },
+                        title = {
+                            Row(
+                                modifier = Modifier.animateContentSize(),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                selectedNotes.size.toString()
+                                    .mapIndexed { index, c -> Digit(c, selectedNotes.size, index) }
+                                    .forEach { digit ->
+                                        AnimatedContent(
+                                            targetState = digit,
+                                            transitionSpec = {
+                                                if (targetState > initialState) {
+                                                    slideInVertically { -it } + fadeIn() togetherWith slideOutVertically { it } + fadeOut()
+                                                } else {
+                                                    slideInVertically { it } + fadeIn() togetherWith slideOutVertically { -it } + fadeOut()
+                                                }
+                                            }
+                                        ) { digit ->
+                                            Text(
+                                                "${digit.digitChar}",
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
+                                    }
+                            }
+                        },
                         navigationIcon = {
                             IconButton(
-                                colors = IconButtonDefaults.iconButtonVibrantColors(
+                                colors = IconButtonDefaults.iconButtonColors(
                                     containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
                                 ),
                                 onClick = { selectedNotes.clear() }
@@ -230,7 +284,7 @@ fun MainScreenContent(
                             }
                         },
                         actions = {
-                            if (currentDrawerItem !is DrawerItem.Trash && currentDrawerItem !is DrawerItem.Templates) {
+                            if (currentDrawerItem is DrawerItem.AllNotes || currentDrawerItem is DrawerItem.Folder) {
                                 val pinnedStr =
                                     pluralStringResource(
                                         Res.plurals.snackbar_pinned,
@@ -250,6 +304,14 @@ fun MainScreenContent(
                                     tipText = stringResource(Res.string.move),
                                     icon = Icons.AutoMirrored.Outlined.DriveFileMove,
                                     onClick = { showFoldersDialog = true }
+                                )
+                                TooltipIconButton(
+                                    tipText = stringResource(Res.string.duplicate),
+                                    icon = painterResource(Res.drawable.duplicate_24px),
+                                    onClick = {
+                                        viewModel.duplicateNotes(selectedNotes.toSet())
+                                        selectedNotes.clear()
+                                    }
                                 )
                             }
 
@@ -400,70 +462,73 @@ fun MainScreenContent(
                                     )
 
                                 if (currentDrawerItem is DrawerItem.Trash) {
-                                    var showMenu by remember { mutableStateOf(false) }
-                                    IconButton(
-                                        modifier =
-                                            Modifier.minimumInteractiveComponentSize()
-                                                .size(
-                                                    IconButtonDefaults.smallContainerSize(
-                                                        IconButtonDefaults.IconButtonWidthOption.Narrow
+                                    Box {
+                                        var showMenu by remember { mutableStateOf(false) }
+                                        IconButton(
+                                            modifier =
+                                                Modifier.minimumInteractiveComponentSize()
+                                                    .size(
+                                                        IconButtonDefaults.smallContainerSize(
+                                                            IconButtonDefaults.IconButtonWidthOption.Narrow
+                                                        )
+                                                    ),
+                                            shape = IconButtonDefaults.smallRoundShape,
+                                            onClick = { showMenu = !showMenu }
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Outlined.MoreVert,
+                                                contentDescription = null
+                                            )
+                                        }
+
+                                        DropdownMenu(
+                                            expanded = showMenu,
+                                            onDismissRequest = { showMenu = false }
+                                        ) {
+                                            val deletedAllStr =
+                                                stringResource(Res.string.snackbar_deleted_all)
+                                            val restoredAllStr =
+                                                stringResource(Res.string.snackbar_restored_all)
+                                            DropdownMenuItem(
+                                                leadingIcon = {
+                                                    Icon(
+                                                        imageVector = Icons.Default.RestoreFromTrash,
+                                                        contentDescription = null
                                                     )
-                                                ),
-                                        colors = IconButtonDefaults.iconButtonVibrantColors(),
-                                        shape = IconButtonDefaults.smallRoundShape,
-                                        onClick = { showMenu = !showMenu }
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.MoreVert,
-                                            contentDescription = null
-                                        )
-                                    }
+                                                },
+                                                text = { Text(text = stringResource(Res.string.restore_all)) },
+                                                onClick = {
+                                                    showMenu = false
+                                                    viewModel.restoreAllNotesFromTrash()
+                                                    scope.launch {
+                                                        snackbarHostState.showSnackbar(
+                                                            restoredAllStr
+                                                        )
+                                                    }
+                                                })
 
-                                    DropdownMenu(
-                                        expanded = showMenu,
-                                        onDismissRequest = { showMenu = false }
-                                    ) {
-                                        val deletedAllStr =
-                                            stringResource(Res.string.snackbar_deleted_all)
-                                        val restoredAllStr =
-                                            stringResource(Res.string.snackbar_restored_all)
-                                        DropdownMenuItem(
-                                            leadingIcon = {
-                                                Icon(
-                                                    imageVector = Icons.Default.RestoreFromTrash,
-                                                    contentDescription = null
-                                                )
-                                            },
-                                            text = { Text(text = stringResource(Res.string.restore_all)) },
-                                            onClick = {
-                                                showMenu = false
-                                                viewModel.restoreAllNotesFromTrash()
-                                                scope.launch {
-                                                    snackbarHostState.showSnackbar(restoredAllStr)
-                                                }
-                                            })
-
-                                        DropdownMenuItem(
-                                            leadingIcon = {
-                                                Icon(
-                                                    imageVector = Icons.Default.DeleteForever,
-                                                    tint = MaterialTheme.colorScheme.error,
-                                                    contentDescription = null
-                                                )
-                                            },
-                                            text = {
-                                                Text(
-                                                    text = stringResource(Res.string.delete_all),
-                                                    color = MaterialTheme.colorScheme.onErrorContainer
-                                                )
-                                            },
-                                            onClick = {
-                                                showMenu = false
-                                                viewModel.emptyTrash()
-                                                scope.launch {
-                                                    snackbarHostState.showSnackbar(deletedAllStr)
-                                                }
-                                            })
+                                            DropdownMenuItem(
+                                                leadingIcon = {
+                                                    Icon(
+                                                        imageVector = Icons.Default.DeleteForever,
+                                                        tint = MaterialTheme.colorScheme.error,
+                                                        contentDescription = null
+                                                    )
+                                                },
+                                                text = {
+                                                    Text(
+                                                        text = stringResource(Res.string.delete_all),
+                                                        color = MaterialTheme.colorScheme.onErrorContainer
+                                                    )
+                                                },
+                                                onClick = {
+                                                    showMenu = false
+                                                    viewModel.emptyTrash()
+                                                    scope.launch {
+                                                        snackbarHostState.showSnackbar(deletedAllStr)
+                                                    }
+                                                })
+                                        }
                                     }
                                 }
                             },

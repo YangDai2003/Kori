@@ -34,6 +34,8 @@ import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.util.SampleMarkdownNote
 import org.yangdai.kori.presentation.util.SampleTodoNote
 import kotlin.math.round
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -205,6 +207,24 @@ class MainViewModel(
                 note?.let {
                     val updatedNote = it.copy(isPinned = true)
                     noteRepository.updateNote(updatedNote)
+                }
+            }
+        }
+    }
+
+    @OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
+    fun duplicateNotes(noteIds: Set<String>) {
+        viewModelScope.launch {
+            noteIds.forEach { noteId ->
+                val note = noteRepository.getNoteById(noteId)
+                note?.let {
+                    val duplicateNote = it.copy(
+                        id = Uuid.random().toString(),
+                        title = it.title + " (\uD83D\uDCD1)",
+                        createdAt = Clock.System.now().toString(),
+                        updatedAt = Clock.System.now().toString()
+                    )
+                    noteRepository.insertNote(duplicateNote)
                 }
             }
         }

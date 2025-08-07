@@ -538,7 +538,7 @@ fun NoteScreen(
                 }
             }
             AdaptiveEditorRow(
-                visible = !isReadView,
+                visible = !isReadView && !isSearching,
                 type = noteEditingState.noteType,
                 scrollState = scrollState,
                 bottomPadding = innerPadding.calculateBottomPadding(),

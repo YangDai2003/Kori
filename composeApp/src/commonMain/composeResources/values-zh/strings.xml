@@ -23,10 +23,10 @@
         <item quantity="other">%1$d个笔记</item>
     </plurals>
     <string name="pin">置顶</string>
-    <string name="pinned">已置顶</string>
     <string name="starred">已星标</string>
     <string name="others">其它</string>
     <string name="move">移动</string>
+    <string name="duplicate">制作副本</string>
     <string name="all_notes">全部笔记</string>
     <string name="templates">模板</string>
     <string name="trash">回收站</string>
@@ -35,7 +35,6 @@
     <string name="settings">设置</string>
     <string name="restore_all">全部恢复</string>
     <string name="delete_all">全部删除</string>
-    <string name="checked">已勾选：</string>
     <string name="modify">自定义</string>
     <string name="warning">警告</string>
     <string name="deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue">删除文件夹将同时删除其包含的所有笔记，且不可恢复，是否继续操作?</string>
