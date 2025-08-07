@@ -1,13 +1,14 @@
 package kink
 
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asSkiaBitmap
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_name
+import kori.composeapp.generated.resources.save
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.skiko.toBufferedImage
 import java.io.File
@@ -38,6 +39,6 @@ actual fun ShareImageButton(imageBitmap: ImageBitmap) {
             }
         }
     ) {
-        Text("Save")
+        Text(stringResource(Res.string.save))
     }
 }

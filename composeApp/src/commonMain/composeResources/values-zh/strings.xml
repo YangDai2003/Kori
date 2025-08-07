@@ -9,6 +9,8 @@
     <string name="exit">退出</string>
     <string name="new">新建</string>
     <string name="open">打开</string>
+    <string name="save">保存</string>
+    <string name="share">分享</string>
 
     <string name="sort_by">排序依据</string>
     <string name="sort_name_a">文件名 (A - Z)</string>

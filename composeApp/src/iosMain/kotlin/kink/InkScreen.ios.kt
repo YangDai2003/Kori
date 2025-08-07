@@ -4,6 +4,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
+import kori.composeapp.generated.resources.Res
+import kori.composeapp.generated.resources.share
+import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.util.toUIImage
 import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSURL
@@ -42,6 +45,6 @@ actual fun ShareImageButton(imageBitmap: ImageBitmap) {
             }
         }
     ) {
-        Text("Share")
+        Text(stringResource(Res.string.share))
     }
 }

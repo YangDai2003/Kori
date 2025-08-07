@@ -9,6 +9,8 @@
     <string name="exit">Beenden</string>
     <string name="new">Neu</string>
     <string name="open">Öffnen</string>
+    <string name="save">Speichern</string>
+    <string name="share">Teilen</string>
 
     <string name="sort_by">Sortieren nach</string>
     <string name="sort_name_a">Dateiname (A - Z)</string>

@@ -9,6 +9,9 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
+import kori.composeapp.generated.resources.Res
+import kori.composeapp.generated.resources.share
+import org.jetbrains.compose.resources.stringResource
 import java.io.File
 import java.io.FileOutputStream
 
@@ -34,6 +37,6 @@ actual fun ShareImageButton(imageBitmap: ImageBitmap) {
             )
         }
     ) {
-        Text("Share")
+        Text(stringResource(Res.string.share))
     }
 }
