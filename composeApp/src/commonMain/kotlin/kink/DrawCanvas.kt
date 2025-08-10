@@ -2,11 +2,13 @@ package kink
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
@@ -18,6 +20,7 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.GraphicsLayer
@@ -28,13 +31,12 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
-import kotlin.math.sqrt
 
 // 通过上下双Canvas分离职责，实现高性能画布
 @Composable
 fun DrawCanvas(state: DrawState, graphicsLayer: GraphicsLayer) {
     // --- 底层画布 ---
-    Canvas(
+    Spacer(
         Modifier
             .fillMaxSize()
             .graphicsLayer {
@@ -46,30 +48,33 @@ fun DrawCanvas(state: DrawState, graphicsLayer: GraphicsLayer) {
                 rotationZ = state.rotation.value
                 compositingStrategy = CompositingStrategy.Offscreen
             }
-            .drawWithContent {
-                // call record to capture the content in the graphics layer
-                graphicsLayer.record {
-                    // draw the contents of the composable into the graphics layer
-                    this@drawWithContent.drawContent()
+            .drawWithCache {
+                val gridType = state.canvasGridType.value
+                val gridColor = state.canvasColor.value
+                val drawActions = state.actions
+
+                onDrawWithContent {
+                    // call record to capture the content in the graphics layer
+                    graphicsLayer.record {
+                        when (gridType) {
+                            GridType.None -> drawRect(gridColor)
+                            GridType.Square -> drawSquareGrid(gridColor)
+                            GridType.Rule -> drawRuleGrid(gridColor)
+                            GridType.Dot -> drawDotGrid(gridColor)
+                        }
+                        drawIntoCanvas {
+                            it.withSaveLayer(size.toRect(), Paint()) {
+                                drawActions.forEach { action ->
+                                    drawAction(action, true)
+                                }
+                            }
+                        }
+                    }
+                    // draw the graphics layer on the visible canvas
+                    drawLayer(graphicsLayer)
                 }
-                // draw the graphics layer on the visible canvas
-                drawLayer(graphicsLayer)
             }
-    ) {
-        when (state.canvasGridType.value) {
-            GridType.None -> drawRect(state.canvasColor.value)
-            GridType.Square -> drawSquareGrid(state.canvasColor.value)
-            GridType.Rule -> drawRuleGrid(state.canvasColor.value)
-            GridType.Dot -> drawDotGrid(state.canvasColor.value)
-        }
-        with(drawContext) {
-            canvas.withSaveLayer(size.toRect(), Paint()) {
-                state.actions.forEach { action ->
-                    drawAction(action, true)
-                }
-            }
-        }
-    }
+    )
 
     // --- 顶层画布 ---
     Canvas(
@@ -308,25 +313,60 @@ private fun DrawScope.drawAction(action: DrawAction, done: Boolean = false) {
     }
 }
 
-// 碰撞检测函数
+/**
+ * 碰撞检测函数
+ * 使用 path.getBounds() 进行高效的粗略检测, 再使用精确检测
+ */
 private fun checkAndRemoveEntirePath(state: DrawState, eraserPosition: Offset) {
     val pathsToRemove = mutableListOf<DrawAction>()
+
+    // 计算橡皮擦的半径和包围盒
+    val eraserRadius = state.eraserStrokeWidth.value / 2f
+    val eraserBounds = Rect(
+        left = eraserPosition.x - eraserRadius,
+        top = eraserPosition.y - eraserRadius,
+        right = eraserPosition.x + eraserRadius,
+        bottom = eraserPosition.y + eraserRadius
+    )
+
     state.actions.forEach { action ->
-        val (pointsToCheck, strokeWidth) = when (action) {
-            is DrawAction.PenStroke -> action.points to action.strokeWidth
-            is DrawAction.HighLighterStroke -> action.points to action.strokeWidth
-            is DrawAction.Erase -> action.points to action.strokeWidth
+        // 使用 when 语句同时获取路径、点列表和笔触宽度
+        val (path, points, strokeWidth) = when (action) {
+            is DrawAction.PenStroke ->
+                Triple(action.path, action.points, action.strokeWidth)
+
+            is DrawAction.HighLighterStroke ->
+                Triple(action.path, action.points, action.strokeWidth)
+
+            is DrawAction.Erase -> Triple(action.path, action.points, action.strokeWidth)
         }
 
-        val collision = pointsToCheck.any { point ->
-            val distance =
-                sqrt((point.x - eraserPosition.x).pow(2) + (point.y - eraserPosition.y).pow(2))
-            distance < (strokeWidth / 2 + state.eraserStrokeWidth.value / 2)
+        // 如果路径没有点，则其包围盒为空，可以安全跳过
+        if (points.isEmpty()) return@forEach
+
+        val pathBounds = path.getBounds()
+        val pathRadius = strokeWidth / 2f
+
+        // 将路径的几何包围盒扩展其笔触半径，得到其真实的视觉包围盒
+        val visualBounds = pathBounds.inflate(pathRadius)
+
+        // 如果橡皮擦的范围与路径的视觉范围不重叠，则绝不可能碰撞，立即跳过
+        if (!eraserBounds.overlaps(visualBounds)) return@forEach
+
+        // 计算碰撞半径的平方值
+        val collisionRadiusSq = (eraserRadius + pathRadius).pow(2)
+
+        val collision = points.any { point ->
+            // 计算点到橡皮擦中心距离的平方
+            val distanceSq =
+                (point.x - eraserPosition.x).pow(2) + (point.y - eraserPosition.y).pow(2)
+            // 比较平方值
+            distanceSq < collisionRadiusSq
         }
-        if (collision) {
-            pathsToRemove.add(action)
-        }
+
+        if (collision) pathsToRemove.add(action)
     }
+
     if (pathsToRemove.isNotEmpty()) {
         state.undoActions.addAll(pathsToRemove)
         state.actions.removeAll(pathsToRemove)
