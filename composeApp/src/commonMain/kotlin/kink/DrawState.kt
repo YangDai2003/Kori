@@ -156,10 +156,12 @@ class DrawState {
 
 /**
  * 一个 Composable 函数，用于创建并记住一个可被自动保存和恢复的 DrawState 实例。
+ *
+ * @param initialActions 可选参数，用于在 DrawState 初始化时提供一组初始的绘制动作。
  */
 @Composable
-fun rememberDrawState(): DrawState {
+fun rememberDrawState(initialActions: List<DrawAction>? = null): DrawState {
     return rememberSaveable(saver = DrawState.Saver) {
-        DrawState()
+        DrawState().apply { initialActions?.let { actions.addAll(it) } }
     }
 }
