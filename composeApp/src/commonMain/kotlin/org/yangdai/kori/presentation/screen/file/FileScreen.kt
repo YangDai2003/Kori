@@ -89,6 +89,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kfile.PlatformFile
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.char_count
+import kori.composeapp.generated.resources.drawing
 import kori.composeapp.generated.resources.line_count
 import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.paragraph_count
@@ -119,12 +120,14 @@ import org.yangdai.kori.presentation.component.dialog.ShareDialog
 import org.yangdai.kori.presentation.component.note.AdaptiveEditor
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorRow
 import org.yangdai.kori.presentation.component.note.AdaptiveView
+import org.yangdai.kori.presentation.component.note.EditorProperties
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.note.moveCursorLeftStateless
 import org.yangdai.kori.presentation.component.note.moveCursorRightStateless
+import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditor
 import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
 import org.yangdai.kori.presentation.component.note.template.TemplateProcessor
 import org.yangdai.kori.presentation.navigation.Screen
@@ -332,16 +335,21 @@ fun FileScreen(
             }
 
             if (fileEditingState.fileType == NoteType.PLAIN_TEXT) {
-                AdaptiveEditor(
+                PlainTextEditor(
                     modifier = Modifier.fillMaxWidth().weight(1f),
-                    type = fileEditingState.fileType,
                     textState = viewModel.contentState,
                     scrollState = scrollState,
-                    isReadOnly = isReadView,
-                    isLineNumberVisible = editorState.showLineNumber,
-                    isLintActive = editorState.isMarkdownLintEnabled,
-                    headerRange = selectedHeader,
+                    editorProperties = EditorProperties(
+                        isReadOnly = isReadView,
+                        isLineNumberVisible = editorState.showLineNumber
+                    ),
                     findAndReplaceState = findAndReplaceState
+                )
+            } else if (fileEditingState.fileType == NoteType.Drawing) {
+                Text(
+                    modifier = Modifier.fillMaxWidth().weight(1f)
+                        .clickable { isReadView = !isReadView },
+                    text = viewModel.contentState.text.toString()
                 )
             } else {
                 if (isScreenWidthExpanded()) {
@@ -577,6 +585,7 @@ fun FileScreen(
                     NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
                     NoteType.MARKDOWN -> stringResource(Res.string.markdown)
                     NoteType.TODO -> stringResource(Res.string.todo_text)
+                    NoteType.Drawing -> stringResource(Res.string.drawing)
                 }
             )
 

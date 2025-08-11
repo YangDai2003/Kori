@@ -200,4 +200,6 @@
     </plurals>
     <string name="snackbar_restored_all">Alle Notizen im Papierkorb wiederhergestellt</string>
     <string name="snackbar_deleted_all">Alle Notizen im Papierkorb gelöscht</string>
+
+    <string name="drawing">Zeichnung</string>
 </resources>

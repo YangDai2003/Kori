@@ -1,4 +1,4 @@
-package kink
+package org.yangdai.kori.presentation.component.note.drawing
 
 import android.content.Intent
 import android.graphics.Bitmap

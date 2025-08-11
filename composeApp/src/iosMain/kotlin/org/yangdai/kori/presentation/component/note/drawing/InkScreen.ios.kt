@@ -1,4 +1,4 @@
-package kink
+package org.yangdai.kori.presentation.component.note.drawing
 
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text

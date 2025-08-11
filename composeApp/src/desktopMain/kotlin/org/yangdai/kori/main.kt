@@ -14,11 +14,12 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.semantics.hideFromAccessibility
@@ -26,13 +27,10 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
-import androidx.compose.ui.window.rememberWindowState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import javafx.embed.swing.JFXPanel
-import kink.InkScreen
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_name
 import kori.composeapp.generated.resources.exit
@@ -64,11 +62,6 @@ import java.awt.Dimension
 @Suppress("unused")
 val fakeJFXPanel = JFXPanel()
 
-object WindowState {
-    val inkWindow: MutableState<Boolean> = mutableStateOf(false)
-    val mainWindow: MutableState<Boolean> = mutableStateOf(true)
-}
-
 fun main() {
     System.setProperty("compose.interop.blending", "true")
     System.setProperty("compose.swing.render.on.graphics", "true")
@@ -82,9 +75,10 @@ fun main() {
     }
     application {
         val navHostController = rememberNavController()
+        var mainWindowVisible by rememberSaveable { mutableStateOf(true) }
         Window(
-            onCloseRequest = { WindowState.mainWindow.value = false },
-            visible = WindowState.mainWindow.value,
+            onCloseRequest = { mainWindowVisible = false },
+            visible = mainWindowVisible,
             title = stringResource(Res.string.app_name),
             icon = painterResource(Res.drawable.icon)
         ) {
@@ -163,31 +157,31 @@ fun main() {
             }
         }
 
-        if (!WindowState.mainWindow.value) {
+        if (!mainWindowVisible) {
             Tray(
                 icon = painterResource(Res.drawable.icon),
                 tooltip = stringResource(Res.string.app_name),
-                onAction = { WindowState.mainWindow.value = true },
+                onAction = { mainWindowVisible = true },
                 menu = {
                     Menu(stringResource(Res.string.new)) {
                         Item(
                             text = stringResource(Res.string.plain_text),
                             onClick = {
-                                WindowState.mainWindow.value = true
+                                mainWindowVisible = true
                                 navHostController.navigate(Screen.Note(noteType = NoteType.PLAIN_TEXT.ordinal))
                             }
                         )
                         Item(
                             text = stringResource(Res.string.markdown),
                             onClick = {
-                                WindowState.mainWindow.value = true
+                                mainWindowVisible = true
                                 navHostController.navigate(Screen.Note(noteType = NoteType.MARKDOWN.ordinal))
                             }
                         )
                         Item(
                             text = stringResource(Res.string.todo_text),
                             onClick = {
-                                WindowState.mainWindow.value = true
+                                mainWindowVisible = true
                                 navHostController.navigate(Screen.Note(noteType = NoteType.TODO.ordinal))
                             }
                         )
@@ -195,22 +189,16 @@ fun main() {
                     Separator()
                     Menu(stringResource(Res.string.open)) {
                         Item(
-                            text = "Ink Playground",
-                            onClick = {
-                                WindowState.inkWindow.value = true
-                            }
-                        )
-                        Item(
                             text = stringResource(Res.string.folders),
                             onClick = {
-                                WindowState.mainWindow.value = true
+                                mainWindowVisible = true
                                 navHostController.navigate(Screen.Folders)
                             }
                         )
                         Item(
                             text = stringResource(Res.string.settings),
                             onClick = {
-                                WindowState.mainWindow.value = true
+                                mainWindowVisible = true
                                 navHostController.navigate(Screen.Settings)
                             }
                         )
@@ -222,20 +210,6 @@ fun main() {
                     )
                 }
             )
-        }
-
-        if (WindowState.inkWindow.value) {
-            Window(
-                onCloseRequest = { WindowState.inkWindow.value = false },
-                state = rememberWindowState(placement = WindowPlacement.Maximized),
-                title = "Ink Playground",
-                resizable = false,
-                icon = painterResource(Res.drawable.icon)
-            ) {
-                KoriTheme {
-                    InkScreen()
-                }
-            }
         }
     }
 }

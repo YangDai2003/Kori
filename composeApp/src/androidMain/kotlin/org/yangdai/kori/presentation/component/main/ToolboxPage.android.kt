@@ -1,6 +1,5 @@
 package org.yangdai.kori.presentation.component.main
 
-import android.content.Intent
 import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
@@ -23,7 +22,6 @@ import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.setWidgetPreviews
 import kotlinx.coroutines.launch
 import org.yangdai.kori.R
-import org.yangdai.kori.InkActivity
 import org.yangdai.kori.presentation.glance.MyAppWidgetReceiver
 
 @Composable
@@ -46,29 +44,6 @@ actual fun WidgetListItem() {
                 }
             },
         headlineContent = { Text(stringResource(R.string.home_widget)) },
-        trailingContent = {
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.ArrowRight,
-                contentDescription = null
-            )
-        }
-    )
-}
-
-@Composable
-actual fun InkListItem() {
-    val context = LocalContext.current
-    ListItem(
-        modifier = Modifier
-            .padding(bottom = 8.dp)
-            .clip(CardDefaults.shape)
-            .clickable {
-                context.startActivity(Intent(context, InkActivity::class.java).apply {
-                    addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT or Intent.FLAG_ACTIVITY_NEW_TASK)
-                })
-            },
-        headlineContent = { Text("Ink Playground") },
-        supportingContent = { Text("This is an experimental feature and may be changed, presented in a different form, or even removed entirely.") },
         trailingContent = {
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.ArrowRight,

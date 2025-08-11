@@ -219,16 +219,17 @@ fun AdaptiveEditorRow(
             AnimatedVisibility(visible) {
                 with(scope) {
                     when (type) {
-                        NoteType.PLAIN_TEXT -> {
+                        NoteType.PLAIN_TEXT ->
                             PlainTextEditorRow(isTemplate, textFieldState, onEditorRowAction)
-                        }
 
-                        NoteType.MARKDOWN -> {
+                        NoteType.MARKDOWN ->
                             MarkdownEditorRow(isTemplate, textFieldState, onEditorRowAction)
-                        }
 
-                        NoteType.TODO -> {
+                        NoteType.TODO ->
                             TodoTextEditorRow(isTemplate, textFieldState, onEditorRowAction)
+
+                        NoteType.Drawing -> {
+                            // 绘图不需要编辑栏
                         }
                     }
                 }

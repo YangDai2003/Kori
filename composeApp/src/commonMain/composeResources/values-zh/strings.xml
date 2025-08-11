@@ -200,4 +200,6 @@
     </plurals>
     <string name="snackbar_restored_all">已恢复回收站中的所有笔记</string>
     <string name="snackbar_deleted_all">已清空回收站中的所有笔记</string>
+
+    <string name="drawing">绘图</string>
 </resources>

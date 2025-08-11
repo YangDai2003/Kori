@@ -97,6 +97,7 @@ import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.all_notes
 import kori.composeapp.generated.resources.delete
 import kori.composeapp.generated.resources.delete_all
+import kori.composeapp.generated.resources.drawing
 import kori.composeapp.generated.resources.duplicate
 import kori.composeapp.generated.resources.duplicate_24px
 import kori.composeapp.generated.resources.markdown
@@ -679,7 +680,8 @@ fun MainScreenContent(
             val items = listOf(
                 stringResource(Res.string.plain_text),
                 stringResource(Res.string.markdown),
-                stringResource(Res.string.todo_text)
+                stringResource(Res.string.todo_text),
+                stringResource(Res.string.drawing)
             )
             FloatingActionButtonMenu(
                 modifier = Modifier.align(Alignment.BottomEnd)

@@ -1,4 +1,4 @@
-package kink
+package org.yangdai.kori.presentation.component.note.drawing
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
@@ -9,6 +9,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.contextual
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 
 // 工具模式：画笔、橡皮擦或查看器
 enum class ToolMode {
@@ -151,6 +156,42 @@ class DrawState {
                 restoredState
             }
         )
+
+        private val json = Json {
+            // 允许序列化多态类型 (sealed interface)
+            serializersModule = SerializersModule {
+                // 注册 DrawAction 的子类用于多态序列化
+                polymorphic(DrawAction::class) {
+                    subclass(DrawAction.PenStroke::class)
+                    subclass(DrawAction.HighLighterStroke::class)
+                    subclass(DrawAction.Erase::class)
+                }
+                // 为无法直接修改的外部类注册上下文序列化器
+                contextual(OffsetSerializer)
+                contextual(ColorSerializer)
+            }
+            // 为了可读性，可以开启格式化输出
+            prettyPrint = true
+            // 忽略 JSON 中有但数据类中没有的字段
+            ignoreUnknownKeys = true
+        }
+
+        fun serializeActions(actions: List<DrawAction>): String {
+            if (actions.isEmpty()) return ""
+            return json.encodeToString(actions)
+        }
+
+        fun deserializeActions(serializedActions: String): List<DrawAction>? {
+            if (serializedActions.isEmpty()) return null
+            val actionsWithoutPath = json.decodeFromString<List<DrawAction>>(serializedActions)
+            // 遍历每个 action，使用它的 points 重新构建 path
+            return actionsWithoutPath.map { action ->
+                // 假设 buildPathFromPoints 在此作用域可见
+                val newPath = buildPathFromPoints(action.points)
+                // 使用 withPath 方法创建一个包含重建路径的新实例
+                action.withPath(newPath)
+            }
+        }
     }
 }
 

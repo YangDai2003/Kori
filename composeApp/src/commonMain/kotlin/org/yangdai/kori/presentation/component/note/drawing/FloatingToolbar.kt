@@ -1,4 +1,4 @@
-package kink
+package org.yangdai.kori.presentation.component.note.drawing
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures

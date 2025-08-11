@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
+import kori.composeapp.generated.resources.drawing
 import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.plain_text
 import kori.composeapp.generated.resources.todo_text
@@ -136,6 +137,7 @@ fun LazyStaggeredGridItemScope.NoteItem(
                         NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
                         NoteType.MARKDOWN -> stringResource(Res.string.markdown)
                         NoteType.TODO -> stringResource(Res.string.todo_text)
+                        NoteType.Drawing -> stringResource(Res.string.drawing)
                     },
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)

@@ -2,6 +2,8 @@ package org.yangdai.kori.presentation.screen.note
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -33,6 +35,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Close
@@ -76,7 +79,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -95,10 +100,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.yangdai.kori.presentation.component.note.drawing.DrawState
+import org.yangdai.kori.presentation.component.note.drawing.InkScreen
+import org.yangdai.kori.presentation.component.note.drawing.rememberDrawState
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.all_notes
 import kori.composeapp.generated.resources.char_count
 import kori.composeapp.generated.resources.created
+import kori.composeapp.generated.resources.drawing
 import kori.composeapp.generated.resources.line_count
 import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.paragraph_count
@@ -134,12 +143,14 @@ import org.yangdai.kori.presentation.component.dialog.ShareDialog
 import org.yangdai.kori.presentation.component.note.AdaptiveEditor
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorRow
 import org.yangdai.kori.presentation.component.note.AdaptiveView
+import org.yangdai.kori.presentation.component.note.EditorProperties
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.note.moveCursorLeftStateless
 import org.yangdai.kori.presentation.component.note.moveCursorRightStateless
+import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditor
 import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
 import org.yangdai.kori.presentation.component.note.template.TemplateProcessor
 import org.yangdai.kori.presentation.navigation.Screen
@@ -153,7 +164,7 @@ import kotlin.time.Instant
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class,
-    ExperimentalTime::class
+    ExperimentalTime::class, ExperimentalComposeUiApi::class
 )
 @Composable
 fun NoteScreen(
@@ -432,16 +443,21 @@ fun NoteScreen(
             }
 
             if (noteEditingState.noteType == NoteType.PLAIN_TEXT) {
-                AdaptiveEditor(
+                PlainTextEditor(
                     modifier = Modifier.fillMaxWidth().weight(1f),
-                    type = noteEditingState.noteType,
                     textState = viewModel.contentState,
                     scrollState = scrollState,
-                    isReadOnly = isReadView,
-                    isLineNumberVisible = editorState.showLineNumber,
-                    isLintActive = editorState.isMarkdownLintEnabled,
-                    headerRange = selectedHeader,
+                    editorProperties = EditorProperties(
+                        isReadOnly = isReadView,
+                        isLineNumberVisible = editorState.showLineNumber
+                    ),
                     findAndReplaceState = findAndReplaceState
+                )
+            } else if (noteEditingState.noteType == NoteType.Drawing) {
+                Text(
+                    modifier = Modifier.fillMaxWidth().weight(1f)
+                        .clickable { isReadView = !isReadView },
+                    text = viewModel.contentState.text.toString()
                 )
             } else {
                 if (isLargeScreen) {
@@ -552,6 +568,20 @@ fun NoteScreen(
                 }
             }
         }
+    }
+
+    AnimatedVisibility(
+        visible = noteEditingState.noteType == NoteType.Drawing && !isReadView,
+        enter = scaleIn(initialScale = 0.9f),
+        exit = scaleOut(targetScale = 0.9f)
+    ) {
+        val drawState =
+            rememberDrawState(initialActions = DrawState.deserializeActions(viewModel.contentState.text.toString()))
+        BackHandler {
+            isReadView = true
+            viewModel.contentState.setTextAndPlaceCursorAtEnd(DrawState.serializeActions(drawState.actions))
+        }
+        InkScreen(drawState)
     }
 
     if (showFolderDialog) {
@@ -718,6 +748,7 @@ fun NoteScreen(
                     NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
                     NoteType.MARKDOWN -> stringResource(Res.string.markdown)
                     NoteType.TODO -> stringResource(Res.string.todo_text)
+                    NoteType.Drawing -> stringResource(Res.string.drawing)
                 }
             )
 

@@ -1,4 +1,4 @@
-package kink
+package org.yangdai.kori.presentation.component.note.drawing
 
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -11,15 +11,17 @@ import kori.composeapp.generated.resources.app_name
 import kori.composeapp.generated.resources.save
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.skiko.toBufferedImage
+import java.awt.FileDialog
+import java.awt.Frame
 import java.io.File
 import javax.imageio.ImageIO
 
 @Composable
 actual fun ShareImageButton(imageBitmap: ImageBitmap) {
-    val fileDialog = java.awt.FileDialog(
-        null as java.awt.Frame?,
+    val fileDialog = FileDialog(
+        null as Frame?,
         stringResource(Res.string.app_name),
-        java.awt.FileDialog.SAVE
+        FileDialog.SAVE
     ).apply {
         isVisible = false
     }

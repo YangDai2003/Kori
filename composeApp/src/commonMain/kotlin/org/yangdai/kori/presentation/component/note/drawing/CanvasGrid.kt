@@ -1,4 +1,4 @@
-package kink
+package org.yangdai.kori.presentation.component.note.drawing
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color

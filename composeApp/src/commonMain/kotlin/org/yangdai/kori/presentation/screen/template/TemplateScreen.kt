@@ -1,6 +1,7 @@
 package org.yangdai.kori.presentation.screen.template
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.draggable
@@ -72,6 +73,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.char_count
 import kori.composeapp.generated.resources.created
+import kori.composeapp.generated.resources.drawing
 import kori.composeapp.generated.resources.line_count
 import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.paragraph_count
@@ -100,11 +102,13 @@ import org.yangdai.kori.presentation.component.dialog.ShareDialog
 import org.yangdai.kori.presentation.component.note.AdaptiveEditor
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorRow
 import org.yangdai.kori.presentation.component.note.AdaptiveView
+import org.yangdai.kori.presentation.component.note.EditorProperties
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.note.moveCursorLeftStateless
 import org.yangdai.kori.presentation.component.note.moveCursorRightStateless
+import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditor
 import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.navigation.UiEvent
@@ -298,16 +302,21 @@ fun TemplateScreen(
             }
 
             if (noteEditingState.noteType == NoteType.PLAIN_TEXT) {
-                AdaptiveEditor(
+                PlainTextEditor(
                     modifier = Modifier.fillMaxWidth().weight(1f),
-                    type = noteEditingState.noteType,
                     textState = viewModel.contentState,
                     scrollState = scrollState,
-                    isReadOnly = isReadView,
-                    isLineNumberVisible = editorState.showLineNumber,
-                    isLintActive = editorState.isMarkdownLintEnabled,
-                    headerRange = selectedHeader,
+                    editorProperties = EditorProperties(
+                        isReadOnly = isReadView,
+                        isLineNumberVisible = editorState.showLineNumber
+                    ),
                     findAndReplaceState = findAndReplaceState
+                )
+            } else if (noteEditingState.noteType == NoteType.Drawing) {
+                Text(
+                    modifier = Modifier.fillMaxWidth().weight(1f)
+                        .clickable { isReadView = !isReadView },
+                    text = viewModel.contentState.text.toString()
                 )
             } else {
                 if (isScreenWidthExpanded()) {
@@ -467,6 +476,7 @@ fun TemplateScreen(
                     NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
                     NoteType.MARKDOWN -> stringResource(Res.string.markdown)
                     NoteType.TODO -> stringResource(Res.string.todo_text)
+                    NoteType.Drawing -> stringResource(Res.string.drawing)
                 }
             )
 

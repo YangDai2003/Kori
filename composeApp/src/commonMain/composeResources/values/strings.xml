@@ -203,4 +203,6 @@
     </plurals>
     <string name="snackbar_restored_all">All notes in trash restored</string>
     <string name="snackbar_deleted_all">All notes in trash deleted</string>
+
+    <string name="drawing">Drawing</string>
 </resources>

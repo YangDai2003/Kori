@@ -1,4 +1,4 @@
-package kink
+package org.yangdai.kori.presentation.component.note.drawing
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
