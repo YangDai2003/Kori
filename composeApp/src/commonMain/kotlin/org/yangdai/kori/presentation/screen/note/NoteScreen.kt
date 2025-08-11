@@ -577,8 +577,8 @@ fun NoteScreen(
     ) {
         val drawState = rememberDrawState(viewModel.contentState.text.toString())
         BackHandler {
-            isReadView = true
             viewModel.contentState.setTextAndPlaceCursorAtEnd(DrawState.serializeDrawState(drawState))
+            isReadView = true
         }
         InkScreen(drawState)
     }
