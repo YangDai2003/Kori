@@ -33,6 +33,7 @@ import androidx.navigation.compose.rememberNavController
 import javafx.embed.swing.JFXPanel
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_name
+import kori.composeapp.generated.resources.drawing
 import kori.composeapp.generated.resources.exit
 import kori.composeapp.generated.resources.folders
 import kori.composeapp.generated.resources.icon
@@ -183,6 +184,13 @@ fun main() {
                             onClick = {
                                 mainWindowVisible = true
                                 navHostController.navigate(Screen.Note(noteType = NoteType.TODO.ordinal))
+                            }
+                        )
+                        Item(
+                            text = stringResource(Res.string.drawing),
+                            onClick = {
+                                mainWindowVisible = true
+                                navHostController.navigate(Screen.Note(noteType = NoteType.Drawing.ordinal))
                             }
                         )
                     }
