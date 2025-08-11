@@ -63,9 +63,14 @@ class MainActivity : AppCompatActivity() {
             }
 
             val isSystemInDarkTheme = isSystemInDarkTheme()
-            val darkMode = remember(isSystemInDarkTheme, stylePaneState.theme) {
-                if (stylePaneState.theme == AppTheme.SYSTEM) isSystemInDarkTheme
-                else stylePaneState.theme == AppTheme.DARK
+            val darkMode by remember(isSystemInDarkTheme) {
+                derivedStateOf {
+                    when (stylePaneState.theme) {
+                        AppTheme.SYSTEM -> isSystemInDarkTheme
+                        AppTheme.DARK -> true
+                        AppTheme.LIGHT -> false
+                    }
+                }
             }
 
             KoriTheme(
