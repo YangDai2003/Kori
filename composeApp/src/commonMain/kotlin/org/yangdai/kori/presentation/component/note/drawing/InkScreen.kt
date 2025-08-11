@@ -243,7 +243,7 @@ private fun Random.nextFloat(from: Float, until: Float): Float {
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun InkScreen(drawState: DrawState = rememberDrawState()) {
+fun InkScreen(drawState: DrawState) {
     val graphicsLayer = rememberGraphicsLayer()
     val coroutineScope = rememberCoroutineScope()
     var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }

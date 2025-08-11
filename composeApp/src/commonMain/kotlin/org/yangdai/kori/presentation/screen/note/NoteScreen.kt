@@ -575,11 +575,10 @@ fun NoteScreen(
         enter = scaleIn(initialScale = 0.9f),
         exit = scaleOut(targetScale = 0.9f)
     ) {
-        val drawState =
-            rememberDrawState(initialActions = DrawState.deserializeActions(viewModel.contentState.text.toString()))
+        val drawState = rememberDrawState(viewModel.contentState.text.toString())
         BackHandler {
             isReadView = true
-            viewModel.contentState.setTextAndPlaceCursorAtEnd(DrawState.serializeActions(drawState.actions))
+            viewModel.contentState.setTextAndPlaceCursorAtEnd(DrawState.serializeDrawState(drawState))
         }
         InkScreen(drawState)
     }
