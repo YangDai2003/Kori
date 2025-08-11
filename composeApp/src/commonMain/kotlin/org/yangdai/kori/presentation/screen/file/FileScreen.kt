@@ -1,6 +1,8 @@
 package org.yangdai.kori.presentation.screen.file
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -32,6 +34,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Close
@@ -125,6 +128,9 @@ import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
+import org.yangdai.kori.presentation.component.note.drawing.DrawState
+import org.yangdai.kori.presentation.component.note.drawing.InkScreen
+import org.yangdai.kori.presentation.component.note.drawing.rememberDrawState
 import org.yangdai.kori.presentation.component.note.moveCursorLeftStateless
 import org.yangdai.kori.presentation.component.note.moveCursorRightStateless
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditor
@@ -455,6 +461,18 @@ fun FileScreen(
                     }
                 }
             }
+        }
+    }
+
+    AnimatedVisibility(
+        visible = fileEditingState.fileType == NoteType.Drawing && !isReadView,
+        enter = scaleIn(initialScale = 0.9f),
+        exit = scaleOut(targetScale = 0.9f)
+    ) {
+        val drawState = rememberDrawState(viewModel.contentState.text.toString())
+        InkScreen(drawState) {
+            viewModel.contentState.setTextAndPlaceCursorAtEnd(DrawState.serializeDrawState(drawState))
+            isReadView = true
         }
     }
 

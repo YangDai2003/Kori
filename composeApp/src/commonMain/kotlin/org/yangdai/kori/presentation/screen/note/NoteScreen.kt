@@ -79,9 +79,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -100,9 +98,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import org.yangdai.kori.presentation.component.note.drawing.DrawState
-import org.yangdai.kori.presentation.component.note.drawing.InkScreen
-import org.yangdai.kori.presentation.component.note.drawing.rememberDrawState
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.all_notes
 import kori.composeapp.generated.resources.char_count
@@ -148,6 +143,9 @@ import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
+import org.yangdai.kori.presentation.component.note.drawing.DrawState
+import org.yangdai.kori.presentation.component.note.drawing.InkScreen
+import org.yangdai.kori.presentation.component.note.drawing.rememberDrawState
 import org.yangdai.kori.presentation.component.note.moveCursorLeftStateless
 import org.yangdai.kori.presentation.component.note.moveCursorRightStateless
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditor
@@ -164,7 +162,7 @@ import kotlin.time.Instant
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class,
-    ExperimentalTime::class, ExperimentalComposeUiApi::class
+    ExperimentalTime::class
 )
 @Composable
 fun NoteScreen(
@@ -576,11 +574,10 @@ fun NoteScreen(
         exit = scaleOut(targetScale = 0.9f)
     ) {
         val drawState = rememberDrawState(viewModel.contentState.text.toString())
-        BackHandler {
+        InkScreen(drawState) {
             viewModel.contentState.setTextAndPlaceCursorAtEnd(DrawState.serializeDrawState(drawState))
             isReadView = true
         }
-        InkScreen(drawState)
     }
 
     if (showFolderDialog) {

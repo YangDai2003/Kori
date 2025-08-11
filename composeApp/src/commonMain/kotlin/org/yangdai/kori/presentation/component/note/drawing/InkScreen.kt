@@ -37,6 +37,7 @@ import androidx.compose.material.icons.automirrored.filled.Redo
 import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Palette
@@ -68,8 +69,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.UiComposable
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -241,12 +244,13 @@ private fun Random.nextFloat(from: Float, until: Float): Float {
     return from + nextFloat() * (until - from)
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalComposeUiApi::class)
 @Composable
-fun InkScreen(drawState: DrawState) {
+fun InkScreen(drawState: DrawState, onDismiss: () -> Unit) {
     val graphicsLayer = rememberGraphicsLayer()
     val coroutineScope = rememberCoroutineScope()
     var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+    BackHandler(onBack = onDismiss)
     Scaffold(
         modifier = Modifier
             .pointerInput(drawState.toolMode.value) {
@@ -308,6 +312,16 @@ fun InkScreen(drawState: DrawState) {
                     .padding(horizontal = 8.dp, vertical = 2.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                OutlinedIconButton(
+                    colors = IconButtonDefaults.outlinedIconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.surface.copy(
+                            alpha = 0.5f
+                        )
+                    ),
+                    onClick = onDismiss
+                ) {
+                    Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
+                }
                 Surface(
                     shape = CircleShape,
                     color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
@@ -555,7 +569,7 @@ fun InkScreen(drawState: DrawState) {
                 Image(
                     modifier = Modifier.fillMaxWidth(),
                     bitmap = it,
-                    contentDescription = "Saved image"
+                    contentDescription = "Canvas image"
                 )
             },
             confirmButton = { ShareImageButton(it) },
