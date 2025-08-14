@@ -59,7 +59,6 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.appcompat)
-            implementation(libs.androidx.core.ktx)
             implementation(libs.androidx.biometric)
             implementation(libs.androidx.documentfile)
             implementation(libs.androidx.browser)

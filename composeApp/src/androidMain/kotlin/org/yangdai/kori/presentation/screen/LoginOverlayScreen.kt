@@ -24,11 +24,11 @@ import org.yangdai.kori.presentation.util.BiometricPromptManager
 
 @Composable
 fun LoginOverlayScreen(
-    storedPassword: String = "123456",
-    isCreatingPassword: Boolean = false,
-    biometricAuthEnabled: Boolean = false,
-    onCreatingCanceled: () -> Unit = {},
-    onPassCreated: (String) -> Unit = {},
+    storedPassword: String,
+    isCreatingPassword: Boolean,
+    biometricAuthEnabled: Boolean,
+    onCreatingCanceled: () -> Unit,
+    onPassCreated: (String) -> Unit,
     onAuthenticated: () -> Unit,
     onAuthenticationNotEnrolled: () -> Unit
 ) {
