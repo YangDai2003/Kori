@@ -74,14 +74,14 @@ private const val TOTAL_PASSWORD_LENGTH = 6
 
 @Composable
 fun NumberLockScreen(
-    modifier: Modifier = Modifier,
-    storedPassword: String = "123456",
+    modifier: Modifier,
+    storedPassword: String,
+    isCreatingPassword: Boolean,
+    onCreatingCanceled: () -> Unit,
+    onPassCreated: (String) -> Unit,
+    onAuthenticated: () -> Unit,
     isBiometricAuthEnabled: Boolean = false,
-    isCreatingPassword: Boolean = false,
-    onCreatingCanceled: () -> Unit = {},
-    onPassCreated: (String) -> Unit = {},
-    onBiometricClick: () -> Unit = {},
-    onAuthenticated: () -> Unit = {}
+    onBiometricClick: () -> Unit = {}
 ) {
     val hapticFeedback = LocalHapticFeedback.current
     var inputPassword by remember { mutableStateOf("") }
