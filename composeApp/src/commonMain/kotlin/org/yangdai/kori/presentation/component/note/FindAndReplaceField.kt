@@ -34,6 +34,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
@@ -91,15 +92,20 @@ enum class ReplaceType {
 }
 
 @Composable
-fun FindAndReplaceField(state: FindAndReplaceState) =
-    if (isScreenWidthExpanded()) Row(
-        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp, bottom = 4.dp),
+fun FindAndReplaceField(
+    state: FindAndReplaceState,
+    modifier: Modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp, bottom = 4.dp)
+) = if (isScreenWidthExpanded())
+    Row(
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
         FindField(modifier = Modifier.weight(1f), state = state)
         ReplaceField(modifier = Modifier.weight(1f), state = state)
-    } else Column(
-        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp, bottom = 4.dp),
+    }
+else
+    Column(
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
@@ -179,75 +185,72 @@ private fun ReplaceField(
 // 由于OutlinedTextField有诡异的边距和大小，因此自定义BasicTextField来实现
 @Composable
 fun CustomTextField(
-    modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
-    isError: Boolean = false,
     leadingIcon: ImageVector,
+    placeholderText: String,
+    modifier: Modifier = Modifier,
     suffix: @Composable (() -> Unit)? = null,
-    placeholderText: String = ""
-) {
-    val focusManager = LocalFocusManager.current
-    val interactionSource = remember { MutableInteractionSource() }
-
-    BasicTextField(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(48.dp),
-        value = value,
-        onValueChange = { onValueChange(it) },
-        singleLine = true,
-        interactionSource = interactionSource,
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-        textStyle = MaterialTheme.typography.bodyLarge.copy(
-            color = MaterialTheme.colorScheme.onSurface
-        ),
-        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-        decorationBox = { innerTextField ->
-            TextFieldDefaults.DecorationBox(
-                value = value,
-                interactionSource = interactionSource,
-                visualTransformation = VisualTransformation.None,
-                innerTextField = innerTextField,
-                singleLine = true,
-                enabled = true,
-                leadingIcon = {
-                    Icon(
-                        imageVector = leadingIcon,
-                        contentDescription = null
+    isError: Boolean = false,
+    focusManager: FocusManager = LocalFocusManager.current,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
+) = BasicTextField(
+    modifier = modifier
+        .fillMaxWidth()
+        .height(48.dp),
+    value = value,
+    onValueChange = { onValueChange(it) },
+    singleLine = true,
+    interactionSource = interactionSource,
+    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+    textStyle = MaterialTheme.typography.bodyLarge.copy(
+        color = MaterialTheme.colorScheme.onSurface
+    ),
+    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+    decorationBox = { innerTextField ->
+        TextFieldDefaults.DecorationBox(
+            value = value,
+            interactionSource = interactionSource,
+            visualTransformation = VisualTransformation.None,
+            innerTextField = innerTextField,
+            singleLine = true,
+            enabled = true,
+            leadingIcon = {
+                Icon(
+                    imageVector = leadingIcon,
+                    contentDescription = null
+                )
+            },
+            placeholder = {
+                Text(
+                    text = placeholderText,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                     )
-                },
-                placeholder = {
-                    Text(
-                        text = placeholderText,
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                        )
-                    )
-                },
-                suffix = suffix,
-                contentPadding = PaddingValues(0.dp),
-                container = {
-                    OutlinedTextFieldDefaults.Container(
-                        enabled = true,
-                        isError = isError,
-                        interactionSource = interactionSource,
-                        colors = OutlinedTextFieldDefaults.colors()
-                            .copy(
-                                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                                errorContainerColor = MaterialTheme.colorScheme.errorContainer,
-                                focusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                disabledTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                errorTextColor = MaterialTheme.colorScheme.onErrorContainer
-                            ),
-                        shape = MaterialTheme.shapes.small
-                    )
-                }
-            )
-        }
-    )
-}
+                )
+            },
+            suffix = suffix,
+            contentPadding = PaddingValues(0.dp),
+            container = {
+                OutlinedTextFieldDefaults.Container(
+                    enabled = true,
+                    isError = isError,
+                    interactionSource = interactionSource,
+                    colors = OutlinedTextFieldDefaults.colors()
+                        .copy(
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            errorContainerColor = MaterialTheme.colorScheme.errorContainer,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            errorTextColor = MaterialTheme.colorScheme.onErrorContainer
+                        ),
+                    shape = MaterialTheme.shapes.small
+                )
+            }
+        )
+    }
+)

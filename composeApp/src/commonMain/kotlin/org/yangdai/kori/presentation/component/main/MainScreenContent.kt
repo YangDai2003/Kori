@@ -162,7 +162,7 @@ operator fun Digit.compareTo(other: Digit): Int {
 fun MainScreenContent(
     viewModel: MainViewModel,
     currentDrawerItem: DrawerItem,
-    navigationIcon: @Composable () -> Unit = {},
+    navigationIcon: @Composable () -> Unit,
     navigateToScreen: (Screen) -> Unit
 ) {
     var showSortDialog by remember { mutableStateOf(false) }

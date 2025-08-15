@@ -12,7 +12,6 @@ import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -31,9 +30,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
@@ -57,7 +53,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.VerticalDragHandle
 import androidx.compose.material3.minimumInteractiveComponentSize
@@ -74,7 +69,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isCtrlPressed
@@ -85,8 +79,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kfile.PlatformFile
@@ -100,7 +92,6 @@ import kori.composeapp.generated.resources.plain_text
 import kori.composeapp.generated.resources.right_panel_open
 import kori.composeapp.generated.resources.saveAsTemplate
 import kori.composeapp.generated.resources.templates
-import kori.composeapp.generated.resources.title
 import kori.composeapp.generated.resources.todo_text
 import kori.composeapp.generated.resources.type
 import kori.composeapp.generated.resources.updated
@@ -110,7 +101,6 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import org.yangdai.kori.OS
 import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
@@ -128,11 +118,10 @@ import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
+import org.yangdai.kori.presentation.component.note.TitleTextField
 import org.yangdai.kori.presentation.component.note.drawing.DrawState
 import org.yangdai.kori.presentation.component.note.drawing.InkScreen
 import org.yangdai.kori.presentation.component.note.drawing.rememberDrawState
-import org.yangdai.kori.presentation.component.note.moveCursorLeftStateless
-import org.yangdai.kori.presentation.component.note.moveCursorRightStateless
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditor
 import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
 import org.yangdai.kori.presentation.component.note.template.TemplateProcessor
@@ -237,60 +226,9 @@ fun FileScreen(
                 },
                 expandedHeight = 56.dp,
                 title = {
-                    BasicTextField(
-                        modifier = Modifier.onPreviewKeyEvent { keyEvent ->
-                            if (keyEvent.type == KeyEventType.KeyDown) {
-                                when (keyEvent.key) {
-                                    Key.DirectionLeft -> {
-                                        if (currentPlatformInfo.operatingSystem == OS.ANDROID) {
-                                            viewModel.titleState.edit { moveCursorLeftStateless() }
-                                            true
-                                        } else false
-                                    }
-
-                                    Key.DirectionRight -> {
-                                        if (currentPlatformInfo.operatingSystem == OS.ANDROID) {
-                                            viewModel.titleState.edit { moveCursorRightStateless() }
-                                            true
-                                        } else false
-                                    }
-
-                                    else -> false
-                                }
-                            } else {
-                                false
-                            }
-                        },
+                    TitleTextField(
                         state = viewModel.titleState,
-                        lineLimits = TextFieldLineLimits.SingleLine,
-                        textStyle = MaterialTheme.typography.titleLarge.copy(
-                            color = MaterialTheme.colorScheme.onSurface
-                        ),
-                        readOnly = true,
-                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                        decorator = { innerTextField ->
-                            TextFieldDefaults.DecorationBox(
-                                value = viewModel.titleState.text.toString(),
-                                innerTextField = innerTextField,
-                                enabled = true,
-                                singleLine = true,
-                                visualTransformation = VisualTransformation.None,
-                                interactionSource = remember { MutableInteractionSource() },
-                                placeholder = {
-                                    Text(
-                                        text = stringResource(Res.string.title),
-                                        style = MaterialTheme.typography.titleLarge.copy(
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                                alpha = 0.6f
-                                            )
-                                        )
-                                    )
-                                },
-                                contentPadding = PaddingValues(0.dp),
-                                container = {}
-                            )
-                        }
+                        readOnly = true
                     )
                 },
                 navigationIcon = {
