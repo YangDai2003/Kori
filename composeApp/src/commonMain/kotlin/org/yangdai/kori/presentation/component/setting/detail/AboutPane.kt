@@ -1,6 +1,9 @@
 package org.yangdai.kori.presentation.component.setting.detail
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,28 +21,32 @@ import androidx.compose.material.icons.outlined.IosShare
 import androidx.compose.material.icons.outlined.PrivacyTip
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.TipsAndUpdates
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.toShape
+import androidx.compose.material3.toPath
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.graphics.shapes.CornerRounding
+import androidx.graphics.shapes.Morph
+import androidx.graphics.shapes.RoundedPolygon
+import androidx.graphics.shapes.circle
+import androidx.graphics.shapes.star
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.guide
 import kori.composeapp.generated.resources.privacy_policy
@@ -69,39 +76,56 @@ fun AboutPane() {
     ) {
         val haptic = LocalHapticFeedback.current
         var clickedCount by rememberSaveable { mutableStateOf(0) }
-
-        Button(
+        val interactionSource = remember { MutableInteractionSource() }
+        val isPressed by interactionSource.collectIsPressedAsState()
+        val animatedProgress = animateFloatAsState(if (isPressed) 1f else 0f)
+        val backgroundColor = MaterialTheme.colorScheme.primaryContainer
+        Box(
             modifier = Modifier
+                .size(240.dp)
                 .padding(top = 16.dp)
-                .size(240.dp),
-            shapes = ButtonDefaults.shapes(
-                shape = MaterialShapes.Cookie12Sided.toShape(),
-                pressedShape = CircleShape
-            ),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-            ),
-            onClick = {
-                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                clickedCount++
-                if (clickedCount >= 5) {
-                    showConfetti = true
-                    clickedCount = 0
+                .drawWithCache {
+                    val unPressedShape = RoundedPolygon.star(
+                        numVerticesPerRadius = 12,
+                        innerRadius = size.minDimension / 2f * 0.85f,
+                        rounding = CornerRounding(
+                            radius = size.minDimension / 12f,
+                            smoothing = 0.1f
+                        ),
+                        radius = size.minDimension / 2f,
+                        centerX = size.width / 2f,
+                        centerY = size.height / 2f,
+                    )
+                    val pressedShape = RoundedPolygon.circle(
+                        radius = size.minDimension / 2f,
+                        centerX = size.width / 2f,
+                        centerY = size.height / 2f,
+                    )
+                    val morph = Morph(unPressedShape, pressedShape)
+                    val morphPath = morph.toPath(animatedProgress.value)
+                    onDrawBehind {
+                        drawPath(morphPath, color = backgroundColor)
+                    }
                 }
-            }
+                .clickable(interactionSource = interactionSource, indication = null) {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    clickedCount++
+                    if (clickedCount >= 5) {
+                        showConfetti = true
+                        clickedCount = 0
+                    }
+                },
+            contentAlignment = Alignment.Center
         ) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                LogoText()
-                Text(
-                    modifier = Modifier.padding(bottom = 36.dp).align(Alignment.BottomCenter),
-                    text = (if (!currentPlatformInfo.isDesktop()) currentPlatformInfo.operatingSystem.name + " " else "")
-                            + currentPlatformInfo.version
-                            + "\n" + currentPlatformInfo.deviceModel,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.labelMedium
-                )
-            }
+            LogoText()
+            Text(
+                modifier = Modifier.padding(bottom = 36.dp).align(Alignment.BottomCenter),
+                text = (if (!currentPlatformInfo.isDesktop()) currentPlatformInfo.operatingSystem.name + " " else "")
+                        + currentPlatformInfo.version
+                        + "\n" + currentPlatformInfo.deviceModel,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.labelMedium
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
