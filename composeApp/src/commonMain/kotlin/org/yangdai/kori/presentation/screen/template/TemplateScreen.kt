@@ -23,6 +23,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.EditNote
@@ -259,6 +260,7 @@ fun TemplateScreen(
             } else if (noteEditingState.noteType == NoteType.Drawing) {
                 Text(
                     modifier = Modifier.fillMaxWidth().weight(1f)
+                        .verticalScroll(rememberScrollState())
                         .clickable { isReadView = !isReadView },
                     text = viewModel.contentState.text.toString()
                 )
