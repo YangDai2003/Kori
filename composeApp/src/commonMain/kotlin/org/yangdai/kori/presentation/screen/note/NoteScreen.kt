@@ -309,18 +309,22 @@ fun NoteScreen(
                 end = innerPadding.calculateEndPadding(layoutDirection)
             )
         ) {
-            AnimatedContent(isSearching) {
-                if (it)
+            if (isLargeScreen)
+                AnimatedVisibility(isSearching) {
                     FindAndReplaceField(findAndReplaceState)
-                else {
-                    if (!isLargeScreen)
+                }
+            else
+                AnimatedContent(isSearching) { targetState ->
+                    if (targetState)
+                        FindAndReplaceField(findAndReplaceState)
+                    else {
                         TitleTextField(
                             state = viewModel.titleState,
                             readOnly = isReadView,
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                         )
+                    }
                 }
-            }
 
             if (noteEditingState.noteType == NoteType.PLAIN_TEXT) {
                 PlainTextEditor(
