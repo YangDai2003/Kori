@@ -1,5 +1,6 @@
 package org.yangdai.kori.presentation.screen.template
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.snapshotFlow
@@ -46,7 +47,7 @@ import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalTime::class)
+@OptIn(ExperimentalTime::class, ExperimentalFoundationApi::class)
 class TemplateViewModel(
     savedStateHandle: SavedStateHandle,
     dataStoreRepository: DataStoreRepository,
@@ -81,7 +82,7 @@ class TemplateViewModel(
                         noteType = NoteType.entries[route.noteType]
                     )
                 }
-            } else
+            } else {
                 noteRepository.getNoteById(route.id)?.let { note ->
                     titleState.setTextAndPlaceCursorAtEnd(note.title)
                     contentState.setTextAndPlaceCursorAtEnd(note.content)
@@ -99,6 +100,9 @@ class TemplateViewModel(
                     }
                     oNote = note
                 }
+            }
+            titleState.undoState.clearHistory()
+            contentState.undoState.clearHistory()
         }
     }
 

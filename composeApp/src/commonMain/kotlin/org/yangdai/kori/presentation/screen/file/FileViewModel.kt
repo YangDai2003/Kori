@@ -1,5 +1,6 @@
 package org.yangdai.kori.presentation.screen.file
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.snapshotFlow
@@ -211,6 +212,7 @@ class FileViewModel(
         false
     )
 
+    @OptIn(ExperimentalFoundationApi::class)
     fun loadFile(file: PlatformFile) {
         viewModelScope.launch(Dispatchers.IO) {
             val title = file.getFileName()
@@ -220,6 +222,8 @@ class FileViewModel(
             ) NoteType.MARKDOWN else NoteType.PLAIN_TEXT
             titleState.setTextAndPlaceCursorAtEnd(title)
             contentState.setTextAndPlaceCursorAtEnd(content)
+            titleState.undoState.clearHistory()
+            contentState.undoState.clearHistory()
             // 记录初始内容
             _initialContent.value = content
             val updatedAt = file.getLastModified().toString()
