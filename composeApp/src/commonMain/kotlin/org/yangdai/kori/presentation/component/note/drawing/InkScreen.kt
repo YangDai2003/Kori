@@ -246,11 +246,19 @@ private fun Random.nextFloat(from: Float, until: Float): Float {
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalComposeUiApi::class)
 @Composable
-fun InkScreen(drawState: DrawState, onDismiss: () -> Unit) {
+fun InkScreen(drawState: DrawState, noteUuid: String, onDismiss: () -> Unit) {
     val graphicsLayer = rememberGraphicsLayer()
     val coroutineScope = rememberCoroutineScope()
     var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
-    BackHandler(onBack = onDismiss)
+    var showDialog by remember { mutableStateOf(false) }
+    BackHandler {
+        coroutineScope.launch {
+            imageBitmap = graphicsLayer.toImageBitmap()
+        }.invokeOnCompletion {
+            onDismiss()
+        }
+    }
+    SaveBitmapToFileOnDispose(imageBitmap, noteUuid)
     Scaffold(
         modifier = Modifier
             .pointerInput(drawState.toolMode.value) {
@@ -318,7 +326,13 @@ fun InkScreen(drawState: DrawState, onDismiss: () -> Unit) {
                             alpha = 0.5f
                         )
                     ),
-                    onClick = onDismiss
+                    onClick = {
+                        coroutineScope.launch {
+                            imageBitmap = graphicsLayer.toImageBitmap()
+                        }.invokeOnCompletion {
+                            onDismiss()
+                        }
+                    }
                 ) {
                     Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
                 }
@@ -472,6 +486,8 @@ fun InkScreen(drawState: DrawState, onDismiss: () -> Unit) {
                     onClick = {
                         coroutineScope.launch {
                             imageBitmap = graphicsLayer.toImageBitmap()
+                        }.invokeOnCompletion {
+                            showDialog = true
                         }
                     }
                 ) {
@@ -561,25 +577,31 @@ fun InkScreen(drawState: DrawState, onDismiss: () -> Unit) {
             )
         }
     }
-    imageBitmap?.let {
-        AlertDialog(
-            shape = dialogShape(),
-            onDismissRequest = { imageBitmap = null },
-            text = {
-                Image(
-                    modifier = Modifier.fillMaxWidth(),
-                    bitmap = it,
-                    contentDescription = "Canvas image"
-                )
-            },
-            confirmButton = { ShareImageButton(it) },
-            dismissButton = { DismissButton { imageBitmap = null } }
-        )
+
+    if (showDialog) {
+        imageBitmap?.let {
+            AlertDialog(
+                shape = dialogShape(),
+                onDismissRequest = { showDialog = false },
+                text = {
+                    Image(
+                        modifier = Modifier.fillMaxWidth(),
+                        bitmap = it,
+                        contentDescription = "Canvas image"
+                    )
+                },
+                confirmButton = { ShareImageButton(it) },
+                dismissButton = { DismissButton { showDialog = false } }
+            )
+        }
     }
 }
 
 @Composable
 expect fun ShareImageButton(imageBitmap: ImageBitmap)
+
+@Composable
+expect fun SaveBitmapToFileOnDispose(imageBitmap: ImageBitmap?, uuid: String)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

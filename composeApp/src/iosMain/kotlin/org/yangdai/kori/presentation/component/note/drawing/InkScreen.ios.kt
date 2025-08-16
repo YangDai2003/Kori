@@ -48,3 +48,8 @@ actual fun ShareImageButton(imageBitmap: ImageBitmap) {
         Text(stringResource(Res.string.share))
     }
 }
+
+@Composable
+actual fun SaveBitmapToFileOnDispose(imageBitmap: ImageBitmap?, uuid: String) {
+
+}

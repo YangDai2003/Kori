@@ -4,14 +4,14 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import org.yangdai.kori.data.local.createDataStore
 import org.yangdai.kori.data.local.dataStoreFileName
-import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 
 fun createDataStore(): DataStore<Preferences> = createDataStore(
     producePath = {
         val userHome: String = System.getProperty("user.home")
-        val koriDir = File(userHome, ".kori")
-        if (!koriDir.exists()) koriDir.mkdirs()
-        val dsFile = File(koriDir, dataStoreFileName)
-        dsFile.absolutePath
+        val koriDirPath = Paths.get(userHome, ".kori")
+        if (!Files.exists(koriDirPath)) Files.createDirectories(koriDirPath)
+        koriDirPath.resolve(dataStoreFileName).toAbsolutePath().toString()
     }
 )

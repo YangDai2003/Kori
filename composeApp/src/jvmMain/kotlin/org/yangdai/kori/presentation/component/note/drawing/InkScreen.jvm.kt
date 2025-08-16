@@ -4,16 +4,21 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asSkiaBitmap
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_name
 import kori.composeapp.generated.resources.save
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.skiko.toBufferedImage
 import java.awt.FileDialog
 import java.awt.Frame
-import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 import javax.imageio.ImageIO
 
 @Composable
@@ -32,7 +37,7 @@ actual fun ShareImageButton(imageBitmap: ImageBitmap) {
             fileDialog.file = fileName
             fileDialog.isVisible = true
             if (fileDialog.directory != null && fileDialog.file != null) {
-                val savePath = File(fileDialog.directory, fileDialog.file)
+                val savePath = Paths.get(fileDialog.directory, fileDialog.file).toFile()
                 try {
                     ImageIO.write(imageBitmap.asSkiaBitmap().toBufferedImage(), "png", savePath)
                 } catch (e: Exception) {
@@ -42,5 +47,29 @@ actual fun ShareImageButton(imageBitmap: ImageBitmap) {
         }
     ) {
         Text(stringResource(Res.string.save))
+    }
+}
+
+@Composable
+actual fun SaveBitmapToFileOnDispose(imageBitmap: ImageBitmap?, uuid: String) {
+    DisposableEffect(uuid, imageBitmap) {
+        onDispose {
+            if (uuid.isEmpty() || imageBitmap == null) return@onDispose
+            CoroutineScope(Dispatchers.IO).launch {
+                val userHome: String = System.getProperty("user.home")
+                val koriDirPath = Paths.get(userHome, ".kori")
+                if (!Files.exists(koriDirPath)) Files.createDirectories(koriDirPath)
+                val noteDirectoryPath = koriDirPath.resolve(uuid)
+                if (!Files.exists(noteDirectoryPath)) Files.createDirectories(noteDirectoryPath)
+                val bitmapFilePath = noteDirectoryPath.resolve("ink.png")
+                Files.newOutputStream(bitmapFilePath).use { outputStream ->
+                    ImageIO.write(
+                        imageBitmap.asSkiaBitmap().toBufferedImage(),
+                        "png",
+                        outputStream
+                    )
+                }
+            }
+        }
     }
 }

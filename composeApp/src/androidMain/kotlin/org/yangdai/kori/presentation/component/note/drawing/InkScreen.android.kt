@@ -5,12 +5,16 @@ import android.graphics.Bitmap
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.share
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import java.io.File
 import java.io.FileOutputStream
@@ -38,5 +42,28 @@ actual fun ShareImageButton(imageBitmap: ImageBitmap) {
         }
     ) {
         Text(stringResource(Res.string.share))
+    }
+}
+
+@Composable
+actual fun SaveBitmapToFileOnDispose(imageBitmap: ImageBitmap?, uuid: String) {
+    val context = LocalContext.current.applicationContext
+    DisposableEffect(Unit) {
+        onDispose {
+            if (uuid.isEmpty() || imageBitmap == null) return@onDispose
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val bitmap = imageBitmap.asAndroidBitmap()
+                    val directory = File(context.filesDir, uuid)
+                    if (!directory.exists()) directory.mkdirs()
+                    val file = File(directory, "ink.png")
+                    FileOutputStream(file).use { outputStream ->
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 }

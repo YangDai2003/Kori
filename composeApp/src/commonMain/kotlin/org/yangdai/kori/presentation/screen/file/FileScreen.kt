@@ -83,6 +83,7 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kfile.PlatformFile
+import kfile.getFileName
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.char_count
 import kori.composeapp.generated.resources.drawing
@@ -408,7 +409,7 @@ fun FileScreen(
         exit = scaleOut(targetScale = 0.9f)
     ) {
         val drawState = rememberDrawState(viewModel.contentState.text.toString())
-        InkScreen(drawState) {
+        InkScreen(drawState, file.getFileName()) {
             viewModel.contentState.setTextAndPlaceCursorAtEnd(DrawState.serializeDrawState(drawState))
             isReadView = true
         }
