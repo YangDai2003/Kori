@@ -72,7 +72,7 @@ fun SettingsListPane(
             PlatformStyleTopAppBar(
                 state = topAppBarState,
                 title = { PlatformStyleTopAppBarTitle(stringResource(Res.string.settings)) },
-                navigationIcon = { PlatformStyleTopAppBarNavigationIcon(onClick = navigateUp) },
+                navigationIcon = { PlatformStyleTopAppBarNavigationIcon(navigateUp) },
                 colors = TopAppBarDefaults.topAppBarColors()
                     .copy(
                         containerColor = MaterialTheme.colorScheme.surfaceContainer,

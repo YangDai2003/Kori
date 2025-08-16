@@ -232,9 +232,7 @@ fun FileScreen(
                         readOnly = true
                     )
                 },
-                navigationIcon = {
-                    PlatformStyleTopAppBarNavigationIcon(onClick = navigateUp)
-                },
+                navigationIcon = { PlatformStyleTopAppBarNavigationIcon(navigateUp) },
                 actions = {
                     TooltipIconButton(
                         enabled = needSave,

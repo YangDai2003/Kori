@@ -274,9 +274,7 @@ fun NoteScreen(
                             )
                     }
                 },
-                navigationIcon = {
-                    PlatformStyleTopAppBarNavigationIcon(onClick = navigateUp)
-                },
+                navigationIcon = { PlatformStyleTopAppBarNavigationIcon(navigateUp) },
                 actions = {
                     if (!isReadView)
                         TooltipIconButton(

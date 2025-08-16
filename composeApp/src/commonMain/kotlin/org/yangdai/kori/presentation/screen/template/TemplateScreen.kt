@@ -206,9 +206,7 @@ fun TemplateScreen(
                         readOnly = isReadView
                     )
                 },
-                navigationIcon = {
-                    PlatformStyleTopAppBarNavigationIcon(onClick = navigateUp)
-                },
+                navigationIcon = { PlatformStyleTopAppBarNavigationIcon(navigateUp) },
                 actions = {
                     if (!isReadView)
                         TooltipIconButton(

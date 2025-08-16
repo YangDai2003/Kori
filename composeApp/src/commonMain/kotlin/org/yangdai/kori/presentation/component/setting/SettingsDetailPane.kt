@@ -63,13 +63,9 @@ fun SettingsDetailPane(
     SettingsDetailPaneContent(
         isExpanded = isExpanded,
         topBarTitle = topBarTitle,
-        navigationIcon = {
-            if (!isExpanded)
-                PlatformStyleTopAppBarNavigationIcon(onClick = navigateBackToList)
-        }
+        navigationIcon = { if (!isExpanded) PlatformStyleTopAppBarNavigationIcon(navigateBackToList) }
     ) {
         when (selectedItem) {
-            null -> {}
             0 -> {
                 topBarTitle = stringResource(Res.string.style)
                 StylePane(viewModel)
@@ -110,15 +106,14 @@ fun SettingsDetailPane(
                 AboutPane()
             }
 
-            else -> {
-            }
+            else -> {}
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsDetailPaneContent(
+private fun SettingsDetailPaneContent(
     isExpanded: Boolean,
     topBarTitle: String,
     navigationIcon: @Composable () -> Unit,

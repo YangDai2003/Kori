@@ -123,7 +123,7 @@ fun FoldersScreen(
                         })
                     },
                     title = { PlatformStyleTopAppBarTitle(stringResource(Res.string.folders)) },
-                    navigationIcon = { PlatformStyleTopAppBarNavigationIcon(onClick = navigateUp) },
+                    navigationIcon = { PlatformStyleTopAppBarNavigationIcon(navigateUp) },
                     actions = {
                         TooltipIconButton(
                             tipText = stringResource(Res.string.sort_by),
