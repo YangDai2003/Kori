@@ -48,20 +48,16 @@ actual fun ShareImageButton(imageBitmap: ImageBitmap) {
 @Composable
 actual fun SaveBitmapToFileOnDispose(imageBitmap: ImageBitmap?, uuid: String) {
     val context = LocalContext.current.applicationContext
-    DisposableEffect(Unit) {
+    DisposableEffect(uuid, imageBitmap) {
         onDispose {
             if (uuid.isEmpty() || imageBitmap == null) return@onDispose
             CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val bitmap = imageBitmap.asAndroidBitmap()
-                    val directory = File(context.filesDir, uuid)
-                    if (!directory.exists()) directory.mkdirs()
-                    val file = File(directory, "ink.png")
-                    FileOutputStream(file).use { outputStream ->
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                val bitmap = imageBitmap.asAndroidBitmap()
+                val directory = File(context.filesDir, uuid)
+                if (!directory.exists()) directory.mkdirs()
+                val file = File(directory, "ink.png")
+                FileOutputStream(file).use { outputStream ->
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
                 }
             }
         }

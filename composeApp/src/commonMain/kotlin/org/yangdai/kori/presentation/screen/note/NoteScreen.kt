@@ -32,7 +32,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Close
@@ -135,6 +134,7 @@ import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.note.TitleTextField
+import org.yangdai.kori.presentation.component.note.drawing.DrawPreview
 import org.yangdai.kori.presentation.component.note.drawing.DrawState
 import org.yangdai.kori.presentation.component.note.drawing.InkScreen
 import org.yangdai.kori.presentation.component.note.drawing.rememberDrawState
@@ -337,11 +337,10 @@ fun NoteScreen(
                     findAndReplaceState = findAndReplaceState
                 )
             } else if (noteEditingState.noteType == NoteType.Drawing) {
-                Text(
+                DrawPreview(
                     modifier = Modifier.fillMaxWidth().weight(1f)
-                        .verticalScroll(rememberScrollState())
                         .clickable { isReadView = !isReadView },
-                    text = viewModel.contentState.text.toString()
+                    uuid = noteEditingState.id
                 )
             } else {
                 if (isLargeScreen) {
