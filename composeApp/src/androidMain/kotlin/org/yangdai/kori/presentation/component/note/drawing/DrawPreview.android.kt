@@ -16,15 +16,13 @@ actual fun InNoteDrawPreview(uuid: String, imageBitmap: ImageBitmap?, modifier: 
         val context = LocalContext.current.applicationContext
         val noteDir = File(context.filesDir, uuid)
         val imageFile = File(noteDir, "ink.png")
-        if (imageFile.exists()) {
+        if (imageFile.exists())
             Image(
                 modifier = modifier,
                 bitmap = BitmapFactory.decodeFile(imageFile.absolutePath).asImageBitmap(),
                 contentDescription = null
             )
-        } else {
-            Spacer(modifier)
-        }
+        else Spacer(modifier)
     } else {
         Image(
             modifier = modifier,

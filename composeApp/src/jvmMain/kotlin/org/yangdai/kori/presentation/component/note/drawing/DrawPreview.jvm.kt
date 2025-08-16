@@ -14,15 +14,13 @@ actual fun InNoteDrawPreview(uuid: String, imageBitmap: ImageBitmap?, modifier: 
     if (imageBitmap == null) {
         val userHome = System.getProperty("user.home")
         val imageFile = File("$userHome/.kori/$uuid/ink.png")
-        if (imageFile.exists()) {
+        if (imageFile.exists())
             Image(
                 modifier = modifier,
                 bitmap = Image.makeFromEncoded(imageFile.readBytes()).toComposeImageBitmap(),
                 contentDescription = null
             )
-        } else {
-            Spacer(modifier)
-        }
+        else Spacer(modifier)
     } else {
         Image(
             modifier = modifier,

@@ -34,9 +34,6 @@ import platform.UIKit.UIApplication
 import platform.UIKit.UIApplicationOpenSettingsURLString
 import platform.UIKit.UIColor
 import platform.UIKit.UIImage
-import platform.UIKit.UIUserInterfaceStyle
-import platform.UIKit.UIView
-import platform.UIKit.UIViewController
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -130,26 +127,6 @@ fun Int.toUIColor(): UIColor {
     val blue = (this and 0xFF) / 255.0
     val alpha = (this shr 24 and 0xFF) / 255.0
     return UIColor.colorWithRed(red, green, blue, alpha)
-}
-
-fun UIViewController.applyTheme(dark: Boolean) {
-    overrideUserInterfaceStyle =
-        if (dark) {
-            UIUserInterfaceStyle.UIUserInterfaceStyleDark
-        } else {
-            UIUserInterfaceStyle.UIUserInterfaceStyleLight
-        }
-}
-
-fun UIView.applyTheme(dark: Boolean) {
-    listOf(this, superview).forEach {
-        it?.overrideUserInterfaceStyle =
-            if (dark) {
-                UIUserInterfaceStyle.UIUserInterfaceStyleDark
-            } else {
-                UIUserInterfaceStyle.UIUserInterfaceStyleLight
-            }
-    }
 }
 
 @OptIn(ExperimentalForeignApi::class)
