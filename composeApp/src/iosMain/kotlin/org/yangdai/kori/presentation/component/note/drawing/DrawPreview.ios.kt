@@ -4,5 +4,5 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-actual fun DrawPreview(uuid: String, modifier: Modifier) {
+actual fun DrawPreview(uuid: String, raw: String, modifier: Modifier) {
 }

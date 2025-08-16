@@ -340,7 +340,8 @@ fun NoteScreen(
                 DrawPreview(
                     modifier = Modifier.fillMaxWidth().weight(1f)
                         .clickable { isReadView = !isReadView },
-                    uuid = noteEditingState.id
+                    uuid = noteEditingState.id,
+                    raw = viewModel.contentState.text.toString()
                 )
             } else {
                 if (isLargeScreen) {
