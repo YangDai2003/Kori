@@ -33,6 +33,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.yangdai.kori.data.local.entity.NoteEntity
+import org.yangdai.kori.presentation.component.main.card.NoteItem
+import org.yangdai.kori.presentation.component.main.card.NoteItemProperties
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable

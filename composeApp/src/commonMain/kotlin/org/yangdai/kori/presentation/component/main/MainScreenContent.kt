@@ -130,6 +130,7 @@ import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.FoldersDialog
 import org.yangdai.kori.presentation.component.dialog.NoteSortOptionBottomSheet
+import org.yangdai.kori.presentation.component.main.card.NoteItemProperties
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.util.isScreenWidthExpanded

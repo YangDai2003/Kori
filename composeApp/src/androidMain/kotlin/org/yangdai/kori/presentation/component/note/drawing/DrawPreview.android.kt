@@ -7,13 +7,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import coil3.compose.LocalPlatformContext
+import androidx.compose.ui.platform.LocalContext
 import java.io.File
 
 @Composable
 actual fun InNoteDrawPreview(uuid: String, imageBitmap: ImageBitmap?, modifier: Modifier) {
     if (imageBitmap == null) {
-        val context = LocalPlatformContext.current
+        val context = LocalContext.current.applicationContext
         val noteDir = File(context.filesDir, uuid)
         val imageFile = File(noteDir, "ink.png")
         if (imageFile.exists()) {

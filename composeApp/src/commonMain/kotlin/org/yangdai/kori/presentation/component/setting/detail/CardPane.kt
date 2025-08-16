@@ -33,7 +33,7 @@ import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.component.SegmentText
 import org.yangdai.kori.presentation.component.SegmentedControl
-import org.yangdai.kori.presentation.component.main.NoteItemProperties
+import org.yangdai.kori.presentation.component.main.card.NoteItemProperties
 import org.yangdai.kori.presentation.component.main.Page
 import org.yangdai.kori.presentation.screen.settings.CardSize.Companion.toInt
 import org.yangdai.kori.presentation.screen.settings.SettingsViewModel

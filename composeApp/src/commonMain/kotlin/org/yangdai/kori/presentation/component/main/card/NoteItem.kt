@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.component.main
+package org.yangdai.kori.presentation.component.main.card
 
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.combinedClickable
@@ -115,12 +115,7 @@ fun LazyStaggeredGridItemScope.NoteItem(
 
             // 内容预览
             if (noteItemProperties.cardSize != CardSize.TITLE_ONLY)
-                Text(
-                    text = note.content,
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 5 else 2,
-                    overflow = if (noteItemProperties.clipOverflow) TextOverflow.Clip else TextOverflow.Ellipsis
-                )
+                NoteContent(note = note, noteItemProperties = noteItemProperties)
 
             // 底部行：笔记类型和更新时间信息
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -163,5 +158,32 @@ fun LazyStaggeredGridItemScope.NoteItem(
                 onCheckedChange = null,
                 modifier = Modifier.padding(12.dp).align(Alignment.TopEnd)
             )
+    }
+}
+
+@Composable
+private fun NoteContent(note: NoteEntity, noteItemProperties: NoteItemProperties) {
+    val type = note.noteType
+    val content = note.content.lineSequence().take(10).joinToString("\n")
+    when (type) {
+        NoteType.PLAIN_TEXT -> Text(
+            text = content,
+            style = MaterialTheme.typography.bodyMedium,
+            // 最多显示5行，小卡片时最多显示2行
+            maxLines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 5 else 2,
+            overflow = if (noteItemProperties.clipOverflow) TextOverflow.Clip else TextOverflow.Ellipsis
+        )
+
+        NoteType.MARKDOWN -> {
+            MarkdownText(text = content, noteItemProperties = noteItemProperties)
+        }
+
+        NoteType.TODO -> {
+            TodoText(text = content, noteItemProperties = noteItemProperties)
+        }
+
+        NoteType.Drawing -> {
+            DrawingImage(note = note, noteItemProperties = noteItemProperties)
+        }
     }
 }
