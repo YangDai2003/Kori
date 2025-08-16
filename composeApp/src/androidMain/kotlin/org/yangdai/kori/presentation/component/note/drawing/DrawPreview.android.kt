@@ -1,20 +1,35 @@
 package org.yangdai.kori.presentation.component.note.drawing
 
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
-import coil3.compose.AsyncImage
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import coil3.compose.LocalPlatformContext
-import coil3.request.ImageRequest
 import java.io.File
 
 @Composable
-actual fun DrawPreview(uuid: String, raw: String, modifier: Modifier) {
-    val context = LocalPlatformContext.current
-    val noteDir = File(context.filesDir, uuid)
-    val imageFile = File(noteDir, "ink.png")
-    key(raw) {
-        val model = ImageRequest.Builder(context).data(imageFile).build()
-        AsyncImage(modifier = modifier, model = model, contentDescription = null)
+actual fun InNoteDrawPreview(uuid: String, imageBitmap: ImageBitmap?, modifier: Modifier) {
+    if (imageBitmap == null) {
+        val context = LocalPlatformContext.current
+        val noteDir = File(context.filesDir, uuid)
+        val imageFile = File(noteDir, "ink.png")
+        if (imageFile.exists()) {
+            Image(
+                modifier = modifier,
+                bitmap = BitmapFactory.decodeFile(imageFile.absolutePath).asImageBitmap(),
+                contentDescription = null
+            )
+        } else {
+            Spacer(modifier)
+        }
+    } else {
+        Image(
+            modifier = modifier,
+            bitmap = imageBitmap,
+            contentDescription = null
+        )
     }
 }

@@ -76,6 +76,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -134,8 +135,8 @@ import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.note.TitleTextField
-import org.yangdai.kori.presentation.component.note.drawing.DrawPreview
 import org.yangdai.kori.presentation.component.note.drawing.DrawState
+import org.yangdai.kori.presentation.component.note.drawing.InNoteDrawPreview
 import org.yangdai.kori.presentation.component.note.drawing.InkScreen
 import org.yangdai.kori.presentation.component.note.drawing.rememberDrawState
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditor
@@ -220,6 +221,7 @@ fun NoteScreen(
         isSearching = false
         pagerState.animateScrollToPage(if (isReadView) 1 else 0)
     }
+    val cachedImageBitmap = remember { mutableStateOf<ImageBitmap?>(null) }
 
     Scaffold(
         modifier = Modifier.imePadding().onPreviewKeyEvent { keyEvent ->
@@ -337,11 +339,11 @@ fun NoteScreen(
                     findAndReplaceState = findAndReplaceState
                 )
             } else if (noteEditingState.noteType == NoteType.Drawing) {
-                DrawPreview(
+                InNoteDrawPreview(
                     modifier = Modifier.fillMaxWidth().weight(1f)
                         .clickable { isReadView = !isReadView },
-                    uuid = noteEditingState.id,
-                    raw = viewModel.contentState.text.toString()
+                    imageBitmap = cachedImageBitmap.value,
+                    uuid = noteEditingState.id
                 )
             } else {
                 if (isLargeScreen) {
@@ -460,7 +462,7 @@ fun NoteScreen(
         exit = scaleOut(targetScale = 0.9f)
     ) {
         val drawState = rememberDrawState(viewModel.contentState.text.toString())
-        InkScreen(drawState, noteEditingState.id) {
+        InkScreen(drawState, noteEditingState.id, cachedImageBitmap) {
             viewModel.contentState.setTextAndPlaceCursorAtEnd(DrawState.serializeDrawState(drawState))
             isReadView = true
         }

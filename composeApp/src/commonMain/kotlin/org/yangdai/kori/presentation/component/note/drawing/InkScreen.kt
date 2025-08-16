@@ -246,19 +246,23 @@ private fun Random.nextFloat(from: Float, until: Float): Float {
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalComposeUiApi::class)
 @Composable
-fun InkScreen(drawState: DrawState, noteUuid: String, onDismiss: () -> Unit) {
+fun InkScreen(
+    drawState: DrawState,
+    noteUuid: String,
+    imageBitmap: MutableState<ImageBitmap?>,
+    onDismiss: () -> Unit
+) {
     val graphicsLayer = rememberGraphicsLayer()
     val coroutineScope = rememberCoroutineScope()
-    var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
     var showDialog by remember { mutableStateOf(false) }
     BackHandler {
         coroutineScope.launch {
-            imageBitmap = graphicsLayer.toImageBitmap()
+            imageBitmap.value = graphicsLayer.toImageBitmap()
         }.invokeOnCompletion {
             onDismiss()
         }
     }
-    SaveBitmapToFileOnDispose(imageBitmap, noteUuid)
+    SaveBitmapToFileOnDispose(imageBitmap.value, noteUuid)
     Scaffold(
         modifier = Modifier
             .pointerInput(drawState.toolMode.value) {
@@ -328,7 +332,7 @@ fun InkScreen(drawState: DrawState, noteUuid: String, onDismiss: () -> Unit) {
                     ),
                     onClick = {
                         coroutineScope.launch {
-                            imageBitmap = graphicsLayer.toImageBitmap()
+                            imageBitmap.value = graphicsLayer.toImageBitmap()
                         }.invokeOnCompletion {
                             onDismiss()
                         }
@@ -485,7 +489,7 @@ fun InkScreen(drawState: DrawState, noteUuid: String, onDismiss: () -> Unit) {
                     ),
                     onClick = {
                         coroutineScope.launch {
-                            imageBitmap = graphicsLayer.toImageBitmap()
+                            imageBitmap.value = graphicsLayer.toImageBitmap()
                         }.invokeOnCompletion {
                             showDialog = true
                         }
@@ -579,7 +583,7 @@ fun InkScreen(drawState: DrawState, noteUuid: String, onDismiss: () -> Unit) {
     }
 
     if (showDialog) {
-        imageBitmap?.let {
+        imageBitmap.value?.let {
             AlertDialog(
                 shape = dialogShape(),
                 onDismissRequest = { showDialog = false },
