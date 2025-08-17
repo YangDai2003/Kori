@@ -98,7 +98,7 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.ktor.client.content.negotiation)
 
-            implementation("io.coil-kt.coil3:coil-compose:3.3.0")
+            implementation(libs.coil.compose)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

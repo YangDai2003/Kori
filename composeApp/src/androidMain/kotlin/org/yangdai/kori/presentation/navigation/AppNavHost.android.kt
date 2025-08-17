@@ -53,7 +53,12 @@ actual fun AppNavHost(
             if (activity == null || activity.intent == null) return@SideEffect
             val destination = activity.intent.extras?.getString("KEY_DESTINATION")
             if (destination != null) {
-                navHostController.navigate(Screen.Note(id = destination.removePrefix("note/")))
+                if (destination.startsWith("note/"))
+                    navHostController.navigate(Screen.Note(id = destination.removePrefix("note/")))
+                else
+                    navHostController.navigate(
+                        Screen.Note(noteType = destination.removePrefix("note?noteType=").toInt())
+                    )
             } else {
                 activity.intent.apply {
                     when (action) {

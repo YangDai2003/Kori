@@ -22,6 +22,7 @@ actual fun InNoteDrawPreview(uuid: String, imageBitmap: ImageBitmap?, modifier: 
         if (imageBitmap == null) {
             val context = LocalContext.current.applicationContext
             val noteDir = File(context.filesDir, uuid)
+            if (!noteDir.exists()) noteDir.mkdirs()
             val imageFile = File(noteDir, "ink.png")
             AsyncImage(
                 modifier = Modifier.fillMaxWidth(),

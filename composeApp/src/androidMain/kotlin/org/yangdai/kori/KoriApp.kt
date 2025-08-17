@@ -18,76 +18,74 @@ class KoriApp : Application() {
         }
 
         // Note shortcut
-        val noteShortcut = ShortcutInfoCompat.Builder(applicationContext, "id1")
-            .setShortLabel(getString(R.string.compose))
+        val noteShortcut = ShortcutInfoCompat.Builder(applicationContext, "id_plain_text")
+            .setShortLabel(getString(R.string.new_plain_text))
             .setIcon(
                 IconCompat.createWithResource(
                     applicationContext,
-                    R.drawable.outline_note_add_24
+                    R.drawable.new_text_24px
                 )
             )
             .setIntent(
                 Intent(applicationContext, MainActivity::class.java).apply {
                     action = Intent.ACTION_VIEW
-                    data = ("${Constants.DEEP_LINK}/note").toUri()
+                    data = ("${Constants.DEEP_LINK}/note?noteType=0").toUri()
                 }
             )
             .build()
 
-        // Settings shortcut
-        val settingsShortcut = ShortcutInfoCompat.Builder(applicationContext, "id_settings")
-            .setShortLabel(getString(R.string.settings))
+        val noteMarkdownShortcut = ShortcutInfoCompat.Builder(applicationContext, "id_markdown")
+            .setShortLabel(getString(R.string.new_markdown))
             .setIcon(
                 IconCompat.createWithResource(
                     applicationContext,
-                    R.drawable.outline_settings_24
+                    R.drawable.new_markdown_24px
                 )
             )
             .setIntent(
                 Intent(applicationContext, MainActivity::class.java).apply {
                     action = Intent.ACTION_VIEW
-                    data = ("${Constants.DEEP_LINK}/settings").toUri()
+                    data = ("${Constants.DEEP_LINK}/note?noteType=1").toUri()
                 }
             )
             .build()
 
-        // Folders shortcut
-        val foldersShortcut = ShortcutInfoCompat.Builder(applicationContext, "id_folders")
-            .setShortLabel(getString(R.string.folders))
+        val noteTodoShortcut = ShortcutInfoCompat.Builder(applicationContext, "id_todo")
+            .setShortLabel(getString(R.string.new_todo))
             .setIcon(
                 IconCompat.createWithResource(
                     applicationContext,
-                    R.drawable.outline_folders_24
+                    R.drawable.new_todo_24px
                 )
             )
             .setIntent(
                 Intent(applicationContext, MainActivity::class.java).apply {
                     action = Intent.ACTION_VIEW
-                    data = ("${Constants.DEEP_LINK}/folders").toUri()
+                    data = ("${Constants.DEEP_LINK}/note?noteType=2").toUri()
                 }
             )
             .build()
 
-        // Template shortcut
-        val templateShortcut = ShortcutInfoCompat.Builder(applicationContext, "id_template")
-            .setShortLabel(getString(R.string.template))
+        val noteDrawingShortcut = ShortcutInfoCompat.Builder(applicationContext, "id_drawing")
+            .setShortLabel(getString(R.string.new_drawing))
             .setIcon(
                 IconCompat.createWithResource(
                     applicationContext,
-                    R.drawable.outline_add_template_24
+                    R.drawable.new_draw_24px
                 )
             )
             .setIntent(
                 Intent(applicationContext, MainActivity::class.java).apply {
                     action = Intent.ACTION_VIEW
-                    data = ("${Constants.DEEP_LINK}/template").toUri()
+                    data = ("${Constants.DEEP_LINK}/note?noteType=3").toUri()
                 }
             )
             .build()
 
+        ShortcutManagerCompat.removeAllDynamicShortcuts(applicationContext)
         ShortcutManagerCompat.pushDynamicShortcut(applicationContext, noteShortcut)
-        ShortcutManagerCompat.pushDynamicShortcut(applicationContext, templateShortcut)
-        ShortcutManagerCompat.pushDynamicShortcut(applicationContext, settingsShortcut)
-        ShortcutManagerCompat.pushDynamicShortcut(applicationContext, foldersShortcut)
+        ShortcutManagerCompat.pushDynamicShortcut(applicationContext, noteMarkdownShortcut)
+        ShortcutManagerCompat.pushDynamicShortcut(applicationContext, noteTodoShortcut)
+        ShortcutManagerCompat.pushDynamicShortcut(applicationContext, noteDrawingShortcut)
     }
 }

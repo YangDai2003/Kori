@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="compose">Neue Notiz</string>
     <string name="unlock_to_use">Freischalten, um Kori zu verwenden</string>
     <string name="dynamic_only_android_12">Dynamische Farbe</string>
     <string name="screen_protection">Bildschirmschutz</string>
@@ -12,4 +11,8 @@
     <string name="template">Neue Vorlage</string>
     <string name="view_all_notes">Alle Notizen anzeigen</string>
     <string name="home_widget">Widget zum Startbildschirm hinzufügen</string>
+    <string name="new_plain_text">Neuer einfacher Text</string>
+    <string name="new_markdown">Neues Markdown</string>
+    <string name="new_todo">Neues Todo.txt</string>
+    <string name="new_drawing">Neue Zeichnung</string>
 </resources>

@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name" translatable="false">Kori</string>
-    <string name="compose">New Note</string>
     <string name="unlock_to_use">Unlock to use Kori</string>
     <string name="dynamic_only_android_12">Dynamic color</string>
     <string name="screen_protection">Screen protection</string>
@@ -12,4 +11,8 @@
     <string name="template">New Template</string>
     <string name="view_all_notes">View all notes</string>
     <string name="home_widget">Add Widget to Home Screen</string>
+    <string name="new_plain_text">New Plain Text</string>
+    <string name="new_markdown">New Markdown</string>
+    <string name="new_todo">New Todo.txt</string>
+    <string name="new_drawing">New Drawing</string>
 </resources>

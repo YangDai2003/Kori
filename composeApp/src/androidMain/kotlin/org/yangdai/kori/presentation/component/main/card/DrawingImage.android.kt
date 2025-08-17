@@ -19,6 +19,7 @@ import java.io.File
 actual fun DrawingImage(note: NoteEntity, noteItemProperties: NoteItemProperties) {
     val context = LocalContext.current.applicationContext
     val noteDir = File(context.filesDir, note.id)
+    if (!noteDir.exists()) noteDir.mkdirs()
     val imageFile = File(noteDir, "ink.png")
     val maxHeight = if (noteItemProperties.cardSize == CardSize.DEFAULT) 240.dp else 160.dp
     AsyncImage(

@@ -4,6 +4,7 @@ androidx-activityCompose = "1.10.1"
 androidx-appcompat = "1.7.1"
 androidx-lifecycle = "2.9.2"
 androidx-navigation = "2.9.0-beta05"
+coilCompose = "3.3.0"
 compose-multiplatform = "1.9.0-beta03"
 compose-adaptive = "1.2.0-alpha05"
 #noinspection NewerVersionAvailable
@@ -25,6 +26,7 @@ androidx-glance = "1.2.0-alpha01"
 composeHotReload = "1.0.0-beta05"
 
 [libraries]
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
