@@ -16,6 +16,7 @@ import kori.composeapp.generated.resources.export_as
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.yangdai.kori.data.local.entity.NoteEntity
+import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.component.TextOptionButton
 
 enum class ExportType {
@@ -38,19 +39,21 @@ fun ExportDialog(
         title = { Text(stringResource(Res.string.export_as)) },
         text = {
             Column(Modifier.fillMaxWidth()) {
-                TextOptionButton(buttonText = "TXT") {
-                    exportType = ExportType.TXT
-                    showSaveFileDialog = true
-                }
+                if (noteEntity.noteType == NoteType.MARKDOWN) {
+                    TextOptionButton(buttonText = "MARKDOWN") {
+                        exportType = ExportType.MARKDOWN
+                        showSaveFileDialog = true
+                    }
 
-                TextOptionButton(buttonText = "MARKDOWN") {
-                    exportType = ExportType.MARKDOWN
-                    showSaveFileDialog = true
-                }
-
-                TextOptionButton(buttonText = "HTML") {
-                    exportType = ExportType.HTML
-                    showSaveFileDialog = true
+                    TextOptionButton(buttonText = "HTML") {
+                        exportType = ExportType.HTML
+                        showSaveFileDialog = true
+                    }
+                } else {
+                    TextOptionButton(buttonText = "TXT") {
+                        exportType = ExportType.TXT
+                        showSaveFileDialog = true
+                    }
                 }
             }
         },

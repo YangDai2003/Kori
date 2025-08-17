@@ -58,7 +58,7 @@ fun NoteTypeDialog(
         title = { Text(stringResource(Res.string.type)) },
         text = {
             Column(modifier = Modifier.fillMaxWidth().selectableGroup()) {
-                NoteType.entries.forEach { noteType ->
+                NoteType.entries.filter { it != NoteType.Drawing }.forEach { noteType ->
                     Row(
                         modifier = Modifier
                             .padding(top = 8.dp)

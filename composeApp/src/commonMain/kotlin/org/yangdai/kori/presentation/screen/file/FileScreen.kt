@@ -28,7 +28,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Close
@@ -283,12 +282,7 @@ fun FileScreen(
                     findAndReplaceState = findAndReplaceState
                 )
             } else if (fileEditingState.fileType == NoteType.Drawing) {
-                Text(
-                    modifier = Modifier.fillMaxWidth().weight(1f)
-                        .verticalScroll(rememberScrollState())
-                        .clickable { isReadView = !isReadView },
-                    text = viewModel.contentState.text.toString()
-                )
+                // 不存在绘画类型文件
             } else {
                 if (isScreenWidthExpanded()) {
                     Row(
@@ -395,18 +389,6 @@ fun FileScreen(
             }
         }
     }
-
-//    AnimatedVisibility(
-//        visible = fileEditingState.fileType == NoteType.Drawing && !isReadView,
-//        enter = scaleIn(initialScale = 0.9f),
-//        exit = scaleOut(targetScale = 0.9f)
-//    ) {
-//        val drawState = rememberDrawState(viewModel.contentState.text.toString())
-//        InkScreen(drawState, file.getFileName()) {
-//            viewModel.contentState.setTextAndPlaceCursorAtEnd(DrawState.serializeDrawState(drawState))
-//            isReadView = true
-//        }
-//    }
 
     val templatesSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val hideTemplatesBottomSheet: () -> Unit = {

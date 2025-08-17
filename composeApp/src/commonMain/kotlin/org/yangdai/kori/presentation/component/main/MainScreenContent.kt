@@ -678,12 +678,18 @@ fun MainScreenContent(
                 }
             }
 
-            val items = listOf(
+            val commonItems = listOf(
                 stringResource(Res.string.plain_text),
                 stringResource(Res.string.markdown),
-                stringResource(Res.string.todo_text),
-                stringResource(Res.string.drawing)
+                stringResource(Res.string.todo_text)
             )
+
+            val items = if (currentDrawerItem is DrawerItem.Templates) {
+                commonItems
+            } else {
+                commonItems + stringResource(Res.string.drawing)
+            }
+
             FloatingActionButtonMenu(
                 modifier = Modifier.align(Alignment.BottomEnd)
                     .padding(bottom = innerPadding.calculateBottomPadding()),

@@ -1,7 +1,10 @@
 package org.yangdai.kori.presentation.component.note.drawing
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,32 +18,42 @@ import platform.UIKit.UIImageView
 import platform.UIKit.UIViewContentMode
 
 @Composable
-actual fun InNoteDrawPreview(uuid: String, imageBitmap: ImageBitmap?, modifier: Modifier) {
-    if (imageBitmap == null) {
-        val documentDirectory = NSFileManager.defaultManager.URLsForDirectory(
-            platform.Foundation.NSDocumentDirectory,
-            platform.Foundation.NSUserDomainMask
-        ).first() as NSURL
-        val imagePath = documentDirectory.URLByAppendingPathComponent("$uuid/ink.png")?.path
-        val image = imagePath?.let { UIImage.imageWithContentsOfFile(it) }
-        val backgroundColor = MaterialTheme.colorScheme.background
-        if (image != null)
+actual fun InNoteDrawPreview(uuid: String, imageBitmap: ImageBitmap?, modifier: Modifier) =
+    Column(modifier) {
+        if (imageBitmap == null) {
+            val backgroundColor = MaterialTheme.colorScheme.background
             UIKitView(
-                modifier = modifier,
+                modifier = Modifier.fillMaxWidth(),
                 factory = {
                     UIImageView().apply {
-                        this.image = image
                         contentMode = UIViewContentMode.UIViewContentModeScaleAspectFit
                         this.backgroundColor = backgroundColor.toUIColor()
                     }
+                },
+                update = { imageView ->
+                    val documentDirectory = NSFileManager.defaultManager.URLsForDirectory(
+                        platform.Foundation.NSDocumentDirectory,
+                        platform.Foundation.NSUserDomainMask
+                    ).first() as NSURL
+                    val fileManager = NSFileManager.defaultManager
+                    val imagePath =
+                        documentDirectory.URLByAppendingPathComponent("$uuid/ink.png")?.path
+                    if (imagePath != null && fileManager.fileExistsAtPath(imagePath)) {
+                        UIImage.imageWithContentsOfFile(imagePath)
+                    } else {
+                        null
+                    }?.also {
+                        imageView.image = it
+                    }
                 }
             )
-        else Spacer(modifier)
-    } else {
-        Image(
-            modifier = modifier,
-            bitmap = imageBitmap,
-            contentDescription = null
-        )
+        } else {
+            Image(
+                modifier = Modifier.fillMaxWidth(),
+                bitmap = imageBitmap,
+                contentDescription = null
+            )
+        }
+
+        Spacer(Modifier.navigationBarsPadding())
     }
-}

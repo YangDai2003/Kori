@@ -32,6 +32,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Close
@@ -271,7 +272,7 @@ fun NoteScreen(
                         if (isLargeScreen)
                             TitleTextField(
                                 state = viewModel.titleState,
-                                readOnly = isReadView,
+                                readOnly = isReadView && noteEditingState.noteType != NoteType.Drawing,
                                 modifier = Modifier.padding(horizontal = 16.dp)
                             )
                     }
@@ -321,7 +322,7 @@ fun NoteScreen(
                     else {
                         TitleTextField(
                             state = viewModel.titleState,
-                            readOnly = isReadView,
+                            readOnly = isReadView && noteEditingState.noteType != NoteType.Drawing,
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                         )
                     }
@@ -340,7 +341,9 @@ fun NoteScreen(
                 )
             } else if (noteEditingState.noteType == NoteType.Drawing) {
                 InNoteDrawPreview(
-                    modifier = Modifier.fillMaxWidth().weight(1f)
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .verticalScroll(scrollState)
                         .clickable { isReadView = !isReadView },
                     imageBitmap = cachedImageBitmap.value,
                     uuid = noteEditingState.id
@@ -586,13 +589,6 @@ fun NoteScreen(
                 )
             }
 
-            IconButton(onClick = { showNoteTypeDialog = true }) {
-                Icon(
-                    imageVector = Icons.Outlined.SwapHorizontalCircle,
-                    contentDescription = null
-                )
-            }
-
             IconButton(onClick = { viewModel.moveNoteToTrash() }) {
                 Icon(
                     imageVector = Icons.Outlined.Delete,
@@ -600,28 +596,34 @@ fun NoteScreen(
                 )
             }
 
-            if (!currentPlatformInfo.isDesktop())
-                IconButton(onClick = { showShareDialog = true }) {
+            if (noteEditingState.noteType != NoteType.Drawing) {
+                IconButton(onClick = { showNoteTypeDialog = true }) {
                     Icon(
-                        imageVector = Icons.Outlined.Share,
+                        imageVector = Icons.Outlined.SwapHorizontalCircle,
                         contentDescription = null
                     )
                 }
+                if (!currentPlatformInfo.isDesktop())
+                    IconButton(onClick = { showShareDialog = true }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Share,
+                            contentDescription = null
+                        )
+                    }
+                IconButton(onClick = { showExportDialog = true }) {
+                    Icon(
+                        imageVector = Icons.Outlined.FileUpload,
+                        contentDescription = null
+                    )
+                }
+            }
 
             AnimatedVisibility(noteEditingState.noteType == NoteType.MARKDOWN) {
-                Column {
-                    IconButton(onClick = { showExportDialog = true }) {
-                        Icon(
-                            imageVector = Icons.Outlined.FileUpload,
-                            contentDescription = null
-                        )
-                    }
-                    IconButton(onClick = { printTrigger.value = true }) {
-                        Icon(
-                            imageVector = Icons.Outlined.Print,
-                            contentDescription = null
-                        )
-                    }
+                IconButton(onClick = { printTrigger.value = true }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Print,
+                        contentDescription = null
+                    )
                 }
             }
         },
