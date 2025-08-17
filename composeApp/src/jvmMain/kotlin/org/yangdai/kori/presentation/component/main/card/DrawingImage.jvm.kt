@@ -18,24 +18,14 @@ import java.io.File
 actual fun DrawingImage(note: NoteEntity, noteItemProperties: NoteItemProperties) {
     val userHome = System.getProperty("user.home")
     val imageFile = File("$userHome/.kori/${note.id}/ink.png")
-    if (noteItemProperties.cardSize == CardSize.DEFAULT)
-        AsyncImage(
-            modifier = Modifier.fillMaxWidth().heightIn(max = 240.dp),
-            model = ImageRequest.Builder(LocalPlatformContext.current)
-                .data(imageFile)
-                .addLastModifiedToFileCacheKey(true)
-                .build(),
-            contentScale = ContentScale.FillWidth,
-            contentDescription = null
-        )
-    else
-        AsyncImage(
-            modifier = Modifier.fillMaxWidth().heightIn(max = 160.dp),
-            model = ImageRequest.Builder(LocalPlatformContext.current)
-                .data(imageFile)
-                .addLastModifiedToFileCacheKey(true)
-                .build(),
-            contentScale = ContentScale.FillWidth,
-            contentDescription = null
-        )
+    val maxHeight = if (noteItemProperties.cardSize == CardSize.DEFAULT) 240.dp else 160.dp
+    AsyncImage(
+        modifier = Modifier.fillMaxWidth().heightIn(max = maxHeight),
+        model = ImageRequest.Builder(LocalPlatformContext.current)
+            .data(imageFile)
+            .addLastModifiedToFileCacheKey(true)
+            .build(),
+        contentScale = ContentScale.FillWidth,
+        contentDescription = null
+    )
 }

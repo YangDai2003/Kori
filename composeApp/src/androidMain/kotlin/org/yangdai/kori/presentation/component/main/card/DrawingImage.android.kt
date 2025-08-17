@@ -20,28 +20,16 @@ actual fun DrawingImage(note: NoteEntity, noteItemProperties: NoteItemProperties
     val context = LocalContext.current.applicationContext
     val noteDir = File(context.filesDir, note.id)
     val imageFile = File(noteDir, "ink.png")
-    if (noteItemProperties.cardSize == CardSize.DEFAULT)
-        AsyncImage(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(max = 240.dp),
-            model = ImageRequest.Builder(LocalPlatformContext.current)
-                .data(imageFile)
-                .addLastModifiedToFileCacheKey(true)
-                .build(),
-            contentScale = ContentScale.FillWidth,
-            contentDescription = null
-        )
-    else
-        AsyncImage(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(max = 160.dp),
-            model = ImageRequest.Builder(LocalPlatformContext.current)
-                .data(imageFile)
-                .addLastModifiedToFileCacheKey(true)
-                .build(),
-            contentScale = ContentScale.FillWidth,
-            contentDescription = null
-        )
+    val maxHeight = if (noteItemProperties.cardSize == CardSize.DEFAULT) 240.dp else 160.dp
+    AsyncImage(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(max = maxHeight),
+        model = ImageRequest.Builder(LocalPlatformContext.current)
+            .data(imageFile)
+            .addLastModifiedToFileCacheKey(true)
+            .build(),
+        contentScale = ContentScale.FillWidth,
+        contentDescription = null
+    )
 }

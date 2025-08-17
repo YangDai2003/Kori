@@ -25,24 +25,16 @@ actual fun DrawingImage(
         platform.Foundation.NSUserDomainMask
     ).first() as NSURL
     val imagePath = documentDirectory.URLByAppendingPathComponent("${note.id}/ink.png")?.path
-    if (noteItemProperties.cardSize == CardSize.DEFAULT)
-        AsyncImage(
-            modifier = Modifier.fillMaxWidth().heightIn(max = 240.dp),
-            model = ImageRequest.Builder(LocalPlatformContext.current)
-                .data(imagePath)
-                .addLastModifiedToFileCacheKey(true)
-                .build(),
-            contentScale = ContentScale.FillWidth,
-            contentDescription = null
-        )
-    else
-        AsyncImage(
-            modifier = Modifier.fillMaxWidth().heightIn(max = 160.dp),
-            model = ImageRequest.Builder(LocalPlatformContext.current)
-                .data(imagePath)
-                .addLastModifiedToFileCacheKey(true)
-                .build(),
-            contentScale = ContentScale.FillWidth,
-            contentDescription = null
-        )
+    val maxHeight = if (noteItemProperties.cardSize == CardSize.DEFAULT) 240.dp else 160.dp
+    AsyncImage(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(max = maxHeight),
+        model = ImageRequest.Builder(LocalPlatformContext.current)
+            .data(imagePath)
+            .addLastModifiedToFileCacheKey(true)
+            .build(),
+        contentScale = ContentScale.FillWidth,
+        contentDescription = null
+    )
 }
