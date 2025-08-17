@@ -3,6 +3,7 @@ package org.yangdai.kori.presentation.component.note.plaintext
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import org.yangdai.kori.presentation.component.note.EditorProperties
 import org.yangdai.kori.presentation.component.note.FindAndReplaceState
@@ -22,5 +23,6 @@ fun PlainTextEditor(
     textState = textState,
     scrollState = scrollState,
     findAndReplaceState = findAndReplaceState,
-    editorProperties = editorProperties
+    editorProperties = editorProperties,
+    outputTransformation = remember { PlainTextTransformation() }
 )

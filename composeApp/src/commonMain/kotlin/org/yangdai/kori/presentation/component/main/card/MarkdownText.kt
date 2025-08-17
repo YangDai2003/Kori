@@ -10,7 +10,7 @@ import org.yangdai.kori.presentation.component.note.markdown.MarkdownFormat
 import org.yangdai.kori.presentation.screen.settings.CardSize
 
 @Composable
-fun MarkdownText(text: String, noteItemProperties: NoteItemProperties) {
+fun MarkdownText(text: String, noteItemProperties: NoteItemProperties) =
     Text(
         text = buildAnnotatedString {
             append(text)
@@ -31,7 +31,6 @@ fun MarkdownText(text: String, noteItemProperties: NoteItemProperties) {
         maxLines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 5 else 2,
         overflow = if (noteItemProperties.clipOverflow) TextOverflow.Clip else TextOverflow.Ellipsis
     )
-}
 
 private fun AnnotatedString.Builder.applyCodeBlockStyles(text: String): List<IntRange> {
     val ranges = mutableListOf<IntRange>()
