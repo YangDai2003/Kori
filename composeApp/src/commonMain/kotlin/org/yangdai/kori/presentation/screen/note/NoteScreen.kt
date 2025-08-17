@@ -2,8 +2,12 @@ package org.yangdai.kori.presentation.screen.note
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -461,8 +465,8 @@ fun NoteScreen(
 
     AnimatedVisibility(
         visible = noteEditingState.noteType == NoteType.Drawing && !isReadView,
-        enter = scaleIn(initialScale = 0.9f),
-        exit = scaleOut(targetScale = 0.9f)
+        enter = scaleIn(initialScale = 0.95f) + slideInVertically { it / 20 } + fadeIn(),
+        exit = scaleOut(targetScale = 0.95f) + slideOutVertically { it / 20 } + fadeOut()
     ) {
         val drawState = rememberDrawState(viewModel.contentState.text.toString())
         InkScreen(drawState, noteEditingState.id, cachedImageBitmap) {
