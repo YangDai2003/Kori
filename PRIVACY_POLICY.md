@@ -17,13 +17,20 @@ The app requires the following permissions, as listed in the `AndroidManifest.xm
 
 ### Dependencies
 
-The app uses the following dependencies:
+The app uses the following open-source libraries:
 
-- **Room**: For local database management.
-- **Datastore**: For preferences management.
+- **Jetpack Compose**: For building the user interface.
+- **Kotlinx Serialization**: For serializing and deserializing data (e.g., JSON).
+- **Kotlinx Datetime**: For handling date and time operations.
+- **Room**: For local database management and persistence.
+- **DataStore**: For storing key-value pairs or typed objects with protocol buffers.
 - **Koin**: For dependency injection.
-- **Compose**: For building the UI.
-- **ColorPicker**: For color picking functionalities.
+- **Ktor**: For making network requests.
+- **Coil**: For image loading and caching.
+- **AndroidX Biometric**: For biometric authentication (e.g., fingerprint).
+- **AndroidX DocumentFile**: For accessing and managing documents.
+- **AndroidX Browser**: For launching a web browser.
+- **Glance**: For creating app widgets.
 
 ### Data Sharing
 
