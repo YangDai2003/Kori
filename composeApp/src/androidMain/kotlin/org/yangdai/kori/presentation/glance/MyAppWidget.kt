@@ -50,6 +50,7 @@ import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
+import androidx.glance.layout.width
 import androidx.glance.text.FontFamily
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
@@ -79,7 +80,7 @@ class MyAppWidget : GlanceAppWidget() {
         private val EXTRA_SMALL = DpSize(48.dp, 48.dp) // 仅显示创建按钮
         private val SMALL = DpSize(128.dp, 72.dp) // 显示应用名和创建按钮
         private val MEDIUM = DpSize(128.dp, 128.dp) // 无标题栏
-        private val LARGE = DpSize(150.dp, 250.dp) // 显示标题栏
+        private val LARGE = DpSize(288.dp, 250.dp) // 显示标题栏
     }
 
     override val previewSizeMode: PreviewSizeMode =
@@ -157,12 +158,40 @@ class MyAppWidget : GlanceAppWidget() {
 
                             Spacer(modifier = GlanceModifier.defaultWeight())
 
-                            SquareIconButton(
-                                modifier = GlanceModifier.size(48.dp),
+                            CircleIconButton(
                                 imageProvider = ImageProvider(R.drawable.new_text_24px),
                                 contentDescription = "new plain text",
+                                backgroundColor = GlanceTheme.colors.widgetBackground,
+                                contentColor = GlanceTheme.colors.primary,
                                 onClick = actionStartActivity<MainActivity>(
-                                    actionParametersOf(destinationKey to "note/")
+                                    actionParametersOf(destinationKey to "note?noteType=0")
+                                )
+                            )
+                            CircleIconButton(
+                                imageProvider = ImageProvider(R.drawable.new_markdown_24px),
+                                contentDescription = "new markdown",
+                                backgroundColor = GlanceTheme.colors.widgetBackground,
+                                contentColor = GlanceTheme.colors.primary,
+                                onClick = actionStartActivity<MainActivity>(
+                                    actionParametersOf(destinationKey to "note?noteType=1")
+                                )
+                            )
+                            CircleIconButton(
+                                imageProvider = ImageProvider(R.drawable.new_todo_24px),
+                                contentDescription = "new todo",
+                                backgroundColor = GlanceTheme.colors.widgetBackground,
+                                contentColor = GlanceTheme.colors.primary,
+                                onClick = actionStartActivity<MainActivity>(
+                                    actionParametersOf(destinationKey to "note?noteType=2")
+                                )
+                            )
+                            CircleIconButton(
+                                imageProvider = ImageProvider(R.drawable.new_draw_24px),
+                                contentDescription = "new drawing",
+                                backgroundColor = GlanceTheme.colors.widgetBackground,
+                                contentColor = GlanceTheme.colors.primary,
+                                onClick = actionStartActivity<MainActivity>(
+                                    actionParametersOf(destinationKey to "note?noteType=3")
                                 )
                             )
                         }
@@ -215,34 +244,34 @@ class MyAppWidget : GlanceAppWidget() {
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             SquareIconButton(
-                                modifier = GlanceModifier.fillMaxHeight(),
+                                modifier = GlanceModifier.fillMaxHeight().defaultWeight(),
                                 imageProvider = ImageProvider(R.drawable.new_text_24px),
                                 contentDescription = "new plain text",
                                 onClick = actionStartActivity<MainActivity>(
                                     actionParametersOf(destinationKey to "note?noteType=0")
                                 )
                             )
-                            Spacer(modifier = GlanceModifier.defaultWeight())
+                            Spacer(modifier = GlanceModifier.width(12.dp))
                             SquareIconButton(
-                                modifier = GlanceModifier.fillMaxHeight(),
+                                modifier = GlanceModifier.fillMaxHeight().defaultWeight(),
                                 imageProvider = ImageProvider(R.drawable.new_markdown_24px),
                                 contentDescription = "new markdown",
                                 onClick = actionStartActivity<MainActivity>(
                                     actionParametersOf(destinationKey to "note?noteType=1")
                                 )
                             )
-                            Spacer(modifier = GlanceModifier.defaultWeight())
+                            Spacer(modifier = GlanceModifier.width(12.dp))
                             SquareIconButton(
-                                modifier = GlanceModifier.fillMaxHeight(),
+                                modifier = GlanceModifier.fillMaxHeight().defaultWeight(),
                                 imageProvider = ImageProvider(R.drawable.new_todo_24px),
                                 contentDescription = "new todo",
                                 onClick = actionStartActivity<MainActivity>(
                                     actionParametersOf(destinationKey to "note?noteType=2")
                                 )
                             )
-                            Spacer(modifier = GlanceModifier.defaultWeight())
+                            Spacer(modifier = GlanceModifier.width(12.dp))
                             SquareIconButton(
-                                modifier = GlanceModifier.fillMaxHeight(),
+                                modifier = GlanceModifier.fillMaxHeight().defaultWeight(),
                                 imageProvider = ImageProvider(R.drawable.new_draw_24px),
                                 contentDescription = "new drawing",
                                 onClick = actionStartActivity<MainActivity>(

@@ -6,9 +6,6 @@
     <string name="screen_protection_detail">When this feature is turned on, app content cannot be captured or recorded, and the content will not be displayed in the background app list.</string>
     <string name="biometric">Unlock with biometrics</string>
     <string name="no_password_set">Please set the system lock screen password first</string>
-    <string name="settings">Settings</string>
-    <string name="folders">Folders</string>
-    <string name="template">New Template</string>
     <string name="view_all_notes">View all notes</string>
     <string name="home_widget">Add Widget to Home Screen</string>
     <string name="new_plain_text">New Plain Text</string>

@@ -6,9 +6,6 @@
     <string name="screen_protection_detail">Wenn diese Funktion aktiviert ist, können App-Inhalte nicht erfasst oder aufgezeichnet werden und die Inhalte werden nicht in der App-Liste im Hintergrund angezeigt.</string>
     <string name="biometric">Entsperren mit Biometrie</string>
     <string name="no_password_set">Bitte legen Sie zuerst das Passwort für den Sperrbildschirm des Systems fest.</string>
-    <string name="settings">Einstellungen</string>
-    <string name="folders">Ordner</string>
-    <string name="template">Neue Vorlage</string>
     <string name="view_all_notes">Alle Notizen anzeigen</string>
     <string name="home_widget">Widget zum Startbildschirm hinzufügen</string>
     <string name="new_plain_text">Neuer einfacher Text</string>
