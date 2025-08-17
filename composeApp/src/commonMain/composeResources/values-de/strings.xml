@@ -159,6 +159,10 @@
     <string name="context_tag">Kontext Tag</string>
     <string name="completion_mark">Abschlussmarkierung</string>
     <string name="priority_mark">Prioritätsmarkierung</string>
+    <string name="total_tasks">Gesamtzahl der Aufgaben</string>
+    <string name="completed_tasks">Erledigte Aufgaben</string>
+    <string name="pending_tasks">Ausstehende Aufgaben</string>
+    <string name="progress">Fortschritt</string>
 
     <string name="undo">Rückgängig</string>
     <string name="redo">Wiederholen</string>

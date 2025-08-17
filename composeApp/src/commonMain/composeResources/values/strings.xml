@@ -162,6 +162,10 @@
     <string name="context_tag">Context Tag</string>
     <string name="completion_mark">Completion Mark</string>
     <string name="priority_mark">Priority Mark</string>
+    <string name="total_tasks">Total Tasks</string>
+    <string name="completed_tasks">Completed Tasks</string>
+    <string name="pending_tasks">Pending Tasks</string>
+    <string name="progress">Progress</string>
 
     <string name="undo">Undo</string>
     <string name="redo">Redo</string>

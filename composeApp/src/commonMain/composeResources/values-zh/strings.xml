@@ -159,6 +159,10 @@
     <string name="context_tag">上下文标签</string>
     <string name="completion_mark">完成标记</string>
     <string name="priority_mark">优先级标记</string>
+    <string name="total_tasks">任务总数</string>
+    <string name="completed_tasks">已完成任务</string>
+    <string name="pending_tasks">待办任务</string>
+    <string name="progress">进度</string>
 
     <string name="undo">撤销</string>
     <string name="redo">恢复</string>

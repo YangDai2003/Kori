@@ -73,6 +73,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -99,16 +100,20 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.all_notes
 import kori.composeapp.generated.resources.char_count
+import kori.composeapp.generated.resources.completed_tasks
 import kori.composeapp.generated.resources.created
 import kori.composeapp.generated.resources.drawing
 import kori.composeapp.generated.resources.line_count
 import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.paragraph_count
+import kori.composeapp.generated.resources.pending_tasks
 import kori.composeapp.generated.resources.plain_text
+import kori.composeapp.generated.resources.progress
 import kori.composeapp.generated.resources.right_panel_open
 import kori.composeapp.generated.resources.saveAsTemplate
 import kori.composeapp.generated.resources.templates
 import kori.composeapp.generated.resources.todo_text
+import kori.composeapp.generated.resources.total_tasks
 import kori.composeapp.generated.resources.type
 import kori.composeapp.generated.resources.updated
 import kori.composeapp.generated.resources.word_count
@@ -283,7 +288,7 @@ fun NoteScreen(
                 },
                 navigationIcon = { PlatformStyleTopAppBarNavigationIcon(navigateUp) },
                 actions = {
-                    if (!isReadView)
+                    if (!isReadView && noteEditingState.noteType != NoteType.Drawing)
                         TooltipIconButton(
                             tipText = "Ctrl + F",
                             icon = if (isSearching) Icons.Default.SearchOff
@@ -683,8 +688,40 @@ fun NoteScreen(
                 )
             } else if (noteEditingState.noteType == NoteType.TODO) {
                 /**总任务，已完成，待办，进度**/
-            } else {
-                /**绘图信息：笔画数**/
+                var totalTasks by remember { mutableIntStateOf(0) }
+                var completedTasks by remember { mutableIntStateOf(0) }
+                var pendingTasks by remember { mutableIntStateOf(0) }
+                var progress by remember { mutableIntStateOf(0) }
+                LaunchedEffect(viewModel.contentState.text) {
+                    withContext(Dispatchers.Default) {
+                        val lines = viewModel.contentState.text.lines()
+                        totalTasks = lines.count { it.isNotBlank() }
+                        completedTasks =
+                            lines.count { it.trim().startsWith("x", ignoreCase = true) }
+                        pendingTasks = totalTasks - completedTasks
+                        progress = if (totalTasks > 0) {
+                            (completedTasks.toFloat() / totalTasks.toFloat() * 100).toInt()
+                        } else {
+                            0
+                        }
+                    }
+                }
+                NoteSideSheetItem(
+                    key = stringResource(Res.string.total_tasks),
+                    value = totalTasks.toString()
+                )
+                NoteSideSheetItem(
+                    key = stringResource(Res.string.completed_tasks),
+                    value = completedTasks.toString()
+                )
+                NoteSideSheetItem(
+                    key = stringResource(Res.string.pending_tasks),
+                    value = pendingTasks.toString()
+                )
+                NoteSideSheetItem(
+                    key = stringResource(Res.string.progress),
+                    value = "$progress%"
+                )
             }
         }
     )
