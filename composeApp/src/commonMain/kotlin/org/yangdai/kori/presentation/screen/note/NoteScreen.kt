@@ -632,6 +632,7 @@ fun NoteScreen(
             }
         },
         drawerContent = {
+            /**通用侧边栏信息：类型，时间**/
             NoteSideSheetItem(
                 key = stringResource(Res.string.type),
                 value = when (noteEditingState.noteType) {
@@ -641,7 +642,6 @@ fun NoteScreen(
                     NoteType.Drawing -> stringResource(Res.string.drawing)
                 }
             )
-
             val formattedCreated = remember(noteEditingState.createdAt) {
                 if (noteEditingState.createdAt.isBlank()) ""
                 else formatInstant(Instant.parse(noteEditingState.createdAt))
@@ -659,26 +659,33 @@ fun NoteScreen(
                 value = formattedUpdated
             )
 
-            NoteSideSheetItem(
-                key = stringResource(Res.string.char_count),
-                value = formatNumber(textState.charCount)
-            )
-            NoteSideSheetItem(
-                key = stringResource(Res.string.word_count),
-                value = formatNumber(textState.wordCountWithPunctuation)
-            )
-            NoteSideSheetItem(
-                key = stringResource(Res.string.word_count_without_punctuation),
-                value = formatNumber(textState.wordCountWithoutPunctuation)
-            )
-            NoteSideSheetItem(
-                key = stringResource(Res.string.line_count),
-                value = formatNumber(textState.lineCount)
-            )
-            NoteSideSheetItem(
-                key = stringResource(Res.string.paragraph_count),
-                value = formatNumber(textState.paragraphCount)
-            )
+            if (noteEditingState.noteType == NoteType.PLAIN_TEXT || noteEditingState.noteType == NoteType.MARKDOWN) {
+                /**文本文件信息：字符数，单词数，行数，段落数**/
+                NoteSideSheetItem(
+                    key = stringResource(Res.string.char_count),
+                    value = formatNumber(textState.charCount)
+                )
+                NoteSideSheetItem(
+                    key = stringResource(Res.string.word_count),
+                    value = formatNumber(textState.wordCountWithPunctuation)
+                )
+                NoteSideSheetItem(
+                    key = stringResource(Res.string.word_count_without_punctuation),
+                    value = formatNumber(textState.wordCountWithoutPunctuation)
+                )
+                NoteSideSheetItem(
+                    key = stringResource(Res.string.line_count),
+                    value = formatNumber(textState.lineCount)
+                )
+                NoteSideSheetItem(
+                    key = stringResource(Res.string.paragraph_count),
+                    value = formatNumber(textState.paragraphCount)
+                )
+            } else if (noteEditingState.noteType == NoteType.TODO) {
+                /**总任务，已完成，待办，进度**/
+            } else {
+                /**绘图信息：笔画数**/
+            }
         }
     )
 
