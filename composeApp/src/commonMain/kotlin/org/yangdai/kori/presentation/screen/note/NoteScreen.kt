@@ -135,9 +135,9 @@ import org.yangdai.kori.presentation.component.dialog.DialogMaxWidth
 import org.yangdai.kori.presentation.component.dialog.ExportDialog
 import org.yangdai.kori.presentation.component.dialog.FoldersDialog
 import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
-import org.yangdai.kori.presentation.component.dialog.PhotosPickerDialog
+import kfile.ImagesPicker
 import org.yangdai.kori.presentation.component.dialog.ShareDialog
-import org.yangdai.kori.presentation.component.dialog.VideoPickerDialog
+import kfile.VideoPicker
 import org.yangdai.kori.presentation.component.note.AdaptiveEditor
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorRow
 import org.yangdai.kori.presentation.component.note.AdaptiveView
@@ -147,12 +147,12 @@ import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.note.TitleTextField
+import org.yangdai.kori.presentation.component.note.addImageLinks
+import org.yangdai.kori.presentation.component.note.addVideoLink
 import org.yangdai.kori.presentation.component.note.drawing.DrawState
 import org.yangdai.kori.presentation.component.note.drawing.InNoteDrawPreview
 import org.yangdai.kori.presentation.component.note.drawing.InkScreen
 import org.yangdai.kori.presentation.component.note.drawing.rememberDrawState
-import org.yangdai.kori.presentation.component.note.addImageLinks
-import org.yangdai.kori.presentation.component.note.addVideoLink
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditor
 import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
 import org.yangdai.kori.presentation.component.note.template.TemplateProcessor
@@ -582,17 +582,15 @@ fun NoteScreen(
     }
 
     if (showImagesPicker) {
-        PhotosPickerDialog(noteEditingState.id) {
-            viewModel.contentState.edit { addImageLinks(it) }
+        ImagesPicker(noteEditingState.id) {
+            if (it.isNotEmpty()) viewModel.contentState.edit { addImageLinks(it) }
             showImagesPicker = false
         }
     }
 
     if (showVideoPicker) {
-        VideoPickerDialog(noteEditingState.id) {
-            it?.let {
-                viewModel.contentState.edit { addVideoLink(it) }
-            }
+        VideoPicker(noteEditingState.id) {
+            if (it != null) viewModel.contentState.edit { addVideoLink(it) }
             showVideoPicker = false
         }
     }

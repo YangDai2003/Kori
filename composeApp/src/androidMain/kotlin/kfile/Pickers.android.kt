@@ -1,4 +1,4 @@
-package org.yangdai.kori.presentation.component.dialog
+package kfile
 
 import android.content.Context
 import android.net.Uri
@@ -11,25 +11,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
-import kfile.PlatformFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.yangdai.kori.data.local.entity.NoteEntity
+import org.yangdai.kori.presentation.component.dialog.ExportType
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 @Composable
-actual fun FilePickerDialog(onFilePicked: (PlatformFile?) -> Unit) {
+actual fun PlatformFilePicker(onFileSelected: (PlatformFile?) -> Unit) {
     val context = LocalContext.current.applicationContext
     val openDocumentLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri ->
         uri?.let { documentUri ->
-            onFilePicked(PlatformFile(context, documentUri))
-        } ?: onFilePicked(null)
+            onFileSelected(PlatformFile(context, documentUri))
+        } ?: onFileSelected(null)
     }
 
     LaunchedEffect(Unit) {
@@ -38,7 +38,7 @@ actual fun FilePickerDialog(onFilePicked: (PlatformFile?) -> Unit) {
 }
 
 @Composable
-actual fun SaveFileDialog(
+actual fun NoteExporter(
     exportType: ExportType,
     noteEntity: NoteEntity,
     html: String,
@@ -74,13 +74,13 @@ actual fun SaveFileDialog(
 }
 
 @Composable
-actual fun FilesImportDialog(onFilePicked: (List<PlatformFile>) -> Unit) {
+actual fun PlatformFilesPicker(onFilesSelected: (List<PlatformFile>) -> Unit) {
     val context = LocalContext.current.applicationContext
     val openDocumentLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenMultipleDocuments()
     ) { uris ->
         val files = uris.map { uri -> PlatformFile(context, uri) }
-        onFilePicked(files)
+        onFilesSelected(files)
     }
 
     LaunchedEffect(Unit) {
@@ -90,7 +90,7 @@ actual fun FilesImportDialog(onFilePicked: (List<PlatformFile>) -> Unit) {
 
 @OptIn(ExperimentalTime::class)
 @Composable
-actual fun BackupJsonDialog(json: String, onJsonSaved: (Boolean) -> Unit) {
+actual fun JsonExporter(json: String, onJsonSaved: (Boolean) -> Unit) {
     val context = LocalContext.current.applicationContext
     val mimeType = "application/json"
     val fileName = "kori_backup_${Clock.System.now().toEpochMilliseconds()}.json"
@@ -111,7 +111,7 @@ actual fun BackupJsonDialog(json: String, onJsonSaved: (Boolean) -> Unit) {
 }
 
 @Composable
-actual fun PickJsonDialog(onJsonPicked: (String?) -> Unit) {
+actual fun JsonPicker(onJsonPicked: (String?) -> Unit) {
     val context = LocalContext.current.applicationContext
     val openDocumentLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
@@ -129,9 +129,9 @@ actual fun PickJsonDialog(onJsonPicked: (String?) -> Unit) {
 }
 
 @Composable
-actual fun PhotosPickerDialog(
+actual fun ImagesPicker(
     noteId: String,
-    onPhotosPicked: (List<Pair<String, String>>) -> Unit
+    onImagesSelected: (List<Pair<String, String>>) -> Unit
 ) {
     val context = LocalContext.current.applicationContext
     val scope = rememberCoroutineScope()
@@ -140,7 +140,7 @@ actual fun PhotosPickerDialog(
         contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = 10)
     ) { uris ->
         if (uris.isEmpty()) {
-            onPhotosPicked(emptyList())
+            onImagesSelected(emptyList())
             return@rememberLauncherForActivityResult
         }
 
@@ -155,7 +155,7 @@ actual fun PhotosPickerDialog(
                 )
             }
             withContext(Dispatchers.Main) {
-                onPhotosPicked(savedFiles)
+                onImagesSelected(savedFiles)
             }
         }
     }
@@ -168,9 +168,9 @@ actual fun PhotosPickerDialog(
 }
 
 @Composable
-actual fun VideoPickerDialog(
+actual fun VideoPicker(
     noteId: String,
-    onVideoPicked: (Pair<String, String>?) -> Unit
+    onVideoSelected: (Pair<String, String>?) -> Unit
 ) {
     val context = LocalContext.current.applicationContext
     val scope = rememberCoroutineScope()
@@ -179,7 +179,7 @@ actual fun VideoPickerDialog(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri ->
         if (uri == null) {
-            onVideoPicked(null)
+            onVideoSelected(null)
             return@rememberLauncherForActivityResult
         }
 
@@ -192,7 +192,7 @@ actual fun VideoPickerDialog(
                 defaultExtension = "mp4"
             )
             withContext(Dispatchers.Main) {
-                onVideoPicked(savedFile)
+                onVideoSelected(savedFile)
             }
         }
     }

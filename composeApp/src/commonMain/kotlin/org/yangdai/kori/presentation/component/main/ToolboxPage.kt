@@ -68,7 +68,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.component.dialog.ConfirmButton
 import org.yangdai.kori.presentation.component.dialog.DismissButton
-import org.yangdai.kori.presentation.component.dialog.FilePickerDialog
+import kfile.PlatformFilePicker
 import org.yangdai.kori.presentation.component.dialog.dialogShape
 import org.yangdai.kori.presentation.navigation.Screen
 
@@ -215,7 +215,7 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
     }
 
     if (showFilePickerDialog)
-        FilePickerDialog { pickedFile ->
+        PlatformFilePicker { pickedFile ->
             showFilePickerDialog = false
             pickedFile?.let {
                 navigateToScreen(Screen.File(pickedFile.getPath()))

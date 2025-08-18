@@ -1,11 +1,13 @@
-package org.yangdai.kori.presentation.component.dialog
+package kfile
 
 import androidx.compose.runtime.Composable
-import kfile.PlatformFile
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_name
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.NoteEntity
+import org.yangdai.kori.presentation.component.dialog.ExportType
+import java.awt.FileDialog
+import java.awt.Frame
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
@@ -13,11 +15,11 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 @Composable
-actual fun FilePickerDialog(onFilePicked: (PlatformFile?) -> Unit) {
-    val fileDialog = java.awt.FileDialog(
-        null as java.awt.Frame?,
+actual fun PlatformFilePicker(onFileSelected: (PlatformFile?) -> Unit) {
+    val fileDialog = FileDialog(
+        null as Frame?,
         stringResource(Res.string.app_name),
-        java.awt.FileDialog.LOAD
+        FileDialog.LOAD
     ).apply {
         file = "*.txt;*.md"
         isVisible = true
@@ -26,15 +28,15 @@ actual fun FilePickerDialog(onFilePicked: (PlatformFile?) -> Unit) {
     if (fileDialog.file != null && fileDialog.directory != null) {
         val file = File(fileDialog.directory, fileDialog.file)
         if (file.exists() && (file.extension == "txt" || file.extension == "md" || file.extension == "markdown")) {
-            onFilePicked(PlatformFile(file = file))
+            onFileSelected(PlatformFile(file = file))
             return
         }
     }
-    onFilePicked(null)
+    onFileSelected(null)
 }
 
 @Composable
-actual fun SaveFileDialog(
+actual fun NoteExporter(
     exportType: ExportType,
     noteEntity: NoteEntity,
     html: String,
@@ -48,10 +50,10 @@ actual fun SaveFileDialog(
     val fileName =
         noteEntity.title.trim().replace(" ", "_").replace("/", "_").replace(":", "_") + extension
     val fileContent = if (exportType == ExportType.HTML) html else noteEntity.content
-    val fileDialog = java.awt.FileDialog(
-        null as java.awt.Frame?,
+    val fileDialog = FileDialog(
+        null as Frame?,
         stringResource(Res.string.app_name),
-        java.awt.FileDialog.SAVE
+        FileDialog.SAVE
     ).apply {
         file = fileName
         isVisible = true
@@ -65,11 +67,11 @@ actual fun SaveFileDialog(
 }
 
 @Composable
-actual fun FilesImportDialog(onFilePicked: (List<PlatformFile>) -> Unit) {
-    val fileDialog = java.awt.FileDialog(
-        null as java.awt.Frame?,
+actual fun PlatformFilesPicker(onFilesSelected: (List<PlatformFile>) -> Unit) {
+    val fileDialog = FileDialog(
+        null as Frame?,
         stringResource(Res.string.app_name),
-        java.awt.FileDialog.LOAD
+        FileDialog.LOAD
     ).apply {
         file = "*.txt;*.md"
         isVisible = true
@@ -84,16 +86,16 @@ actual fun FilesImportDialog(onFilePicked: (List<PlatformFile>) -> Unit) {
             }
         }
     }
-    onFilePicked(selectedFiles)
+    onFilesSelected(selectedFiles)
 }
 
 @OptIn(ExperimentalTime::class)
 @Composable
-actual fun BackupJsonDialog(json: String, onJsonSaved: (Boolean) -> Unit) {
-    val fileDialog = java.awt.FileDialog(
-        null as java.awt.Frame?,
+actual fun JsonExporter(json: String, onJsonSaved: (Boolean) -> Unit) {
+    val fileDialog = FileDialog(
+        null as Frame?,
         stringResource(Res.string.app_name),
-        java.awt.FileDialog.SAVE
+        FileDialog.SAVE
     ).apply {
         file = "kori_backup_${Clock.System.now().toEpochMilliseconds()}.json"
         isVisible = true
@@ -107,11 +109,11 @@ actual fun BackupJsonDialog(json: String, onJsonSaved: (Boolean) -> Unit) {
 }
 
 @Composable
-actual fun PickJsonDialog(onJsonPicked: (String?) -> Unit) {
-    val fileDialog = java.awt.FileDialog(
-        null as java.awt.Frame?,
+actual fun JsonPicker(onJsonPicked: (String?) -> Unit) {
+    val fileDialog = FileDialog(
+        null as Frame?,
         stringResource(Res.string.app_name),
-        java.awt.FileDialog.LOAD
+        FileDialog.LOAD
     ).apply {
         file = "*.json"
         isVisible = true
@@ -128,14 +130,14 @@ actual fun PickJsonDialog(onJsonPicked: (String?) -> Unit) {
 }
 
 @Composable
-actual fun PhotosPickerDialog(
+actual fun ImagesPicker(
     noteId: String,
-    onPhotosPicked: (List<Pair<String, String>>) -> Unit
+    onImagesSelected: (List<Pair<String, String>>) -> Unit
 ) {
-    val fileDialog = java.awt.FileDialog(
-        null as java.awt.Frame?,
+    val fileDialog = FileDialog(
+        null as Frame?,
         stringResource(Res.string.app_name),
-        java.awt.FileDialog.LOAD
+        FileDialog.LOAD
     ).apply {
         file = "*.jpg;*.jpeg;*.png;*.gif;*.bmp;*.webp"
         isVisible = true
@@ -168,18 +170,18 @@ actual fun PhotosPickerDialog(
             }
         }
     }
-    onPhotosPicked(savedNames)
+    onImagesSelected(savedNames)
 }
 
 @Composable
-actual fun VideoPickerDialog(
+actual fun VideoPicker(
     noteId: String,
-    onVideoPicked: (Pair<String, String>?) -> Unit
+    onVideoSelected: (Pair<String, String>?) -> Unit
 ) {
-    val fileDialog = java.awt.FileDialog(
-        null as java.awt.Frame?,
+    val fileDialog = FileDialog(
+        null as Frame?,
         stringResource(Res.string.app_name),
-        java.awt.FileDialog.LOAD
+        FileDialog.LOAD
     ).apply {
         file = "*.mp4;*.avi;*.mkv;*.mov;*.wmv;*.flv;*.webm"
         isVisible = true
@@ -207,5 +209,5 @@ actual fun VideoPickerDialog(
             }
         }
     }
-    onVideoPicked(savedName)
+    onVideoSelected(savedName)
 }

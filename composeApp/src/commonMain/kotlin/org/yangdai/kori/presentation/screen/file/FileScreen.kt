@@ -106,9 +106,9 @@ import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationI
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.DialogMaxWidth
 import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
-import org.yangdai.kori.presentation.component.dialog.PhotosPickerDialog
+import kfile.ImagesPicker
 import org.yangdai.kori.presentation.component.dialog.ShareDialog
-import org.yangdai.kori.presentation.component.dialog.VideoPickerDialog
+import kfile.VideoPicker
 import org.yangdai.kori.presentation.component.note.AdaptiveEditor
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorRow
 import org.yangdai.kori.presentation.component.note.AdaptiveView
@@ -480,17 +480,15 @@ fun FileScreen(
     }
 
     if (showImagesPicker) {
-        PhotosPickerDialog("") {
-            viewModel.contentState.edit { addImageLinks(it) }
+        ImagesPicker("") {
+            if (it.isNotEmpty()) viewModel.contentState.edit { addImageLinks(it) }
             showImagesPicker = false
         }
     }
 
     if (showVideoPicker) {
-        VideoPickerDialog("") {
-            it?.let {
-                viewModel.contentState.edit { addVideoLink(it) }
-            }
+        VideoPicker("") {
+            if (it != null) viewModel.contentState.edit { addVideoLink(it) }
             showVideoPicker = false
         }
     }

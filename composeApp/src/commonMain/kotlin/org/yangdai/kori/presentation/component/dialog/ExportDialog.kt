@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import kfile.NoteExporter
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.export_as
 import org.jetbrains.compose.resources.stringResource
@@ -62,7 +63,7 @@ fun ExportDialog(
     )
 
     if (showSaveFileDialog) {
-        SaveFileDialog(exportType, noteEntity, html) {
+        NoteExporter(exportType, noteEntity, html) {
             showSaveFileDialog = false
             onDismissRequest()
         }

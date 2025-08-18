@@ -36,10 +36,10 @@ import kori.composeapp.generated.resources.restore_description
 import kori.composeapp.generated.resources.restore_from_backup
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import org.yangdai.kori.presentation.component.dialog.BackupJsonDialog
-import org.yangdai.kori.presentation.component.dialog.FilesImportDialog
+import kfile.JsonExporter
+import kfile.PlatformFilesPicker
 import org.yangdai.kori.presentation.component.dialog.FoldersDialog
-import org.yangdai.kori.presentation.component.dialog.PickJsonDialog
+import kfile.JsonPicker
 import org.yangdai.kori.presentation.component.dialog.ProgressDialog
 import org.yangdai.kori.presentation.component.dialog.WarningDialog
 import org.yangdai.kori.presentation.component.setting.DetailPaneItem
@@ -127,19 +127,19 @@ fun DataPane(viewModel: DataViewModel = koinViewModel()) {
         )
 
     if (showImportDialog)
-        FilesImportDialog {
+        PlatformFilesPicker {
             showImportDialog = false
             if (it.isNotEmpty())
                 viewModel.importFiles(it, selectFolderId)
         }
 
     if (showSaveJsonDialog)
-        BackupJsonDialog(json!!) {
+        JsonExporter(json!!) {
             showSaveJsonDialog = false
         }
 
     if (showPickJsonDialog)
-        PickJsonDialog { json ->
+        JsonPicker { json ->
             showPickJsonDialog = false
             if (json != null) {
                 viewModel.restoreFromJson(json)

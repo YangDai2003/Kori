@@ -1,11 +1,11 @@
-package org.yangdai.kori.presentation.component.dialog
+package kfile
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.uikit.LocalUIViewController
-import kfile.PlatformFile
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.yangdai.kori.data.local.entity.NoteEntity
+import org.yangdai.kori.presentation.component.dialog.ExportType
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSString
 import platform.Foundation.NSTemporaryDirectory
@@ -22,7 +22,7 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
-actual fun FilePickerDialog(onFilePicked: (PlatformFile?) -> Unit) {
+actual fun PlatformFilePicker(onFileSelected: (PlatformFile?) -> Unit) {
     val currentUIViewController = LocalUIViewController.current
 
     val delegate = remember {
@@ -31,11 +31,11 @@ actual fun FilePickerDialog(onFilePicked: (PlatformFile?) -> Unit) {
                 controller: UIDocumentPickerViewController,
                 didPickDocumentAtURL: NSURL
             ) {
-                onFilePicked(PlatformFile(url = didPickDocumentAtURL))
+                onFileSelected(PlatformFile(url = didPickDocumentAtURL))
             }
 
             override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
-                onFilePicked(null)
+                onFileSelected(null)
             }
         }
     }
@@ -66,7 +66,7 @@ actual fun FilePickerDialog(onFilePicked: (PlatformFile?) -> Unit) {
 @OptIn(ExperimentalForeignApi::class)
 @Suppress("CAST_NEVER_SUCCEEDS")
 @Composable
-actual fun SaveFileDialog(
+actual fun NoteExporter(
     exportType: ExportType,
     noteEntity: NoteEntity,
     html: String,
@@ -127,7 +127,7 @@ actual fun SaveFileDialog(
 }
 
 @Composable
-actual fun FilesImportDialog(onFilePicked: (List<PlatformFile>) -> Unit) {
+actual fun PlatformFilesPicker(onFilesSelected: (List<PlatformFile>) -> Unit) {
     val currentUIViewController = LocalUIViewController.current
 
     val delegate = remember {
@@ -139,11 +139,11 @@ actual fun FilesImportDialog(onFilePicked: (List<PlatformFile>) -> Unit) {
                 val files = didPickDocumentsAtURLs.mapNotNull { url ->
                     (url as? NSURL)?.let { PlatformFile(url = it) }
                 }
-                onFilePicked(files)
+                onFilesSelected(files)
             }
 
             override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
-                onFilePicked(emptyList())
+                onFilesSelected(emptyList())
             }
         }
     }
@@ -174,7 +174,7 @@ actual fun FilesImportDialog(onFilePicked: (List<PlatformFile>) -> Unit) {
 @Suppress("CAST_NEVER_SUCCEEDS")
 @OptIn(ExperimentalForeignApi::class, ExperimentalTime::class)
 @Composable
-actual fun BackupJsonDialog(json: String, onJsonSaved: (Boolean) -> Unit) {
+actual fun JsonExporter(json: String, onJsonSaved: (Boolean) -> Unit) {
     val currentUIViewController = LocalUIViewController.current
     val tempDir = NSTemporaryDirectory()
     val tempDirURL = NSURL.fileURLWithPath(tempDir, isDirectory = true)
@@ -222,7 +222,7 @@ actual fun BackupJsonDialog(json: String, onJsonSaved: (Boolean) -> Unit) {
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
-actual fun PickJsonDialog(onJsonPicked: (String?) -> Unit) {
+actual fun JsonPicker(onJsonPicked: (String?) -> Unit) {
     val currentUIViewController = LocalUIViewController.current
 
     val delegate = remember {
@@ -263,17 +263,17 @@ actual fun PickJsonDialog(onJsonPicked: (String?) -> Unit) {
 }
 
 @Composable
-actual fun PhotosPickerDialog(
+actual fun ImagesPicker(
     noteId: String,
-    onPhotosPicked: (List<Pair<String, String>>) -> Unit
+    onImagesSelected: (List<Pair<String, String>>) -> Unit
 ) {
     TODO("Not yet implemented")
 }
 
 @Composable
-actual fun VideoPickerDialog(
+actual fun VideoPicker(
     noteId: String,
-    onVideoPicked: (Pair<String, String>?) -> Unit
+    onVideoSelected: (Pair<String, String>?) -> Unit
 ) {
     TODO("Not yet implemented")
 }
