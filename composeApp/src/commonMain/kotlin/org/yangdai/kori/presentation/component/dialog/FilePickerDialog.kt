@@ -25,4 +25,4 @@ expect fun SaveFileDialog(
 )
 
 @Composable
-expect fun PhotosPickerDialog(onPhotosPicked: (List<String>) -> Unit)
+expect fun PhotosPickerDialog(noteId: String, onPhotosPicked: (List<Pair<String, String>>) -> Unit)

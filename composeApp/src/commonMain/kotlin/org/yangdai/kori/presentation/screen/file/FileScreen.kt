@@ -106,6 +106,7 @@ import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationI
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.DialogMaxWidth
 import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
+import org.yangdai.kori.presentation.component.dialog.PhotosPickerDialog
 import org.yangdai.kori.presentation.component.dialog.ShareDialog
 import org.yangdai.kori.presentation.component.note.AdaptiveEditor
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorRow
@@ -116,6 +117,7 @@ import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.note.TitleTextField
+import org.yangdai.kori.presentation.component.note.addImageLinks
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditor
 import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
 import org.yangdai.kori.presentation.component.note.template.TemplateProcessor
@@ -162,6 +164,7 @@ fun FileScreen(
     val scrollState = rememberScrollState()
     var isReadView by rememberSaveable { mutableStateOf(false) }
     var showTemplatesBottomSheet by rememberSaveable { mutableStateOf(false) }
+    var showImagePicker by rememberSaveable { mutableStateOf(false) }
     var isSearching by remember { mutableStateOf(false) }
     var selectedHeader by remember { mutableStateOf<IntRange?>(null) }
     val findAndReplaceState = rememberFindAndReplaceState()
@@ -332,7 +335,8 @@ fun FileScreen(
                         AdaptiveView(
                             modifier = Modifier.fillMaxHeight().weight(1f - editorWeight),
                             noteType = fileEditingState.fileType,
-                            contentString = if (fileEditingState.fileType == NoteType.MARKDOWN) html else viewModel.contentState.text.toString(),
+                            html = html,
+                            rawText = viewModel.contentState.text.toString(),
                             scrollState = scrollState,
                             isSheetVisible = isSideSheetOpen || showTemplatesBottomSheet,
                             printTrigger = printTrigger
@@ -364,7 +368,8 @@ fun FileScreen(
                                 AdaptiveView(
                                     modifier = Modifier.fillMaxSize(),
                                     noteType = fileEditingState.fileType,
-                                    contentString = if (fileEditingState.fileType == NoteType.MARKDOWN) html else viewModel.contentState.text.toString(),
+                                    html = html,
+                                    rawText = viewModel.contentState.text.toString(),
                                     scrollState = scrollState,
                                     isSheetVisible = isSideSheetOpen || showTemplatesBottomSheet,
                                     printTrigger = printTrigger
@@ -384,6 +389,10 @@ fun FileScreen(
                 when (action) {
                     EditorRowAction.Templates -> {
                         showTemplatesBottomSheet = true
+                    }
+
+                    EditorRowAction.Images -> {
+                        showImagePicker = true
                     }
                 }
             }
@@ -468,6 +477,13 @@ fun FileScreen(
                     }
                 }
             }
+        }
+    }
+
+    if (showImagePicker) {
+        PhotosPickerDialog("") {
+            viewModel.contentState.edit { addImageLinks(it) }
+            showImagePicker = false
         }
     }
 

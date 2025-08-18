@@ -21,6 +21,7 @@ import androidx.compose.material.icons.automirrored.outlined.Redo
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.automirrored.outlined.Undo
 import androidx.compose.material.icons.outlined.AddChart
+import androidx.compose.material.icons.outlined.AddPhotoAlternate
 import androidx.compose.material.icons.outlined.AttachMoney
 import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.Code
@@ -374,7 +375,13 @@ fun EditorRowScope.MarkdownEditorRow(
         )
     }
 
-    if (!isTemplate)
+    if (!isTemplate) {
+        EditorRowSection {
+            EditorRowButton(
+                icon = Icons.Outlined.AddPhotoAlternate,
+                onClick = { onEditorRowAction(EditorRowAction.Images) }
+            )
+        }
         EditorRowSection {
             EditorRowButton(
                 hint = stringResource(Res.string.templates),
@@ -382,6 +389,7 @@ fun EditorRowScope.MarkdownEditorRow(
                 onClick = { onEditorRowAction(EditorRowAction.Templates) }
             )
         }
+    }
 
     Spacer(Modifier.width(4.dp))
 }

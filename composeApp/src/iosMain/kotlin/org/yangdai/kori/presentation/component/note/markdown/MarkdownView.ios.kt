@@ -34,11 +34,12 @@ import platform.darwin.NSObject
 @Composable
 actual fun MarkdownView(
     modifier: Modifier,
+    uuid: String,
     html: String,
     scrollState: ScrollState,
-    styles: MarkdownStyles,
     isSheetVisible: Boolean,
-    printTrigger: MutableState<Boolean>
+    printTrigger: MutableState<Boolean>,
+    styles: MarkdownStyles
 ) {
     var webView by remember { mutableStateOf<WKWebView?>(null) }
     val navigationDelegate = remember { NavigationDelegate() }

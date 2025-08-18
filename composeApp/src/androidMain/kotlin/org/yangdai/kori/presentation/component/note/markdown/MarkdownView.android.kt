@@ -9,8 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.JavascriptInterface
 import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebView
-import android.webkit.WebView.enableSlowWholeDocumentDraw
 import android.webkit.WebViewClient
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.ScrollState
@@ -20,46 +20,92 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.net.toUri
+import androidx.webkit.WebViewAssetLoader
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.yangdai.kori.presentation.component.dialog.ImageViewerDialog
 import org.yangdai.kori.presentation.theme.LocalAppConfig
 import org.yangdai.kori.presentation.util.rememberCustomTabsIntent
+import org.yangdai.kori.presentation.util.toHexColor
+import java.io.File
+import java.io.InputStreamReader
+import kotlin.math.roundToInt
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 actual fun MarkdownView(
     modifier: Modifier,
+    uuid: String,
     html: String,
     scrollState: ScrollState,
-    styles: MarkdownStyles,
     isSheetVisible: Boolean,
-    printTrigger: MutableState<Boolean>
+    printTrigger: MutableState<Boolean>,
+    styles: MarkdownStyles
 ) {
     val customTabsIntent = rememberCustomTabsIntent()
     val activity = LocalActivity.current
+    val appConfig = LocalAppConfig.current
+    val context = LocalContext.current
+
     var webView by remember { mutableStateOf<WebView?>(null) }
     var showDialog by remember { mutableStateOf(false) }
     var clickedImageUrl by remember { mutableStateOf("") }
-    val appConfig = LocalAppConfig.current
-    val data = remember(html, styles, appConfig) { processHtml(html, styles, appConfig) }
+    var rawData by rememberSaveable { mutableStateOf("") }
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            rawData = runCatching {
+                InputStreamReader(context.assets.open("template.html")).use { it.readText() }
+            }.getOrDefault("")
+        }
+    }
+    val data = remember(html, styles, appConfig, rawData) {
+        rawData
+            .replace("{{TEXT_COLOR}}", styles.hexTextColor)
+            .replace("{{BACKGROUND_COLOR}}", styles.backgroundColor.toHexColor())
+            .replace("{{CODE_BACKGROUND}}", styles.hexCodeBackgroundColor)
+            .replace("{{PRE_BACKGROUND}}", styles.hexPreBackgroundColor)
+            .replace("{{QUOTE_BACKGROUND}}", styles.hexQuoteBackgroundColor)
+            .replace("{{LINK_COLOR}}", styles.hexLinkColor)
+            .replace("{{BORDER_COLOR}}", styles.hexBorderColor)
+            .replace("{{COLOR_SCHEME}}", if (appConfig.darkMode) "dark" else "light")
+            .replace("{{FONT_SCALE}}", "${(appConfig.fontScale * 100).roundToInt()}%")
+            .replace("{{CONTENT}}", html)
+    }
 
-    val webViewClient = remember {
+    val assetLoader = remember(context, uuid) {
+        WebViewAssetLoader.Builder()
+            .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(context))
+            .addPathHandler(
+                "/files/",
+                WebViewAssetLoader.InternalStoragePathHandler(context, File(context.filesDir, uuid))
+            )
+            .build()
+    }
+
+    val webViewClient = remember(assetLoader, customTabsIntent) {
         object : WebViewClient() {
             override fun shouldOverrideUrlLoading(
-                view: WebView?,
+                view: WebView,
                 request: WebResourceRequest
             ): Boolean {
                 val url = request.url.toString()
-                if (url.startsWith("http://") || url.startsWith("https://")) {
-                    view?.context?.let {
-                        customTabsIntent.launchUrl(it, url.toUri())
-                    }
+                if (!url.startsWith("https://${WebViewAssetLoader.DEFAULT_DOMAIN}")) {
+                    customTabsIntent.launchUrl(view.context, request.url)
                 }
                 return true
+            }
+
+            override fun shouldInterceptRequest(
+                view: WebView,
+                request: WebResourceRequest
+            ): WebResourceResponse? {
+                return assetLoader.shouldInterceptRequest(request.url)
             }
         }
     }
@@ -67,12 +113,12 @@ actual fun MarkdownView(
     AndroidView(
         modifier = modifier.clipToBounds(),
         factory = {
-            WebView(it).also { wv -> webView = wv }.apply {
+            WebView(it).apply {
+                webView = this
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
-                this.webViewClient = webViewClient
                 addJavascriptInterface(
                     object {
                         @Suppress("unused")
@@ -84,28 +130,26 @@ actual fun MarkdownView(
                     },
                     "imageInterface"
                 )
-                settings.allowFileAccess = true
-                settings.allowContentAccess = true
-                settings.allowFileAccessFromFileURLs = true
-                settings.allowUniversalAccessFromFileURLs = true
                 setLayerType(View.LAYER_TYPE_HARDWARE, null)
-                settings.domStorageEnabled = true
-                settings.javaScriptEnabled = true
-                settings.loadsImagesAutomatically = true
                 isVerticalScrollBarEnabled = true
                 isHorizontalScrollBarEnabled = false
-                settings.setSupportZoom(false)
-                settings.builtInZoomControls = false
-                settings.displayZoomControls = false
-                settings.useWideViewPort = true
-                settings.loadWithOverviewMode = false
-                enableSlowWholeDocumentDraw()
+                settings.apply {
+                    domStorageEnabled = true
+                    javaScriptEnabled = true
+                    loadsImagesAutomatically = true
+                    setSupportZoom(false)
+                    builtInZoomControls = false
+                    displayZoomControls = false
+                    useWideViewPort = true
+                    loadWithOverviewMode = false
+                }
             }
         },
         update = {
+            it.webViewClient = webViewClient
             it.setBackgroundColor(styles.backgroundColor)
             it.loadDataWithBaseURL(
-                null,
+                "https://${WebViewAssetLoader.DEFAULT_DOMAIN}/",
                 data,
                 "text/html",
                 "UTF-8",

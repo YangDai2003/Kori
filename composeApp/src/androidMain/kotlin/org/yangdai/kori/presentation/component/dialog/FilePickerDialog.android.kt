@@ -1,5 +1,7 @@
 package org.yangdai.kori.presentation.component.dialog
 
+import android.provider.OpenableColumns
+import android.webkit.MimeTypeMap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,8 +14,6 @@ import java.io.File
 import java.io.FileOutputStream
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @Composable
 actual fun FilePickerDialog(onFilePicked: (PlatformFile?) -> Unit) {
@@ -122,29 +122,70 @@ actual fun PickJsonDialog(onJsonPicked: (String?) -> Unit) {
     }
 }
 
-@OptIn(ExperimentalUuidApi::class)
 @Composable
-actual fun PhotosPickerDialog(onPhotosPicked: (List<String>) -> Unit) {
+actual fun PhotosPickerDialog(
+    noteId: String,
+    onPhotosPicked: (List<Pair<String, String>>) -> Unit
+) {
     val context = LocalContext.current.applicationContext
     val photoPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = 10)
     ) { uris ->
-        val savedNames = mutableListOf<String>()
-        val imagesDir = File(context.filesDir, "images")
+        if (uris.isEmpty()) {
+            onPhotosPicked(emptyList())
+            return@rememberLauncherForActivityResult
+        }
+
+        val savedNames = mutableListOf<Pair<String, String>>()
+        val imagesDir = File(context.filesDir, noteId)
         if (!imagesDir.exists()) imagesDir.mkdirs()
+
         uris.forEach { uri ->
-            val ext = context.contentResolver.getType(uri)?.substringAfterLast('/') ?: "jpg"
-            val fileName = "IMG_${Uuid.random().toHexString()}.$ext"
-            val destFile = File(imagesDir, fileName)
             try {
+                // 优先获取原始文件名
+                var originalFullName: String? = null
+                context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                    if (cursor.moveToFirst()) {
+                        val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                        if (nameIndex != -1) {
+                            originalFullName = cursor.getString(nameIndex)
+                        }
+                    }
+                }
+
+                // 获取基于MIME类型的备用扩展名，以备后用
+                val mimeType = context.contentResolver.getType(uri) ?: ""
+                val mimeExtension =
+                    MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: "jpg"
+
+                val finalFileName = if (!originalFullName.isNullOrBlank()) {
+                    // 检查原始文件名是否包含一个点以及点后面的字符
+                    val originalExtension = originalFullName.substringAfterLast('.', "")
+                    if (originalExtension.isNotBlank()) {
+                        // --- 情况 A: 原始文件名已包含扩展名 ---
+                        // 直接使用，例如 "IMG_1234.JPG" -> "IMG_1234.JPG"
+                        originalFullName
+                    } else {
+                        // --- 情况 B: 原始文件名不含扩展名 ---
+                        // 将原始名称和MIME扩展名结合，例如 "MyPhoto" -> "MyPhoto.png"
+                        "$originalFullName.$mimeExtension"
+                    }
+                } else {
+                    // --- 情况 C: 无法获取任何原始文件名 ---
+                    // 生成一个全新的文件名，例如 "IMG_1692081000000.jpg"
+                    "IMG_${System.currentTimeMillis()}.$mimeExtension"
+                }
+
+                val destFile = File(imagesDir, finalFileName)
+
                 context.contentResolver.openInputStream(uri)?.use { input ->
                     FileOutputStream(destFile).use { output ->
                         input.copyTo(output)
                     }
                 }
-                savedNames.add(fileName)
-            } catch (_: Exception) {
-                // ignore failed copy
+                savedNames.add(finalFileName to "/files/$finalFileName")
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
         onPhotosPicked(savedNames)

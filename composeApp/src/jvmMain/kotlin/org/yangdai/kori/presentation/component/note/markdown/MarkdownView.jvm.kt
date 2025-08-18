@@ -27,11 +27,12 @@ import java.net.URI
 @Composable
 actual fun MarkdownView(
     modifier: Modifier,
+    uuid: String,
     html: String,
     scrollState: ScrollState,
-    styles: MarkdownStyles,
     isSheetVisible: Boolean,
-    printTrigger: MutableState<Boolean>
+    printTrigger: MutableState<Boolean>,
+    styles: MarkdownStyles
 ) {
     val jfxPanel = remember { InteropPanel() }
     var webView by remember { mutableStateOf<WebView?>(null) }

@@ -64,6 +64,7 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.androidx.glance)
             implementation(libs.androidx.glance.appwidget)
+            implementation(libs.androidx.webkit)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -132,8 +133,8 @@ android {
         applicationId = "org.yangdai.kori"
         minSdk = 29
         targetSdk = 36
-        versionCode = 8
-        versionName = "1.0.8"
+        versionCode = 9
+        versionName = "1.0.9"
     }
     splits {
         abi {
@@ -231,7 +232,7 @@ compose.desktop {
                 TargetFormat.Rpm
             )
             packageName = "Kori"
-            packageVersion = "1.0.8"
+            packageVersion = "1.0.9"
             description = "Compose Multiplatform App"
             licenseFile.set(rootProject.file("LICENSE.txt"))
         }

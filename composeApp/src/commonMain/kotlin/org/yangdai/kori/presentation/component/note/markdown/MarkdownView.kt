@@ -6,11 +6,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kotlinx.coroutines.runBlocking
+import org.yangdai.kori.presentation.component.note.markdown.MarkdownStyles.Companion.rememberMarkdownStyles
 import org.yangdai.kori.presentation.theme.AppConfig
 import org.yangdai.kori.presentation.theme.linkColor
 import org.yangdai.kori.presentation.util.toHexColor
@@ -26,7 +28,7 @@ data class MarkdownStyles(
     val backgroundColor: Int
 ) {
     companion object {
-        fun fromColorScheme(colorScheme: ColorScheme) = MarkdownStyles(
+        private fun fromColorScheme(colorScheme: ColorScheme) = MarkdownStyles(
             hexTextColor = colorScheme.onSurface.toArgb().toHexColor(),
             hexCodeBackgroundColor = colorScheme.surfaceVariant.toArgb().toHexColor(),
             hexPreBackgroundColor = colorScheme.surfaceColorAtElevation(1.dp).toArgb().toHexColor(),
@@ -35,6 +37,11 @@ data class MarkdownStyles(
             hexBorderColor = colorScheme.outline.toArgb().toHexColor(),
             backgroundColor = colorScheme.surface.toArgb()
         )
+
+        @Composable
+        fun rememberMarkdownStyles(colorScheme: ColorScheme): MarkdownStyles {
+            return remember(colorScheme) { fromColorScheme(colorScheme) }
+        }
     }
 }
 
@@ -81,10 +88,11 @@ fun processHtml(
 
 @Composable
 expect fun MarkdownView(
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
+    uuid: String,
     html: String,
     scrollState: ScrollState,
-    styles: MarkdownStyles = MarkdownStyles.fromColorScheme(MaterialTheme.colorScheme),
     isSheetVisible: Boolean,
-    printTrigger: MutableState<Boolean>
+    printTrigger: MutableState<Boolean>,
+    styles: MarkdownStyles = rememberMarkdownStyles(MaterialTheme.colorScheme)
 )

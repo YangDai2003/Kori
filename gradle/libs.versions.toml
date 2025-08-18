@@ -24,6 +24,7 @@ androidx-documentfile = "1.1.0"
 androidx-browser = "1.9.0"
 androidx-glance = "1.2.0-alpha01"
 composeHotReload = "1.0.0-beta05"
+webkit = "1.14.0"
 
 [libraries]
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
@@ -65,6 +66,7 @@ androidx-activity-compose = { group = "androidx.activity", name = "activity-comp
 androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "androidx-biometric" }
 androidx-documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "androidx-documentfile" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "androidx-browser" }
+androidx-webkit = { module = "androidx.webkit:webkit", version.ref = "webkit" }
 androidx-glance = { group = "androidx.glance", name = "glance", version.ref = "androidx-glance" }
 androidx-glance-appwidget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "androidx-glance" }
 

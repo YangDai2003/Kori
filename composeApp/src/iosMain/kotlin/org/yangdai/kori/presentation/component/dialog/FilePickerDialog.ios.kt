@@ -263,6 +263,9 @@ actual fun PickJsonDialog(onJsonPicked: (String?) -> Unit) {
 }
 
 @Composable
-actual fun PhotosPickerDialog(onPhotosPicked: (List<String>) -> Unit) {
+actual fun PhotosPickerDialog(
+    noteId: String,
+    onPhotosPicked: (List<Pair<String, String>>) -> Unit
+) {
     TODO("Not yet implemented")
 }

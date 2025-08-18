@@ -239,6 +239,7 @@ fun AdaptiveEditorRow(
 }
 
 sealed class EditorRowAction {
+    object Images : EditorRowAction()
     object Templates : EditorRowAction()
 }
 

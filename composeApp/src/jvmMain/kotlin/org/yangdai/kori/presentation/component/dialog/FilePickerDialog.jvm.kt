@@ -11,8 +11,6 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @Composable
 actual fun FilePickerDialog(onFilePicked: (PlatformFile?) -> Unit) {
@@ -129,38 +127,43 @@ actual fun PickJsonDialog(onJsonPicked: (String?) -> Unit) {
     onJsonPicked(null)
 }
 
-@OptIn(ExperimentalUuidApi::class)
 @Composable
-actual fun PhotosPickerDialog(onPhotosPicked: (List<String>) -> Unit) {
+actual fun PhotosPickerDialog(
+    noteId: String,
+    onPhotosPicked: (List<Pair<String, String>>) -> Unit
+) {
     val fileDialog = java.awt.FileDialog(
         null as java.awt.Frame?,
         stringResource(Res.string.app_name),
         java.awt.FileDialog.LOAD
     ).apply {
-        file = "*.jpg;*.jpeg;*.png;*.gif"
+        file = "*.jpg;*.jpeg;*.png;*.gif;*.bmp;*.webp"
         isVisible = true
         isMultipleMode = true
     }
 
-    val savedNames = mutableListOf<String>()
-    if (fileDialog.files != null) {
+    val savedNames = mutableListOf<Pair<String, String>>()
+    if (fileDialog.files != null && fileDialog.files.isNotEmpty()) {
+
         val userHome: String = System.getProperty("user.home")
-        val imagesDir = File(File(userHome, ".kori"), "images")
+        val imagesDir = File(File(userHome, ".kori"), noteId)
         if (!imagesDir.exists()) imagesDir.mkdirs()
+
         for (file in fileDialog.files) {
-            if (file.extension in listOf("jpg", "jpeg", "png", "webp", "gif")) {
-                val ext = file.extension.ifBlank { "jpg" }
-                val fileName = "IMG_${Uuid.random().toHexString()}.$ext"
-                val destFile = File(imagesDir, fileName)
+            if (file.extension in listOf("jpg", "jpeg", "png", "webp", "gif", "bmp")) {
+                val destFile = File(imagesDir, file.name)
                 try {
                     Files.copy(
                         file.toPath(),
                         destFile.toPath(),
                         StandardCopyOption.REPLACE_EXISTING
                     )
-                    savedNames.add(fileName)
-                } catch (_: Exception) {
-                    // ignore failed copy
+                    savedNames.add(
+                        destFile.name to
+                                "file:///${destFile.absolutePath.replace("\\", "/")}"
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
         }

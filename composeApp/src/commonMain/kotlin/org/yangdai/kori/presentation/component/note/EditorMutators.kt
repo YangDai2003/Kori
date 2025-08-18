@@ -40,32 +40,20 @@ private fun TextFieldBuffer.inlineWrap(
 }
 
 fun TextFieldBuffer.bold() = inlineWrap("**")
-
 fun TextFieldBuffer.italic() = inlineWrap("_")
-
 fun TextFieldBuffer.underline() = inlineWrap("<ins>", "</ins>")
-
 fun TextFieldBuffer.strikeThrough() = inlineWrap("~~")
-
 fun TextFieldBuffer.highlight() = inlineWrap("<mark>", "</mark>")
-
 fun TextFieldBuffer.parentheses() = inlineWrap("(", ")")
-
 fun TextFieldBuffer.brackets() = inlineWrap("[", "]")
-
 fun TextFieldBuffer.braces() = inlineWrap("{", "}")
-
 fun TextFieldBuffer.link() = inlineWrap("[", "]()")
-
 fun TextFieldBuffer.inlineCode() = inlineWrap("`")
-
 fun TextFieldBuffer.codeBlock() = inlineWrap("```\n", "\n```\n")
-
 fun TextFieldBuffer.inlineMath() = inlineWrap("$")
-
 fun TextFieldBuffer.mathBlock() = inlineWrap("$$\n", "\n$$\n")
-
 fun TextFieldBuffer.mermaidDiagram() = inlineWrap("<pre class=\"mermaid\">\n", "\n</pre>\n")
+
 
 fun TextFieldBuffer.quote() {
     val text = toString()
@@ -326,4 +314,9 @@ fun TextFieldBuffer.taskList() {
         replace(start, end, transformedText)
         selection = TextRange(start, start + transformedText.length)
     }
+}
+
+fun TextFieldBuffer.addImageLinks(names: List<Pair<String, String>>) {
+    val markdownImages = names.joinToString(separator = "\n") { "![${it.first}](${it.second})" }
+    addInNewLine(markdownImages)
 }
