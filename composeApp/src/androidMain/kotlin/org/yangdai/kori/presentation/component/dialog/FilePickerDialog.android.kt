@@ -183,7 +183,8 @@ actual fun PhotosPickerDialog(
                         input.copyTo(output)
                     }
                 }
-                savedNames.add(finalFileName to "/files/$finalFileName")
+                val relativePath = if (noteId.isBlank()) finalFileName else "$noteId/$finalFileName"
+                savedNames.add(finalFileName to "/files/$relativePath")
             } catch (e: Exception) {
                 e.printStackTrace()
             }

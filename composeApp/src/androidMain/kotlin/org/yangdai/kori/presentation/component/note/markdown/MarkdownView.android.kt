@@ -24,6 +24,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.webkit.WebViewAssetLoader
@@ -41,7 +43,6 @@ import kotlin.math.roundToInt
 @Composable
 actual fun MarkdownView(
     modifier: Modifier,
-    uuid: String,
     html: String,
     scrollState: ScrollState,
     isSheetVisible: Boolean,
@@ -51,7 +52,7 @@ actual fun MarkdownView(
     val customTabsIntent = rememberCustomTabsIntent()
     val activity = LocalActivity.current
     val appConfig = LocalAppConfig.current
-    val context = LocalContext.current
+    val context = LocalContext.current.applicationContext
 
     var webView by remember { mutableStateOf<WebView?>(null) }
     var showDialog by remember { mutableStateOf(false) }
@@ -65,7 +66,8 @@ actual fun MarkdownView(
         }
     }
     val data = remember(html, styles, appConfig, rawData) {
-        rawData
+        if (rawData.isEmpty()) ""
+        else rawData
             .replace("{{TEXT_COLOR}}", styles.hexTextColor)
             .replace("{{BACKGROUND_COLOR}}", styles.backgroundColor.toHexColor())
             .replace("{{CODE_BACKGROUND}}", styles.hexCodeBackgroundColor)
@@ -78,12 +80,12 @@ actual fun MarkdownView(
             .replace("{{CONTENT}}", html)
     }
 
-    val assetLoader = remember(context, uuid) {
+    val assetLoader = remember {
         WebViewAssetLoader.Builder()
             .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(context))
             .addPathHandler(
                 "/files/",
-                WebViewAssetLoader.InternalStoragePathHandler(context, File(context.filesDir, uuid))
+                WebViewAssetLoader.InternalStoragePathHandler(context, File(context.filesDir, ""))
             )
             .build()
     }
@@ -143,18 +145,9 @@ actual fun MarkdownView(
                     useWideViewPort = true
                     loadWithOverviewMode = false
                 }
+                this.webViewClient = webViewClient
+                setBackgroundColor(Color.Transparent.toArgb())
             }
-        },
-        update = {
-            it.webViewClient = webViewClient
-            it.setBackgroundColor(styles.backgroundColor)
-            it.loadDataWithBaseURL(
-                "https://${WebViewAssetLoader.DEFAULT_DOMAIN}/",
-                data,
-                "text/html",
-                "UTF-8",
-                null
-            )
         },
         onReset = {
             it.clearHistory()
@@ -163,6 +156,17 @@ actual fun MarkdownView(
             webView = null
         }
     )
+
+    LaunchedEffect(data, webView) {
+        val webViewInstance = webView ?: return@LaunchedEffect
+        webViewInstance.loadDataWithBaseURL(
+            "https://${WebViewAssetLoader.DEFAULT_DOMAIN}/",
+            data,
+            "text/html",
+            "UTF-8",
+            null
+        )
+    }
 
     LaunchedEffect(scrollState.value, scrollState.maxValue) {
         val webViewInstance = webView ?: return@LaunchedEffect

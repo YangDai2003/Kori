@@ -27,7 +27,6 @@ import java.net.URI
 @Composable
 actual fun MarkdownView(
     modifier: Modifier,
-    uuid: String,
     html: String,
     scrollState: ScrollState,
     isSheetVisible: Boolean,

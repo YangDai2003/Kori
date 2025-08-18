@@ -11,7 +11,6 @@ import org.yangdai.kori.presentation.component.note.todo.TodoView
 @Composable
 fun AdaptiveView(
     modifier: Modifier,
-    noteId: String = "",
     noteType: NoteType,
     html: String,
     rawText: String,
@@ -22,7 +21,6 @@ fun AdaptiveView(
 
     NoteType.MARKDOWN -> MarkdownView(
         modifier = modifier,
-        uuid = noteId,
         html = html,
         scrollState = scrollState,
         isSheetVisible = isSheetVisible,

@@ -296,7 +296,6 @@ fun TemplateScreen(
 
                         AdaptiveView(
                             modifier = Modifier.fillMaxHeight().weight(1f - editorWeight),
-                            noteId = noteEditingState.id,
                             noteType = noteEditingState.noteType,
                             html = html,
                             rawText = viewModel.contentState.text.toString(),
@@ -330,7 +329,6 @@ fun TemplateScreen(
                             1 -> {
                                 AdaptiveView(
                                     modifier = Modifier.fillMaxSize(),
-                                    noteId = noteEditingState.id,
                                     noteType = noteEditingState.noteType,
                                     html = html,
                                     rawText = viewModel.contentState.text.toString(),

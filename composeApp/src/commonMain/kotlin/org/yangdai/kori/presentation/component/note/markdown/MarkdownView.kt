@@ -89,7 +89,6 @@ fun processHtml(
 @Composable
 expect fun MarkdownView(
     modifier: Modifier,
-    uuid: String,
     html: String,
     scrollState: ScrollState,
     isSheetVisible: Boolean,

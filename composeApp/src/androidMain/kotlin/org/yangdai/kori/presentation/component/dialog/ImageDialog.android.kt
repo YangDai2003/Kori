@@ -42,6 +42,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.webkit.WebViewAssetLoader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -54,9 +55,7 @@ import java.net.HttpURLConnection
 
 sealed interface ImageState {
     data object Loading : ImageState
-    data class Success(val imagePath: String, val isPath: Boolean, val isLocalFile: Boolean) :
-        ImageState
-
+    data class Success(val imagePath: String, val isLocalFile: Boolean) : ImageState
     data class Error(val message: String) : ImageState
     data object Empty : ImageState
 }
@@ -69,27 +68,15 @@ class ImageViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             _imageState.value = ImageState.Loading
             try {
-                val isLocalFile = isLocalFile(imageUrl)
-                val imagePath =
-                    if (isLocalFile) getLocalFilePath(imageUrl) else downloadAndSaveImage(
-                        context,
-                        imageUrl
-                    )
-                _imageState.value =
-                    ImageState.Success(imagePath, !imageUrl.startsWith("content://"), isLocalFile)
+                val isLocalFile = imageUrl.contains(WebViewAssetLoader.DEFAULT_DOMAIN)
+                val imagePath = if (isLocalFile)
+                    context.filesDir.absolutePath + imageUrl.removePrefix("https://${WebViewAssetLoader.DEFAULT_DOMAIN}/files")
+                else downloadAndSaveImage(context, imageUrl)
+                _imageState.value = ImageState.Success(imagePath, isLocalFile)
             } catch (e: Exception) {
                 _imageState.value = ImageState.Error(e.message ?: "Unknown error")
             }
         }
-    }
-
-    private fun isLocalFile(url: String): Boolean {
-        return url.startsWith("file://") || url.startsWith("content://")
-    }
-
-    private fun getLocalFilePath(fileUrl: String): String {
-        // 移除 "file:///" 前缀
-        return fileUrl.replace("file:///", "")
     }
 
     private suspend fun downloadAndSaveImage(context: Context, imageUrl: String): String {
@@ -130,7 +117,7 @@ class ImageViewModel : ViewModel() {
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 actual fun ImageViewerDialog(imageUrl: String, onDismissRequest: () -> Unit) {
-    val context = LocalContext.current
+    val context = LocalContext.current.applicationContext
     val activity = LocalActivity.current
     val viewModel = viewModel<ImageViewModel>()
     val imageState by viewModel.imageState.collectAsStateWithLifecycle()
@@ -151,9 +138,9 @@ actual fun ImageViewerDialog(imageUrl: String, onDismissRequest: () -> Unit) {
             }
         }
         DisposableEffect(imageUrl) {
-            viewModel.loadImage(context.applicationContext, imageUrl)
+            viewModel.loadImage(context, imageUrl)
             onDispose {
-                viewModel.clearCache(context.applicationContext)
+                viewModel.clearCache(context)
                 activity?.window?.colorMode = ActivityInfo.COLOR_MODE_DEFAULT
                 dialogWindow?.colorMode = ActivityInfo.COLOR_MODE_DEFAULT
             }
@@ -167,11 +154,7 @@ actual fun ImageViewerDialog(imageUrl: String, onDismissRequest: () -> Unit) {
 
                 is ImageState.Success -> {
                     val bitmap = remember(state.imagePath) {
-                        if (state.isPath) BitmapFactory.decodeFile(state.imagePath)
-                        else
-                            context.contentResolver.openInputStream(state.imagePath.toUri())?.use {
-                                BitmapFactory.decodeStream(it)
-                            }
+                        BitmapFactory.decodeFile(state.imagePath)
                     }?.also {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                             if (it.hasGainmap()) {
@@ -202,9 +185,7 @@ actual fun ImageViewerDialog(imageUrl: String, onDismissRequest: () -> Unit) {
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
                                 .padding(end = 16.dp),
-                            onClick = {
-                                downloadImage(context.applicationContext, imageUrl)
-                            }
+                            onClick = { downloadImage(context, imageUrl) }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Download,
