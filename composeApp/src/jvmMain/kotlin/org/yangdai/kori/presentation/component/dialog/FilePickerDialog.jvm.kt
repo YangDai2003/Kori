@@ -170,3 +170,42 @@ actual fun PhotosPickerDialog(
     }
     onPhotosPicked(savedNames)
 }
+
+@Composable
+actual fun VideoPickerDialog(
+    noteId: String,
+    onVideoPicked: (Pair<String, String>?) -> Unit
+) {
+    val fileDialog = java.awt.FileDialog(
+        null as java.awt.Frame?,
+        stringResource(Res.string.app_name),
+        java.awt.FileDialog.LOAD
+    ).apply {
+        file = "*.mp4;*.avi;*.mkv;*.mov;*.wmv;*.flv;*.webm"
+        isVisible = true
+        isMultipleMode = false
+    }
+
+    var savedName: Pair<String, String>? = null
+    if (fileDialog.file != null && fileDialog.directory != null) {
+        val userHome: String = System.getProperty("user.home")
+        val videoDir = File(File(userHome, ".kori"), noteId)
+        if (!videoDir.exists()) videoDir.mkdirs()
+        val file = File(fileDialog.directory, fileDialog.file)
+        if (file.extension in listOf("mp4", "avi", "mkv", "mov", "wmv", "flv", "webm")) {
+            val destFile = File(videoDir, file.name)
+            try {
+                Files.copy(
+                    file.toPath(),
+                    destFile.toPath(),
+                    StandardCopyOption.REPLACE_EXISTING
+                )
+                savedName = destFile.name to
+                        "file:///${destFile.absolutePath.replace("\\", "/")}"
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+    onVideoPicked(savedName)
+}

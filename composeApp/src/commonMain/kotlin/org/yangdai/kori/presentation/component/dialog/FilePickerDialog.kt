@@ -26,3 +26,6 @@ expect fun SaveFileDialog(
 
 @Composable
 expect fun PhotosPickerDialog(noteId: String, onPhotosPicked: (List<Pair<String, String>>) -> Unit)
+
+@Composable
+expect fun VideoPickerDialog(noteId: String, onVideoPicked: (Pair<String, String>?) -> Unit)

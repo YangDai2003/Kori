@@ -21,7 +21,6 @@ import androidx.compose.material.icons.automirrored.outlined.Redo
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.automirrored.outlined.Undo
 import androidx.compose.material.icons.outlined.AddChart
-import androidx.compose.material.icons.outlined.AddPhotoAlternate
 import androidx.compose.material.icons.outlined.AttachMoney
 import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.Code
@@ -74,6 +73,7 @@ import kori.composeapp.generated.resources.math_block
 import kori.composeapp.generated.resources.mermaid_diagram
 import kori.composeapp.generated.resources.numbered_list
 import kori.composeapp.generated.resources.parentheses
+import kori.composeapp.generated.resources.photo_library_24px
 import kori.composeapp.generated.resources.quote
 import kori.composeapp.generated.resources.redo
 import kori.composeapp.generated.resources.strikethrough
@@ -81,6 +81,7 @@ import kori.composeapp.generated.resources.task_list
 import kori.composeapp.generated.resources.templates
 import kori.composeapp.generated.resources.underline
 import kori.composeapp.generated.resources.undo
+import kori.composeapp.generated.resources.video_library_24px
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.note.EditorRowAction
@@ -378,11 +379,13 @@ fun EditorRowScope.MarkdownEditorRow(
     if (!isTemplate) {
         EditorRowSection {
             EditorRowButton(
-                icon = Icons.Outlined.AddPhotoAlternate,
+                icon = painterResource(Res.drawable.photo_library_24px),
                 onClick = { onEditorRowAction(EditorRowAction.Images) }
             )
-        }
-        EditorRowSection {
+            EditorRowButton(
+                icon = painterResource(Res.drawable.video_library_24px),
+                onClick = { onEditorRowAction(EditorRowAction.Videos) }
+            )
             EditorRowButton(
                 hint = stringResource(Res.string.templates),
                 icon = Icons.AutoMirrored.Outlined.TextSnippet,

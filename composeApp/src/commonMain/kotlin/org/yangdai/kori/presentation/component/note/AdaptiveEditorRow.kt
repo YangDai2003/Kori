@@ -240,6 +240,7 @@ fun AdaptiveEditorRow(
 
 sealed class EditorRowAction {
     object Images : EditorRowAction()
+    object Videos : EditorRowAction()
     object Templates : EditorRowAction()
 }
 

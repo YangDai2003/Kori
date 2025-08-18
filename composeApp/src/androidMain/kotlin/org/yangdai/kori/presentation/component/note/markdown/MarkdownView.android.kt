@@ -61,7 +61,7 @@ actual fun MarkdownView(
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
             rawData = runCatching {
-                InputStreamReader(context.assets.open("template.html")).use { it.readText() }
+                InputStreamReader(context.assets.open("template_for_android.html")).use { it.readText() }
             }.getOrDefault("")
         }
     }

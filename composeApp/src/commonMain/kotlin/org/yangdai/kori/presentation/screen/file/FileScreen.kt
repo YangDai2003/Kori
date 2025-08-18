@@ -108,6 +108,7 @@ import org.yangdai.kori.presentation.component.dialog.DialogMaxWidth
 import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
 import org.yangdai.kori.presentation.component.dialog.PhotosPickerDialog
 import org.yangdai.kori.presentation.component.dialog.ShareDialog
+import org.yangdai.kori.presentation.component.dialog.VideoPickerDialog
 import org.yangdai.kori.presentation.component.note.AdaptiveEditor
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorRow
 import org.yangdai.kori.presentation.component.note.AdaptiveView
@@ -118,6 +119,7 @@ import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.note.TitleTextField
 import org.yangdai.kori.presentation.component.note.addImageLinks
+import org.yangdai.kori.presentation.component.note.addVideoLink
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditor
 import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
 import org.yangdai.kori.presentation.component.note.template.TemplateProcessor
@@ -164,7 +166,8 @@ fun FileScreen(
     val scrollState = rememberScrollState()
     var isReadView by rememberSaveable { mutableStateOf(false) }
     var showTemplatesBottomSheet by rememberSaveable { mutableStateOf(false) }
-    var showImagePicker by rememberSaveable { mutableStateOf(false) }
+    var showImagesPicker by rememberSaveable { mutableStateOf(false) }
+    var showVideoPicker by rememberSaveable { mutableStateOf(false) }
     var isSearching by remember { mutableStateOf(false) }
     var selectedHeader by remember { mutableStateOf<IntRange?>(null) }
     val findAndReplaceState = rememberFindAndReplaceState()
@@ -387,13 +390,9 @@ fun FileScreen(
                 textFieldState = viewModel.contentState
             ) { action ->
                 when (action) {
-                    EditorRowAction.Templates -> {
-                        showTemplatesBottomSheet = true
-                    }
-
-                    EditorRowAction.Images -> {
-                        showImagePicker = true
-                    }
+                    EditorRowAction.Templates -> showTemplatesBottomSheet = true
+                    EditorRowAction.Images -> showImagesPicker = true
+                    EditorRowAction.Videos -> showVideoPicker = true
                 }
             }
         }
@@ -480,10 +479,19 @@ fun FileScreen(
         }
     }
 
-    if (showImagePicker) {
+    if (showImagesPicker) {
         PhotosPickerDialog("") {
             viewModel.contentState.edit { addImageLinks(it) }
-            showImagePicker = false
+            showImagesPicker = false
+        }
+    }
+
+    if (showVideoPicker) {
+        VideoPickerDialog("") {
+            it?.let {
+                viewModel.contentState.edit { addVideoLink(it) }
+            }
+            showVideoPicker = false
         }
     }
 

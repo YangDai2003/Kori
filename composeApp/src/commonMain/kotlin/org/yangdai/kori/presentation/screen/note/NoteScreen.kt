@@ -137,6 +137,7 @@ import org.yangdai.kori.presentation.component.dialog.FoldersDialog
 import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
 import org.yangdai.kori.presentation.component.dialog.PhotosPickerDialog
 import org.yangdai.kori.presentation.component.dialog.ShareDialog
+import org.yangdai.kori.presentation.component.dialog.VideoPickerDialog
 import org.yangdai.kori.presentation.component.note.AdaptiveEditor
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorRow
 import org.yangdai.kori.presentation.component.note.AdaptiveView
@@ -151,6 +152,7 @@ import org.yangdai.kori.presentation.component.note.drawing.InNoteDrawPreview
 import org.yangdai.kori.presentation.component.note.drawing.InkScreen
 import org.yangdai.kori.presentation.component.note.drawing.rememberDrawState
 import org.yangdai.kori.presentation.component.note.addImageLinks
+import org.yangdai.kori.presentation.component.note.addVideoLink
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditor
 import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
 import org.yangdai.kori.presentation.component.note.template.TemplateProcessor
@@ -227,7 +229,8 @@ fun NoteScreen(
     var showShareDialog by rememberSaveable { mutableStateOf(false) }
     var showExportDialog by rememberSaveable { mutableStateOf(false) }
     var showTemplatesBottomSheet by rememberSaveable { mutableStateOf(false) }
-    var showImagePicker by rememberSaveable { mutableStateOf(false) }
+    var showImagesPicker by rememberSaveable { mutableStateOf(false) }
+    var showVideoPicker by rememberSaveable { mutableStateOf(false) }
     val printTrigger = remember { mutableStateOf(false) }
     LaunchedEffect(isReadView) {
         focusManager.clearFocus()
@@ -465,13 +468,9 @@ fun NoteScreen(
                 textFieldState = viewModel.contentState
             ) { action ->
                 when (action) {
-                    EditorRowAction.Templates -> {
-                        showTemplatesBottomSheet = true
-                    }
-
-                    EditorRowAction.Images -> {
-                        showImagePicker = true
-                    }
+                    EditorRowAction.Templates -> showTemplatesBottomSheet = true
+                    EditorRowAction.Images -> showImagesPicker = true
+                    EditorRowAction.Videos -> showVideoPicker = true
                 }
             }
         }
@@ -582,10 +581,19 @@ fun NoteScreen(
         }
     }
 
-    if (showImagePicker) {
+    if (showImagesPicker) {
         PhotosPickerDialog(noteEditingState.id) {
             viewModel.contentState.edit { addImageLinks(it) }
-            showImagePicker = false
+            showImagesPicker = false
+        }
+    }
+
+    if (showVideoPicker) {
+        VideoPickerDialog(noteEditingState.id) {
+            it?.let {
+                viewModel.contentState.edit { addVideoLink(it) }
+            }
+            showVideoPicker = false
         }
     }
 

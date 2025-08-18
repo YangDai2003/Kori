@@ -225,76 +225,6 @@
           id="prism-light-theme">
     <link rel="stylesheet" href="/assets/prism/prism-theme-dark.css"
           id="prism-dark-theme">
-
-    <script type="text/javascript">
-        function scrollToRangePosition(rangeStart, rangeEnd) {
-            try {
-                const SCROLL_PADDING_TOP = 20; // <-- Define desired padding in pixels
-                // console.log(`Attempting to scroll for range: ${rangeStart}..${rangeEnd}`);
-                const elements = document.querySelectorAll('[md-src-pos]');
-                let bestContainingElement = null;
-                let minContainingLength = Infinity;
-                let maxStartAtMinLength = -Infinity; // Tie-breaker: elementStart closest to rangeStart
-
-                for (let i = 0; i < elements.length; i++) {
-                    const element = elements[i];
-                    const posData = element.getAttribute('md-src-pos');
-                    if (!posData) continue;
-
-                    const parts = posData.split('..');
-                    if (parts.length !== 2) continue;
-
-                    const elementStart = parseInt(parts[0], 10);
-                    const elementEnd = parseInt(parts[1], 10);
-
-                    if (isNaN(elementStart) || isNaN(elementEnd)) continue;
-
-                    // --- Check if this element fully contains the input range ---
-                    const containsRange = elementStart <= rangeStart && elementEnd >= rangeEnd;
-
-                    if (containsRange) {
-                        const elementLength = elementEnd - elementStart;
-
-                        // --- Compare with the best containing element found so far ---
-                        if (elementLength < minContainingLength) {
-                            // Found a strictly smaller containing element
-                            minContainingLength = elementLength;
-                            maxStartAtMinLength = elementStart; // Record its start
-                            bestContainingElement = element;
-                            // console.log(`New best CONTAINING: Length=${elementLength}, Start=${elementStart}`, element.tagName);
-                        } else if (elementLength === minContainingLength) {
-                            // Same length, check the tie-breaker (elementStart closer to rangeStart)
-                            if (elementStart > maxStartAtMinLength) {
-                                 // This one starts later (closer to rangeStart), so it's better
-                                maxStartAtMinLength = elementStart;
-                                bestContainingElement = element;
-                                // console.log(`Tie-breaker win (CONTAINING): Length=${elementLength}, Start=${elementStart}`, element.tagName);
-                            }
-                        }
-                    }
-                } // end for loop
-
-                // --- Perform Scroll ONLY if a suitable element was found (and it's not BODY) ---
-                if (bestContainingElement && bestContainingElement.tagName.toLowerCase() !== 'body') {
-
-                    bestContainingElement.scrollIntoView({ behavior: 'auto', block: 'start' });
-                    const targetScrollY = Math.max(0, window.scrollY - SCROLL_PADDING_TOP);
-                    window.scrollTo({ top: targetScrollY, behavior: 'auto' });
-
-                } else if (bestContainingElement && bestContainingElement.tagName.toLowerCase() === 'body') {
-                    // console.log('Best containing element is BODY. Doing nothing.');
-                     // Explicitly do nothing if the best element is the body
-                }
-                 else {
-                    // console.log('No element found containing the range. Doing nothing.');
-                    // Explicitly do nothing if no containing element is found
-                }
-
-            } catch (e) {
-                // console.error('Error in scrollToRangePosition:', e);
-            }
-        }
-    </script>
 </head>
 <body>
 <main>{{CONTENT}}</main>
@@ -306,6 +236,7 @@
             handlers.processCheckboxLists();
             handlers.processAlerts();
             handlers.processImages();
+            handlers.processVideos();
         },
 
         processImages: () => {
@@ -314,7 +245,6 @@
                 const id = 'img_' + index;
                 img.setAttribute('data-id', id);
                 img.setAttribute('loading', 'lazy');
-<!--                window.mediaPathHandler.processMedia(imageName, id, "image");-->
 
                 let touchStartTime;
 
@@ -331,6 +261,15 @@
                         e.preventDefault();
                     }
                 });
+            });
+        },
+
+        processVideos: () => {
+            document.querySelectorAll('video').forEach(video => {
+                const currentSrc = video.getAttribute('src');
+                if (currentSrc && !currentSrc.includes('#t=0.1')) {
+                    video.setAttribute('src', currentSrc + '#t=0.1');
+                }
             });
         },
 

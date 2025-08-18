@@ -320,3 +320,8 @@ fun TextFieldBuffer.addImageLinks(names: List<Pair<String, String>>) {
     val markdownImages = names.joinToString(separator = "\n") { "![${it.first}](${it.second})" }
     addInNewLine(markdownImages)
 }
+
+fun TextFieldBuffer.addVideoLink(name: Pair<String, String>) {
+    val htmlVideo = "<video src=\"${name.second}\" controls>${name.first}</video>\n"
+    addInNewLine(htmlVideo)
+}

@@ -1,5 +1,7 @@
 package org.yangdai.kori.presentation.component.dialog
 
+import android.content.Context
+import android.net.Uri
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -7,8 +9,12 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import kfile.PlatformFile
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.yangdai.kori.data.local.entity.NoteEntity
 import java.io.File
 import java.io.FileOutputStream
@@ -128,6 +134,8 @@ actual fun PhotosPickerDialog(
     onPhotosPicked: (List<Pair<String, String>>) -> Unit
 ) {
     val context = LocalContext.current.applicationContext
+    val scope = rememberCoroutineScope()
+
     val photoPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = 10)
     ) { uris ->
@@ -136,67 +144,127 @@ actual fun PhotosPickerDialog(
             return@rememberLauncherForActivityResult
         }
 
-        val savedNames = mutableListOf<Pair<String, String>>()
-        val imagesDir = File(context.filesDir, noteId)
-        if (!imagesDir.exists()) imagesDir.mkdirs()
-
-        uris.forEach { uri ->
-            try {
-                // 优先获取原始文件名
-                var originalFullName: String? = null
-                context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-                    if (cursor.moveToFirst()) {
-                        val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                        if (nameIndex != -1) {
-                            originalFullName = cursor.getString(nameIndex)
-                        }
-                    }
-                }
-
-                // 获取基于MIME类型的备用扩展名，以备后用
-                val mimeType = context.contentResolver.getType(uri) ?: ""
-                val mimeExtension =
-                    MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: "jpg"
-
-                val finalFileName = if (!originalFullName.isNullOrBlank()) {
-                    // 检查原始文件名是否包含一个点以及点后面的字符
-                    val originalExtension = originalFullName.substringAfterLast('.', "")
-                    if (originalExtension.isNotBlank()) {
-                        // --- 情况 A: 原始文件名已包含扩展名 ---
-                        // 直接使用，例如 "IMG_1234.JPG" -> "IMG_1234.JPG"
-                        originalFullName
-                    } else {
-                        // --- 情况 B: 原始文件名不含扩展名 ---
-                        // 将原始名称和MIME扩展名结合，例如 "MyPhoto" -> "MyPhoto.png"
-                        "$originalFullName.$mimeExtension"
-                    }
-                } else {
-                    // --- 情况 C: 无法获取任何原始文件名 ---
-                    // 生成一个全新的文件名，例如 "IMG_1692081000000.jpg"
-                    "IMG_${System.currentTimeMillis()}.$mimeExtension"
-                }
-
-                val destFile = File(imagesDir, finalFileName)
-
-                context.contentResolver.openInputStream(uri)?.use { input ->
-                    FileOutputStream(destFile).use { output ->
-                        input.copyTo(output)
-                    }
-                }
-                val relativePath = if (noteId.isBlank()) finalFileName else "$noteId/$finalFileName"
-                savedNames.add(finalFileName to "/files/$relativePath")
-            } catch (e: Exception) {
-                e.printStackTrace()
+        scope.launch {
+            val savedFiles = uris.mapNotNull { uri ->
+                saveFileFromUri(
+                    context = context,
+                    uri = uri,
+                    parentDirName = noteId,
+                    filePrefix = "IMG_",
+                    defaultExtension = "jpg"
+                )
+            }
+            withContext(Dispatchers.Main) {
+                onPhotosPicked(savedFiles)
             }
         }
-        onPhotosPicked(savedNames)
     }
 
     LaunchedEffect(Unit) {
         photoPicker.launch(
-            PickVisualMediaRequest(
-                ActivityResultContracts.PickVisualMedia.ImageOnly
-            )
+            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
         )
+    }
+}
+
+@Composable
+actual fun VideoPickerDialog(
+    noteId: String,
+    onVideoPicked: (Pair<String, String>?) -> Unit
+) {
+    val context = LocalContext.current.applicationContext
+    val scope = rememberCoroutineScope()
+
+    val videoPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri == null) {
+            onVideoPicked(null)
+            return@rememberLauncherForActivityResult
+        }
+
+        scope.launch {
+            val savedFile = saveFileFromUri(
+                context = context,
+                uri = uri,
+                parentDirName = noteId,
+                filePrefix = "VID_",
+                defaultExtension = "mp4"
+            )
+            withContext(Dispatchers.Main) {
+                onVideoPicked(savedFile)
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        videoPicker.launch(
+            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly)
+        )
+    }
+}
+
+/**
+ * 将给定的Uri内容保存到应用的内部存储，并在IO线程上执行。
+ *
+ * @param context 应用上下文
+ * @param uri 内容的Uri
+ * @param parentDirName 父目录名 (通常是noteId)
+ * @param filePrefix 文件名前缀 (例如 "IMG_" 或 "VID_")
+ * @param defaultExtension 默认扩展名 (例如 "jpg" 或 "mp4")
+ * @return 一个Pair，包含最终文件名和相对路径；如果失败则返回null。
+ */
+private suspend fun saveFileFromUri(
+    context: Context,
+    uri: Uri,
+    parentDirName: String,
+    filePrefix: String,
+    defaultExtension: String
+): Pair<String, String>? = withContext(Dispatchers.IO) {
+    try {
+        val parentDir = File(context.filesDir, parentDirName)
+        if (!parentDir.exists()) {
+            parentDir.mkdirs()
+        }
+
+        // 优先获取原始文件名
+        var originalFullName: String? = null
+        context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (nameIndex != -1) {
+                    originalFullName = cursor.getString(nameIndex)
+                }
+            }
+        }
+
+        // 获取MIME类型对应的扩展名
+        val mimeType = context.contentResolver.getType(uri) ?: ""
+        val mimeExtension =
+            MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: defaultExtension
+
+        val finalFileName = if (!originalFullName.isNullOrBlank()) {
+            val originalExtension = originalFullName.substringAfterLast('.', "")
+            if (originalExtension.isNotBlank()) {
+                originalFullName
+            } else {
+                "$originalFullName.$mimeExtension"
+            }
+        } else {
+            "${filePrefix}${System.currentTimeMillis()}.$mimeExtension"
+        }
+
+        val destFile = File(parentDir, finalFileName)
+        context.contentResolver.openInputStream(uri)?.use { input ->
+            FileOutputStream(destFile).use { output ->
+                input.copyTo(output)
+            }
+        }
+        val relativePath =
+            if (parentDirName.isBlank()) finalFileName else "$parentDirName/$finalFileName"
+        finalFileName to "/files/$relativePath"
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null // 操作失败时返回null
     }
 }

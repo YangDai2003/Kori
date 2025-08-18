@@ -269,3 +269,11 @@ actual fun PhotosPickerDialog(
 ) {
     TODO("Not yet implemented")
 }
+
+@Composable
+actual fun VideoPickerDialog(
+    noteId: String,
+    onVideoPicked: (Pair<String, String>?) -> Unit
+) {
+    TODO("Not yet implemented")
+}
