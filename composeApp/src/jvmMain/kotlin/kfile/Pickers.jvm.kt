@@ -211,3 +211,41 @@ actual fun VideoPicker(
     }
     onVideoSelected(savedName)
 }
+
+@Composable
+actual fun AudioPicker(
+    noteId: String,
+    onAudioSelected: (Pair<String, String>?) -> Unit
+) {
+    val fileDialog = FileDialog(
+        null as Frame?,
+        stringResource(Res.string.app_name),
+        FileDialog.LOAD
+    ).apply {
+        file = "*.mp3;*.wav;*.ogg;*.aac;*.flac;*.m4a"
+        isVisible = true
+        isMultipleMode = false
+    }
+
+    var savedName: Pair<String, String>? = null
+    if (fileDialog.file != null && fileDialog.directory != null) {
+        val userHome: String = System.getProperty("user.home")
+        val audioDir = File(File(userHome, ".kori"), noteId)
+        if (!audioDir.exists()) audioDir.mkdirs()
+        val file = File(fileDialog.directory, fileDialog.file)
+        if (file.extension in listOf("mp3", "wav", "ogg", "aac", "flac", "m4a")) {
+            val destFile = File(audioDir, file.name)
+            try {
+                Files.copy(
+                    file.toPath(),
+                    destFile.toPath(),
+                    StandardCopyOption.REPLACE_EXISTING
+                )
+                savedName = destFile.name to "file:///${destFile.absolutePath.replace("\\", "/")}"
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+    onAudioSelected(savedName)
+}

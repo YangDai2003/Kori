@@ -138,18 +138,19 @@ fun TemplateScreen(
         }
     }
 
+    val pagerState = rememberPagerState { 2 }
     val coroutineScope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
+    var isSideSheetOpen by rememberSaveable { mutableStateOf(false) }
     var isSearching by remember { mutableStateOf(false) }
     var selectedHeader by remember { mutableStateOf<IntRange?>(null) }
     val findAndReplaceState = rememberFindAndReplaceState()
-    val pagerState = rememberPagerState { 2 }
-    val focusManager = LocalFocusManager.current
-    var isSideSheetOpen by rememberSaveable { mutableStateOf(false) }
-    var showNoteTypeDialog by rememberSaveable { mutableStateOf(false) }
-    var showShareDialog by rememberSaveable { mutableStateOf(false) }
-    var showExportDialog by rememberSaveable { mutableStateOf(false) }
+    var showNoteTypeDialog by remember { mutableStateOf(false) }
+    var showShareDialog by remember { mutableStateOf(false) }
+    var showExportDialog by remember { mutableStateOf(false) }
     val printTrigger = remember { mutableStateOf(false) }
+
+    val focusManager = LocalFocusManager.current
     LaunchedEffect(isReadView) {
         focusManager.clearFocus()
         isSearching = false

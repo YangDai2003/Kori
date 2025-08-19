@@ -78,6 +78,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kfile.AudioPicker
 import kfile.PlatformFile
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.char_count
@@ -118,6 +119,7 @@ import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.note.TitleTextField
+import org.yangdai.kori.presentation.component.note.addAudioLink
 import org.yangdai.kori.presentation.component.note.addImageLinks
 import org.yangdai.kori.presentation.component.note.addVideoLink
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditor
@@ -162,21 +164,23 @@ fun FileScreen(
         }
     }
 
+    val pagerState = rememberPagerState { 2 }
     val coroutineScope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
     var isReadView by rememberSaveable { mutableStateOf(false) }
-    var showTemplatesBottomSheet by rememberSaveable { mutableStateOf(false) }
-    var showImagesPicker by rememberSaveable { mutableStateOf(false) }
-    var showVideoPicker by rememberSaveable { mutableStateOf(false) }
-    var isSearching by remember { mutableStateOf(false) }
-    var selectedHeader by remember { mutableStateOf<IntRange?>(null) }
-    val findAndReplaceState = rememberFindAndReplaceState()
-    val pagerState = rememberPagerState { 2 }
-    val focusManager = LocalFocusManager.current
     var isSideSheetOpen by rememberSaveable { mutableStateOf(false) }
-    var showNoteTypeDialog by rememberSaveable { mutableStateOf(false) }
-    var showShareDialog by rememberSaveable { mutableStateOf(false) }
+    var showTemplatesBottomSheet by remember { mutableStateOf(false) }
+    var showImagesPicker by remember { mutableStateOf(false) }
+    var showVideoPicker by remember { mutableStateOf(false) }
+    var showAudioPicker by remember { mutableStateOf(false) }
+    var isSearching by remember { mutableStateOf(false) }
+    val findAndReplaceState = rememberFindAndReplaceState()
+    var selectedHeader by remember { mutableStateOf<IntRange?>(null) }
+    var showNoteTypeDialog by remember { mutableStateOf(false) }
+    var showShareDialog by remember { mutableStateOf(false) }
     val printTrigger = remember { mutableStateOf(false) }
+
+    val focusManager = LocalFocusManager.current
     LaunchedEffect(isReadView) {
         focusManager.clearFocus()
         isSearching = false
@@ -393,6 +397,7 @@ fun FileScreen(
                     EditorRowAction.Templates -> showTemplatesBottomSheet = true
                     EditorRowAction.Images -> showImagesPicker = true
                     EditorRowAction.Videos -> showVideoPicker = true
+                    EditorRowAction.Audio -> showAudioPicker = true
                 }
             }
         }
@@ -490,6 +495,13 @@ fun FileScreen(
         VideoPicker("") {
             if (it != null) viewModel.contentState.edit { addVideoLink(it) }
             showVideoPicker = false
+        }
+    }
+
+    if (showAudioPicker) {
+        AudioPicker("") {
+            if (it != null) viewModel.contentState.edit { addAudioLink(it) }
+            showAudioPicker = false
         }
     }
 

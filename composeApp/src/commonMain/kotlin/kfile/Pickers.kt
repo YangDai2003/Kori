@@ -29,3 +29,6 @@ expect fun ImagesPicker(noteId: String, onImagesSelected: (List<Pair<String, Str
 
 @Composable
 expect fun VideoPicker(noteId: String, onVideoSelected: (Pair<String, String>?) -> Unit)
+
+@Composable
+expect fun AudioPicker(noteId: String, onAudioSelected: (Pair<String, String>?) -> Unit)

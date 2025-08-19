@@ -268,3 +268,38 @@ private suspend fun saveFileFromUri(
         null // 操作失败时返回null
     }
 }
+
+@Composable
+actual fun AudioPicker(
+    noteId: String,
+    onAudioSelected: (Pair<String, String>?) -> Unit
+) {
+    val context = LocalContext.current.applicationContext
+    val scope = rememberCoroutineScope()
+
+    val audioPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri == null) {
+            onAudioSelected(null)
+            return@rememberLauncherForActivityResult
+        }
+
+        scope.launch {
+            val savedFile = saveFileFromUri(
+                context = context,
+                uri = uri,
+                parentDirName = noteId,
+                filePrefix = "ADI_",
+                defaultExtension = "mp3"
+            )
+            withContext(Dispatchers.Main) {
+                onAudioSelected(savedFile)
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        audioPicker.launch("audio/*")
+    }
+}

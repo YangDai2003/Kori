@@ -277,3 +277,11 @@ actual fun VideoPicker(
 ) {
     TODO("Not yet implemented")
 }
+
+@Composable
+actual fun AudioPicker(
+    noteId: String,
+    onAudioSelected: (Pair<String, String>?) -> Unit
+) {
+    TODO("Not yet implemented")
+}

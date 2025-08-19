@@ -3,6 +3,7 @@ package org.yangdai.kori.presentation.component.dialog
 import android.app.DownloadManager
 import android.content.Context
 import android.content.pm.ActivityInfo
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Environment
@@ -24,15 +25,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -55,7 +55,12 @@ import java.net.HttpURLConnection
 
 sealed interface ImageState {
     data object Loading : ImageState
-    data class Success(val imagePath: String, val isLocalFile: Boolean) : ImageState
+    data class Success(
+        val imageBitmap: ImageBitmap,
+        val isHdr: Boolean,
+        val isLocalFile: Boolean
+    ) : ImageState
+
     data class Error(val message: String) : ImageState
     data object Empty : ImageState
 }
@@ -64,18 +69,65 @@ class ImageViewModel : ViewModel() {
     private val _imageState = MutableStateFlow<ImageState>(ImageState.Empty)
     val imageState = _imageState.asStateFlow()
 
-    fun loadImage(context: Context, imageUrl: String) {
+    fun loadImage(context: Context, imageUrl: String, reqWidth: Int, reqHeight: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             _imageState.value = ImageState.Loading
             try {
                 val isLocalFile = imageUrl.contains(WebViewAssetLoader.DEFAULT_DOMAIN)
-                val imagePath = if (isLocalFile)
+                val imagePath = if (isLocalFile) {
                     context.filesDir.absolutePath + imageUrl.removePrefix("https://${WebViewAssetLoader.DEFAULT_DOMAIN}/files")
-                else downloadAndSaveImage(context, imageUrl)
-                _imageState.value = ImageState.Success(imagePath, isLocalFile)
+                } else {
+                    downloadAndSaveImage(context, imageUrl)
+                }
+
+                val bitmap = decodeSampledBitmapFromFile(imagePath, reqWidth, reqHeight)
+                if (bitmap != null) {
+                    var isHdr = false
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                        if (bitmap.hasGainmap()) {
+                            isHdr = true
+                        }
+                    }
+                    _imageState.value =
+                        ImageState.Success(bitmap.asImageBitmap(), isHdr, isLocalFile)
+                } else {
+                    _imageState.value = ImageState.Error("Failed to decode image")
+                }
             } catch (e: Exception) {
                 _imageState.value = ImageState.Error(e.message ?: "Unknown error")
             }
+        }
+    }
+
+    private fun calculateInSampleSize(
+        options: BitmapFactory.Options,
+        reqWidth: Int,
+        reqHeight: Int
+    ): Int {
+        val (height: Int, width: Int) = options.run { outHeight to outWidth }
+        var inSampleSize = 1
+
+        if (height > reqHeight || width > reqWidth) {
+            val halfHeight: Int = height / 2
+            val halfWidth: Int = width / 2
+            while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
+                inSampleSize *= 2
+            }
+        }
+        return inSampleSize
+    }
+
+    private fun decodeSampledBitmapFromFile(
+        imagePath: String,
+        reqWidth: Int,
+        reqHeight: Int
+    ): Bitmap? {
+        return BitmapFactory.Options().run {
+            inJustDecodeBounds = true
+            BitmapFactory.decodeFile(imagePath, this)
+            inSampleSize = calculateInSampleSize(this, reqWidth, reqHeight)
+            inJustDecodeBounds = false
+            BitmapFactory.decodeFile(imagePath, this)
         }
     }
 
@@ -83,11 +135,9 @@ class ImageViewModel : ViewModel() {
         return withContext(Dispatchers.IO) {
             val connection = imageUrl.toHttpUrl().toUrl().openConnection() as HttpURLConnection
             connection.connect()
-            // 创建临时文件
             val fileName = "img_${System.currentTimeMillis()}"
             val file = File(context.cacheDir, fileName)
 
-            // 将图片保存到临时文件
             connection.inputStream.use { inputStream ->
                 FileOutputStream(file).use { output ->
                     inputStream.copyTo(output)
@@ -97,7 +147,6 @@ class ImageViewModel : ViewModel() {
         }
     }
 
-    // 清理缓存目录中的图片文件
     fun clearCache(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             _imageState.value = ImageState.Empty
@@ -116,11 +165,12 @@ class ImageViewModel : ViewModel() {
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-actual fun ImageViewerDialog(imageUrl: String, onDismissRequest: () -> Unit) {
+fun ImageViewerDialog(imageUrl: String, onDismissRequest: () -> Unit) {
     val context = LocalContext.current.applicationContext
     val activity = LocalActivity.current
     val viewModel = viewModel<ImageViewModel>()
     val imageState by viewModel.imageState.collectAsStateWithLifecycle()
+    val size = LocalWindowInfo.current.containerSize
 
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -138,14 +188,13 @@ actual fun ImageViewerDialog(imageUrl: String, onDismissRequest: () -> Unit) {
             }
         }
         DisposableEffect(imageUrl) {
-            viewModel.loadImage(context, imageUrl)
+            viewModel.loadImage(context, imageUrl, size.width, size.height)
             onDispose {
                 viewModel.clearCache(context)
                 activity?.window?.colorMode = ActivityInfo.COLOR_MODE_DEFAULT
                 dialogWindow?.colorMode = ActivityInfo.COLOR_MODE_DEFAULT
             }
         }
-        var isHdr by remember { mutableStateOf(false) }
         Box(Modifier.fillMaxSize()) {
             when (val state = imageState) {
                 is ImageState.Loading -> {
@@ -153,24 +202,14 @@ actual fun ImageViewerDialog(imageUrl: String, onDismissRequest: () -> Unit) {
                 }
 
                 is ImageState.Success -> {
-                    val bitmap = remember(state.imagePath) {
-                        BitmapFactory.decodeFile(state.imagePath)
-                    }?.also {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                            if (it.hasGainmap()) {
-                                isHdr = true
-                                activity?.window?.colorMode = ActivityInfo.COLOR_MODE_HDR
-                                dialogWindow?.colorMode = ActivityInfo.COLOR_MODE_HDR
-                            }
+                    SideEffect {
+                        if (state.isHdr && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                            activity?.window?.colorMode = ActivityInfo.COLOR_MODE_HDR
+                            dialogWindow?.colorMode = ActivityInfo.COLOR_MODE_HDR
                         }
                     }
-                    val imageBitmap = bitmap?.asImageBitmap()
-                        ?: run {
-                            onDismissRequest()
-                            return@Box
-                        }
-                    ImageViewer(imageBitmap)
-                    if (isHdr)
+                    ImageViewer(state.imageBitmap)
+                    if (state.isHdr)
                         Icon(
                             modifier = Modifier
                                 .size(48.dp)

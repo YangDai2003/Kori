@@ -84,6 +84,3 @@ fun ImageViewer(imageBitmap: ImageBitmap) {
             }
     )
 }
-
-@Composable
-expect fun ImageViewerDialog(imageUrl: String, onDismissRequest: () -> Unit)

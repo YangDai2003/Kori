@@ -325,3 +325,8 @@ fun TextFieldBuffer.addVideoLink(name: Pair<String, String>) {
     val htmlVideo = "<video src=\"${name.second}\" controls>${name.first}</video>\n"
     addInNewLine(htmlVideo)
 }
+
+fun TextFieldBuffer.addAudioLink(name: Pair<String, String>) {
+    val htmlAudio = "<audio src=\"${name.second}\" controls>${name.first}</audio>\n"
+    addInNewLine(htmlAudio)
+}

@@ -67,6 +67,7 @@ import kori.composeapp.generated.resources.horizontal_rule
 import kori.composeapp.generated.resources.indent_decrease
 import kori.composeapp.generated.resources.indent_increase
 import kori.composeapp.generated.resources.italic
+import kori.composeapp.generated.resources.library_music_24px
 import kori.composeapp.generated.resources.link
 import kori.composeapp.generated.resources.math
 import kori.composeapp.generated.resources.math_block
@@ -385,6 +386,10 @@ fun EditorRowScope.MarkdownEditorRow(
             EditorRowButton(
                 icon = painterResource(Res.drawable.video_library_24px),
                 onClick = { onEditorRowAction(EditorRowAction.Videos) }
+            )
+            EditorRowButton(
+                icon = painterResource(Res.drawable.library_music_24px),
+                onClick = { onEditorRowAction(EditorRowAction.Audio) }
             )
             EditorRowButton(
                 hint = stringResource(Res.string.templates),
