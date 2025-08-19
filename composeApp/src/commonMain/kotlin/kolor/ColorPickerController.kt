@@ -45,7 +45,6 @@ class ColorPickerController
             }
             val cur = _selectedPoint.value
             _selectedPoint.value = Offset(
-                // TODO: check this for aspect ratio preservation
                 cur.x * value.width / field.width,
                 cur.y * value.height / field.height,
             )
