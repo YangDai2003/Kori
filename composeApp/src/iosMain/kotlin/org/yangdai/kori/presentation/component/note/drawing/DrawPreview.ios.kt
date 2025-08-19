@@ -23,8 +23,8 @@ actual fun InNoteDrawPreview(uuid: String, imageBitmap: ImageBitmap?, modifier: 
             val documentDirectory = NSFileManager.defaultManager.URLsForDirectory(
                 platform.Foundation.NSDocumentDirectory,
                 platform.Foundation.NSUserDomainMask
-            ).first() as NSURL
-            val imagePath = documentDirectory.URLByAppendingPathComponent("$uuid/ink.png")?.path
+            ).firstOrNull() as? NSURL
+            val imagePath = documentDirectory?.URLByAppendingPathComponent("$uuid/ink.png")?.path
             AsyncImage(
                 modifier = Modifier.fillMaxWidth(),
                 model = ImageRequest.Builder(LocalPlatformContext.current)

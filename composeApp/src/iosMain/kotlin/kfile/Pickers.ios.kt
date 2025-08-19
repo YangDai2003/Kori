@@ -6,11 +6,13 @@ import androidx.compose.ui.uikit.LocalUIViewController
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.presentation.component.dialog.ExportType
+import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSString
 import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSURL
 import platform.Foundation.NSUTF8StringEncoding
+import platform.Foundation.NSUserDomainMask
 import platform.Foundation.stringWithContentsOfURL
 import platform.Foundation.writeToURL
 import platform.UIKit.UIDocumentPickerDelegateProtocol
@@ -262,26 +264,219 @@ actual fun JsonPicker(onJsonPicked: (String?) -> Unit) {
     )
 }
 
+@OptIn(ExperimentalForeignApi::class, ExperimentalTime::class)
 @Composable
 actual fun ImagesPicker(
     noteId: String,
     onImagesSelected: (List<Pair<String, String>>) -> Unit
 ) {
-    TODO("Not yet implemented")
+    val currentUIViewController = LocalUIViewController.current
+
+    val delegate = remember {
+        object : NSObject(), UIDocumentPickerDelegateProtocol {
+            override fun documentPicker(
+                controller: UIDocumentPickerViewController,
+                didPickDocumentsAtURLs: List<*>
+            ) {
+                val fileManager = NSFileManager.defaultManager
+                val documentsDirectoryURL =
+                    fileManager.URLsForDirectory(NSDocumentDirectory, NSUserDomainMask)
+                        .firstOrNull() as? NSURL
+                val noteDir = documentsDirectoryURL?.URLByAppendingPathComponent(noteId)
+                if (noteDir == null) {
+                    onImagesSelected(emptyList())
+                    return
+                }
+                fileManager.createDirectoryAtURL(noteDir, true, null, null)
+
+                val newImagePairs = mutableListOf<Pair<String, String>>()
+                for (imageURL in didPickDocumentsAtURLs) {
+                    val sourceURL = imageURL as? NSURL ?: continue
+                    val originalFileName = sourceURL.lastPathComponent ?: "image_${
+                        Clock.System.now().toEpochMilliseconds()
+                    }.${sourceURL.pathExtension}"
+                    val destinationURL = noteDir.URLByAppendingPathComponent(originalFileName)
+
+                    if (destinationURL == null) continue
+
+                    // Remove existing file before copying to ensure the latest file is used or to prevent copy error
+                    if (fileManager.fileExistsAtPath(destinationURL.path!!)) {
+                        fileManager.removeItemAtURL(destinationURL, null)
+                    }
+
+                    val success = fileManager.copyItemAtURL(sourceURL, destinationURL, null)
+                    if (success) {
+                        destinationURL.path?.let { newPath ->
+                            newImagePairs.add(Pair(originalFileName, newPath))
+                        }
+                    }
+                }
+                onImagesSelected(newImagePairs)
+            }
+
+            override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
+                onImagesSelected(emptyList())
+            }
+        }
+    }
+
+    val documentPicker = remember {
+        UIDocumentPickerViewController(
+            documentTypes = listOf("public.image"),
+            inMode = UIDocumentPickerMode.UIDocumentPickerModeImport
+        ).apply {
+            this.delegate = delegate
+            this.allowsMultipleSelection = true
+        }
+    }
+
+    currentUIViewController.presentViewController(
+        documentPicker,
+        animated = true,
+        completion = null
+    )
 }
 
+@OptIn(ExperimentalForeignApi::class, ExperimentalTime::class)
 @Composable
 actual fun VideoPicker(
     noteId: String,
     onVideoSelected: (Pair<String, String>?) -> Unit
 ) {
-    TODO("Not yet implemented")
+    val currentUIViewController = LocalUIViewController.current
+
+    val delegate = remember {
+        object : NSObject(), UIDocumentPickerDelegateProtocol {
+            override fun documentPicker(
+                controller: UIDocumentPickerViewController,
+                didPickDocumentAtURL: NSURL
+            ) {
+                val fileManager = NSFileManager.defaultManager
+                val documentsDirectoryURL =
+                    fileManager.URLsForDirectory(NSDocumentDirectory, NSUserDomainMask)
+                        .firstOrNull() as? NSURL
+                val noteDir = documentsDirectoryURL?.URLByAppendingPathComponent(noteId)
+                if (noteDir == null) {
+                    onVideoSelected(null)
+                    return
+                }
+                fileManager.createDirectoryAtURL(noteDir, true, null, null)
+
+                val sourceURL = didPickDocumentAtURL
+                val originalFileName = sourceURL.lastPathComponent ?: "video_${
+                    Clock.System.now().toEpochMilliseconds()
+                }.${sourceURL.pathExtension}"
+                val destinationURL = noteDir.URLByAppendingPathComponent(originalFileName)
+                if (destinationURL == null) {
+                    onVideoSelected(null)
+                    return
+                }
+
+                if (fileManager.fileExistsAtPath(destinationURL.path!!)) {
+                    fileManager.removeItemAtURL(destinationURL, null)
+                }
+
+                val success = fileManager.copyItemAtURL(sourceURL, destinationURL, null)
+                if (success) {
+                    destinationURL.path?.let { newPath ->
+                        onVideoSelected(Pair(originalFileName, newPath))
+                    } ?: onVideoSelected(null)
+                } else {
+                    onVideoSelected(null)
+                }
+            }
+
+            override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
+                onVideoSelected(null)
+            }
+        }
+    }
+
+    val documentPicker = remember {
+        UIDocumentPickerViewController(
+            documentTypes = listOf("public.movie", "public.video"),
+            inMode = UIDocumentPickerMode.UIDocumentPickerModeImport
+        ).apply {
+            this.delegate = delegate
+            this.allowsMultipleSelection = false
+        }
+    }
+
+    currentUIViewController.presentViewController(
+        documentPicker,
+        animated = true,
+        completion = null
+    )
 }
 
+@OptIn(ExperimentalForeignApi::class, ExperimentalTime::class)
 @Composable
 actual fun AudioPicker(
     noteId: String,
     onAudioSelected: (Pair<String, String>?) -> Unit
 ) {
-    TODO("Not yet implemented")
+    val currentUIViewController = LocalUIViewController.current
+
+    val delegate = remember {
+        object : NSObject(), UIDocumentPickerDelegateProtocol {
+            override fun documentPicker(
+                controller: UIDocumentPickerViewController,
+                didPickDocumentAtURL: NSURL
+            ) {
+                val fileManager = NSFileManager.defaultManager
+                val documentsDirectoryURL =
+                    fileManager.URLsForDirectory(NSDocumentDirectory, NSUserDomainMask)
+                        .firstOrNull() as? NSURL
+                val noteDir = documentsDirectoryURL?.URLByAppendingPathComponent(noteId)
+                if (noteDir == null) {
+                    onAudioSelected(null)
+                    return
+                }
+                fileManager.createDirectoryAtURL(noteDir, true, null, null)
+
+                val sourceURL = didPickDocumentAtURL
+                val originalFileName = sourceURL.lastPathComponent ?: "audio_${
+                    Clock.System.now().toEpochMilliseconds()
+                }.${sourceURL.pathExtension}"
+                val destinationURL = noteDir.URLByAppendingPathComponent(originalFileName)
+                if (destinationURL == null) {
+                    onAudioSelected(null)
+                    return
+                }
+
+                if (fileManager.fileExistsAtPath(destinationURL.path!!)) {
+                    fileManager.removeItemAtURL(destinationURL, null)
+                }
+
+                val success = fileManager.copyItemAtURL(sourceURL, destinationURL, null)
+                if (success) {
+                    destinationURL.path?.let { newPath ->
+                        onAudioSelected(Pair(originalFileName, newPath))
+                    } ?: onAudioSelected(null)
+                } else {
+                    onAudioSelected(null)
+                }
+            }
+
+            override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
+                onAudioSelected(null)
+            }
+        }
+    }
+
+    val documentPicker = remember {
+        UIDocumentPickerViewController(
+            documentTypes = listOf("public.audio"),
+            inMode = UIDocumentPickerMode.UIDocumentPickerModeImport
+        ).apply {
+            this.delegate = delegate
+            this.allowsMultipleSelection = false
+        }
+    }
+
+    currentUIViewController.presentViewController(
+        documentPicker,
+        animated = true,
+        completion = null
+    )
 }
