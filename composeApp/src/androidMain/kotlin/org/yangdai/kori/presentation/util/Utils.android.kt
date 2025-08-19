@@ -10,11 +10,9 @@ import android.net.Uri
 import android.os.Build
 import android.os.Parcelable
 import android.provider.Settings
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalContext
@@ -45,15 +43,6 @@ actual fun Modifier.clickToShareText(text: String): Modifier {
         val chooserIntent = Intent.createChooser(sendIntent, null)
         chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(chooserIntent)
-    }
-}
-
-@Composable
-fun rememberCustomTabsIntent(): CustomTabsIntent {
-    return remember {
-        CustomTabsIntent.Builder()
-            .setShowTitle(true)
-            .build()
     }
 }
 

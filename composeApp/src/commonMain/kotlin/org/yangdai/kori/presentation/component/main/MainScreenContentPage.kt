@@ -52,7 +52,7 @@ fun Page(
     val scope = rememberCoroutineScope()
     val showScrollToTopButton by remember {
         derivedStateOf {
-            state.firstVisibleItemIndex > 0 && !isSelectionMode && state.lastScrolledBackward
+            state.firstVisibleItemIndex > 0 && state.lastScrolledBackward
         }
     }
 

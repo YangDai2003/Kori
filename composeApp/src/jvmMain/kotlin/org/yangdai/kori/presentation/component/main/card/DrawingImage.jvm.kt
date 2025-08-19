@@ -18,7 +18,7 @@ import java.io.File
 actual fun DrawingImage(note: NoteEntity, noteItemProperties: NoteItemProperties) {
     val userHome = System.getProperty("user.home")
     val imageFile = File("$userHome/.kori/${note.id}/ink.png")
-    val maxHeight = if (noteItemProperties.cardSize == CardSize.DEFAULT) 240.dp else 160.dp
+    val maxHeight = if (noteItemProperties.cardSize == CardSize.DEFAULT) 160.dp else 96.dp
     AsyncImage(
         modifier = Modifier.fillMaxWidth().heightIn(max = maxHeight),
         model = ImageRequest.Builder(LocalPlatformContext.current)

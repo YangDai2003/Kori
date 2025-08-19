@@ -16,16 +16,13 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
 
 @Composable
-actual fun DrawingImage(
-    note: NoteEntity,
-    noteItemProperties: NoteItemProperties
-) {
+actual fun DrawingImage(note: NoteEntity, noteItemProperties: NoteItemProperties) {
     val documentDirectory = NSFileManager.defaultManager.URLsForDirectory(
         platform.Foundation.NSDocumentDirectory,
         platform.Foundation.NSUserDomainMask
     ).first() as NSURL
     val imagePath = documentDirectory.URLByAppendingPathComponent("${note.id}/ink.png")?.path
-    val maxHeight = if (noteItemProperties.cardSize == CardSize.DEFAULT) 240.dp else 160.dp
+    val maxHeight = if (noteItemProperties.cardSize == CardSize.DEFAULT) 160.dp else 96.dp
     AsyncImage(
         modifier = Modifier
             .fillMaxWidth()

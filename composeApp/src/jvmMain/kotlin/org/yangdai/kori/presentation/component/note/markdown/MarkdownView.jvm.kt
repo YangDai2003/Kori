@@ -9,6 +9,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingPanel
@@ -17,6 +18,9 @@ import javafx.concurrent.Worker
 import javafx.embed.swing.JFXPanel
 import javafx.scene.Scene
 import javafx.scene.web.WebView
+import kori.composeapp.generated.resources.Res
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.yangdai.kori.presentation.theme.LocalAppConfig
 import java.awt.Desktop
 import java.awt.event.MouseEvent
@@ -43,6 +47,7 @@ actual fun MarkdownView(
         Platform.setImplicitExit(false)
         Platform.runLater { // Run on JavaFX Application Thread
             val wv = WebView()
+            webView = wv
             val engine = wv.engine
             engine.isJavaScriptEnabled = true
 
@@ -52,20 +57,17 @@ actual fun MarkdownView(
                 if (newLocation != null && newLocation != oldLocation && newLocation != "about:blank") {
                     // Check if it's an external link we should handle
                     if (newLocation.startsWith("http://") || newLocation.startsWith("https://")) {
-
-                        // --- Capture scroll position BEFORE reloading for link interception ---
-                        Platform.runLater { // Get scroll on FX thread
-                            try {
-                                // Try to open the link in the default system browser
-                                if (Desktop.isDesktopSupported()
-                                    && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)
-                                ) {
-                                    Desktop.getDesktop().browse(URI(newLocation))
-                                }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
+                        try {
+                            // Try to open the link in the default system browser
+                            if (Desktop.isDesktopSupported()
+                                && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)
+                            ) {
+                                Desktop.getDesktop().browse(URI(newLocation))
                             }
-
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                        Platform.runLater {
                             // IMPORTANT: Prevent the WebView from navigating by reloading the original content
                             // The loadWorker listener above will handle restoring the scroll position.
                             engine.loadContent(latestData, "text/html")
@@ -74,7 +76,6 @@ actual fun MarkdownView(
                 }
             }
 
-            webView = wv
             jfxPanel.scene = Scene(wv)
             jfxPanel.enableMouseEvent()
         }
@@ -82,7 +83,6 @@ actual fun MarkdownView(
         onDispose {
             Platform.runLater {
                 webView?.engine?.load(null) // Stop loading
-                webView?.engine?.loadWorker?.cancel() // Cancel any ongoing work
                 webView = null
                 jfxPanel.scene = null // Clean up scene
             }
@@ -90,22 +90,33 @@ actual fun MarkdownView(
     }
 
     val appConfig = LocalAppConfig.current
-    val data = remember(html, styles, appConfig) { processHtml(html, styles, appConfig) }
+    var htmlTemplate by rememberSaveable { mutableStateOf("") }
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            htmlTemplate = runCatching {
+                Res.readBytes("files/template.html").decodeToString()
+            }.getOrDefault("")
+        }
+    }
+    val data = remember(html, styles, appConfig, htmlTemplate) {
+        processHtml(htmlTemplate, html, styles, appConfig)
+    }
 
     // Embed the JFXPanel using SwingPanel
     SwingPanel(
         factory = { jfxPanel },
         modifier = modifier,
-        background = MaterialTheme.colorScheme.background,
-        update = {
-            webView?.let {
-                Platform.runLater {
-                    latestData = data // Update data used for link interception too
-                    it.engine.loadContent(latestData, "text/html")
-                }
+        background = MaterialTheme.colorScheme.background
+    )
+
+    LaunchedEffect(data, webView) {
+        webView?.let {
+            latestData = data
+            Platform.runLater {
+                it.engine.loadContent(latestData, "text/html")
             }
         }
-    )
+    }
 
     LaunchedEffect(scrollState.value, scrollState.maxValue) {
         val webViewInstance = webView ?: return@LaunchedEffect

@@ -1,36 +1,24 @@
 package org.yangdai.kori.presentation.component.main.card
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextOverflow
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownFormat
-import org.yangdai.kori.presentation.screen.settings.CardSize
 
-@Composable
-fun MarkdownText(text: String, noteItemProperties: NoteItemProperties) =
-    Text(
-        text = buildAnnotatedString {
-            append(text)
+fun buildMarkdownAnnotatedString(text: String) =
+    buildAnnotatedString {
+        append(text)
 
-            // 步骤 1: 优先处理代码块，它们内部的语法不应被高亮。
-            val codeBlockRanges = applyCodeBlockStyles(text)
-            val isInCodeBlock = { position: Int -> codeBlockRanges.any { position in it } }
+        val codeBlockRanges = applyCodeBlockStyles(text)
+        val isInCodeBlock = { position: Int -> codeBlockRanges.any { position in it } }
 
-            // 步骤 2: 应用其他所有样式，并传入 isInCodeBlock 检查。
-            applyLinkStyles(text, isInCodeBlock)
-            applyTaskListStyles(text, isInCodeBlock)
-            applyListStyles(text, isInCodeBlock)
-            applyHeadingStyles(text, isInCodeBlock)
-            applyHrStyles(text, isInCodeBlock)
-            applyGithubAlertStyles(text, isInCodeBlock)
-        },
-        style = MaterialTheme.typography.bodyMedium,
-        maxLines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 5 else 2,
-        overflow = if (noteItemProperties.clipOverflow) TextOverflow.Clip else TextOverflow.Ellipsis
-    )
+        applyLinkStyles(text, isInCodeBlock)
+        applyTaskListStyles(text, isInCodeBlock)
+        applyListStyles(text, isInCodeBlock)
+        applyHeadingStyles(text, isInCodeBlock)
+        applyHrStyles(text, isInCodeBlock)
+        applyGithubAlertStyles(text, isInCodeBlock)
+        applyInlineCodeStyles(text, isInCodeBlock)
+    }
 
 private fun AnnotatedString.Builder.applyCodeBlockStyles(text: String): List<IntRange> {
     val ranges = mutableListOf<IntRange>()
@@ -129,5 +117,15 @@ private fun AnnotatedString.Builder.applyGithubAlertStyles(
             else -> return@forEach
         }
         addStyle(style, match.range.first, match.range.last + 1)
+    }
+}
+
+private fun AnnotatedString.Builder.applyInlineCodeStyles(
+    text: String,
+    isInCodeBlock: (Int) -> Boolean
+) {
+    MarkdownFormat.inlineCodeRegex.findAll(text).forEach { match ->
+        if (isInCodeBlock(match.range.first)) return@forEach
+        addStyle(MarkdownFormat.inlineCodeStyle, match.range.first, match.range.last + 1)
     }
 }

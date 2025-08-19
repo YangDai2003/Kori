@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
-import kotlinx.coroutines.runBlocking
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownStyles.Companion.rememberMarkdownStyles
 import org.yangdai.kori.presentation.theme.AppConfig
 import org.yangdai.kori.presentation.theme.linkColor
@@ -45,46 +44,39 @@ data class MarkdownStyles(
     }
 }
 
-private val markdownHtmlTemplate: String by lazy {
-    runBlocking {
-        Res.readBytes("files/template.html").decodeToString()
-    }
-}
-
 private object StaticUris {
-    val MERMAID by lazy { Res.getUri("files/mermaid.min.js") }
-    val KATEX by lazy { Res.getUri("files/katex/katex.min.js") }
-    val KATEX_CSS by lazy { Res.getUri("files/katex/katex.min.css") }
-    val KATEX_RENDER by lazy { Res.getUri("files/katex/auto-render.min.js") }
-    val PRISM by lazy { Res.getUri("files/prism/prism.js") }
-    val PRISM_LIGHT_CSS by lazy { Res.getUri("files/prism/prism-theme-light.css") }
-    val PRISM_DARK_CSS by lazy { Res.getUri("files/prism/prism-theme-dark.css") }
+    val MERMAID = Res.getUri("files/mermaid.min.js")
+    val KATEX = Res.getUri("files/katex/katex.min.js")
+    val KATEX_CSS = Res.getUri("files/katex/katex.min.css")
+    val KATEX_RENDER = Res.getUri("files/katex/auto-render.min.js")
+    val PRISM = Res.getUri("files/prism/prism.js")
+    val PRISM_LIGHT_CSS = Res.getUri("files/prism/prism-theme-light.css")
+    val PRISM_DARK_CSS = Res.getUri("files/prism/prism-theme-dark.css")
 }
 
 fun processHtml(
-    html: String,
+    htmlTemplate: String,
+    htmlContent: String,
     markdownStyles: MarkdownStyles,
     appConfig: AppConfig
-): String {
-    return markdownHtmlTemplate
-        .replace("{{TEXT_COLOR}}", markdownStyles.hexTextColor)
-        .replace("{{BACKGROUND_COLOR}}", markdownStyles.backgroundColor.toHexColor())
-        .replace("{{CODE_BACKGROUND}}", markdownStyles.hexCodeBackgroundColor)
-        .replace("{{PRE_BACKGROUND}}", markdownStyles.hexPreBackgroundColor)
-        .replace("{{QUOTE_BACKGROUND}}", markdownStyles.hexQuoteBackgroundColor)
-        .replace("{{LINK_COLOR}}", markdownStyles.hexLinkColor)
-        .replace("{{BORDER_COLOR}}", markdownStyles.hexBorderColor)
-        .replace("{{COLOR_SCHEME}}", if (appConfig.darkMode) "dark" else "light")
-        .replace("{{MERMAID}}", StaticUris.MERMAID)
-        .replace("{{KATEX}}", StaticUris.KATEX)
-        .replace("{{KATEX-CSS}}", StaticUris.KATEX_CSS)
-        .replace("{{KATEX-RENDER}}", StaticUris.KATEX_RENDER)
-        .replace("{{PRISM}}", StaticUris.PRISM)
-        .replace("{{PRISM-LIGHT-CSS}}", StaticUris.PRISM_LIGHT_CSS)
-        .replace("{{PRISM-DARK-CSS}}", StaticUris.PRISM_DARK_CSS)
-        .replace("{{FONT_SCALE}}", "${(appConfig.fontScale * 100).roundToInt()}%")
-        .replace("{{CONTENT}}", html)
-}
+) = htmlTemplate
+    .replace("{{TEXT_COLOR}}", markdownStyles.hexTextColor)
+    .replace("{{BACKGROUND_COLOR}}", markdownStyles.backgroundColor.toHexColor())
+    .replace("{{CODE_BACKGROUND}}", markdownStyles.hexCodeBackgroundColor)
+    .replace("{{PRE_BACKGROUND}}", markdownStyles.hexPreBackgroundColor)
+    .replace("{{QUOTE_BACKGROUND}}", markdownStyles.hexQuoteBackgroundColor)
+    .replace("{{LINK_COLOR}}", markdownStyles.hexLinkColor)
+    .replace("{{BORDER_COLOR}}", markdownStyles.hexBorderColor)
+    .replace("{{COLOR_SCHEME}}", if (appConfig.darkMode) "dark" else "light")
+    .replace("{{MERMAID}}", StaticUris.MERMAID)
+    .replace("{{KATEX}}", StaticUris.KATEX)
+    .replace("{{KATEX-CSS}}", StaticUris.KATEX_CSS)
+    .replace("{{KATEX-RENDER}}", StaticUris.KATEX_RENDER)
+    .replace("{{PRISM}}", StaticUris.PRISM)
+    .replace("{{PRISM-LIGHT-CSS}}", StaticUris.PRISM_LIGHT_CSS)
+    .replace("{{PRISM-DARK-CSS}}", StaticUris.PRISM_DARK_CSS)
+    .replace("{{FONT_SCALE}}", "${(appConfig.fontScale * 100).roundToInt()}%")
+    .replace("{{CONTENT}}", htmlContent)
 
 @Composable
 expect fun MarkdownView(

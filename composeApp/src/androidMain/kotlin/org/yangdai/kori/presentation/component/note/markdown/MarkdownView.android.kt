@@ -13,6 +13,7 @@ import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.compose.LocalActivity
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.ScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,14 +27,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.webkit.WebViewAssetLoader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.yangdai.kori.presentation.component.dialog.ImageViewerDialog
 import org.yangdai.kori.presentation.theme.LocalAppConfig
-import org.yangdai.kori.presentation.util.rememberCustomTabsIntent
 import org.yangdai.kori.presentation.util.toHexColor
 import java.io.File
 import java.io.InputStreamReader
@@ -49,25 +49,24 @@ actual fun MarkdownView(
     printTrigger: MutableState<Boolean>,
     styles: MarkdownStyles
 ) {
-    val customTabsIntent = rememberCustomTabsIntent()
     val activity = LocalActivity.current
     val appConfig = LocalAppConfig.current
-    val context = LocalContext.current.applicationContext
+    val assets = LocalResources.current.assets
 
     var webView by remember { mutableStateOf<WebView?>(null) }
     var showDialog by remember { mutableStateOf(false) }
     var clickedImageUrl by remember { mutableStateOf("") }
-    var rawData by rememberSaveable { mutableStateOf("") }
+    var htmlTemplate by rememberSaveable { mutableStateOf("") }
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
-            rawData = runCatching {
-                InputStreamReader(context.assets.open("template_for_android.html")).use { it.readText() }
+            htmlTemplate = runCatching {
+                InputStreamReader(assets.open("template_for_android.html")).use { it.readText() }
             }.getOrDefault("")
         }
     }
-    val data = remember(html, styles, appConfig, rawData) {
-        if (rawData.isEmpty()) ""
-        else rawData
+    val data = remember(html, styles, appConfig, htmlTemplate) {
+        if (htmlTemplate.isEmpty()) ""
+        else htmlTemplate
             .replace("{{TEXT_COLOR}}", styles.hexTextColor)
             .replace("{{BACKGROUND_COLOR}}", styles.backgroundColor.toHexColor())
             .replace("{{CODE_BACKGROUND}}", styles.hexCodeBackgroundColor)
@@ -78,38 +77,6 @@ actual fun MarkdownView(
             .replace("{{COLOR_SCHEME}}", if (appConfig.darkMode) "dark" else "light")
             .replace("{{FONT_SCALE}}", "${(appConfig.fontScale * 100).roundToInt()}%")
             .replace("{{CONTENT}}", html)
-    }
-
-    val assetLoader = remember {
-        WebViewAssetLoader.Builder()
-            .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(context))
-            .addPathHandler(
-                "/files/",
-                WebViewAssetLoader.InternalStoragePathHandler(context, File(context.filesDir, ""))
-            )
-            .build()
-    }
-
-    val webViewClient = remember(assetLoader, customTabsIntent) {
-        object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(
-                view: WebView,
-                request: WebResourceRequest
-            ): Boolean {
-                val url = request.url.toString()
-                if (!url.startsWith("https://${WebViewAssetLoader.DEFAULT_DOMAIN}")) {
-                    customTabsIntent.launchUrl(view.context, request.url)
-                }
-                return true
-            }
-
-            override fun shouldInterceptRequest(
-                view: WebView,
-                request: WebResourceRequest
-            ): WebResourceResponse? {
-                return assetLoader.shouldInterceptRequest(request.url)
-            }
-        }
     }
 
     AndroidView(
@@ -145,7 +112,7 @@ actual fun MarkdownView(
                     useWideViewPort = true
                     loadWithOverviewMode = false
                 }
-                this.webViewClient = webViewClient
+                this.webViewClient = WVClient(it)
                 setBackgroundColor(Color.Transparent.toArgb())
             }
         },
@@ -158,8 +125,7 @@ actual fun MarkdownView(
     )
 
     LaunchedEffect(data, webView) {
-        val webViewInstance = webView ?: return@LaunchedEffect
-        webViewInstance.loadDataWithBaseURL(
+        webView?.loadDataWithBaseURL(
             "https://${WebViewAssetLoader.DEFAULT_DOMAIN}/",
             data,
             "text/html",
@@ -208,6 +174,36 @@ actual fun MarkdownView(
             onDismissRequest = { showDialog = false },
             imageUrl = clickedImageUrl,
         )
+}
+
+private class WVClient(context: Context) : WebViewClient() {
+    private val assetLoader = WebViewAssetLoader.Builder()
+        .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(context))
+        .addPathHandler(
+            "/files/",
+            WebViewAssetLoader.InternalStoragePathHandler(context, File(context.filesDir, ""))
+        )
+        .build()
+
+    private val customTabsIntent = CustomTabsIntent.Builder().setShowTitle(true).build()
+
+    override fun shouldOverrideUrlLoading(
+        view: WebView,
+        request: WebResourceRequest
+    ): Boolean {
+        val url = request.url.toString()
+        if (!url.startsWith("https://${WebViewAssetLoader.DEFAULT_DOMAIN}")) {
+            customTabsIntent.launchUrl(view.context, request.url)
+        }
+        return true
+    }
+
+    override fun shouldInterceptRequest(
+        view: WebView,
+        request: WebResourceRequest
+    ): WebResourceResponse? {
+        return assetLoader.shouldInterceptRequest(request.url)
+    }
 }
 
 private fun createWebPrintJob(webView: WebView, activity: Activity?) {

@@ -80,7 +80,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.contentDescription
@@ -584,13 +583,11 @@ fun MainScreenContent(
                 modifier = Modifier
                     .padding(top = innerPadding.calculateTopPadding())
                     .fillMaxSize()
-                    .graphicsLayer {
-                        shape =
-                            if (isLargeScreen) RoundedCornerShape(topStart = 12.dp)
-                            else RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
-                        clip = true
-                    }
-                    .background(MaterialTheme.colorScheme.surfaceContainerLow),
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceContainerLow,
+                        shape = if (isLargeScreen) RoundedCornerShape(topStart = 12.dp)
+                        else RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
+                    ),
                 state = pagerState,
                 beyondViewportPageCount = 1,
                 key = { it },
@@ -696,17 +693,16 @@ fun MainScreenContent(
                 expanded = fabMenuExpanded,
                 button = {
                     ToggleFloatingActionButton(
-                        modifier =
-                            Modifier.semantics {
-                                traversalIndex = -1f
-                                stateDescription = if (fabMenuExpanded) "Expanded" else "Collapsed"
-                                contentDescription = "Toggle menu"
-                            }.animateFloatingActionButton(
-                                visible = !(currentDrawerItem is DrawerItem.Trash || currentDrawerItem is DrawerItem.Toolbox || isSelectionMode),
-                                alignment = Alignment.BottomEnd
-                            ),
+                        modifier = Modifier.semantics {
+                            traversalIndex = -1f
+                            stateDescription = if (fabMenuExpanded) "Expanded" else "Collapsed"
+                            contentDescription = "Toggle menu"
+                        }.animateFloatingActionButton(
+                            visible = !(currentDrawerItem is DrawerItem.Trash || currentDrawerItem is DrawerItem.Toolbox || isSelectionMode),
+                            alignment = Alignment.BottomEnd
+                        ),
                         checked = fabMenuExpanded,
-                        onCheckedChange = { fabMenuExpanded = it },
+                        onCheckedChange = { fabMenuExpanded = it }
                     ) {
                         val imageVector by remember {
                             derivedStateOf {
@@ -723,25 +719,24 @@ fun MainScreenContent(
             ) {
                 items.forEachIndexed { i, item ->
                     FloatingActionButtonMenuItem(
-                        modifier =
-                            Modifier.semantics {
-                                isTraversalGroup = true
-                                // Add a custom a11y action to allow closing the menu when focusing
-                                // the last menu item, since the close button comes before the first
-                                // menu item in the traversal order.
-                                if (i == items.size - 1) {
-                                    customActions =
-                                        listOf(
-                                            CustomAccessibilityAction(
-                                                label = "Close menu",
-                                                action = {
-                                                    fabMenuExpanded = false
-                                                    true
-                                                }
-                                            )
+                        modifier = Modifier.semantics {
+                            isTraversalGroup = true
+                            // Add a custom a11y action to allow closing the menu when focusing
+                            // the last menu item, since the close button comes before the first
+                            // menu item in the traversal order.
+                            if (i == items.size - 1) {
+                                customActions =
+                                    listOf(
+                                        CustomAccessibilityAction(
+                                            label = "Close menu",
+                                            action = {
+                                                fabMenuExpanded = false
+                                                true
+                                            }
                                         )
-                                }
-                            },
+                                    )
+                            }
+                        },
                         onClick = {
                             fabMenuExpanded = false
                             if (currentDrawerItem is DrawerItem.Templates)
@@ -754,7 +749,7 @@ fun MainScreenContent(
                             }
                         },
                         icon = { },
-                        text = { Text(item) },
+                        text = { Text(item) }
                     )
                 }
             }

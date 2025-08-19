@@ -7,10 +7,15 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.UIKitView
+import kori.composeapp.generated.resources.Res
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.withContext
 import org.yangdai.kori.presentation.theme.LocalAppConfig
 import org.yangdai.kori.presentation.util.toUIColor
 import platform.CoreGraphics.CGRectMake
@@ -43,7 +48,17 @@ actual fun MarkdownView(
     var webView by remember { mutableStateOf<WKWebView?>(null) }
     val navigationDelegate = remember { NavigationDelegate() }
     val appConfig = LocalAppConfig.current
-    val data = remember(html, styles, appConfig) { processHtml(html, styles, appConfig) }
+    var htmlTemplate by rememberSaveable { mutableStateOf("") }
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            htmlTemplate = runCatching {
+                Res.readBytes("files/template.html").decodeToString()
+            }.getOrDefault("")
+        }
+    }
+    val data = remember(html, styles, appConfig, htmlTemplate) {
+        processHtml(htmlTemplate, html, styles, appConfig)
+    }
 
     UIKitView(
         factory = {
@@ -58,14 +73,17 @@ actual fun MarkdownView(
                 this.scrollView.showsHorizontalScrollIndicator = false
             }.also { webView = it }
         },
-        modifier = modifier, // Apply Compose modifiers
-        update = { wv -> wv.loadHTMLString(data, baseURL = NSBundle.mainBundle.resourceURL) },
+        modifier = modifier,
         onRelease = { wv ->
             wv.stopLoading()
             wv.navigationDelegate = null // Break reference cycle
             webView = null // Clear the state variable
         }
     )
+
+    LaunchedEffect(data, webView) {
+        webView?.loadHTMLString(data, baseURL = NSBundle.mainBundle.resourceURL)
+    }
 
     LaunchedEffect(scrollState.value, scrollState.maxValue) {
         val webViewInstance = webView ?: return@LaunchedEffect

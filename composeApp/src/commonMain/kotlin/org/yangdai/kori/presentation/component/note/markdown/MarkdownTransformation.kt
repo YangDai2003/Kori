@@ -26,6 +26,7 @@ class MarkdownTransformation : OutputTransformation {
         applyHeadingStyles(isInCodeBlock)
         applyHrStyles(isInCodeBlock)
         applyGithubAlertStyles(isInCodeBlock)
+        applyInlineCodeStyles(isInCodeBlock)
     }
 
     /**
@@ -129,6 +130,13 @@ class MarkdownTransformation : OutputTransformation {
             addStyle(style, match.range.first, match.range.last + 1)
         }
     }
+
+    private fun TextFieldBuffer.applyInlineCodeStyles(isInCodeBlock: (Int) -> Boolean) {
+        MarkdownFormat.inlineCodeRegex.findAll(originalText).forEach { match ->
+            if (isInCodeBlock(match.range.first)) return@forEach
+            addStyle(MarkdownFormat.inlineCodeStyle, match.range.first, match.range.last + 1)
+        }
+    }
 }
 
 object MarkdownFormat {
@@ -144,14 +152,19 @@ object MarkdownFormat {
     val importantStyle = SpanStyle(color = Color(0xFF8250DF), background = Color(0x148250DF))
     val warningStyle = SpanStyle(color = Color(0xFFD29922), background = Color(0x14FFD299))
     val cautionStyle = SpanStyle(color = Color(0xFFF85149), background = Color(0x14F85149))
+    val inlineCodeStyle =
+        SpanStyle(background = Color.DarkGray.copy(alpha = 0.2f), fontFamily = FontFamily.Monospace)
 
     // 支持语言名包含符号（如c#, c++, .net, C--等）
     val codeBlockRegex = Regex("""```([^\s\n`]*)?\n([\s\S]*?)\n```""")
+    val inlineCodeRegex = Regex("(?<!`)`([^`\n]+)`(?!`)")
     val linkRegex = Regex("""\[(.+?)]\((.+?)\)""")
     val taskListRegex = Regex("""^[ \t]*-\s\[([ x])]\s.+$""", RegexOption.MULTILINE)
     val listRegex = Regex("""^([ \t]*)([-*+]|(\d+\.))\s.+$""", RegexOption.MULTILINE)
     val headingRegex = Regex("""^(#{1,6})\s+(.+)$""", RegexOption.MULTILINE)
     val hrRegex = Regex("""^[ \t]*(\*{3,}|-{3,}|_{3,})[ \t]*$""", RegexOption.MULTILINE)
+
+    // 根据规范，最多允许3个空格的缩进，且不允许制表符
     val githubAlertRegex =
-        Regex("""^> \[(!(NOTE|TIP|IMPORTANT|WARNING|CAUTION))]""", RegexOption.MULTILINE)
+        Regex("""^ {0,3}> ?\[(!(NOTE|TIP|IMPORTANT|WARNING|CAUTION))]""", RegexOption.MULTILINE)
 }

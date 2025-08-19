@@ -26,9 +26,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
@@ -117,13 +119,22 @@ fun LazyStaggeredGridItemScope.NoteItem(
                 val content = note.content.lineSequence().take(10).joinToString("\n")
                 when (note.noteType) {
                     NoteType.PLAIN_TEXT ->
-                        PlainText(text = content, noteItemProperties = noteItemProperties)
+                        CardContentText(
+                            text = buildPlainTextAnnotatedString(content),
+                            noteItemProperties = noteItemProperties
+                        )
 
                     NoteType.MARKDOWN ->
-                        MarkdownText(text = content, noteItemProperties = noteItemProperties)
+                        CardContentText(
+                            text = buildMarkdownAnnotatedString(content),
+                            noteItemProperties = noteItemProperties
+                        )
 
                     NoteType.TODO ->
-                        TodoText(text = content, noteItemProperties = noteItemProperties)
+                        CardContentText(
+                            text = buildTodoAnnotatedString(content),
+                            noteItemProperties = noteItemProperties
+                        )
 
                     NoteType.Drawing ->
                         DrawingImage(note = note, noteItemProperties = noteItemProperties)
@@ -173,3 +184,12 @@ fun LazyStaggeredGridItemScope.NoteItem(
             )
     }
 }
+
+@Composable
+private fun CardContentText(text: AnnotatedString, noteItemProperties: NoteItemProperties) =
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        maxLines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 6 else 3,
+        overflow = if (noteItemProperties.clipOverflow) TextOverflow.Clip else TextOverflow.Ellipsis
+    )
