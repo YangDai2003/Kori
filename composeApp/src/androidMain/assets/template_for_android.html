@@ -237,15 +237,12 @@
             handlers.processAlerts();
             handlers.processImages();
             handlers.processVideos();
+            handlers.processAudios();
         },
 
         processImages: () => {
-            document.querySelectorAll('img').forEach((img, index) => {
-                const imageName = img.getAttribute('src');
-                const id = 'img_' + index;
-                img.setAttribute('data-id', id);
+            document.querySelectorAll('img').forEach(img => {
                 img.setAttribute('loading', 'lazy');
-
                 let touchStartTime;
 
                 img.onclick = () => window.imageInterface.onImageClick(img.src);
@@ -270,6 +267,13 @@
                 if (currentSrc && !currentSrc.includes('#t=0.1')) {
                     video.setAttribute('src', currentSrc + '#t=0.1');
                 }
+                video.setAttribute('controlsList', 'nodownload');
+            });
+        },
+
+        processAudios: () => {
+            document.querySelectorAll('audio').forEach(audio => {
+                audio.setAttribute('controlsList', 'nodownload');
             });
         },
 
