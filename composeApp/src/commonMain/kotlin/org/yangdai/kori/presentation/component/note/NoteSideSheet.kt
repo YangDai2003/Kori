@@ -2,6 +2,7 @@ package org.yangdai.kori.presentation.component.note
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,11 +25,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowRight
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.UnfoldLess
 import androidx.compose.material.icons.outlined.UnfoldMore
@@ -54,9 +53,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.PredictiveBackHandler
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isCtrlPressed
@@ -68,7 +73,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
@@ -418,42 +422,56 @@ private fun HeaderItem(
     LaunchedEffect(parentExpanded) {
         expanded = parentExpanded
     }
+    val outlineColor = MaterialTheme.colorScheme.outline
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onHeaderClick(header.range) }
-            .heightIn(min = 32.dp),
+            .heightIn(min = 32.dp)
+            .drawBehind {
+                // 如果深度大于0，才需要绘制线条
+                if (depth > 0) {
+                    val indentPerLevel = 12.dp.toPx()
+                    val iconCenterOffset = 16.dp.toPx()
+
+                    // 根据深度，循环绘制每一层级的垂直对齐线
+                    for (i in 0 until depth) {
+                        val lineX = i * indentPerLevel + iconCenterOffset
+                        drawLine(
+                            color = outlineColor,
+                            start = Offset(lineX, 0f),
+                            end = Offset(lineX, size.height), // 线条高度为当前 Row 的高度
+                            cap = StrokeCap.Round
+                        )
+                    }
+                }
+            },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (header.children.isNotEmpty()) {
-            IconButton(
-                modifier = Modifier
-                    .padding(start = (depth * 8).dp)
-                    .size(32.dp),
-                onClick = { expanded = !expanded }
-            ) {
-                Icon(
-                    imageVector = if (expanded) Icons.Default.ArrowDropDown
-                    else Icons.AutoMirrored.Filled.ArrowRight,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    contentDescription = null
+        val iconColor = MaterialTheme.colorScheme.onSurfaceVariant
+        Canvas(
+            Modifier.padding(start = (depth * 12).dp).size(32.dp)
+                .then(
+                    if (header.children.isNotEmpty()) {
+                        Modifier.clip(CircleShape).clickable { expanded = !expanded }
+                    } else {
+                        Modifier
+                    }
                 )
-            }
-        } else {
-            Spacer(
-                modifier = Modifier
-                    .padding(start = (depth * 8).dp)
-                    .width(32.dp)
+        ) {
+            drawCircle(
+                color = iconColor,
+                radius = 3.dp.toPx(),
+                style = if (header.children.isNotEmpty() && !expanded) Fill else Stroke()
             )
         }
 
         Text(
-            modifier = Modifier.padding(vertical = 2.dp),
             text = header.title,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.bodyLarge.copy(lineBreak = LineBreak.Heading),
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
+            style = MaterialTheme.typography.bodyLarge,
+            maxLines = 1,
+            overflow = TextOverflow.MiddleEllipsis
         )
     }
 
