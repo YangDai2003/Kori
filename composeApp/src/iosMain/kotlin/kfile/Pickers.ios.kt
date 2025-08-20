@@ -6,6 +6,7 @@ import androidx.compose.ui.uikit.LocalUIViewController
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.presentation.component.dialog.ExportType
+import org.yangdai.kori.presentation.component.note.markdown.IOS_CUSTOM_SCHEME
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSString
@@ -278,37 +279,11 @@ actual fun ImagesPicker(
                 controller: UIDocumentPickerViewController,
                 didPickDocumentsAtURLs: List<*>
             ) {
-                val fileManager = NSFileManager.defaultManager
-                val documentsDirectoryURL =
-                    fileManager.URLsForDirectory(NSDocumentDirectory, NSUserDomainMask)
-                        .firstOrNull() as? NSURL
-                val noteDir = documentsDirectoryURL?.URLByAppendingPathComponent(noteId)
-                if (noteDir == null) {
-                    onImagesSelected(emptyList())
-                    return
-                }
-                fileManager.createDirectoryAtURL(noteDir, true, null, null)
-
                 val newImagePairs = mutableListOf<Pair<String, String>>()
-                for (imageURL in didPickDocumentsAtURLs) {
-                    val sourceURL = imageURL as? NSURL ?: continue
-                    val originalFileName = sourceURL.lastPathComponent ?: "image_${
-                        Clock.System.now().toEpochMilliseconds()
-                    }.${sourceURL.pathExtension}"
-                    val destinationURL = noteDir.URLByAppendingPathComponent(originalFileName)
-
-                    if (destinationURL == null) continue
-
-                    // Remove existing file before copying to ensure the latest file is used or to prevent copy error
-                    if (fileManager.fileExistsAtPath(destinationURL.path!!)) {
-                        fileManager.removeItemAtURL(destinationURL, null)
-                    }
-
-                    val success = fileManager.copyItemAtURL(sourceURL, destinationURL, null)
-                    if (success) {
-                        destinationURL.path?.let { newPath ->
-                            newImagePairs.add(Pair(originalFileName, newPath))
-                        }
+                for (imageURLObject in didPickDocumentsAtURLs) {
+                    val sourceURL = imageURLObject as? NSURL ?: continue
+                    processAndCopyMediaFile(noteId, sourceURL, "image")?.let {
+                        newImagePairs.add(it)
                     }
                 }
                 onImagesSelected(newImagePairs)
@@ -351,39 +326,8 @@ actual fun VideoPicker(
                 controller: UIDocumentPickerViewController,
                 didPickDocumentAtURL: NSURL
             ) {
-                val fileManager = NSFileManager.defaultManager
-                val documentsDirectoryURL =
-                    fileManager.URLsForDirectory(NSDocumentDirectory, NSUserDomainMask)
-                        .firstOrNull() as? NSURL
-                val noteDir = documentsDirectoryURL?.URLByAppendingPathComponent(noteId)
-                if (noteDir == null) {
-                    onVideoSelected(null)
-                    return
-                }
-                fileManager.createDirectoryAtURL(noteDir, true, null, null)
-
-                val sourceURL = didPickDocumentAtURL
-                val originalFileName = sourceURL.lastPathComponent ?: "video_${
-                    Clock.System.now().toEpochMilliseconds()
-                }.${sourceURL.pathExtension}"
-                val destinationURL = noteDir.URLByAppendingPathComponent(originalFileName)
-                if (destinationURL == null) {
-                    onVideoSelected(null)
-                    return
-                }
-
-                if (fileManager.fileExistsAtPath(destinationURL.path!!)) {
-                    fileManager.removeItemAtURL(destinationURL, null)
-                }
-
-                val success = fileManager.copyItemAtURL(sourceURL, destinationURL, null)
-                if (success) {
-                    destinationURL.path?.let { newPath ->
-                        onVideoSelected(Pair(originalFileName, newPath))
-                    } ?: onVideoSelected(null)
-                } else {
-                    onVideoSelected(null)
-                }
+                val result = processAndCopyMediaFile(noteId, didPickDocumentAtURL, "video")
+                onVideoSelected(result)
             }
 
             override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
@@ -423,39 +367,8 @@ actual fun AudioPicker(
                 controller: UIDocumentPickerViewController,
                 didPickDocumentAtURL: NSURL
             ) {
-                val fileManager = NSFileManager.defaultManager
-                val documentsDirectoryURL =
-                    fileManager.URLsForDirectory(NSDocumentDirectory, NSUserDomainMask)
-                        .firstOrNull() as? NSURL
-                val noteDir = documentsDirectoryURL?.URLByAppendingPathComponent(noteId)
-                if (noteDir == null) {
-                    onAudioSelected(null)
-                    return
-                }
-                fileManager.createDirectoryAtURL(noteDir, true, null, null)
-
-                val sourceURL = didPickDocumentAtURL
-                val originalFileName = sourceURL.lastPathComponent ?: "audio_${
-                    Clock.System.now().toEpochMilliseconds()
-                }.${sourceURL.pathExtension}"
-                val destinationURL = noteDir.URLByAppendingPathComponent(originalFileName)
-                if (destinationURL == null) {
-                    onAudioSelected(null)
-                    return
-                }
-
-                if (fileManager.fileExistsAtPath(destinationURL.path!!)) {
-                    fileManager.removeItemAtURL(destinationURL, null)
-                }
-
-                val success = fileManager.copyItemAtURL(sourceURL, destinationURL, null)
-                if (success) {
-                    destinationURL.path?.let { newPath ->
-                        onAudioSelected(Pair(originalFileName, newPath))
-                    } ?: onAudioSelected(null)
-                } else {
-                    onAudioSelected(null)
-                }
+                val result = processAndCopyMediaFile(noteId, didPickDocumentAtURL, "audio")
+                onAudioSelected(result)
             }
 
             override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
@@ -479,4 +392,42 @@ actual fun AudioPicker(
         animated = true,
         completion = null
     )
+}
+
+@OptIn(ExperimentalForeignApi::class, ExperimentalTime::class)
+private fun processAndCopyMediaFile(
+    noteId: String,
+    sourceURL: NSURL,
+    fileTypePrefix: String
+): Pair<String, String>? {
+    val fileManager = NSFileManager.defaultManager
+    val documentsDirectoryURL =
+        fileManager.URLsForDirectory(NSDocumentDirectory, NSUserDomainMask).firstOrNull() as? NSURL
+    val noteDir = documentsDirectoryURL?.URLByAppendingPathComponent(noteId)
+
+    if (noteDir == null) {
+        return null
+    }
+    fileManager.createDirectoryAtURL(noteDir, true, null, null)
+
+    val originalFileName = sourceURL.lastPathComponent ?: "${fileTypePrefix}_${
+        Clock.System.now().toEpochMilliseconds()
+    }.${sourceURL.pathExtension}"
+    val destinationURL = noteDir.URLByAppendingPathComponent(originalFileName)
+
+    if (destinationURL == null) {
+        return null
+    }
+
+    if (fileManager.fileExistsAtPath(destinationURL.path!!)) {
+        fileManager.removeItemAtURL(destinationURL, null)
+    }
+
+    val success = fileManager.copyItemAtURL(sourceURL, destinationURL, null)
+    return if (success) {
+        val relativePath = if (noteId.isBlank()) originalFileName else "$noteId/$originalFileName"
+        Pair(originalFileName, "$IOS_CUSTOM_SCHEME://$relativePath")
+    } else {
+        null
+    }
 }

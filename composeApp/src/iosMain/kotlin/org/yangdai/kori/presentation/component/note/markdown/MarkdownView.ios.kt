@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.UIKitView
 import kori.composeapp.generated.resources.Res
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.ObjCSignatureOverride
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
@@ -20,7 +21,12 @@ import org.yangdai.kori.presentation.theme.LocalAppConfig
 import org.yangdai.kori.presentation.util.toUIColor
 import platform.CoreGraphics.CGRectMake
 import platform.Foundation.NSBundle
+import platform.Foundation.NSData
 import platform.Foundation.NSError
+import platform.Foundation.NSFileManager
+import platform.Foundation.NSHTTPURLResponse
+import platform.Foundation.NSURL
+import platform.Foundation.dataWithContentsOfURL
 import platform.UIKit.UIApplication
 import platform.UIKit.UIPrintInfo
 import platform.UIKit.UIPrintInfoOutputType
@@ -30,10 +36,14 @@ import platform.WebKit.WKNavigationAction
 import platform.WebKit.WKNavigationActionPolicy
 import platform.WebKit.WKNavigationDelegateProtocol
 import platform.WebKit.WKNavigationTypeLinkActivated
+import platform.WebKit.WKURLSchemeHandlerProtocol
+import platform.WebKit.WKURLSchemeTaskProtocol
 import platform.WebKit.WKWebView
 import platform.WebKit.WKWebViewConfiguration
 import platform.WebKit.javaScriptEnabled
 import platform.darwin.NSObject
+
+internal const val IOS_CUSTOM_SCHEME = "note-files"
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
@@ -47,6 +57,7 @@ actual fun MarkdownView(
 ) {
     var webView by remember { mutableStateOf<WKWebView?>(null) }
     val navigationDelegate = remember { NavigationDelegate() }
+    val schemeHandler = remember { LocalFileSchemeHandler() }
     val appConfig = LocalAppConfig.current
     var htmlTemplate by rememberSaveable { mutableStateOf("") }
     LaunchedEffect(Unit) {
@@ -64,6 +75,7 @@ actual fun MarkdownView(
         factory = {
             val config = WKWebViewConfiguration()
             config.preferences().javaScriptEnabled = true
+            config.setURLSchemeHandler(schemeHandler, IOS_CUSTOM_SCHEME)
 
             WKWebView(frame = CGRectMake(0.0, 0.0, 0.0, 0.0), configuration = config).apply {
                 this.opaque = false // To stop 'white flash'
@@ -128,6 +140,123 @@ actual fun MarkdownView(
                     // Reset the trigger regardless of the outcome
                     printTrigger.value = false
                 })
+        }
+    }
+}
+
+
+@OptIn(ExperimentalForeignApi::class)
+private class LocalFileSchemeHandler : NSObject(), WKURLSchemeHandlerProtocol {
+
+    private val fileManager = NSFileManager.defaultManager
+    private val documentsDirectoryURL: NSURL? =
+        fileManager.URLsForDirectory(
+            platform.Foundation.NSDocumentDirectory,
+            platform.Foundation.NSUserDomainMask
+        ).firstOrNull() as? NSURL
+
+    @ObjCSignatureOverride
+    override fun webView(webView: WKWebView, startURLSchemeTask: WKURLSchemeTaskProtocol) {
+        val request = startURLSchemeTask.request
+        val url = request.URL ?: run {
+            startURLSchemeTask.didFailWithError(
+                NSError.errorWithDomain(
+                    "LocalFileSchemeHandlerError",
+                    code = 1,
+                    userInfo = null
+                )
+            )
+            return
+        }
+
+        // 从 URL 中提取文件名 (去除 scheme 和 "://")
+        val pathComponent = url.resourceSpecifier // 通常是 scheme 后面的部分
+
+        if (pathComponent == null || pathComponent.isBlank()) {
+            startURLSchemeTask.didFailWithError(
+                NSError.errorWithDomain(
+                    "LocalFileSchemeHandlerError",
+                    code = 2,
+                    userInfo = null
+                )
+            )
+            return
+        }
+
+        val targetFileUrl = documentsDirectoryURL?.URLByAppendingPathComponent(pathComponent)
+
+        if (targetFileUrl == null || !fileManager.fileExistsAtPath(targetFileUrl.path!!)) {
+            val error = NSError.errorWithDomain(
+                "LocalFileSchemeHandlerError", code = 404, userInfo = mapOf<Any?, Any>(
+                    platform.Foundation.NSLocalizedDescriptionKey to "File not found for scheme at path $pathComponent"
+                )
+            )
+            startURLSchemeTask.didFailWithError(error)
+            return
+        }
+
+        try {
+            val fileData = NSData.dataWithContentsOfURL(targetFileUrl)
+            if (fileData == null) {
+                startURLSchemeTask.didFailWithError(
+                    NSError.errorWithDomain(
+                        "LocalFileSchemeHandlerError",
+                        code = 3,
+                        userInfo = null
+                    )
+                )
+                return
+            }
+
+            // 推断 MIME 类型 (简化版)
+            val mimeType = getMimeTypeForPathExtension(targetFileUrl.pathExtension())
+
+            val response = NSHTTPURLResponse(
+                uRL = url,
+                statusCode = 200,
+                HTTPVersion = "HTTP/1.1",
+                headerFields = mapOf<Any?, Any>(
+                    "Content-Type" to mimeType,
+                    "Content-Length" to fileData.length.toString()
+                )
+            )
+
+            startURLSchemeTask.didReceiveResponse(response)
+            startURLSchemeTask.didReceiveData(fileData)
+            startURLSchemeTask.didFinish()
+
+        } catch (e: Exception) {
+            // 在 Kotlin/Native 中，NSError 可能不是直接通过 throw/catch 捕获
+            // 这里假设 e 是某种可以转换为 NSError 的异常
+            val nsError = NSError.errorWithDomain(
+                "LocalFileSchemeHandlerError",
+                code = 4,
+                userInfo = mapOf<Any?, Any>(
+                    platform.Foundation.NSLocalizedDescriptionKey to (e.message ?: "Unknown error")
+                )
+            )
+            startURLSchemeTask.didFailWithError(nsError)
+        }
+    }
+
+    @ObjCSignatureOverride
+    override fun webView(webView: WKWebView, stopURLSchemeTask: WKURLSchemeTaskProtocol) {
+        // 当请求被取消或 WebView 被销毁时调用。
+        println("Scheme task stopped for: ${stopURLSchemeTask.request.URL?.absoluteString}")
+    }
+
+    private fun getMimeTypeForPathExtension(pathExtension: String?): String {
+        return when (pathExtension?.lowercase()) {
+            "jpeg", "jpg" -> "image/jpeg"
+            "png" -> "image/png"
+            "gif" -> "image/gif"
+            "html", "htm" -> "text/html"
+            "css" -> "text/css"
+            "js" -> "application/javascript"
+            "pdf" -> "application/pdf"
+            "txt" -> "text/plain"
+            // 根据需要添加更多 MIME 类型
+            else -> "application/octet-stream" // 默认二进制流
         }
     }
 }
