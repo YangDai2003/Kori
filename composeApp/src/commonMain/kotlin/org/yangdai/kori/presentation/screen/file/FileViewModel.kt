@@ -23,17 +23,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -66,6 +65,8 @@ class FileViewModel(
     val titleState = TextFieldState()
     val contentState = TextFieldState()
     private val contentSnapshotFlow = snapshotFlow { contentState.text }
+    private val _uiEventChannel = Channel<UiEvent>()
+    val uiEventFlow = _uiEventChannel.receiveAsFlow()
 
     val formatterState = combine(
         dataStoreRepository.stringFlow(Constants.Preferences.DATE_FORMATTER),
@@ -203,22 +204,29 @@ class FileViewModel(
     private val _initialContent = MutableStateFlow("")
     val needSave = combine(
         _initialContent,
-        snapshotFlow { contentState.text.toString() }
-    ) { initial, current ->
-        initial != current
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5_000L),
-        false
-    )
+        contentSnapshotFlow
+    ) { initial, current -> initial != current.toString() }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000L),
+            false
+        )
 
     @OptIn(ExperimentalFoundationApi::class)
     fun loadFile(file: PlatformFile) {
         viewModelScope.launch(Dispatchers.IO) {
             val title = file.getFileName()
             val content = file.readText()
-            val noteType = if (file.getExtension().contains("md")
-                || file.getExtension().contains("markdown")
+            val noteType = if (file.getExtension().lowercase() in listOf(
+                    "md",
+                    "markdown",
+                    "mkd",
+                    "mdwn",
+                    "mdown",
+                    "mdtxt",
+                    "mdtext",
+                    "html"
+                )
             ) NoteType.MARKDOWN else NoteType.PLAIN_TEXT
             titleState.setTextAndPlaceCursorAtEnd(title)
             contentState.setTextAndPlaceCursorAtEnd(content)
@@ -247,12 +255,9 @@ class FileViewModel(
     fun deleteFile(file: PlatformFile) {
         viewModelScope.launch(Dispatchers.IO) {
             if (file.delete())
-                _uiEventFlow.emit(UiEvent.NavigateUp)
+                _uiEventChannel.send(UiEvent.NavigateUp)
         }
     }
-
-    private val _uiEventFlow = MutableSharedFlow<UiEvent>()
-    val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
 
     fun updateFileType(noteType: NoteType) {
         _fileEditingState.update {

@@ -192,7 +192,7 @@ fun NoteScreen(
         }
     }
 
-    LaunchedEffect(true) {
+    LaunchedEffect(Unit) {
         viewModel.uiEventFlow.collect { event ->
             if (event is UiEvent.NavigateUp) navigateUp()
         }

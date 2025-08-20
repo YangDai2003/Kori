@@ -82,8 +82,16 @@ class DataViewModel(
                     val title = it.getFileName()
                     val content = it.readText()
                     val modified = it.getLastModified().toString()
-                    val noteType = if (it.getExtension().contains("md")
-                        || it.getExtension().contains("markdown")
+                    val noteType = if (it.getExtension().lowercase() in listOf(
+                            "md",
+                            "markdown",
+                            "mkd",
+                            "mdwn",
+                            "mdown",
+                            "mdtxt",
+                            "mdtext",
+                            "html"
+                        )
                     ) NoteType.MARKDOWN else NoteType.PLAIN_TEXT
                     val noteEntity = NoteEntity(
                         id = Uuid.random().toString(),

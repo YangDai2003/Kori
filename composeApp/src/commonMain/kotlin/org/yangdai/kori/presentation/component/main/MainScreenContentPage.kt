@@ -57,7 +57,7 @@ fun Page(
     }
 
     LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Adaptive(minSize = 320.dp),
+        columns = StaggeredGridCells.Adaptive(minSize = 256.dp),
         modifier = Modifier.fillMaxSize(),
         state = state,
         contentPadding = contentPadding,

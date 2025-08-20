@@ -156,9 +156,6 @@ fun FileScreen(
 
     LaunchedEffect(Unit) {
         viewModel.loadFile(file)
-    }
-
-    LaunchedEffect(true) {
         viewModel.uiEventFlow.collect { event ->
             if (event is UiEvent.NavigateUp) navigateUp()
         }

@@ -17,11 +17,10 @@ import kmark.parser.MarkdownParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -30,6 +29,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -70,8 +70,8 @@ class NoteViewModel(
     val contentState = TextFieldState()
     private val contentSnapshotFlow = snapshotFlow { contentState.text }
 
-    private val _uiEventFlow = MutableSharedFlow<UiEvent>()
-    val uiEventFlow = _uiEventFlow.asSharedFlow()
+    private val _uiEventChannel = Channel<UiEvent>()
+    val uiEventFlow = _uiEventChannel.receiveAsFlow()
 
     private val _noteEditingState = MutableStateFlow(NoteEditingState())
     val noteEditingState = _noteEditingState.asStateFlow()
@@ -306,7 +306,7 @@ class NoteViewModel(
                     )
                 )
             }
-            _uiEventFlow.emit(UiEvent.NavigateUp)
+            _uiEventChannel.send(UiEvent.NavigateUp)
         }
     }
 

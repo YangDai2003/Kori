@@ -48,7 +48,6 @@ fun MainScreen(
 
     AdaptiveNavigationDrawerLayout(
         isLargeScreen = isLargeScreen,
-        gesturesEnabled = true,
         drawerState = drawerState,
         drawerContent = {
             NavigationDrawerContent(
