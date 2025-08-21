@@ -14,6 +14,8 @@ import java.nio.file.StandardCopyOption
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
+private val allowedExtensions = listOf("txt", "md", "markdown", "html", "htm")
+
 @Composable
 actual fun PlatformFilePicker(onFileSelected: (PlatformFile?) -> Unit) {
     val fileDialog = FileDialog(
@@ -21,14 +23,15 @@ actual fun PlatformFilePicker(onFileSelected: (PlatformFile?) -> Unit) {
         stringResource(Res.string.app_name),
         FileDialog.LOAD
     ).apply {
-        file = "*.txt;*.md"
+        file = "*.txt;*.md;*.markdown;*.html;*.htm"
         isVisible = true
     }
 
     if (fileDialog.file != null && fileDialog.directory != null) {
-        val file = File(fileDialog.directory, fileDialog.file)
-        if (file.exists() && (file.extension == "txt" || file.extension == "md" || file.extension == "markdown")) {
-            onFileSelected(PlatformFile(file = file))
+        val selectedFile = File(fileDialog.directory, fileDialog.file)
+        val fileExtension = selectedFile.extension.lowercase()
+        if (selectedFile.exists() && allowedExtensions.contains(fileExtension)) {
+            onFileSelected(PlatformFile(file = selectedFile))
             return
         }
     }
@@ -73,15 +76,15 @@ actual fun PlatformFilesPicker(onFilesSelected: (List<PlatformFile>) -> Unit) {
         stringResource(Res.string.app_name),
         FileDialog.LOAD
     ).apply {
-        file = "*.txt;*.md"
-        isVisible = true
+        file = "*.txt;*.md;*.markdown;*.html;*.htm"
         isMultipleMode = true
+        isVisible = true
     }
 
     val selectedFiles = mutableListOf<PlatformFile>()
     if (fileDialog.files != null) {
         for (file in fileDialog.files) {
-            if (file.extension == "txt" || file.extension == "md" || file.extension == "markdown") {
+            if (allowedExtensions.contains(file.extension.lowercase())) {
                 selectedFiles.add(PlatformFile(file = file))
             }
         }
@@ -121,7 +124,7 @@ actual fun JsonPicker(onJsonPicked: (String?) -> Unit) {
 
     if (fileDialog.file != null && fileDialog.directory != null) {
         val file = File(fileDialog.directory, fileDialog.file)
-        if (file.exists() && file.extension == "json") {
+        if (file.exists() && file.extension.lowercase() == "json") {
             onJsonPicked(file.readText())
             return
         }
@@ -140,8 +143,8 @@ actual fun ImagesPicker(
         FileDialog.LOAD
     ).apply {
         file = "*.jpg;*.jpeg;*.png;*.gif;*.bmp;*.webp"
-        isVisible = true
         isMultipleMode = true
+        isVisible = true
     }
 
     val savedNames = mutableListOf<Pair<String, String>>()
@@ -152,7 +155,7 @@ actual fun ImagesPicker(
         if (!imagesDir.exists()) imagesDir.mkdirs()
 
         for (file in fileDialog.files) {
-            if (file.extension in listOf("jpg", "jpeg", "png", "webp", "gif", "bmp")) {
+            if (file.extension.lowercase() in listOf("jpg", "jpeg", "png", "webp", "gif", "bmp")) {
                 val destFile = File(imagesDir, file.name)
                 try {
                     Files.copy(
@@ -185,7 +188,6 @@ actual fun VideoPicker(
     ).apply {
         file = "*.mp4;*.avi;*.mkv;*.mov;*.wmv;*.flv;*.webm"
         isVisible = true
-        isMultipleMode = false
     }
 
     var savedName: Pair<String, String>? = null
@@ -194,7 +196,10 @@ actual fun VideoPicker(
         val videoDir = File(File(userHome, ".kori"), noteId)
         if (!videoDir.exists()) videoDir.mkdirs()
         val file = File(fileDialog.directory, fileDialog.file)
-        if (file.extension in listOf("mp4", "avi", "mkv", "mov", "wmv", "flv", "webm")) {
+        if (
+            file.extension.lowercase() in
+            listOf("mp4", "avi", "mkv", "mov", "wmv", "flv", "webm")
+        ) {
             val destFile = File(videoDir, file.name)
             try {
                 Files.copy(
@@ -224,7 +229,6 @@ actual fun AudioPicker(
     ).apply {
         file = "*.mp3;*.wav;*.ogg;*.aac;*.flac;*.m4a"
         isVisible = true
-        isMultipleMode = false
     }
 
     var savedName: Pair<String, String>? = null
@@ -233,7 +237,7 @@ actual fun AudioPicker(
         val audioDir = File(File(userHome, ".kori"), noteId)
         if (!audioDir.exists()) audioDir.mkdirs()
         val file = File(fileDialog.directory, fileDialog.file)
-        if (file.extension in listOf("mp3", "wav", "ogg", "aac", "flac", "m4a")) {
+        if (file.extension.lowercase() in listOf("mp3", "wav", "ogg", "aac", "flac", "m4a")) {
             val destFile = File(audioDir, file.name)
             try {
                 Files.copy(

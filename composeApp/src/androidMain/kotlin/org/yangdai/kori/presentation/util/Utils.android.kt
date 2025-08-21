@@ -109,10 +109,14 @@ data class SharedContent(
 private fun Uri.getMimeType(context: Context): String? = context.contentResolver.getType(this)
 private fun String?.isTextMimeType(): Boolean = this?.startsWith("text/") == true
 private fun String?.isMarkdownMimeType(): Boolean =
-    this == "text/markdown" || this == "application/x-markdown"
+    this == "text/markdown" || this == "application/x-markdown" || this == "text/x-markdown" || this == "text/html"
 
 private fun String?.isMarkdownFileName(): Boolean =
-    this?.lowercase()?.let { it.endsWith(".md") || it.endsWith(".markdown") } == true
+    this?.lowercase()?.let {
+        it.contains(".md") || it.contains(".markdown") || it.contains(".mkd")
+                || it.contains(".mdwn") || it.contains(".mdown") || it.contains(".mdtxt")
+                || it.contains(".mdtext") || it.contains(".html")
+    } == true
 
 private fun getFileName(context: Context, uri: Uri): String? {
     if ("content" == uri.scheme) {
