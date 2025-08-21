@@ -206,4 +206,17 @@
     <string name="snackbar_deleted_all">Alle Notizen im Papierkorb gelöscht</string>
 
     <string name="drawing">Zeichnung</string>
+    <string name="white">Weiß</string>
+    <string name="black">Schwarz</string>
+    <string name="none">Keine</string>
+    <string name="square">Quadrat</string>
+    <string name="rule">Regel</string>
+    <string name="dot">Punkt</string>
+    <string name="brush_size">Pinselgröße</string>
+    <string name="brush_color">Pinselfarbe</string>
+    <string name="stroke_eraser">Stricheradierer</string>
+    <string name="area_eraser">Flächenradierer</string>
+    <string name="eraser_size">Radiergröße</string>
+    <string name="erase_all_strokes">Alle Striche löschen</string>
+    <string name="reset_canvas">Leinwand zurücksetzen</string>
 </resources>

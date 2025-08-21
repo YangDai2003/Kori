@@ -206,4 +206,17 @@
     <string name="snackbar_deleted_all">已清空回收站中的所有笔记</string>
 
     <string name="drawing">绘图</string>
+    <string name="white">白色</string>
+    <string name="black">黑色</string>
+    <string name="none">无</string>
+    <string name="square">方格</string>
+    <string name="rule">横线</string>
+    <string name="dot">圆点</string>
+    <string name="brush_size">画笔大小</string>
+    <string name="brush_color">画笔颜色</string>
+    <string name="stroke_eraser">笔画擦除</string>
+    <string name="area_eraser">区域擦除</string>
+    <string name="eraser_size">橡皮擦大小</string>
+    <string name="erase_all_strokes">清除所有笔迹</string>
+    <string name="reset_canvas">重置画布</string>
 </resources>

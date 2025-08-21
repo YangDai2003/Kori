@@ -92,11 +92,25 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
+import kori.composeapp.generated.resources.area_eraser
+import kori.composeapp.generated.resources.black
+import kori.composeapp.generated.resources.brush_color
+import kori.composeapp.generated.resources.brush_size
+import kori.composeapp.generated.resources.dot
+import kori.composeapp.generated.resources.erase_all_strokes
+import kori.composeapp.generated.resources.eraser_size
 import kori.composeapp.generated.resources.ink_eraser_24px
+import kori.composeapp.generated.resources.none
+import kori.composeapp.generated.resources.reset_canvas
+import kori.composeapp.generated.resources.rule
+import kori.composeapp.generated.resources.square
+import kori.composeapp.generated.resources.stroke_eraser
 import kori.composeapp.generated.resources.stylus_highlighter_24px
 import kori.composeapp.generated.resources.stylus_pen_24px
+import kori.composeapp.generated.resources.white
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.dialog.DismissButton
 import org.yangdai.kori.presentation.component.dialog.dialogShape
 import kotlin.math.roundToInt
@@ -403,7 +417,7 @@ fun InkScreen(
                         tonalElevation = 0.dp
                     ) {
                         DropdownMenuItem(
-                            text = { Text("White") },
+                            text = { Text(stringResource(Res.string.white)) },
                             trailingIcon = {
                                 RadioButton(
                                     selected = drawState.canvasColor.value == Color.White,
@@ -416,7 +430,7 @@ fun InkScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("Black") },
+                            text = { Text(stringResource(Res.string.black)) },
                             trailingIcon = {
                                 RadioButton(
                                     selected = drawState.canvasColor.value == Color.Black,
@@ -430,7 +444,7 @@ fun InkScreen(
                         )
                         HorizontalDivider()
                         DropdownMenuItem(
-                            text = { Text("None") },
+                            text = { Text(stringResource(Res.string.none)) },
                             trailingIcon = {
                                 RadioButton(
                                     selected = drawState.canvasGridType.value == GridType.None,
@@ -443,7 +457,7 @@ fun InkScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("Square") },
+                            text = { Text(stringResource(Res.string.square)) },
                             trailingIcon = {
                                 RadioButton(
                                     selected = drawState.canvasGridType.value == GridType.Square,
@@ -456,7 +470,7 @@ fun InkScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("Rule") },
+                            text = { Text(stringResource(Res.string.rule)) },
                             trailingIcon = {
                                 RadioButton(
                                     selected = drawState.canvasGridType.value == GridType.Rule,
@@ -469,7 +483,7 @@ fun InkScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("Dot") },
+                            text = { Text(stringResource(Res.string.dot)) },
                             trailingIcon = {
                                 RadioButton(
                                     selected = drawState.canvasGridType.value == GridType.Dot,
@@ -571,7 +585,7 @@ fun InkScreen(
                                     showPopup.value = false
                                 }
                             ) {
-                                Text("Reset canvas")
+                                Text(stringResource(Res.string.reset_canvas))
                             }
                         }
                     ) {
@@ -619,7 +633,10 @@ private fun BrushStylusPane(widthState: MutableState<Float>, colorState: Mutable
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Brush Size:", style = MaterialTheme.typography.labelMedium)
+            Text(
+                stringResource(Res.string.brush_size),
+                style = MaterialTheme.typography.labelMedium
+            )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     modifier = Modifier.clickable {
@@ -669,7 +686,7 @@ private fun BrushStylusPane(widthState: MutableState<Float>, colorState: Mutable
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = "Brush Color:",
+                text = stringResource(Res.string.brush_color),
                 style = MaterialTheme.typography.labelMedium
             )
         }
@@ -747,7 +764,7 @@ private fun EraserStylusPane(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text("Stroke eraser", style = MaterialTheme.typography.labelMedium)
+        Text(stringResource(Res.string.stroke_eraser), style = MaterialTheme.typography.labelMedium)
         RadioButton(
             selected = state.toolMode.value == ToolMode.ERASER_ENTIRE, onClick = null
         )
@@ -762,7 +779,7 @@ private fun EraserStylusPane(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text("Area eraser", style = MaterialTheme.typography.labelMedium)
+        Text(stringResource(Res.string.area_eraser), style = MaterialTheme.typography.labelMedium)
         RadioButton(
             selected = state.toolMode.value == ToolMode.ERASER_PARTIAL, onClick = null
         )
@@ -772,7 +789,7 @@ private fun EraserStylusPane(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("Eraser Size:", style = MaterialTheme.typography.labelMedium)
+        Text(stringResource(Res.string.eraser_size), style = MaterialTheme.typography.labelMedium)
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 modifier = Modifier.clickable {
@@ -821,7 +838,8 @@ private fun EraserStylusPane(
             state.actions.clear()
             state.undoActions.clear()
             showPopup.value = false
-        }) {
-        Text("Erase all strokes", maxLines = 1)
+        }
+    ) {
+        Text(stringResource(Res.string.erase_all_strokes), maxLines = 1)
     }
 }

@@ -256,7 +256,7 @@ fun NoteSideSheet(
                         // 顶部操作按钮
                         item {
                             Row(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth().padding(top = 4.dp, end = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
@@ -300,27 +300,23 @@ fun NoteSideSheet(
                             item {
                                 HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
                                 Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 12.dp),
+                                    modifier = Modifier.fillMaxWidth().padding(end = 4.dp),
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
+                                        modifier = Modifier.padding(start = 12.dp),
                                         text = stringResource(Res.string.outline),
                                         style = MaterialTheme.typography.titleLarge,
                                         color = MaterialTheme.colorScheme.onSurface,
                                         fontWeight = FontWeight.Bold
                                     )
 
-                                    IconButton(
-                                        onClick = { isAllExpanded = !isAllExpanded }
-                                    ) {
+                                    IconButton(onClick = { isAllExpanded = !isAllExpanded }) {
                                         Icon(
                                             imageVector = if (isAllExpanded) Icons.Outlined.UnfoldLess
                                             else Icons.Outlined.UnfoldMore,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                            contentDescription = null
                                         )
                                     }
                                 }
@@ -411,7 +407,7 @@ private fun HeaderItem(
             .drawBehind {
                 // 如果深度大于0，才需要绘制线条
                 if (depth > 0) {
-                    val indentPerLevel = 12.dp.toPx()
+                    val indentPerLevel = 16.dp.toPx()
                     val iconCenterOffset = 16.dp.toPx()
 
                     // 根据深度，循环绘制每一层级的垂直对齐线
@@ -430,7 +426,7 @@ private fun HeaderItem(
     ) {
         val iconColor = MaterialTheme.colorScheme.onSurfaceVariant
         Canvas(
-            Modifier.padding(start = (depth * 12).dp).size(32.dp)
+            Modifier.padding(start = (depth * 16).dp).size(32.dp)
                 .then(
                     if (header.children.isNotEmpty()) {
                         Modifier.clip(CircleShape).clickable { expanded = !expanded }
@@ -442,7 +438,7 @@ private fun HeaderItem(
             drawCircle(
                 color = iconColor,
                 radius = 3.dp.toPx(),
-                style = if (header.children.isNotEmpty() && !expanded) Fill else Stroke()
+                style = if (header.children.isNotEmpty() && !expanded) Fill else Stroke(1.dp.toPx())
             )
         }
 

@@ -209,4 +209,17 @@
     <string name="snackbar_deleted_all">All notes in trash deleted</string>
 
     <string name="drawing">Drawing</string>
+    <string name="white">White</string>
+    <string name="black">Black</string>
+    <string name="none">None</string>
+    <string name="square">Square</string>
+    <string name="rule">Rule</string>
+    <string name="dot">Dot</string>
+    <string name="brush_size">Brush size</string>
+    <string name="brush_color">Brush color</string>
+    <string name="stroke_eraser">Stroke eraser</string>
+    <string name="area_eraser">Area eraser</string>
+    <string name="eraser_size">Eraser size</string>
+    <string name="erase_all_strokes">Erase all strokes</string>
+    <string name="reset_canvas">Reset canvas</string>
 </resources>
