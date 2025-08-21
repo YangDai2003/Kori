@@ -55,7 +55,6 @@ fun EditorRowScope.PlainTextEditorRow(
             enabled = textFieldState.undoState.canUndo,
             onClick = { textFieldState.undoState.undo() }
         )
-
         EditorRowButton(
             hint = stringResource(Res.string.redo),
             actionText = "$platformKeyboardShortCut + Y",

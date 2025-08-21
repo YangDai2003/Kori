@@ -61,7 +61,6 @@ fun EditorRowScope.TodoTextEditorRow(
             enabled = textFieldState.undoState.canUndo,
             onClick = { textFieldState.undoState.undo() }
         )
-
         EditorRowButton(
             hint = stringResource(Res.string.redo),
             actionText = "$platformKeyboardShortCut + Y",
@@ -77,19 +76,16 @@ fun EditorRowScope.TodoTextEditorRow(
             icon = painterResource(Res.drawable.parentheses),
             onClick = { textFieldState.edit { parentheses() } }
         )
-
         EditorRowButton(
             hint = stringResource(Res.string.project_tag),
             icon = Icons.Outlined.Add,
             onClick = { textFieldState.edit { addBeforeWithWhiteSpace("+") } }
         )
-
         EditorRowButton(
             hint = stringResource(Res.string.context_tag),
             icon = Icons.Outlined.AlternateEmail,
             onClick = { textFieldState.edit { addBeforeWithWhiteSpace("@") } }
         )
-
         EditorRowButton(
             hint = stringResource(Res.string.completion_mark),
             icon = Icons.Outlined.CheckBox,

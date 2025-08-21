@@ -1,7 +1,5 @@
 package org.yangdai.kori.presentation.component.note.todo
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,9 +10,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -53,7 +51,8 @@ private fun parseTodoLines(lines: List<String>): Pair<List<TodoItem>, List<TodoI
     val priorityRegex = Regex("""^\(([A-Z])\) """)
     val dateRegex = Regex("""(?<=^|\s)(\d{4}-\d{2}-\d{2})(?=\s|$)""")
     val doneRegex = Regex("""^x\s""")
-    val doneDateRegex = Regex("""^x\s(\d{4}-\d{2}-\d{2})(?:\s(\d{4}-\d{2}-\d{2}))?""")
+    val doneDateRegex =
+        Regex("""^x\s(?:\(([A-Z])\)\s)?(\d{4}-\d{2}-\d{2})(?:\s(\d{4}-\d{2}-\d{2}))?""")
 
     val undone = mutableListOf<TodoItem>()
     val done = mutableListOf<TodoItem>()
@@ -61,41 +60,44 @@ private fun parseTodoLines(lines: List<String>): Pair<List<TodoItem>, List<TodoI
     for (line in lines) {
         val trimmed = line.trim()
         if (trimmed.isEmpty()) continue
-        val isDone = doneRegex.containsMatchIn(trimmed)
-        var priority: Char? = null
-        var date: String? = null
-        var sortDate: String? = null
 
-        if (isDone) {
-            // 完成任务
+        if (doneRegex.containsMatchIn(trimmed)) {
+            var priority: Char? = null
+            var date: String? = null // 创建日期
+            var sortDate: String? = null // 完成日期
+
             val m = doneDateRegex.find(trimmed)
             if (m != null) {
-                // m.groupValues[1] 完成日期, m.groupValues[2] 创建日期(可选)
-                date = m.groupValues.getOrNull(2)
-                sortDate = m.groupValues.getOrNull(1) // 按完成日期排序
-            }
-            // 查找优先级（完成任务优先级可能被保留）
-            val afterDone = trimmed.removePrefix("x ").trimStart()
-            val priMatch = priorityRegex.find(afterDone)
-            if (priMatch != null) {
-                priority = priMatch.groupValues[1][0]
+                // groupValues 索引: [0]是完整匹配, [1]是优先级, [2]是完成日期, [3]是创建日期
+                val priorityStr = m.groupValues.getOrNull(1)
+                if (!priorityStr.isNullOrEmpty()) {
+                    priority = priorityStr[0]
+                }
+                sortDate = m.groupValues.getOrNull(2) // 完成日期，用于排序
+                date = m.groupValues.getOrNull(3)     // 创建日期 (可选)
             }
             done.add(TodoItem(trimmed, true, priority, date, sortDate))
         } else {
-            // 未完成任务
+            var priority: Char? = null
+            var date: String? = null
+
             val priMatch = priorityRegex.find(trimmed)
             if (priMatch != null) {
                 priority = priMatch.groupValues[1][0]
             }
-            val dateMatch = dateRegex.find(trimmed.removePrefix("(${priority ?: ""}) ").trimStart())
+
+            // 从优先级之后开始查找
+            val textToSearchDate =
+                if (priMatch != null) trimmed.substring(priMatch.range.last + 1) else trimmed
+            val dateMatch = dateRegex.find(textToSearchDate)
             if (dateMatch != null) {
                 date = dateMatch.groupValues[1]
             }
-            sortDate = date
-            undone.add(TodoItem(trimmed, false, priority, date, sortDate))
+            undone.add(TodoItem(trimmed, false, priority, date, date))
         }
     }
-    // 排序
+
+    // 排序逻辑 (保持不变)
     val priorityOrder: (Char?) -> Int = { c -> if (c == null) 26 else (c - 'A') }
     val dateOrder: (String?) -> String = { it ?: "9999-99-99" }
     val undoneSorted = undone.sortedWith(
@@ -103,8 +105,9 @@ private fun parseTodoLines(lines: List<String>): Pair<List<TodoItem>, List<TodoI
             .thenBy { dateOrder(it.sortDate) }
     )
     val doneSorted = done.sortedWith(
-        compareBy<TodoItem> { priorityOrder(it.priority) }
-            .thenBy { dateOrder(it.sortDate) }
+        // 已完成任务通常按完成日期倒序排列，但这里按正序，与您原逻辑保持一致
+        compareBy<TodoItem> { dateOrder(it.sortDate) }
+            .thenBy { priorityOrder(it.priority) }
     )
     return Pair(undoneSorted, doneSorted)
 }
@@ -213,12 +216,12 @@ private fun TodoCard(todoItem: TodoItem) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp),
+            .padding(horizontal = 16.dp, vertical = 4.dp),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 优先级圆点或已完成图标
@@ -227,16 +230,17 @@ private fun TodoCard(todoItem: TodoItem) {
                     imageVector = Icons.Filled.CheckCircle,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-                    modifier = Modifier.size(22.dp)
+                    modifier = Modifier.size(20.dp)
                 )
             } else {
-                Box(
-                    modifier = Modifier
-                        .size(12.dp)
-                        .background(priorityColor, shape = CircleShape)
+                Icon(
+                    imageVector = Icons.Filled.Circle,
+                    contentDescription = null,
+                    tint = priorityColor,
+                    modifier = Modifier.size(20.dp)
                 )
             }
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = content,

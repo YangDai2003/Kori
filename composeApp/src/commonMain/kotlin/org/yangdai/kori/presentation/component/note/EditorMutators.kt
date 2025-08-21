@@ -2,6 +2,13 @@ package org.yangdai.kori.presentation.component.note
 
 import androidx.compose.foundation.text.input.TextFieldBuffer
 import androidx.compose.ui.text.TextRange
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format.FormatStringsInDatetimeFormats
+import kotlinx.datetime.format.byUnicodePattern
+import kotlinx.datetime.todayIn
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 fun TextFieldBuffer.moveCursorLeftStateless() {
     if (selection.min > 0) {
@@ -131,22 +138,75 @@ fun TextFieldBuffer.alert(type: String) {
     )
 }
 
+/**
+ *
+ * - **标记为完成**: 在行首添加 'x '。
+ *   - 如果事项中没有完成日期，则在规定位置添加当前日期。
+ *   - 如果已有完成日期（通常意味着它已经是 '完成' 状态，但代码会做健壮性处理），则仅确保 'x ' 存在。
+ *
+ * - **标记为未完成**: 移除行首的 'x '。
+ *   - 如果存在完成日期，则一并移除。
+ *
+ * @param str 通常是 "x "，代表完成状态的字符串。
+ */
+@OptIn(ExperimentalTime::class, FormatStringsInDatetimeFormats::class)
 fun TextFieldBuffer.toggleLineStart(str: String) {
     val text = toString()
-    val lineStart = text.take(selection.min)
-        .lastIndexOf('\n')
-        .takeIf { it != -1 }
-        ?.let { it + 1 }
-        ?: 0
+    if (selection.min > text.length) return
 
-    val lineContent = text.substring(lineStart, selection.min)
+    // 1. 确定当前光标所在行的起始和结束位置
+    val lineStart = text.take(selection.min).lastIndexOf('\n').let { if (it != -1) it + 1 else 0 }
+    val lineEnd = text.indexOf('\n', lineStart).let { if (it != -1) it else text.length }
+    val lineContent = text.substring(lineStart, lineEnd)
 
-    if (lineContent.startsWith(str)) {
-        // 如果行首已经有 str，则删除它
-        replace(lineStart, lineStart + str.length, "")
+    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+    val dateFormat = LocalDate.Format { byUnicodePattern("yyyy-MM-dd") }
+    val todayStr = dateFormat.format(today)
+
+    // 正则表达式来匹配优先级和日期
+    // 匹配如 "(A) " 的优先级标记
+    val priorityRegex = Regex("^\\s*\\(\\w\\)\\s+")
+    // 匹配如 "2024-08-21 " 的日期
+    val dateRegex = Regex("^\\s*\\d{4}-\\d{2}-\\d{2}\\s+")
+
+    // 2. 判断当前行是否已经标记为完成
+    if (lineContent.trim().startsWith(str.trim())) {
+        // --- 标记为未完成 ---
+        var tempLine = lineContent.substring(str.length)
+        val priorityMatch = priorityRegex.find(tempLine)
+        var hasPriority = false
+
+        if (priorityMatch != null) {
+            // 如果有优先级，检查优先级后面的内容
+            tempLine = tempLine.substring(priorityMatch.value.length)
+            hasPriority = true
+        }
+
+        val dateMatch = dateRegex.find(tempLine)
+        if (dateMatch != null) {
+            // 如果找到了完成日期，移除它
+            tempLine = tempLine.substring(dateMatch.value.length)
+        }
+
+        // 重新组合成未完成状态的行
+        val newLine = if (hasPriority) priorityMatch!!.value + tempLine else tempLine
+        replace(lineStart, lineEnd, newLine)
+
     } else {
-        // 否则添加 str
-        replace(lineStart, lineStart, str)
+        // --- 标记为完成 ---
+        val priorityMatch = priorityRegex.find(lineContent)
+        if (priorityMatch != null) {
+            // 情况 A: 带有优先级，如 "(A) 2016-04-30 task..."
+            val restOfLine = lineContent.substring(priorityMatch.value.length)
+            // 组合成: "x (A) yyyy-MM-dd 2016-04-30 task..."
+            val newLine = "$str${priorityMatch.value}$todayStr $restOfLine"
+            replace(lineStart, lineEnd, newLine)
+        } else {
+            // 情况 B: 不带优先级，如 "2016-04-30 task..." 或 "task..."
+            // 组合成: "x yyyy-MM-dd 2016-04-30 task..."
+            val newLine = "$str$todayStr $lineContent"
+            replace(lineStart, lineEnd, newLine)
+        }
     }
 }
 

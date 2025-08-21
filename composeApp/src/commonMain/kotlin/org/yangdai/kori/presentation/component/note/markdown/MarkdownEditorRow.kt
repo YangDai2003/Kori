@@ -194,28 +194,24 @@ fun EditorRowScope.MarkdownEditorRow(
             icon = Icons.Outlined.FormatBold,
             onClick = { textFieldState.edit { bold() } }
         )
-
         EditorRowButton(
             hint = stringResource(Res.string.italic),
             actionText = "Ctrl + I",
             icon = Icons.Outlined.FormatItalic,
             onClick = { textFieldState.edit { italic() } }
         )
-
-        EditorRowButton(
-            hint = stringResource(Res.string.underline),
-            actionText = "Ctrl + U",
-            icon = Icons.Outlined.FormatUnderlined,
-            onClick = { textFieldState.edit { underline() } }
-        )
-
         EditorRowButton(
             hint = stringResource(Res.string.strikethrough),
             actionText = "Ctrl + D",
             icon = Icons.Outlined.StrikethroughS,
             onClick = { textFieldState.edit { strikeThrough() } }
         )
-
+        EditorRowButton(
+            hint = stringResource(Res.string.underline),
+            actionText = "Ctrl + U",
+            icon = Icons.Outlined.FormatUnderlined,
+            onClick = { textFieldState.edit { underline() } }
+        )
         EditorRowButton(
             hint = stringResource(Res.string.highlight),
             actionText = "Ctrl + H",
@@ -230,7 +226,6 @@ fun EditorRowScope.MarkdownEditorRow(
             icon = Icons.AutoMirrored.Outlined.FormatIndentIncrease,
             onClick = { textFieldState.edit { tab() } }
         )
-
         EditorRowButton(
             hint = stringResource(Res.string.indent_decrease),
             icon = Icons.AutoMirrored.Outlined.FormatIndentDecrease,
@@ -245,35 +240,30 @@ fun EditorRowScope.MarkdownEditorRow(
             icon = Icons.Outlined.Code,
             onClick = { textFieldState.edit { inlineCode() } }
         )
-
         EditorRowButton(
             hint = stringResource(Res.string.code_block),
             actionText = "Ctrl + Shift + E",
             icon = Icons.Outlined.IntegrationInstructions,
             onClick = { textFieldState.edit { codeBlock() } }
         )
-
         EditorRowButton(
             hint = stringResource(Res.string.math),
             actionText = "Ctrl + M",
             icon = Icons.Outlined.AttachMoney,
             onClick = { textFieldState.edit { inlineMath() } }
         )
-
         EditorRowButton(
             hint = stringResource(Res.string.math_block),
             actionText = "Ctrl + Shift + M",
             icon = Icons.Outlined.Functions,
             onClick = { textFieldState.edit { mathBlock() } }
         )
-
         EditorRowButton(
             hint = stringResource(Res.string.link),
             actionText = "Ctrl + L",
             icon = Icons.Outlined.Link,
             onClick = { textFieldState.edit { link() } }
         )
-
         EditorRowButton(
             hint = stringResource(Res.string.quote),
             actionText = "Ctrl + Q",
@@ -298,25 +288,21 @@ fun EditorRowScope.MarkdownEditorRow(
                 icon = Icons.Outlined.Info,
                 onClick = { textFieldState.edit { alert("NOTE") } }
             )
-
             EditorRowButton(
                 hint = "TIP",
                 icon = Icons.Outlined.Lightbulb,
                 onClick = { textFieldState.edit { alert("TIP") } }
             )
-
             EditorRowButton(
                 hint = "IMPORTANT",
                 icon = Icons.AutoMirrored.Outlined.Announcement,
                 onClick = { textFieldState.edit { alert("IMPORTANT") } }
             )
-
             EditorRowButton(
                 hint = "WARNING",
                 icon = Icons.Outlined.WarningAmber,
                 onClick = { textFieldState.edit { alert("WARNING") } }
             )
-
             EditorRowButton(
                 hint = "CAUTION",
                 icon = Icons.Outlined.ReportGmailerrorred,
@@ -351,24 +337,20 @@ fun EditorRowScope.MarkdownEditorRow(
             icon = painterResource(Res.drawable.parentheses),
             onClick = { textFieldState.edit { parentheses() } }
         )
-
         EditorRowButton(
             icon = Icons.Outlined.DataArray,
             onClick = { textFieldState.edit { brackets() } }
         )
-
         EditorRowButton(
             icon = Icons.Outlined.DataObject,
             onClick = { textFieldState.edit { braces() } }
         )
-
         EditorRowButton(
             hint = stringResource(Res.string.horizontal_rule),
             actionText = "Ctrl + R",
             icon = Icons.Outlined.HorizontalRule,
             onClick = { textFieldState.edit { horizontalRule() } }
         )
-
         EditorRowButton(
             hint = stringResource(Res.string.mermaid_diagram),
             actionText = "Ctrl + Shift + D",

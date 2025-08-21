@@ -97,9 +97,9 @@ val SampleMarkdownNote = """
 
     ***Bold and italic*** or ___also bold and italic___
 
-    <del>Strikethrough</del> or ~~also Strikethrough~~
+    ~~Strikethrough~~ or <del>also strikethrough</del>
 
-    <ins>Underline</ins> and <mark>Highlighted text</mark>
+    <ins>Underline</ins> and <mark>Highlight</mark>
 
     ## Lists
 
