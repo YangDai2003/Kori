@@ -27,6 +27,7 @@ class MarkdownTransformation : OutputTransformation {
         applyAllListStyles(isInCodeBlock)
         applyTableStyles(isInCodeBlock)
         applyInlineMathStyles(isInCodeBlock)
+        findAndApplyMathBlockStyles()
     }
 
     /**
@@ -153,25 +154,45 @@ class MarkdownTransformation : OutputTransformation {
     }
 
     private fun TextFieldBuffer.applyHtmlTagStyles(isInCodeBlock: (Int) -> Boolean) {
+        // 正则表达式，用于在属性字符串中查找所有双引号包裹的内容
+        val quotedContentRegex = Regex("\"[^\"]*\"")
+
         MarkdownFormat.htmlTagRegex.findAll(originalText).forEach { match ->
             if (isInCodeBlock(match.range.first)) return@forEach
 
-            val isClosingTag = match.groupValues[1].isNotEmpty() // 检查是否有 "/"
-            val tagName = match.groupValues[2]
+            // 安全地提取捕获组
+            val isClosingTag = match.groups[1] != null    // 组1: "/"
+            val tagNameGroup = match.groups[2]            // 组2: "tag"
+            val attributesGroup = match.groups[3]       // 组3: 'xx="yyy"'
+
+            // 如果没有匹配到标签名，则跳过
+            if (tagNameGroup == null) return@forEach
 
             val tagStart = match.range.first
 
-            // 高亮开头的 "<" 或 "</"
+            // 计算开括号部分的结束位置 (e.g., "<" or "</")
             val openBracketEnd = tagStart + 1 + (if (isClosingTag) 1 else 0)
-            addStyle(MarkdownFormat.htmlBrackets, tagStart, openBracketEnd)
+            addStyle(MarkdownFormat.brackets, tagStart, openBracketEnd)
+            // 高亮闭括号 ">"
+            addStyle(MarkdownFormat.brackets, match.range.last, match.range.last + 1)
 
-            // 高亮标签名
+            // 标签名的起始位置紧跟在开括号之后
             val tagNameStart = openBracketEnd
-            val tagNameEnd = tagNameStart + tagName.length
+            val tagNameEnd = tagNameStart + tagNameGroup.value.length
             addStyle(MarkdownFormat.htmlTag, tagNameStart, tagNameEnd)
 
-            // 高亮结尾的 ">"
-            addStyle(MarkdownFormat.htmlBrackets, match.range.last, match.range.last + 1)
+            // 仅当是开标签且属性部分不为空时处理
+            if (!isClosingTag && attributesGroup != null && attributesGroup.value.isNotEmpty()) {
+                // 属性字符串在原始文本中的绝对起始位置
+                val attributesStart = tagNameEnd
+                quotedContentRegex.findAll(attributesGroup.value).forEach { quoteMatch ->
+                    // 计算双引号内容在原始文本中的绝对位置：
+                    // 属性的绝对起始位置 + 双引号内容在属性字符串中的相对起始位置
+                    val quoteStart = attributesStart + quoteMatch.range.first
+                    val quoteEnd = attributesStart + quoteMatch.range.last + 1
+                    addStyle(MarkdownFormat.htmlQuotedValue, quoteStart, quoteEnd)
+                }
+            }
         }
     }
 
@@ -202,12 +223,64 @@ class MarkdownTransformation : OutputTransformation {
     private fun TextFieldBuffer.applyInlineMathStyles(isInCodeBlock: (Int) -> Boolean) {
         MarkdownFormat.inlineMathRegex.findAll(originalText).forEach { match ->
             if (isInCodeBlock(match.range.first)) return@forEach
-            // 高亮开头的 '$'
+            // 高亮开头的 '$', 高亮结尾的 '$'
             addStyle(MarkdownFormat.marker, match.range.first, match.range.first + 1)
-            // 高亮结尾的 '$'
             addStyle(MarkdownFormat.marker, match.range.last, match.range.last + 1)
-            addStyle(MarkdownFormat.monoContent, match.range.first + 1, match.range.last)
+
+            // 提取公式内容及其在原始文本中的起始位置
+            val content = match.groupValues[1]
+            val contentOffset = match.range.first + 1
+
+            // 在公式内容上进行二次匹配，实现内部语法高亮
+            MarkdownFormat.latexRegex.findAll(content).forEach { latexMatch ->
+                // 根据匹配到的捕获组来决定应用哪种样式
+                val style = when {
+                    latexMatch.groups[1] != null -> MarkdownFormat.latexCommand
+                    latexMatch.groups[2] != null -> MarkdownFormat.latexNumber
+                    latexMatch.groups[3] != null -> MarkdownFormat.brackets
+                    latexMatch.groups[4] != null -> MarkdownFormat.latexOperator
+                    else -> return@forEach
+                }
+
+                // 计算高亮范围在原始文本中的绝对位置
+                val start = contentOffset + latexMatch.range.first
+                val end = contentOffset + latexMatch.range.last + 1
+                addStyle(style, start, end)
+            }
         }
+    }
+
+    private fun TextFieldBuffer.findAndApplyMathBlockStyles(): List<IntRange> {
+        val ranges = mutableListOf<IntRange>()
+        MarkdownFormat.mathBlockRegex.findAll(originalText).forEach { match ->
+            ranges.add(match.range)
+            // 高亮首尾的 '$$' 标记
+            val openingMarkerEnd = match.range.first + 2
+            val closingMarkerStart = match.range.last - 1
+            addStyle(MarkdownFormat.marker, match.range.first, openingMarkerEnd)
+            addStyle(MarkdownFormat.marker, closingMarkerStart, match.range.last + 1)
+
+            // 提取公式内容
+            val contentGroup = match.groups[1] ?: return@forEach
+
+            // 内容的起始位置就是整个匹配的起始位置 + 开头标记"$$"的长度(2)
+            val contentOffset = match.range.first + 2
+            MarkdownFormat.latexRegex.findAll(contentGroup.value).forEach { latexMatch ->
+                val style = when {
+                    latexMatch.groups[1] != null -> MarkdownFormat.latexCommand
+                    latexMatch.groups[2] != null -> MarkdownFormat.latexNumber
+                    latexMatch.groups[3] != null -> MarkdownFormat.brackets
+                    latexMatch.groups[4] != null -> MarkdownFormat.latexOperator
+                    else -> return@forEach
+                }
+
+                // 计算高亮范围在原始文本中的绝对位置
+                val start = contentOffset + latexMatch.range.first
+                val end = contentOffset + latexMatch.range.last + 1
+                addStyle(style, start, end)
+            }
+        }
+        return ranges
     }
 }
 
@@ -237,8 +310,13 @@ object MarkdownFormat {
 
     val inlineCodeStyle =
         SpanStyle(background = Color.DarkGray.copy(alpha = 0.2f), fontFamily = FontFamily.Monospace)
-    val htmlTag = SpanStyle(color = Color(0xFF26A69A))
-    val htmlBrackets = SpanStyle(color = Color(0xFFB0BEC5))
+    val htmlTag = SpanStyle(color = Color(0xFFF65314))       // 标签名样式 (例如: div)
+    val brackets = SpanStyle(color = Color(0xFF808080))  // 括号样式
+    val htmlQuotedValue = SpanStyle(color = Color(0xFF7CBB00)) // (例如: "yyy")
+
+    val latexCommand = SpanStyle(color = Color(0xFFE4004B))  // LaTeX 命令样式 (例如: \frac, \alpha)
+    val latexNumber = SpanStyle(color = Color(0xFFED775A))   // LaTeX 数字样式 (例如: 2, 3.14)
+    val latexOperator = SpanStyle(color = Color(0xFFFAD691))  // LaTeX 运算符样式 (例如: +, -, ^, _, =)
 
     // 支持语言名包含符号（如c#, c++, .net, C--等）
     val codeBlockRegex = Regex("""```([^\s\n`]*)?\n([\s\S]*?)\n```""")
@@ -261,7 +339,7 @@ object MarkdownFormat {
     // 根据规范，最多允许3个空格的缩进，且不允许制表符
     val githubAlertRegex =
         Regex("""^ {0,3}> ?\[(!(NOTE|TIP|IMPORTANT|WARNING|CAUTION))]""", RegexOption.MULTILINE)
-    val htmlTagRegex = Regex("""<(/)?([a-zA-Z0-9]+)[^>]*?>""")
+    val htmlTagRegex = Regex("""<(/)?([a-zA-Z0-9]+)([^>\n]*)>""")
 
     /**
      * 用于匹配整个 Markdown 表格。
@@ -269,10 +347,7 @@ object MarkdownFormat {
      * - 第2组 `(^\|[\s\d:|-].+\n)`: 捕获分隔行。同样以'|'开头，且必须包含分隔符的有效字符。
      * - 第3组 `((?:^\|.+\n?)*)`: 捕获零行或多行表体。每一行都必须以'|'开头。
      */
-    val tableRegex = Regex(
-        """(^\|.+\n)(^\|[\s\d:|-].+\n)((?:^\|.+\n?)*)""",
-        RegexOption.MULTILINE
-    )
+    val tableRegex = Regex("""(^\|.+\n)(^\|[\s\d:|-].+\n)((?:^\|.+\n?)*)""", RegexOption.MULTILINE)
 
     /**
      * 匹配行内数学公式 (例如 $E=mc^2$)
@@ -283,4 +358,6 @@ object MarkdownFormat {
      * - `(?!\$)`: 负向后行断言，确保后面的字符不是'$'。
      */
     val inlineMathRegex = Regex("""(?<!\$)\$([^\n$]+?)\$(?!\$)""")
+    val latexRegex = Regex("""(\\[a-zA-Z]+)|(\d+(?:\.\d+)?)|([{}()\[\]])|([+*/=^_,.<>|-])""")
+    val mathBlockRegex = Regex("""\$\$([\s\S]+?)\$\$""")
 }

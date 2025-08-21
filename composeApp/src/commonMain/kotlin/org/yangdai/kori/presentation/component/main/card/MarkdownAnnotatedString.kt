@@ -7,10 +7,8 @@ import org.yangdai.kori.presentation.component.note.markdown.MarkdownFormat
 fun buildMarkdownAnnotatedString(text: String) =
     buildAnnotatedString {
         append(text)
-
         val codeBlockRanges = findAndApplyCodeBlockStyles(text)
         val isInCodeBlock = { position: Int -> codeBlockRanges.any { position in it } }
-
         applyLinkStyles(text, isInCodeBlock)
         applyHeadingStyles(text, isInCodeBlock)
         applyGithubAlertStyles(text, isInCodeBlock)
@@ -19,6 +17,7 @@ fun buildMarkdownAnnotatedString(text: String) =
         applyAllListStyles(text, isInCodeBlock)
         applyTableStyles(text, isInCodeBlock)
         applyInlineMathStyles(text, isInCodeBlock)
+        findAndApplyMathBlockStyles(text)
     }
 
 /**
@@ -163,25 +162,45 @@ private fun AnnotatedString.Builder.applyHtmlTagStyles(
     originalText: String,
     isInCodeBlock: (Int) -> Boolean
 ) {
+    // 正则表达式，用于在属性字符串中查找所有双引号包裹的内容
+    val quotedContentRegex = Regex("\"[^\"]*\"")
+
     MarkdownFormat.htmlTagRegex.findAll(originalText).forEach { match ->
         if (isInCodeBlock(match.range.first)) return@forEach
 
-        val isClosingTag = match.groupValues[1].isNotEmpty() // 检查是否有 "/"
-        val tagName = match.groupValues[2]
+        // 安全地提取捕获组
+        val isClosingTag = match.groups[1] != null    // 组1: "/"
+        val tagNameGroup = match.groups[2]            // 组2: "tag"
+        val attributesGroup = match.groups[3]       // 组3: 'xx="yyy"'
+
+        // 如果没有匹配到标签名，则跳过
+        if (tagNameGroup == null) return@forEach
 
         val tagStart = match.range.first
 
-        // 高亮开头的 "<" 或 "</"
+        // 计算开括号部分的结束位置 (e.g., "<" or "</")
         val openBracketEnd = tagStart + 1 + (if (isClosingTag) 1 else 0)
-        addStyle(MarkdownFormat.htmlBrackets, tagStart, openBracketEnd)
+        addStyle(MarkdownFormat.brackets, tagStart, openBracketEnd)
+        // 高亮闭括号 ">"
+        addStyle(MarkdownFormat.brackets, match.range.last, match.range.last + 1)
 
-        // 高亮标签名
+        // 标签名的起始位置紧跟在开括号之后
         val tagNameStart = openBracketEnd
-        val tagNameEnd = tagNameStart + tagName.length
+        val tagNameEnd = tagNameStart + tagNameGroup.value.length
         addStyle(MarkdownFormat.htmlTag, tagNameStart, tagNameEnd)
 
-        // 高亮结尾的 ">"
-        addStyle(MarkdownFormat.htmlBrackets, match.range.last, match.range.last + 1)
+        // 仅当是开标签且属性部分不为空时处理
+        if (!isClosingTag && attributesGroup != null && attributesGroup.value.isNotEmpty()) {
+            // 属性字符串在原始文本中的绝对起始位置
+            val attributesStart = tagNameEnd
+            quotedContentRegex.findAll(attributesGroup.value).forEach { quoteMatch ->
+                // 计算双引号内容在原始文本中的绝对位置：
+                // 属性的绝对起始位置 + 双引号内容在属性字符串中的相对起始位置
+                val quoteStart = attributesStart + quoteMatch.range.first
+                val quoteEnd = attributesStart + quoteMatch.range.last + 1
+                addStyle(MarkdownFormat.htmlQuotedValue, quoteStart, quoteEnd)
+            }
+        }
     }
 }
 
@@ -214,10 +233,64 @@ private fun AnnotatedString.Builder.applyInlineMathStyles(
 ) {
     MarkdownFormat.inlineMathRegex.findAll(originalText).forEach { match ->
         if (isInCodeBlock(match.range.first)) return@forEach
-        // 高亮开头的 '$'
+        // 高亮开头的 '$', 高亮结尾的 '$'
         addStyle(MarkdownFormat.marker, match.range.first, match.range.first + 1)
-        // 高亮结尾的 '$'
         addStyle(MarkdownFormat.marker, match.range.last, match.range.last + 1)
-        addStyle(MarkdownFormat.monoContent, match.range.first + 1, match.range.last)
+
+        // 提取公式内容及其在原始文本中的起始位置
+        val content = match.groupValues[1]
+        val contentOffset = match.range.first + 1
+
+        // 在公式内容上进行二次匹配，实现内部语法高亮
+        MarkdownFormat.latexRegex.findAll(content).forEach { latexMatch ->
+            // 根据匹配到的捕获组来决定应用哪种样式
+            val style = when {
+                latexMatch.groups[1] != null -> MarkdownFormat.latexCommand
+                latexMatch.groups[2] != null -> MarkdownFormat.latexNumber
+                latexMatch.groups[3] != null -> MarkdownFormat.brackets
+                latexMatch.groups[4] != null -> MarkdownFormat.latexOperator
+                else -> return@forEach
+            }
+
+            // 计算高亮范围在原始文本中的绝对位置
+            val start = contentOffset + latexMatch.range.first
+            val end = contentOffset + latexMatch.range.last + 1
+            addStyle(style, start, end)
+        }
     }
+}
+
+private fun AnnotatedString.Builder.findAndApplyMathBlockStyles(
+    originalText: String
+): List<IntRange> {
+    val ranges = mutableListOf<IntRange>()
+    MarkdownFormat.mathBlockRegex.findAll(originalText).forEach { match ->
+        ranges.add(match.range)
+        // 高亮首尾的 '$$' 标记
+        val openingMarkerEnd = match.range.first + 2
+        val closingMarkerStart = match.range.last - 1
+        addStyle(MarkdownFormat.marker, match.range.first, openingMarkerEnd)
+        addStyle(MarkdownFormat.marker, closingMarkerStart, match.range.last + 1)
+
+        // 提取公式内容
+        val contentGroup = match.groups[1] ?: return@forEach
+
+        // 内容的起始位置就是整个匹配的起始位置 + 开头标记"$$"的长度(2)
+        val contentOffset = match.range.first + 2
+        MarkdownFormat.latexRegex.findAll(contentGroup.value).forEach { latexMatch ->
+            val style = when {
+                latexMatch.groups[1] != null -> MarkdownFormat.latexCommand
+                latexMatch.groups[2] != null -> MarkdownFormat.latexNumber
+                latexMatch.groups[3] != null -> MarkdownFormat.brackets
+                latexMatch.groups[4] != null -> MarkdownFormat.latexOperator
+                else -> return@forEach
+            }
+
+            // 计算高亮范围在原始文本中的绝对位置
+            val start = contentOffset + latexMatch.range.first
+            val end = contentOffset + latexMatch.range.last + 1
+            addStyle(style, start, end)
+        }
+    }
+    return ranges
 }
