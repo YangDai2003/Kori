@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBackIosNew
@@ -23,7 +22,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -34,7 +32,6 @@ import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -70,6 +67,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.OS
 import org.yangdai.kori.currentPlatformInfo
+import org.yangdai.kori.presentation.component.dialog.dialogShape
 import org.yangdai.kori.presentation.component.setting.SettingsDetailPane
 import org.yangdai.kori.presentation.component.setting.SettingsListPane
 import kotlin.coroutines.cancellation.CancellationException
@@ -154,13 +152,13 @@ fun SettingsScreen(navigateUp: () -> Unit) {
                     scaleX = 1f - (progress * 0.1f)
                     scaleY = 1f - (progress * 0.1f)
                 },
-            shape = MaterialTheme.shapes.medium,
+            shape = dialogShape(),
             color = MaterialTheme.colorScheme.surfaceContainer,
             shadowElevation = 8.dp,
             border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outlineVariant)
         ) {
             Column {
-                Box(Modifier.fillMaxWidth().pointerInput(Unit) {
+                Box(Modifier.fillMaxWidth().padding(2.dp).pointerInput(Unit) {
                     detectVerticalDragGestures(
                         onDragEnd = {
                             coroutineScope.launch {
@@ -191,11 +189,8 @@ fun SettingsScreen(navigateUp: () -> Unit) {
                 }) {
                     if (navigator.canNavigateBack()) {
                         IconButton(
-                            modifier = Modifier
-                                .align(Alignment.CenterStart)
-                                .minimumInteractiveComponentSize()
-                                .size(IconButtonDefaults.extraSmallContainerSize(widthOption = IconButtonDefaults.IconButtonWidthOption.Uniform)),
-                            shape = IconButtonDefaults.extraSmallSquareShape,
+                            modifier = Modifier.align(Alignment.CenterStart),
+                            shape = dialogShape(),
                             onClick = {
                                 coroutineScope.launch {
                                     navigator.navigateBack()
@@ -203,7 +198,6 @@ fun SettingsScreen(navigateUp: () -> Unit) {
                             }
                         ) {
                             Icon(
-                                modifier = Modifier.size(IconButtonDefaults.extraSmallIconSize),
                                 imageVector = if (currentPlatformInfo.operatingSystem == OS.IOS || currentPlatformInfo.operatingSystem == OS.MACOS)
                                     Icons.Default.ArrowBackIosNew
                                 else Icons.AutoMirrored.Filled.ArrowBack,
@@ -235,15 +229,11 @@ fun SettingsScreen(navigateUp: () -> Unit) {
                         )
                     }
                     IconButton(
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .minimumInteractiveComponentSize()
-                            .size(IconButtonDefaults.extraSmallContainerSize(widthOption = IconButtonDefaults.IconButtonWidthOption.Uniform)),
-                        shape = IconButtonDefaults.extraSmallSquareShape,
+                        modifier = Modifier.align(Alignment.CenterEnd),
+                        shape = dialogShape(),
                         onClick = { triggerExit() }
                     ) {
                         Icon(
-                            modifier = Modifier.size(IconButtonDefaults.extraSmallIconSize),
                             imageVector = Icons.Default.Close,
                             contentDescription = null
                         )
