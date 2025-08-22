@@ -178,7 +178,7 @@ fun NoteSideSheet(
                         detectTapGestures(onTap = { if (!isExiting) isExiting = true })
                     }
                 ) {
-                    val alpha = (fullOffsetPx - offsetX.value) / fullOffsetPx * 0.38f
+                    val alpha = (fullOffsetPx - offsetX.value) / fullOffsetPx * 0.32f
                     drawRect(scrimColor.copy(alpha = alpha))
                 }
 

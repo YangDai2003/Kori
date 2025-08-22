@@ -6,10 +6,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.DialogWindowProvider
 import androidx.core.net.toUri
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.dialog
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import kfile.PlatformFile
@@ -116,11 +120,21 @@ actual fun AppNavHost(
         }
     }
 
-    composable<Screen.Settings>(
+    dialog<Screen.Settings>(
+        dialogProperties = DialogProperties(
+            dismissOnBackPress = false,
+            usePlatformDefaultWidth = false
+        ),
         deepLinks = listOf(
             navDeepLink { uriPattern = "${Constants.DEEP_LINK}/settings" }
         )
     ) {
+        val dialogWindow = (LocalView.current.parent as? DialogWindowProvider)?.window
+        SideEffect {
+            dialogWindow?.apply {
+                setDimAmount(0.32f)
+            }
+        }
         SettingsScreen {
             navHostController.navigateUp()
         }

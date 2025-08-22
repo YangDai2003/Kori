@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.Language
@@ -17,6 +18,8 @@ import androidx.compose.material.icons.outlined.PermDeviceInformation
 import androidx.compose.material.icons.outlined.SdStorage
 import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
@@ -50,7 +53,6 @@ import kori.composeapp.generated.resources.text_overflow
 import kori.composeapp.generated.resources.time_format
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBar
-import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
 import org.yangdai.kori.presentation.component.rememberPlatformStyleTopAppBarState
 import org.yangdai.kori.presentation.util.clickToLanguageSetting
@@ -72,7 +74,14 @@ fun SettingsListPane(
             PlatformStyleTopAppBar(
                 state = topAppBarState,
                 title = { PlatformStyleTopAppBarTitle(stringResource(Res.string.settings)) },
-                navigationIcon = { PlatformStyleTopAppBarNavigationIcon(navigateUp) },
+                navigationIcon = {
+                    IconButton(onClick = navigateUp) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors()
                     .copy(
                         containerColor = MaterialTheme.colorScheme.surfaceContainer,

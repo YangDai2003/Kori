@@ -179,10 +179,9 @@ fun ImageViewerDialog(imageUrl: String, onDismissRequest: () -> Unit) {
         val dialogWindow = (LocalView.current.parent as? DialogWindowProvider)?.window
         SideEffect {
             dialogWindow?.apply {
-                setDimAmount(0.5f)
                 addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND)
                 attributes.let {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) it.blurBehindRadius = 16
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) it.blurBehindRadius = 20
                     attributes = it
                 }
             }

@@ -2,11 +2,15 @@ package org.yangdai.kori.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import androidx.navigation.NavUri
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.dialog
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import kfile.PlatformFile
@@ -20,6 +24,7 @@ import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.util.ExternalUriHandler
 import java.io.File
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 actual fun AppNavHost(
     modifier: Modifier,
@@ -70,7 +75,12 @@ actual fun AppNavHost(
         }
     }
 
-    composable<Screen.Settings>(
+    dialog<Screen.Settings>(
+        dialogProperties = DialogProperties(
+            dismissOnBackPress = false,
+            usePlatformDefaultWidth = false,
+            scrimColor = Color.Black.copy(alpha = 0.32f)
+        ),
         deepLinks = listOf(
             navDeepLink { uriPattern = "${Constants.DEEP_LINK}/settings" }
         )
