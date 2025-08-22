@@ -78,6 +78,7 @@ actual fun AppNavHost(
     dialog<Screen.Settings>(
         dialogProperties = DialogProperties(
             dismissOnBackPress = false,
+            dismissOnClickOutside = false,
             usePlatformDefaultWidth = false,
             scrimColor = Color.Black.copy(alpha = 0.32f)
         ),

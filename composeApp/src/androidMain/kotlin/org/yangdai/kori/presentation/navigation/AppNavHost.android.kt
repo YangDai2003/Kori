@@ -123,6 +123,7 @@ actual fun AppNavHost(
     dialog<Screen.Settings>(
         dialogProperties = DialogProperties(
             dismissOnBackPress = false,
+            dismissOnClickOutside = false,
             usePlatformDefaultWidth = false
         ),
         deepLinks = listOf(
