@@ -15,6 +15,8 @@ actual fun LoginDialog(content: @Composable (() -> Unit)) {
             dismissOnBackPress = false,
             dismissOnClickOutside = false,
             usePlatformDefaultWidth = false,
+            usePlatformInsets = false,
+            useSoftwareKeyboardInset = false,
             scrimColor = Color.Transparent
         ),
         content = content

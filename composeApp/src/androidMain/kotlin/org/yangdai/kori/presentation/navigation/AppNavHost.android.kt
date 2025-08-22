@@ -124,7 +124,8 @@ actual fun AppNavHost(
         dialogProperties = DialogProperties(
             dismissOnBackPress = false,
             dismissOnClickOutside = false,
-            usePlatformDefaultWidth = false
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = false
         ),
         deepLinks = listOf(
             navDeepLink { uriPattern = "${Constants.DEEP_LINK}/settings" }

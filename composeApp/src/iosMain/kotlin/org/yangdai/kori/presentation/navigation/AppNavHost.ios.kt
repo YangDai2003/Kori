@@ -81,6 +81,8 @@ actual fun AppNavHost(
             dismissOnBackPress = false,
             dismissOnClickOutside = false,
             usePlatformDefaultWidth = false,
+            usePlatformInsets = false,
+            useSoftwareKeyboardInset = false,
             scrimColor = Color.Black.copy(alpha = 0.32f)
         ),
         deepLinks = listOf(

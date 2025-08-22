@@ -59,14 +59,17 @@ fun MainScreen(
                     selectedItem = currentDrawerItem,
                     isAppProtected = isAppProtected
                 ),
-                navigateToScreen = navigateToScreen,
-                onLockClick = {
-                    AppLockManager.lock()
+                navigateToScreen = {
                     scope.launch { drawerState.close() }
+                    navigateToScreen(it)
+                },
+                onLockClick = {
+                    scope.launch { drawerState.close() }
+                    AppLockManager.lock()
                 },
                 onItemClick = { item ->
-                    currentDrawerItem = item
                     scope.launch { drawerState.close() }
+                    currentDrawerItem = item
                 }
             )
         }
