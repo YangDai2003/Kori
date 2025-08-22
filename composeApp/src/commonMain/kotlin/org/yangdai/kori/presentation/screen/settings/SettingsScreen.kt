@@ -52,6 +52,7 @@ import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.backhandler.PredictiveBackHandler
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kori.composeapp.generated.resources.Res
@@ -137,6 +138,7 @@ fun SettingsScreen(navigateUp: () -> Unit) {
         } else 1f
     }
 
+    val size = LocalWindowInfo.current.containerSize
     AnimatedVisibility(
         visible = isVisible,
         enter = slideInVertically(initialOffsetY = { it }) + fadeIn() + scaleIn(initialScale = 0.9f),
@@ -146,11 +148,23 @@ fun SettingsScreen(navigateUp: () -> Unit) {
             modifier = Modifier
                 .fillMaxSize(fraction)
                 .padding(16.dp)
-                .pointerInput(Unit) {
+                .graphicsLayer {
+                    val progress = backProgress.value
+                    translationY = progress * size.height * 0.5f
+                    scaleX = 1f - (progress * 0.1f)
+                    scaleY = 1f - (progress * 0.1f)
+                },
+            shape = MaterialTheme.shapes.medium,
+            color = MaterialTheme.colorScheme.surfaceContainer,
+            shadowElevation = 8.dp,
+            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outlineVariant)
+        ) {
+            Column {
+                Box(Modifier.fillMaxWidth().pointerInput(Unit) {
                     detectVerticalDragGestures(
                         onDragEnd = {
                             coroutineScope.launch {
-                                if (backProgress.value > 0.5f) {
+                                if (backProgress.value > 1f) {
                                     triggerExit()
                                 } else {
                                     backProgress.animateTo(0f)
@@ -174,20 +188,7 @@ fun SettingsScreen(navigateUp: () -> Unit) {
                             backProgress.snapTo(newProgress)
                         }
                     }
-                }
-                .graphicsLayer {
-                    val progress = backProgress.value
-                    translationY = progress * size.height * 0.5f
-                    scaleX = 1f - (progress * 0.1f)
-                    scaleY = 1f - (progress * 0.1f)
-                },
-            shape = MaterialTheme.shapes.medium,
-            color = MaterialTheme.colorScheme.surfaceContainer,
-            shadowElevation = 8.dp,
-            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outlineVariant)
-        ) {
-            Column {
-                Box(Modifier.fillMaxWidth()) {
+                }) {
                     if (navigator.canNavigateBack()) {
                         IconButton(
                             modifier = Modifier
