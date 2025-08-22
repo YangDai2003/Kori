@@ -4,12 +4,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
@@ -95,15 +90,7 @@ class MainActivity : AppCompatActivity() {
                             .blur(blur)
                             .then(semanticsModifier)
                     )
-                    AnimatedVisibility(
-                        visible = showPassScreen,
-                        enter = slideInVertically(
-                            initialOffsetY = { fullHeight -> fullHeight }
-                        ) + fadeIn(),
-                        exit = slideOutVertically(
-                            targetOffsetY = { fullHeight -> fullHeight }
-                        ) + fadeOut()
-                    ) {
+                    if (showPassScreen) {
                         LoginOverlayScreen(
                             storedPassword = securityPaneState.password,
                             biometricAuthEnabled = securityPaneState.isBiometricEnabled,

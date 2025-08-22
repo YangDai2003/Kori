@@ -1,11 +1,6 @@
 package org.yangdai.kori
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
@@ -88,20 +83,10 @@ fun MainViewController() = ComposeUIViewController(
                         .blur(blur)
                         .then(semanticsModifier)
                 )
-                AnimatedVisibility(
-                    visible = showPassScreen,
-                    enter = slideInVertically(
-                        initialOffsetY = { fullHeight -> -fullHeight }
-                    ) + fadeIn(),
-                    exit = slideOutVertically(
-                        targetOffsetY = { fullHeight -> -fullHeight }
-                    ) + fadeOut()
-                ) {
+                if (showPassScreen) {
                     NumberLockScreen(
                         modifier = Modifier.background(
-                            MaterialTheme.colorScheme.surfaceDim.copy(
-                                alpha = 0.25f
-                            )
+                            MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.25f)
                         ),
                         storedPassword = securityPaneState.password,
                         isCreatingPassword = securityPaneState.isCreatingPass,

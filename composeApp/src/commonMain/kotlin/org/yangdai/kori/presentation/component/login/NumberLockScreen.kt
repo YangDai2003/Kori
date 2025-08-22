@@ -39,7 +39,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -72,9 +74,10 @@ import kotlin.math.sin
 
 private const val TOTAL_PASSWORD_LENGTH = 6
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun NumberLockScreen(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     storedPassword: String,
     isCreatingPassword: Boolean,
     onCreatingCanceled: () -> Unit,
@@ -82,12 +85,14 @@ fun NumberLockScreen(
     onAuthenticated: () -> Unit,
     isBiometricAuthEnabled: Boolean = false,
     onBiometricClick: () -> Unit = {}
-) {
+) = LoginDialog {
     val hapticFeedback = LocalHapticFeedback.current
     var inputPassword by remember { mutableStateOf("") }
     var inputPassword2 by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
+
+    BackHandler { }
 
     BoxWithConstraints(
         modifier = Modifier
@@ -148,7 +153,10 @@ fun NumberLockScreen(
 
                 false // 其他按键不处理
             }
-            .then(modifier),
+            .then(
+                if (isCreatingPassword) Modifier.background(MaterialTheme.colorScheme.surfaceContainer)
+                else modifier
+            ),
         contentAlignment = Alignment.Center
     ) {
         val screenWidth = maxWidth
@@ -248,6 +256,9 @@ fun NumberLockScreen(
         focusRequester.requestFocus()
     }
 }
+
+@Composable
+expect fun LoginDialog(content: @Composable () -> Unit)
 
 @Composable
 private fun calculateButtonSize(isLandscape: Boolean, screenWidth: Dp, screenHeight: Dp): Dp =

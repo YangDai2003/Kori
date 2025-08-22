@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -24,6 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kfile.JsonExporter
+import kfile.JsonPicker
+import kfile.PlatformFilesPicker
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.backup
 import kori.composeapp.generated.resources.backup_description
@@ -36,10 +38,7 @@ import kori.composeapp.generated.resources.restore_description
 import kori.composeapp.generated.resources.restore_from_backup
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import kfile.JsonExporter
-import kfile.PlatformFilesPicker
 import org.yangdai.kori.presentation.component.dialog.FoldersDialog
-import kfile.JsonPicker
 import org.yangdai.kori.presentation.component.dialog.ProgressDialog
 import org.yangdai.kori.presentation.component.dialog.WarningDialog
 import org.yangdai.kori.presentation.component.setting.DetailPaneItem
@@ -111,7 +110,7 @@ fun DataPane(viewModel: DataViewModel = koinViewModel()) {
             onClick = { showWarningDialog = true }
         )
 
-        Spacer(Modifier.navigationBarsPadding())
+        Spacer(Modifier.height(8.dp))
     }
 
     if (showFolderDialog)

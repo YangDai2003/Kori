@@ -1,11 +1,6 @@
 package org.yangdai.kori
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.DarkDefaultContextMenuRepresentation
 import androidx.compose.foundation.LightDefaultContextMenuRepresentation
 import androidx.compose.foundation.LocalContextMenuRepresentation
@@ -127,11 +122,7 @@ fun main() {
                                 .then(semanticsModifier),
                             navHostController = navHostController
                         )
-                        AnimatedVisibility(
-                            visible = showPassScreen,
-                            enter = scaleIn(initialScale = 0.92f) + fadeIn(),
-                            exit = scaleOut(targetScale = 0.92f) + fadeOut()
-                        ) {
+                        if (showPassScreen) {
                             NumberLockScreen(
                                 modifier = Modifier.background(
                                     MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.25f)

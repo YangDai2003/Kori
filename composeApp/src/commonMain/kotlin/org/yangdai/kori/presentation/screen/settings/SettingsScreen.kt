@@ -158,35 +158,38 @@ fun SettingsScreen(navigateUp: () -> Unit) {
             border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outlineVariant)
         ) {
             Column {
-                Box(Modifier.fillMaxWidth().padding(2.dp).pointerInput(Unit) {
-                    detectVerticalDragGestures(
-                        onDragEnd = {
-                            coroutineScope.launch {
-                                if (backProgress.value > 1f) {
-                                    triggerExit()
-                                } else {
+                Box(
+                    Modifier.fillMaxWidth().padding(2.dp).pointerInput(Unit) {
+                        detectVerticalDragGestures(
+                            onDragEnd = {
+                                coroutineScope.launch {
+                                    if (backProgress.value > 1f) {
+                                        triggerExit()
+                                    } else {
+                                        backProgress.animateTo(0f)
+                                    }
+                                }
+                            },
+                            onDragCancel = {
+                                coroutineScope.launch {
                                     backProgress.animateTo(0f)
                                 }
                             }
-                        },
-                        onDragCancel = {
+                        ) { _, dragAmount ->
                             coroutineScope.launch {
-                                backProgress.animateTo(0f)
+                                // 根据 graphicsLayer 中的变换逻辑，反向计算出进度增量
+                                // translationY = progress * size.height * 0.5f
+                                // 因此，progress = translationY / (size.height * 0.5f)
+                                // 进度增量 delta_progress = dragAmount / (size.height * 0.5f)
+                                val progressDelta = dragAmount / (size.height * 0.5f)
+                                // 将增量加到当前进度上，并确保进度不小于0（即不允许向上拖动使界面上移）
+                                val newProgress =
+                                    (backProgress.value + progressDelta).coerceAtLeast(0f)
+                                backProgress.snapTo(newProgress)
                             }
                         }
-                    ) { _, dragAmount ->
-                        coroutineScope.launch {
-                            // 根据 graphicsLayer 中的变换逻辑，反向计算出进度增量
-                            // translationY = progress * size.height * 0.5f
-                            // 因此，progress = translationY / (size.height * 0.5f)
-                            // 进度增量 delta_progress = dragAmount / (size.height * 0.5f)
-                            val progressDelta = dragAmount / (size.height * 0.5f)
-                            // 将增量加到当前进度上，并确保进度不小于0（即不允许向上拖动使界面上移）
-                            val newProgress = (backProgress.value + progressDelta).coerceAtLeast(0f)
-                            backProgress.snapTo(newProgress)
-                        }
                     }
-                }) {
+                ) {
                     if (navigator.canNavigateBack()) {
                         IconButton(
                             modifier = Modifier.align(Alignment.CenterStart),
@@ -243,7 +246,7 @@ fun SettingsScreen(navigateUp: () -> Unit) {
                     directive = navigator.scaffoldDirective,
                     value = navigator.scaffoldValue,
                     listPane = {
-                        AnimatedPane {
+                        AnimatedPane(Modifier.preferredWidth(320.dp)) {
                             SettingsListPane(selectedItem) { itemId ->
                                 coroutineScope.launch {
                                     navigator.navigateTo(
@@ -258,7 +261,7 @@ fun SettingsScreen(navigateUp: () -> Unit) {
                         AnimatedPane {
                             SettingsDetailPane(selectedItem, isExpanded)
                         }
-                    }
+                    },
                 )
             }
         }

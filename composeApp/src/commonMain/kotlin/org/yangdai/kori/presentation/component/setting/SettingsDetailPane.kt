@@ -2,17 +2,13 @@ package org.yangdai.kori.presentation.component.setting
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.presentation.component.setting.detail.AboutPane
@@ -30,34 +26,27 @@ fun SettingsDetailPane(
     selectedItem: Int?,
     isExpanded: Boolean,
     viewModel: SettingsViewModel = koinViewModel()
-) = Scaffold(containerColor = MaterialTheme.colorScheme.surfaceContainer) { innerPadding ->
-    val layoutDirection = LocalLayoutDirection.current
-    Box(
-        Modifier
-            .padding(top = innerPadding.calculateTopPadding())
-            .fillMaxSize()
-            .background(
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-                shape = if (isExpanded) RoundedCornerShape(topStart = 12.dp)
-                else RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
-            ),
-        contentAlignment = Alignment.TopCenter
-    ) {
-        Box(
-            Modifier.widthIn(max = 600.dp).fillMaxSize()
-                .padding(end = innerPadding.calculateEndPadding(layoutDirection))
-        ) {
-            when (selectedItem) {
-                0 -> StylePane(viewModel)
-                1 -> EditorPane(viewModel)
-                2 -> CardPane(viewModel)
-                3 -> TemplatePane(viewModel)
-                4 -> DataPane()
-                5 -> SecurityPane(viewModel)
-                6 -> AiPane(viewModel)
-                7 -> AboutPane()
-                else -> {}
-            }
+) = Box(
+    Modifier
+        .fillMaxSize()
+        .background(
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            shape = if (isExpanded) RoundedCornerShape(topStart = 12.dp)
+            else RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
+        ),
+    contentAlignment = Alignment.TopCenter
+) {
+    Box(Modifier.widthIn(max = 600.dp).fillMaxSize()) {
+        when (selectedItem) {
+            0 -> StylePane(viewModel)
+            1 -> EditorPane(viewModel)
+            2 -> CardPane(viewModel)
+            3 -> TemplatePane(viewModel)
+            4 -> DataPane()
+            5 -> SecurityPane(viewModel)
+            6 -> AiPane(viewModel)
+            7 -> AboutPane()
+            else -> {}
         }
     }
 }
