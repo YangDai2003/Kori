@@ -1,6 +1,8 @@
 package org.yangdai.kori.presentation.component.setting
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -12,8 +14,10 @@ import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.PermDeviceInformation
 import androidx.compose.material.icons.outlined.SdStorage
 import androidx.compose.material.icons.outlined.Security
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_info
 import kori.composeapp.generated.resources.backup
@@ -45,7 +49,12 @@ import org.yangdai.kori.presentation.util.shouldShowLanguageSetting
 fun SettingsListPane(
     selectedItem: Int? = null,
     navigateToDetail: (Int) -> Unit
-) = Column(Modifier.verticalScroll(rememberScrollState())) {
+) = Column(
+    Modifier
+        .background(MaterialTheme.colorScheme.surfaceContainer)
+        .padding(top = 52.dp)
+        .verticalScroll(rememberScrollState())
+) {
     ListPaneSection(
         items = listOf(
             {

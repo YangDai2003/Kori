@@ -9,13 +9,14 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBackIosNew
@@ -48,9 +49,11 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.backhandler.PredictiveBackHandler
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kori.composeapp.generated.resources.Res
@@ -147,7 +150,7 @@ fun SettingsScreen(navigateUp: () -> Unit) {
             modifier = Modifier
                 .systemBarsPadding()
                 .fillMaxSize(fraction)
-                .padding(16.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
                 .graphicsLayer {
                     val progress = backProgress.value
                     translationY = progress * size.height * 0.5f
@@ -155,11 +158,34 @@ fun SettingsScreen(navigateUp: () -> Unit) {
                     scaleY = 1f - (progress * 0.1f)
                 },
             shape = dialogShape(),
-            color = MaterialTheme.colorScheme.surfaceContainer,
+            color = Color.Transparent,
             shadowElevation = 8.dp,
             border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outlineVariant)
         ) {
-            Column {
+            Box(contentAlignment = Alignment.TopCenter) {
+                ListDetailPaneScaffold(
+                    modifier = Modifier.fillMaxSize()
+                        .background(MaterialTheme.colorScheme.surfaceContainerLow),
+                    directive = navigator.scaffoldDirective,
+                    value = navigator.scaffoldValue,
+                    listPane = {
+                        AnimatedPane(Modifier.preferredWidth(320.dp)) {
+                            SettingsListPane(selectedItem) { itemId ->
+                                coroutineScope.launch {
+                                    navigator.navigateTo(
+                                        ListDetailPaneScaffoldRole.Detail,
+                                        itemId
+                                    )
+                                }
+                            }
+                        }
+                    },
+                    detailPane = {
+                        AnimatedPane {
+                            SettingsDetailPane(selectedItem, isExpanded)
+                        }
+                    }
+                )
                 Box(
                     Modifier.fillMaxWidth().padding(2.dp).pointerInput(Unit) {
                         detectVerticalDragGestures(
@@ -212,9 +238,10 @@ fun SettingsScreen(navigateUp: () -> Unit) {
                     }
                     if (isExpanded) {
                         Text(
-                            modifier = Modifier.align(Alignment.Center),
+                            modifier = Modifier.align(Alignment.CenterStart).width(320.dp),
                             text = stringResource(Res.string.settings),
-                            style = MaterialTheme.typography.titleLargeEmphasized
+                            style = MaterialTheme.typography.titleLargeEmphasized,
+                            textAlign = TextAlign.Center
                         )
                     } else {
                         Text(
@@ -244,27 +271,6 @@ fun SettingsScreen(navigateUp: () -> Unit) {
                         )
                     }
                 }
-                ListDetailPaneScaffold(
-                    directive = navigator.scaffoldDirective,
-                    value = navigator.scaffoldValue,
-                    listPane = {
-                        AnimatedPane(Modifier.preferredWidth(320.dp)) {
-                            SettingsListPane(selectedItem) { itemId ->
-                                coroutineScope.launch {
-                                    navigator.navigateTo(
-                                        ListDetailPaneScaffoldRole.Detail,
-                                        itemId
-                                    )
-                                }
-                            }
-                        }
-                    },
-                    detailPane = {
-                        AnimatedPane {
-                            SettingsDetailPane(selectedItem, isExpanded)
-                        }
-                    },
-                )
             }
         }
     }

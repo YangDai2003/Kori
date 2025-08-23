@@ -50,7 +50,7 @@ fun CardPane(settingsViewModel: SettingsViewModel) {
     Box(Modifier.fillMaxSize()) {
         Page(
             notes = sampleNotes,
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp),
             noteItemProperties = NoteItemProperties(
                 showCreatedTime = true,
                 cardSize = cardPaneState.cardSize,

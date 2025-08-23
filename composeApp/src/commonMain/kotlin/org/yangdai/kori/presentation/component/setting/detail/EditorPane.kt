@@ -56,8 +56,6 @@ fun EditorPane(settingsViewModel: SettingsViewModel) {
             .verticalScroll(rememberScrollState())
     ) {
 
-        Spacer(Modifier.height(16.dp))
-
         Column(
             Modifier.fillMaxWidth().padding(bottom = 8.dp)
                 .clip(MaterialTheme.shapes.large)

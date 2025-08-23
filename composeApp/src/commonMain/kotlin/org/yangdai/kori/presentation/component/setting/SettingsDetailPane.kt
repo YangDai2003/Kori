@@ -1,11 +1,9 @@
 package org.yangdai.kori.presentation.component.setting
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,13 +25,8 @@ fun SettingsDetailPane(
     isExpanded: Boolean,
     viewModel: SettingsViewModel = koinViewModel()
 ) = Box(
-    Modifier
-        .fillMaxSize()
-        .background(
-            color = MaterialTheme.colorScheme.surfaceContainerLow,
-            shape = if (isExpanded) RoundedCornerShape(topStart = 12.dp)
-            else RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
-        ),
+    modifier = Modifier.fillMaxSize()
+        .padding(top = 52.dp, end = if (isExpanded) 24.dp else 0.dp),
     contentAlignment = Alignment.TopCenter
 ) {
     Box(Modifier.widthIn(max = 600.dp).fillMaxSize()) {

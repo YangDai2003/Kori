@@ -82,7 +82,6 @@ fun AboutPane() {
         Box(
             modifier = Modifier
                 .size(240.dp)
-                .padding(top = 16.dp)
                 .drawWithCache {
                     val unPressedShape = RoundedPolygon.star(
                         numVerticesPerRadius = 12,

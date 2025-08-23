@@ -66,8 +66,6 @@ fun DataPane(viewModel: DataViewModel = koinViewModel()) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Spacer(Modifier.height(16.dp))
-
         DetailPaneItem(
             modifier = Modifier.padding(bottom = 8.dp),
             title = stringResource(Res.string.import_files),

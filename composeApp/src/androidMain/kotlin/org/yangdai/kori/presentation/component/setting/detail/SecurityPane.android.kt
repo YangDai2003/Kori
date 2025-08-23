@@ -51,8 +51,6 @@ actual fun SecurityPane(settingsViewModel: SettingsViewModel) {
             .verticalScroll(rememberScrollState())
     ) {
 
-        Spacer(Modifier.height(16.dp))
-
         DetailPaneItem(
             modifier = Modifier.padding(bottom = 8.dp),
             title = org.jetbrains.compose.resources.stringResource(Res.string.keep_screen_on),

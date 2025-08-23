@@ -82,8 +82,6 @@ fun AiPane(settingsViewModel: SettingsViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Spacer(Modifier.height(16.dp))
-
         DetailPaneItem(
             title = stringResource(Res.string.cowriter),
             description = stringResource(Res.string.cowriter_description),

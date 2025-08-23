@@ -115,8 +115,6 @@ fun TemplatePane(viewModel: SettingsViewModel) {
             .verticalScroll(rememberScrollState())
     ) {
 
-        Spacer(Modifier.height(16.dp))
-
         Column(
             modifier = Modifier
                 .clip(MaterialTheme.shapes.large)

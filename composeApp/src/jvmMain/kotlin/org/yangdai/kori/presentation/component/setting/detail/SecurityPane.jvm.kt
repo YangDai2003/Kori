@@ -36,8 +36,6 @@ actual fun SecurityPane(settingsViewModel: SettingsViewModel) {
             .verticalScroll(rememberScrollState())
     ) {
 
-        Spacer(Modifier.height(16.dp))
-
         DetailPaneItem(
             title = stringResource(Res.string.password),
             description = stringResource(Res.string.password_description),

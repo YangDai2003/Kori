@@ -275,7 +275,7 @@ fun StyledPaletteImage() = Row(
     Box(
         modifier = Modifier
             .sizeIn(maxWidth = 480.dp)
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
             .clip(MaterialTheme.shapes.large)
             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .padding(16.dp),
