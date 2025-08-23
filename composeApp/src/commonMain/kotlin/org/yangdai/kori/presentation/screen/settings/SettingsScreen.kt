@@ -12,6 +12,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -132,10 +133,17 @@ fun SettingsScreen(navigateUp: () -> Unit) {
     }
 
     val windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    val fraction = remember(windowSizeClass) {
+    val fillMaxWidthFraction = remember(windowSizeClass) {
         if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) {
             0.9f
         } else if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)) {
+            0.95f
+        } else 1f
+    }
+    val fillMaxHeightFraction = remember(windowSizeClass) {
+        if (windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_EXPANDED_LOWER_BOUND)) {
+            0.9f
+        } else if (windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)) {
             0.95f
         } else 1f
     }
@@ -149,7 +157,8 @@ fun SettingsScreen(navigateUp: () -> Unit) {
         Surface(
             modifier = Modifier
                 .systemBarsPadding()
-                .fillMaxSize(fraction)
+                .fillMaxWidth(fillMaxWidthFraction)
+                .fillMaxHeight(fillMaxHeightFraction)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
                 .graphicsLayer {
                     val progress = backProgress.value
