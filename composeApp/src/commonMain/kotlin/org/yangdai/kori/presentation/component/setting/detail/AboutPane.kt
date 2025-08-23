@@ -30,7 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,7 +63,7 @@ import org.yangdai.kori.presentation.util.clickToShareText
 @Composable
 fun AboutPane() {
     val uriHandler = LocalUriHandler.current
-    var showConfetti by rememberSaveable { mutableStateOf(false) }
+    var showConfetti by remember { mutableStateOf(false) }
 
     Column(
         Modifier
@@ -74,7 +73,7 @@ fun AboutPane() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val haptic = LocalHapticFeedback.current
-        var clickedCount by rememberSaveable { mutableStateOf(0) }
+        var clickedCount by remember { mutableStateOf(0) }
         val interactionSource = remember { MutableInteractionSource() }
         val isPressed by interactionSource.collectIsPressedAsState()
         val animatedProgress = animateFloatAsState(if (isPressed) 1f else 0f)
@@ -84,7 +83,7 @@ fun AboutPane() {
                 .size(240.dp)
                 .drawWithCache {
                     val unPressedShape = RoundedPolygon.star(
-                        numVerticesPerRadius = 12,
+                        numVerticesPerRadius = 12 - clickedCount,
                         innerRadius = size.minDimension / 2f * 0.85f,
                         rounding = CornerRounding(
                             radius = size.minDimension / 12f,
@@ -188,6 +187,8 @@ fun AboutPane() {
     }
 
     if (showConfetti) {
-        ConfettiEffect()
+        ConfettiEffect {
+            showConfetti = false
+        }
     }
 }

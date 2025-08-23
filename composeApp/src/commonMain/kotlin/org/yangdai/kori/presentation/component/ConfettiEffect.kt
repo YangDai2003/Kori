@@ -58,6 +58,7 @@ enum class ConfettiShape {
  * @param verticalVelocity The initial vertical velocity of the confetti particles. Defaults to -30f,
  *                         meaning particles initially move upwards.
  * @param gravityForce The force of gravity acting on the confetti particles. Defaults to 0.3f.
+ * @param onAnimationEnd A callback function to be invoked when the confetti animation finishes.
  */
 @Composable
 fun ConfettiEffect(
@@ -82,7 +83,8 @@ fun ConfettiEffect(
     horizontalVelocity: Float = 3f,    // 初始水平速度
     verticalVelocity: Float = -30f,   // 初始向上速度
     gravityForce: Float = 0.3f,       // 重力加速度
-    dragCoefficient: Float = 1f    // 空气阻力系数
+    dragCoefficient: Float = 1f,    // 空气阻力系数
+    onAnimationEnd: () -> Unit = {}
 ) {
     var particles by remember { mutableStateOf(emptyList<Confetti>()) }
     val animationScope = rememberCoroutineScope()
@@ -153,6 +155,7 @@ fun ConfettiEffect(
             }
 
             particles = emptyList()
+            onAnimationEnd()
         }
     }
 }

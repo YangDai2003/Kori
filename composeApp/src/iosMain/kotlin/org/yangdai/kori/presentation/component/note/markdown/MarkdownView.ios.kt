@@ -17,7 +17,9 @@ import kotlinx.cinterop.ObjCSignatureOverride
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
+import org.yangdai.kori.presentation.theme.AppConfig
 import org.yangdai.kori.presentation.theme.LocalAppConfig
+import org.yangdai.kori.presentation.util.toHexColor
 import org.yangdai.kori.presentation.util.toUIColor
 import platform.CoreGraphics.CGRectMake
 import platform.Foundation.NSBundle
@@ -42,8 +44,43 @@ import platform.WebKit.WKWebView
 import platform.WebKit.WKWebViewConfiguration
 import platform.WebKit.javaScriptEnabled
 import platform.darwin.NSObject
+import kotlin.math.roundToInt
 
 internal const val IOS_CUSTOM_SCHEME = "note-files"
+
+private object StaticUris {
+    val MERMAID = Res.getUri("files/mermaid.min.js")
+    val KATEX = Res.getUri("files/katex/katex.min.js")
+    val KATEX_CSS = Res.getUri("files/katex/katex.min.css")
+    val KATEX_RENDER = Res.getUri("files/katex/auto-render.min.js")
+    val PRISM = Res.getUri("files/prism/prism.js")
+    val PRISM_LIGHT_CSS = Res.getUri("files/prism/prism-theme-light.css")
+    val PRISM_DARK_CSS = Res.getUri("files/prism/prism-theme-dark.css")
+}
+
+private fun processHtml(
+    htmlTemplate: String,
+    htmlContent: String,
+    markdownStyles: MarkdownStyles,
+    appConfig: AppConfig
+) = htmlTemplate
+    .replace("{{TEXT_COLOR}}", markdownStyles.hexTextColor)
+    .replace("{{BACKGROUND_COLOR}}", markdownStyles.backgroundColor.toHexColor())
+    .replace("{{CODE_BACKGROUND}}", markdownStyles.hexCodeBackgroundColor)
+    .replace("{{PRE_BACKGROUND}}", markdownStyles.hexPreBackgroundColor)
+    .replace("{{QUOTE_BACKGROUND}}", markdownStyles.hexQuoteBackgroundColor)
+    .replace("{{LINK_COLOR}}", markdownStyles.hexLinkColor)
+    .replace("{{BORDER_COLOR}}", markdownStyles.hexBorderColor)
+    .replace("{{COLOR_SCHEME}}", if (appConfig.darkMode) "dark" else "light")
+    .replace("{{MERMAID}}", StaticUris.MERMAID)
+    .replace("{{KATEX}}", StaticUris.KATEX)
+    .replace("{{KATEX-CSS}}", StaticUris.KATEX_CSS)
+    .replace("{{KATEX-RENDER}}", StaticUris.KATEX_RENDER)
+    .replace("{{PRISM}}", StaticUris.PRISM)
+    .replace("{{PRISM-LIGHT-CSS}}", StaticUris.PRISM_LIGHT_CSS)
+    .replace("{{PRISM-DARK-CSS}}", StaticUris.PRISM_DARK_CSS)
+    .replace("{{FONT_SCALE}}", "${(appConfig.fontScale * 100).roundToInt()}%")
+    .replace("{{CONTENT}}", htmlContent)
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
