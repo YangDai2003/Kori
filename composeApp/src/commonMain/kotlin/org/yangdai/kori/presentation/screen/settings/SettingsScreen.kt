@@ -149,135 +149,143 @@ fun SettingsScreen(navigateUp: () -> Unit) {
     }
 
     val size = LocalWindowInfo.current.containerSize
-    AnimatedVisibility(
-        visible = isVisible,
-        enter = slideInVertically(initialOffsetY = { it }) + fadeIn() + scaleIn(initialScale = 0.9f),
-        exit = slideOutVertically(targetOffsetY = { it }) + fadeOut() + scaleOut(targetScale = 0.9f)
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        Surface(
-            modifier = Modifier
-                .systemBarsPadding()
-                .fillMaxWidth(fillMaxWidthFraction)
-                .fillMaxHeight(fillMaxHeightFraction)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .graphicsLayer {
-                    val progress = backProgress.value
-                    translationY = progress * size.height * 0.5f
-                    scaleX = 1f - (progress * 0.1f)
-                    scaleY = 1f - (progress * 0.1f)
-                },
-            shape = dialogShape(),
-            color = Color.Transparent,
-            shadowElevation = 8.dp,
-            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outlineVariant)
+        AnimatedVisibility(
+            visible = isVisible,
+            enter = slideInVertically(initialOffsetY = { it }) + fadeIn() + scaleIn(initialScale = 0.9f),
+            exit = slideOutVertically(targetOffsetY = { it }) + fadeOut() + scaleOut(targetScale = 0.9f)
         ) {
-            Box(contentAlignment = Alignment.TopCenter) {
-                ListDetailPaneScaffold(
-                    modifier = Modifier.fillMaxSize()
-                        .background(MaterialTheme.colorScheme.surfaceContainerLow),
-                    directive = navigator.scaffoldDirective,
-                    value = navigator.scaffoldValue,
-                    listPane = {
-                        AnimatedPane(Modifier.preferredWidth(320.dp)) {
-                            SettingsListPane(selectedItem) { itemId ->
-                                coroutineScope.launch {
-                                    navigator.navigateTo(
-                                        ListDetailPaneScaffoldRole.Detail,
-                                        itemId
-                                    )
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth(fillMaxWidthFraction)
+                    .fillMaxHeight(fillMaxHeightFraction)
+                    .systemBarsPadding()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .graphicsLayer {
+                        val progress = backProgress.value
+                        translationY = progress * size.height * 0.5f
+                        scaleX = 1f - (progress * 0.1f)
+                        scaleY = 1f - (progress * 0.1f)
+                    },
+                shape = dialogShape(),
+                color = Color.Transparent,
+                shadowElevation = 8.dp,
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
+            ) {
+                Box(contentAlignment = Alignment.TopCenter) {
+                    ListDetailPaneScaffold(
+                        modifier = Modifier.fillMaxSize()
+                            .background(MaterialTheme.colorScheme.surfaceContainerLow),
+                        directive = navigator.scaffoldDirective,
+                        value = navigator.scaffoldValue,
+                        listPane = {
+                            AnimatedPane(Modifier.preferredWidth(320.dp)) {
+                                SettingsListPane(selectedItem) { itemId ->
+                                    coroutineScope.launch {
+                                        navigator.navigateTo(
+                                            ListDetailPaneScaffoldRole.Detail,
+                                            itemId
+                                        )
+                                    }
                                 }
                             }
+                        },
+                        detailPane = {
+                            AnimatedPane {
+                                SettingsDetailPane(selectedItem, isExpanded)
+                            }
                         }
-                    },
-                    detailPane = {
-                        AnimatedPane {
-                            SettingsDetailPane(selectedItem, isExpanded)
-                        }
-                    }
-                )
-                Box(
-                    Modifier.fillMaxWidth().padding(2.dp).pointerInput(Unit) {
-                        detectVerticalDragGestures(
-                            onDragEnd = {
-                                coroutineScope.launch {
-                                    if (backProgress.value > 1f) {
-                                        triggerExit()
-                                    } else {
+                    )
+                    Box(
+                        Modifier.fillMaxWidth().padding(2.dp).pointerInput(Unit) {
+                            detectVerticalDragGestures(
+                                onDragEnd = {
+                                    coroutineScope.launch {
+                                        if (backProgress.value > 1f) {
+                                            triggerExit()
+                                        } else {
+                                            backProgress.animateTo(0f)
+                                        }
+                                    }
+                                },
+                                onDragCancel = {
+                                    coroutineScope.launch {
                                         backProgress.animateTo(0f)
                                     }
                                 }
-                            },
-                            onDragCancel = {
+                            ) { _, dragAmount ->
                                 coroutineScope.launch {
-                                    backProgress.animateTo(0f)
+                                    // 根据 graphicsLayer 中的变换逻辑，反向计算出进度增量
+                                    // translationY = progress * size.height * 0.5f
+                                    // 因此，progress = translationY / (size.height * 0.5f)
+                                    // 进度增量 delta_progress = dragAmount / (size.height * 0.5f)
+                                    val progressDelta = dragAmount / (size.height * 0.5f)
+                                    // 将增量加到当前进度上，并确保进度不小于0（即不允许向上拖动使界面上移）
+                                    val newProgress =
+                                        (backProgress.value + progressDelta).coerceAtLeast(0f)
+                                    backProgress.snapTo(newProgress)
                                 }
-                            }
-                        ) { _, dragAmount ->
-                            coroutineScope.launch {
-                                // 根据 graphicsLayer 中的变换逻辑，反向计算出进度增量
-                                // translationY = progress * size.height * 0.5f
-                                // 因此，progress = translationY / (size.height * 0.5f)
-                                // 进度增量 delta_progress = dragAmount / (size.height * 0.5f)
-                                val progressDelta = dragAmount / (size.height * 0.5f)
-                                // 将增量加到当前进度上，并确保进度不小于0（即不允许向上拖动使界面上移）
-                                val newProgress =
-                                    (backProgress.value + progressDelta).coerceAtLeast(0f)
-                                backProgress.snapTo(newProgress)
                             }
                         }
-                    }
-                ) {
-                    if (navigator.canNavigateBack()) {
-                        IconButton(
-                            modifier = Modifier.align(Alignment.CenterStart),
-                            shape = dialogShape(),
-                            onClick = {
-                                coroutineScope.launch {
-                                    navigator.navigateBack()
+                    ) {
+                        if (navigator.canNavigateBack()) {
+                            IconButton(
+                                modifier = Modifier.align(Alignment.CenterStart),
+                                shape = dialogShape(),
+                                onClick = {
+                                    coroutineScope.launch {
+                                        navigator.navigateBack()
+                                    }
                                 }
+                            ) {
+                                Icon(
+                                    imageVector = if (currentPlatformInfo.operatingSystem == OS.IOS || currentPlatformInfo.operatingSystem == OS.MACOS)
+                                        Icons.Default.ArrowBackIosNew
+                                    else Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = null
+                                )
                             }
+                        }
+                        if (isExpanded) {
+                            Text(
+                                modifier = Modifier.align(Alignment.CenterStart).width(320.dp),
+                                text = stringResource(Res.string.settings),
+                                style = MaterialTheme.typography.titleLargeEmphasized,
+                                textAlign = TextAlign.Center
+                            )
+                        } else {
+                            Text(
+                                modifier = Modifier.align(Alignment.Center),
+                                style = MaterialTheme.typography.titleLargeEmphasized,
+                                text = when (selectedItem) {
+                                    0 -> stringResource(Res.string.style)
+                                    1 -> stringResource(Res.string.editor)
+                                    2 -> stringResource(Res.string.card)
+                                    3 -> stringResource(Res.string.templates)
+                                    4 -> stringResource(Res.string.data)
+                                    5 -> stringResource(Res.string.security)
+                                    6 -> stringResource(Res.string.cowriter)
+                                    7 -> stringResource(Res.string.app_info)
+                                    else -> stringResource(Res.string.settings)
+                                }
+                            )
+                        }
+                        IconButton(
+                            modifier = Modifier.align(Alignment.CenterEnd),
+                            shape = dialogShape(),
+                            onClick = { triggerExit() }
                         ) {
                             Icon(
-                                imageVector = if (currentPlatformInfo.operatingSystem == OS.IOS || currentPlatformInfo.operatingSystem == OS.MACOS)
-                                    Icons.Default.ArrowBackIosNew
-                                else Icons.AutoMirrored.Filled.ArrowBack,
+                                imageVector = Icons.Default.Close,
                                 contentDescription = null
                             )
                         }
-                    }
-                    if (isExpanded) {
-                        Text(
-                            modifier = Modifier.align(Alignment.CenterStart).width(320.dp),
-                            text = stringResource(Res.string.settings),
-                            style = MaterialTheme.typography.titleLargeEmphasized,
-                            textAlign = TextAlign.Center
-                        )
-                    } else {
-                        Text(
-                            modifier = Modifier.align(Alignment.Center),
-                            style = MaterialTheme.typography.titleLargeEmphasized,
-                            text = when (selectedItem) {
-                                0 -> stringResource(Res.string.style)
-                                1 -> stringResource(Res.string.editor)
-                                2 -> stringResource(Res.string.card)
-                                3 -> stringResource(Res.string.templates)
-                                4 -> stringResource(Res.string.data)
-                                5 -> stringResource(Res.string.security)
-                                6 -> stringResource(Res.string.cowriter)
-                                7 -> stringResource(Res.string.app_info)
-                                else -> stringResource(Res.string.settings)
-                            }
-                        )
-                    }
-                    IconButton(
-                        modifier = Modifier.align(Alignment.CenterEnd),
-                        shape = dialogShape(),
-                        onClick = { triggerExit() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = null
-                        )
                     }
                 }
             }
