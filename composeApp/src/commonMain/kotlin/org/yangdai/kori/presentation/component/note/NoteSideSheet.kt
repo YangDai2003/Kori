@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -182,29 +181,6 @@ fun NoteSideSheet(
                     drawRect(scrimColor.copy(alpha = alpha))
                 }
 
-                // 侧边操作栏 (左侧部分)
-                Column(
-                    modifier = Modifier
-                        .statusBarsPadding()
-                        .padding(top = 16.dp)
-                        .offset {
-                            IntOffset(
-                                x = (offsetX.value - drawerWidthPx).roundToInt(),
-                                y = 0
-                            )
-                        }
-                        .align(Alignment.TopEnd)
-                        .background(
-                            color = DrawerDefaults.modalContainerColor.copy(alpha = 0.9f),
-                            shape = MaterialTheme.shapes.extraLarge.copy(
-                                topEnd = CornerSize(0),
-                                bottomEnd = CornerSize(0)
-                            )
-                        ),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    content = actionContent
-                )
-
                 // 拖动状态
                 val dragState = rememberDraggableState { delta ->
                     scope.launch {
@@ -213,124 +189,142 @@ fun NoteSideSheet(
                     }
                 }
 
-                // 抽屉内容 (右侧主体)
-                Surface(
-                    modifier = Modifier
-                        .systemBarsPadding()
-                        .fillMaxHeight()
-                        .width(drawerWidth)
-                        .offset { IntOffset(x = offsetX.value.roundToInt(), y = 0) }
+                Row(
+                    modifier = Modifier.systemBarsPadding()
                         .align(Alignment.CenterEnd)
-                        .draggable(
-                            orientation = Orientation.Horizontal,
-                            state = dragState,
-                            enabled = !isExiting,
-                            onDragStopped = { velocity ->
-                                val shouldClose = if (abs(velocity) < 100) {
-                                    offsetX.value > drawerWidthPx / 2
-                                } else {
-                                    velocity > 0
-                                }
+                        .offset { IntOffset(x = offsetX.value.roundToInt(), y = 0) },
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.Top
+                ) {
+                    // 侧边操作栏 (左侧部分)
+                    Column(
+                        modifier = Modifier
+                            .padding(top = 16.dp)
+                            .background(
+                                color = DrawerDefaults.modalContainerColor.copy(alpha = 0.9f),
+                                shape = MaterialTheme.shapes.extraLarge.copy(
+                                    topEnd = CornerSize(0),
+                                    bottomEnd = CornerSize(0)
+                                )
+                            ),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        content = actionContent
+                    )
 
-                                if (shouldClose) {
-                                    if (!isExiting) isExiting = true
-                                } else {
-                                    // 动画恢复到打开状态
-                                    scope.launch {
-                                        offsetX.animateTo(0f)
+                    // 抽屉内容 (右侧主体)
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(drawerWidth)
+                            .draggable(
+                                orientation = Orientation.Horizontal,
+                                state = dragState,
+                                enabled = !isExiting,
+                                onDragStopped = { velocity ->
+                                    val shouldClose = if (abs(velocity) < 100) {
+                                        offsetX.value > drawerWidthPx / 2
+                                    } else {
+                                        velocity > 0
+                                    }
+
+                                    if (shouldClose) {
+                                        if (!isExiting) isExiting = true
+                                    } else {
+                                        // 动画恢复到打开状态
+                                        scope.launch {
+                                            offsetX.animateTo(0f)
+                                        }
                                     }
                                 }
-                            }
+                            ),
+                        color = DrawerDefaults.modalContainerColor.copy(alpha = 0.95f),
+                        shape = MaterialTheme.shapes.large.copy(
+                            topEnd = CornerSize(0),
+                            bottomEnd = CornerSize(0)
                         ),
-                    color = DrawerDefaults.modalContainerColor.copy(alpha = 0.95f),
-                    shape = MaterialTheme.shapes.large.copy(
-                        topEnd = CornerSize(0),
-                        bottomEnd = CornerSize(0)
-                    ),
-                    shadowElevation = 2.dp,
-                    tonalElevation = DrawerDefaults.ModalDrawerElevation
-                ) {
-                    var isAllExpanded by rememberSaveable { mutableStateOf(true) }
+                        shadowElevation = 2.dp,
+                        tonalElevation = DrawerDefaults.ModalDrawerElevation
+                    ) {
+                        var isAllExpanded by rememberSaveable { mutableStateOf(true) }
 
-                    LazyColumn(Modifier.fillMaxSize()) {
-                        // 顶部操作按钮
-                        item {
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(top = 4.dp, end = 4.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    modifier = Modifier.padding(start = 12.dp),
-                                    text = stringResource(Res.string.overview),
-                                    style = MaterialTheme.typography.titleLarge,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    fontWeight = FontWeight.Bold
-                                )
-
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    TooltipIconButton(
-                                        tipText = stringResource(Res.string.settings),
-                                        icon = Icons.Outlined.Settings,
-                                        onClick = {
-                                            if (!isExiting) isExiting = true
-                                            navigateTo(Screen.Settings)
-                                        }
-                                    )
-                                    TooltipIconButton(
-                                        tipText = "Ctrl + Tab",
-                                        icon = painterResource(Res.drawable.right_panel_close),
-                                        onClick = { if (!isExiting) isExiting = true }
-                                    )
-                                }
-                            }
-                        }
-
-                        // 详细内容
-                        item {
-                            SelectionContainer {
-                                Column(Modifier.padding(start = 16.dp, end = 12.dp)) {
-                                    drawerContent()
-                                }
-                            }
-                        }
-
-                        // ... 大纲部分 (outline) ...
-                        if (outline.children.isNotEmpty() && showOutline)
+                        LazyColumn(Modifier.fillMaxSize()) {
+                            // 顶部操作按钮
                             item {
-                                HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
                                 Row(
-                                    modifier = Modifier.fillMaxWidth().padding(end = 4.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
+                                    modifier = Modifier.fillMaxWidth()
+                                        .padding(top = 4.dp, end = 4.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
                                         modifier = Modifier.padding(start = 12.dp),
-                                        text = stringResource(Res.string.outline),
+                                        text = stringResource(Res.string.overview),
                                         style = MaterialTheme.typography.titleLarge,
                                         color = MaterialTheme.colorScheme.onSurface,
                                         fontWeight = FontWeight.Bold
                                     )
 
-                                    IconButton(onClick = { isAllExpanded = !isAllExpanded }) {
-                                        Icon(
-                                            imageVector = if (isAllExpanded) Icons.Outlined.UnfoldLess
-                                            else Icons.Outlined.UnfoldMore,
-                                            contentDescription = null
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        TooltipIconButton(
+                                            tipText = stringResource(Res.string.settings),
+                                            icon = Icons.Outlined.Settings,
+                                            onClick = { navigateTo(Screen.Settings) }
+                                        )
+                                        TooltipIconButton(
+                                            tipText = "Ctrl + Tab",
+                                            icon = painterResource(Res.drawable.right_panel_close),
+                                            onClick = { if (!isExiting) isExiting = true }
                                         )
                                     }
                                 }
                             }
 
-                        if (outline.children.isNotEmpty() && showOutline)
-                            items(outline.children) { header ->
-                                HeaderItem(
-                                    header = header,
-                                    depth = 0,
-                                    onHeaderClick = onHeaderClick,
-                                    parentExpanded = isAllExpanded
-                                )
+                            // 详细内容
+                            item {
+                                SelectionContainer {
+                                    Column(Modifier.padding(start = 16.dp, end = 12.dp)) {
+                                        drawerContent()
+                                    }
+                                }
                             }
+
+                            // ... 大纲部分 (outline) ...
+                            if (outline.children.isNotEmpty() && showOutline)
+                                item {
+                                    HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().padding(end = 4.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            modifier = Modifier.padding(start = 12.dp),
+                                            text = stringResource(Res.string.outline),
+                                            style = MaterialTheme.typography.titleLarge,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            fontWeight = FontWeight.Bold
+                                        )
+
+                                        IconButton(onClick = { isAllExpanded = !isAllExpanded }) {
+                                            Icon(
+                                                imageVector = if (isAllExpanded) Icons.Outlined.UnfoldLess
+                                                else Icons.Outlined.UnfoldMore,
+                                                contentDescription = null
+                                            )
+                                        }
+                                    }
+                                }
+
+                            if (outline.children.isNotEmpty() && showOutline)
+                                items(outline.children) { header ->
+                                    HeaderItem(
+                                        header = header,
+                                        depth = 0,
+                                        onHeaderClick = onHeaderClick,
+                                        parentExpanded = isAllExpanded
+                                    )
+                                }
+                        }
                     }
                 }
             }

@@ -200,11 +200,7 @@ class MarkdownTransformation : OutputTransformation {
         MarkdownFormat.tableRegex.findAll(originalText).forEach { tableMatch ->
             if (isInCodeBlock(tableMatch.range.first)) return@forEach
 
-            addStyle(
-                MarkdownFormat.monoContent,
-                tableMatch.range.first,
-                tableMatch.range.last + 1
-            )
+            addStyle(MarkdownFormat.monoContent, tableMatch.range.first, tableMatch.range.last + 1)
 
             // 查找表格内所有的 '|' 字符并应用 marker 样式
             val pipeRegex = Regex("""\|""")
@@ -310,13 +306,13 @@ object MarkdownFormat {
 
     val inlineCodeStyle =
         SpanStyle(background = Color.DarkGray.copy(alpha = 0.2f), fontFamily = FontFamily.Monospace)
-    val htmlTag = SpanStyle(color = Color(0xFFF65314))       // 标签名样式 (例如: div)
+    val htmlTag = SpanStyle(color = Color(0xFFD92C54))       // 标签名样式 (例如: div)
     val brackets = SpanStyle(color = Color(0xFF808080))  // 括号样式
-    val htmlQuotedValue = SpanStyle(color = Color(0xFF7CBB00)) // (例如: "yyy")
+    val htmlQuotedValue = SpanStyle(color = Color(0xFF8ABB6C)) // (例如: "yyy")
 
-    val latexCommand = SpanStyle(color = Color(0xFFE4004B))  // LaTeX 命令样式 (例如: \frac, \alpha)
-    val latexNumber = SpanStyle(color = Color(0xFFED775A))   // LaTeX 数字样式 (例如: 2, 3.14)
-    val latexOperator = SpanStyle(color = Color(0xFFFAD691))  // LaTeX 运算符样式 (例如: +, -, ^, _, =)
+    val latexCommand = SpanStyle(color = Color(0xFF693382))  // LaTeX 命令样式 (例如: \frac, \alpha)
+    val latexNumber = SpanStyle(color = Color(0xFF336D82))   // LaTeX 数字样式 (例如: 2, 3.14)
+    val latexOperator = SpanStyle(color = Color(0xFF5F99AE))  // LaTeX 运算符样式 (例如: +, -, ^, _, =)
 
     // 支持语言名包含符号（如c#, c++, .net, C--等）
     val codeBlockRegex = Regex("""```([^\s\n`]*)?\n([\s\S]*?)\n```""")

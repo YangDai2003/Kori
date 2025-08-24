@@ -12,6 +12,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,7 +30,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
@@ -53,10 +53,9 @@ import androidx.compose.ui.backhandler.PredictiveBackHandler
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import androidx.window.core.layout.WindowSizeClass
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_info
 import kori.composeapp.generated.resources.card
@@ -132,27 +131,23 @@ fun SettingsScreen(navigateUp: () -> Unit) {
         }
     }
 
-    val windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    val fillMaxWidthFraction = remember(windowSizeClass) {
-        if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) {
-            0.9f
-        } else if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)) {
-            0.95f
-        } else 1f
-    }
-    val fillMaxHeightFraction = remember(windowSizeClass) {
-        if (windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_EXPANDED_LOWER_BOUND)) {
-            0.9f
-        } else if (windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)) {
-            0.95f
-        } else 1f
-    }
-
-    val size = LocalWindowInfo.current.containerSize
-    Box(
+    BoxWithConstraints(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        val size = IntSize(constraints.maxWidth, constraints.maxHeight)
+        val fillMaxWidthFraction = when {
+            maxWidth >= 1600.dp -> 0.8f
+            maxWidth >= 1200.dp -> 0.85f
+            maxWidth >= 840.dp -> 0.9f
+            maxWidth >= 600.dp -> 0.95f
+            else -> 1f
+        }
+        val fillMaxHeightFraction = when {
+            maxHeight >= 900.dp -> 0.9f
+            maxHeight >= 480.dp -> 0.95f
+            else -> 1f
+        }
         AnimatedVisibility(
             visible = isVisible,
             enter = slideInVertically(initialOffsetY = { it }) + fadeIn() + scaleIn(initialScale = 0.9f),
