@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.DateRange
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -210,12 +209,7 @@ fun TemplatePane(mainViewModel: MainViewModel) {
 
         DetailPaneItem(
             title = stringResource(Res.string.explore_and_share_community_note_templates),
-            trailingContent = {
-                Icon(
-                    Icons.AutoMirrored.Outlined.OpenInNew,
-                    contentDescription = null
-                )
-            },
+            icon = Icons.AutoMirrored.Outlined.OpenInNew,
             onClick = {
                 uriHandler.openUri("https://github.com/YangDai2003/OpenNote-Compose/discussions/categories/community-templates")
             }

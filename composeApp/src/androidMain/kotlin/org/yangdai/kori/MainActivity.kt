@@ -18,6 +18,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
+import org.yangdai.kori.presentation.component.dialog.ProgressDialog
 import org.yangdai.kori.presentation.navigation.AppNavHost
 import org.yangdai.kori.presentation.screen.LoginOverlayScreen
 import org.yangdai.kori.presentation.screen.main.MainViewModel
@@ -35,6 +36,7 @@ class MainActivity : AppCompatActivity() {
             val mainViewModel: MainViewModel = koinViewModel<MainViewModel>()
             val stylePaneState by mainViewModel.stylePaneState.collectAsStateWithLifecycle()
             val securityPaneState by mainViewModel.securityPaneState.collectAsStateWithLifecycle()
+            val dataActionState by mainViewModel.dataActionState.collectAsStateWithLifecycle()
             val isUnlocked by AppLockManager.isUnlocked.collectAsStateWithLifecycle()
 
             LaunchedEffect(securityPaneState.isScreenProtected) {
@@ -91,6 +93,9 @@ class MainActivity : AppCompatActivity() {
                             .then(semanticsModifier),
                         mainViewModel = mainViewModel
                     )
+                    ProgressDialog(dataActionState) {
+                        mainViewModel.cancelDataAction()
+                    }
                     if (showPassScreen) {
                         LoginOverlayScreen(
                             storedPassword = securityPaneState.password,

@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Backup
 import androidx.compose.material.icons.outlined.CleaningServices
-import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.Restore
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -30,16 +28,18 @@ import kfile.PlatformFilesPicker
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.backup
 import kori.composeapp.generated.resources.backup_description
+import kori.composeapp.generated.resources.backup_json_24px
 import kori.composeapp.generated.resources.import_files
 import kori.composeapp.generated.resources.import_files_description
+import kori.composeapp.generated.resources.import_text_files_24px
 import kori.composeapp.generated.resources.reset_database
 import kori.composeapp.generated.resources.reset_database_description
 import kori.composeapp.generated.resources.reset_database_warning
 import kori.composeapp.generated.resources.restore_description
 import kori.composeapp.generated.resources.restore_from_backup
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.dialog.FoldersDialog
-import org.yangdai.kori.presentation.component.dialog.ProgressDialog
 import org.yangdai.kori.presentation.component.dialog.WarningDialog
 import org.yangdai.kori.presentation.component.setting.DetailPaneItem
 import org.yangdai.kori.presentation.screen.main.MainViewModel
@@ -48,8 +48,6 @@ import org.yangdai.kori.presentation.screen.main.MainViewModel
 fun DataPane(mainViewModel: MainViewModel) {
 
     val foldersWithNoteCounts by mainViewModel.foldersWithNoteCounts.collectAsStateWithLifecycle()
-    val dataActionState by mainViewModel.dataActionState.collectAsStateWithLifecycle()
-
     var showWarningDialog by remember { mutableStateOf(false) }
     var showFolderDialog by remember { mutableStateOf(false) }
     var launchFilesPicker by remember { mutableStateOf(false) }
@@ -70,7 +68,7 @@ fun DataPane(mainViewModel: MainViewModel) {
             modifier = Modifier.padding(bottom = 8.dp),
             title = stringResource(Res.string.import_files),
             description = stringResource(Res.string.import_files_description),
-            icon = Icons.Outlined.FileDownload,
+            icon = painterResource(Res.drawable.import_text_files_24px),
             onClick = { showFolderDialog = true }
         )
 
@@ -78,7 +76,7 @@ fun DataPane(mainViewModel: MainViewModel) {
             modifier = Modifier.padding(bottom = 8.dp),
             title = stringResource(Res.string.backup),
             description = stringResource(Res.string.backup_description),
-            icon = Icons.Outlined.Backup,
+            icon = painterResource(Res.drawable.backup_json_24px),
             onClick = {
                 mainViewModel.createBackupJson {
                     json = it
@@ -142,8 +140,4 @@ fun DataPane(mainViewModel: MainViewModel) {
             onDismissRequest = { showWarningDialog = false },
             onConfirm = { mainViewModel.resetDatabase() }
         )
-
-    ProgressDialog(dataActionState) {
-        mainViewModel.cancelDataAction()
-    }
 }

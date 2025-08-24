@@ -43,6 +43,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.data.di.KoinInitializer
 import org.yangdai.kori.data.local.entity.NoteType
+import org.yangdai.kori.presentation.component.dialog.ProgressDialog
 import org.yangdai.kori.presentation.component.login.NumberLockScreen
 import org.yangdai.kori.presentation.navigation.AppNavHost
 import org.yangdai.kori.presentation.navigation.Screen
@@ -82,6 +83,7 @@ fun main() {
             val mainViewModel: MainViewModel = koinViewModel<MainViewModel>()
             val stylePaneState by mainViewModel.stylePaneState.collectAsStateWithLifecycle()
             val securityPaneState by mainViewModel.securityPaneState.collectAsStateWithLifecycle()
+            val dataActionState by mainViewModel.dataActionState.collectAsStateWithLifecycle()
             val isUnlocked by AppLockManager.isUnlocked.collectAsStateWithLifecycle()
             val isSystemInDarkTheme = isSystemInDarkTheme()
 
@@ -123,6 +125,9 @@ fun main() {
                             mainViewModel = mainViewModel,
                             navHostController = navHostController
                         )
+                        ProgressDialog(dataActionState) {
+                            mainViewModel.cancelDataAction()
+                        }
                         if (showPassScreen) {
                             NumberLockScreen(
                                 modifier = Modifier.background(

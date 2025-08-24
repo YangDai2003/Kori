@@ -19,6 +19,7 @@ import androidx.compose.ui.window.ComposeUIViewController
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.data.di.KoinInitializer
+import org.yangdai.kori.presentation.component.dialog.ProgressDialog
 import org.yangdai.kori.presentation.component.login.NumberLockScreen
 import org.yangdai.kori.presentation.navigation.AppNavHost
 import org.yangdai.kori.presentation.screen.main.MainViewModel
@@ -37,6 +38,7 @@ fun MainViewController() = ComposeUIViewController(
     val mainViewModel: MainViewModel = koinViewModel<MainViewModel>()
     val stylePaneState by mainViewModel.stylePaneState.collectAsStateWithLifecycle()
     val securityPaneState by mainViewModel.securityPaneState.collectAsStateWithLifecycle()
+    val dataActionState by mainViewModel.dataActionState.collectAsStateWithLifecycle()
     val isUnlocked by AppLockManager.isUnlocked.collectAsStateWithLifecycle()
 
     LaunchedEffect(securityPaneState.keepScreenOn) {
@@ -79,6 +81,9 @@ fun MainViewController() = ComposeUIViewController(
                     .then(semanticsModifier),
                 mainViewModel = mainViewModel
             )
+            ProgressDialog(dataActionState) {
+                mainViewModel.cancelDataAction()
+            }
             if (showPassScreen) {
                 NumberLockScreen(
                     modifier = Modifier.background(

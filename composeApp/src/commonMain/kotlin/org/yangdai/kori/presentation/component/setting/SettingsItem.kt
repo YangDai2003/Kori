@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
@@ -95,6 +96,38 @@ fun DetailPaneItem(
         {
             Icon(
                 imageVector = icon,
+                contentDescription = null
+            )
+        }
+    },
+    trailingContent = trailingContent,
+    colors = colors
+)
+
+@Composable
+fun DetailPaneItem(
+    modifier: Modifier = Modifier,
+    title: String,
+    description: String? = null,
+    icon: Painter? = null,
+    colors: ListItemColors = ListItemDefaults.colors(),
+    trailingContent: @Composable () -> Unit = {},
+    onClick: (() -> Unit)? = null
+) = ListItem(
+    modifier = modifier.clip(MaterialTheme.shapes.large)
+        .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier),
+    headlineContent = {
+        Text(
+            modifier = Modifier.basicMarquee(),
+            text = title,
+            maxLines = 1
+        )
+    },
+    supportingContent = description?.let { { Text(description) } },
+    leadingContent = icon?.let {
+        {
+            Icon(
+                painter = icon,
                 contentDescription = null
             )
         }
