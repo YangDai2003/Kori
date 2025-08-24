@@ -16,6 +16,8 @@ import androidx.compose.material.icons.automirrored.outlined.FormatIndentIncreas
 import androidx.compose.material.icons.automirrored.outlined.Redo
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.automirrored.outlined.Undo
+import androidx.compose.material.icons.outlined.AccessTime
+import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +31,7 @@ import kori.composeapp.generated.resources.undo
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.EditorRowScope
+import org.yangdai.kori.presentation.component.note.addAfter
 import org.yangdai.kori.presentation.component.note.platformKeyboardShortCut
 import org.yangdai.kori.presentation.component.note.tab
 import org.yangdai.kori.presentation.component.note.unTab
@@ -83,6 +86,17 @@ fun EditorRowScope.PlainTextEditorRow(
                 hint = stringResource(Res.string.templates),
                 icon = Icons.AutoMirrored.Outlined.TextSnippet,
                 onClick = { onEditorRowAction(EditorRowAction.Templates) }
+            )
+        }
+    else
+        EditorRowSection {
+            EditorRowButton(
+                icon = Icons.Outlined.CalendarToday,
+                onClick = { textFieldState.edit { addAfter("{{date}}") } }
+            )
+            EditorRowButton(
+                icon = Icons.Outlined.AccessTime,
+                onClick = { textFieldState.edit { addAfter("{{time}}") } }
             )
         }
 

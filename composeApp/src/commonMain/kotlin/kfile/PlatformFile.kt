@@ -1,5 +1,6 @@
 package kfile
 
+import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -23,3 +24,7 @@ expect suspend fun PlatformFile.delete(): Boolean
 
 @OptIn(ExperimentalTime::class)
 expect fun PlatformFile.getLastModified(): Instant
+
+@OptIn(ExperimentalTime::class)
+fun String.normalizeFileName(): String = this.trim().replace(Regex("[\\\\/:*?\"<>|]"), "_")
+    .ifBlank { "file_${Clock.System.now().toEpochMilliseconds()}" }

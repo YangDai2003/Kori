@@ -50,8 +50,7 @@ actual fun NoteExporter(
         ExportType.MARKDOWN -> ".md"
         ExportType.HTML -> ".html"
     }
-    val fileName =
-        noteEntity.title.trim().replace(" ", "_").replace("/", "_").replace(":", "_") + extension
+    val fileName = noteEntity.title.normalizeFileName() + extension
     val fileContent = if (exportType == ExportType.HTML) html else noteEntity.content
     val fileDialog = FileDialog(
         null as Frame?,

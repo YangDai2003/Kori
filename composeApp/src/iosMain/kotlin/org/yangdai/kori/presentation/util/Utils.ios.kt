@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asSkiaBitmap
 import androidx.compose.ui.platform.ClipEntry
+import kfile.normalizeFileName
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
@@ -79,8 +80,7 @@ actual fun clipEntryOf(string: String): ClipEntry {
 actual fun Modifier.clickToShareFile(noteEntity: NoteEntity): Modifier {
     val tempDir = NSTemporaryDirectory()
     val isMarkdown = noteEntity.noteType == NoteType.MARKDOWN
-    val fileName = noteEntity.title.trim().replace(" ", "_").replace("/", "_").replace(":", "_") +
-            if (isMarkdown) ".md" else ".txt"
+    val fileName = noteEntity.title.normalizeFileName() + if (isMarkdown) ".md" else ".txt"
     val tempDirURL = NSURL.fileURLWithPath(tempDir, isDirectory = true)
     val fileURL = tempDirURL.URLByAppendingPathComponent(fileName) ?: return this
     val nsString = noteEntity.content as NSString

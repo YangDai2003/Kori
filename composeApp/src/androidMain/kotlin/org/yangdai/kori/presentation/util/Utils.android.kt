@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
 import androidx.documentfile.provider.DocumentFile
+import kfile.normalizeFileName
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
@@ -81,8 +82,7 @@ actual fun clipEntryOf(string: String): ClipEntry {
 actual fun Modifier.clickToShareFile(noteEntity: NoteEntity): Modifier {
     val context = LocalContext.current.applicationContext
     val isMarkdown = noteEntity.noteType == NoteType.MARKDOWN
-    val fileName = noteEntity.title.trim().replace(" ", "_").replace("/", "_").replace(":", "_") +
-            if (isMarkdown) ".md" else ".txt"
+    val fileName = noteEntity.title.normalizeFileName() + if (isMarkdown) ".md" else ".txt"
     val file = File(context.cacheDir, fileName)
     file.writeText(noteEntity.content)
     val fileUri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)

@@ -20,8 +20,10 @@ import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material.icons.automirrored.outlined.Redo
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.automirrored.outlined.Undo
+import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.AddChart
 import androidx.compose.material.icons.outlined.AttachMoney
+import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.DataArray
@@ -87,6 +89,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.EditorRowScope
+import org.yangdai.kori.presentation.component.note.addAfter
 import org.yangdai.kori.presentation.component.note.alert
 import org.yangdai.kori.presentation.component.note.bold
 import org.yangdai.kori.presentation.component.note.braces
@@ -359,7 +362,7 @@ fun EditorRowScope.MarkdownEditorRow(
         )
     }
 
-    if (!isTemplate) {
+    if (!isTemplate)
         EditorRowSection {
             EditorRowButton(
                 icon = painterResource(Res.drawable.photo_library_24px),
@@ -379,7 +382,17 @@ fun EditorRowScope.MarkdownEditorRow(
                 onClick = { onEditorRowAction(EditorRowAction.Templates) }
             )
         }
-    }
+    else
+        EditorRowSection {
+            EditorRowButton(
+                icon = Icons.Outlined.CalendarToday,
+                onClick = { textFieldState.edit { addAfter("{{date}}") } }
+            )
+            EditorRowButton(
+                icon = Icons.Outlined.AccessTime,
+                onClick = { textFieldState.edit { addAfter("{{time}}") } }
+            )
+        }
 
     Spacer(Modifier.width(4.dp))
 }

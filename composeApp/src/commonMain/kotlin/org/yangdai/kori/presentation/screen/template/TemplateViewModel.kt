@@ -236,7 +236,13 @@ class TemplateViewModel(
             )
             if (noteEntity.id.isEmpty() && (noteEntity.title.isNotBlank() || noteEntity.content.isNotBlank())) {
                 val id = Uuid.random().toString()
-                noteRepository.insertNote(noteEntity.copy(id = id))
+                val title = noteEntity.title
+                    .ifBlank {
+                        val defaultTitle = "Untitled_${Clock.System.now().toEpochMilliseconds()}"
+                        titleState.setTextAndPlaceCursorAtEnd(defaultTitle)
+                        defaultTitle
+                    }
+                noteRepository.insertNote(noteEntity.copy(id = id, title = title))
                 _noteEditingState.update { it.copy(id = id) }
             } else {
                 if (oNote.title != noteEntity.title || oNote.content != noteEntity.content ||
