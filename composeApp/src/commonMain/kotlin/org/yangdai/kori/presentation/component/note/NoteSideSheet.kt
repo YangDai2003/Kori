@@ -129,7 +129,7 @@ fun NoteSideSheet(
             LaunchedEffect(isExiting) {
                 if (isExiting) {
                     scope.launch {
-                        offsetX.animateTo(fullOffsetPx, animationSpec = tween(durationMillis = 300))
+                        offsetX.animateTo(fullOffsetPx, animationSpec = tween())
                     }.invokeOnCompletion {
                         onDismiss()
                     }
@@ -330,7 +330,7 @@ fun NoteSideSheet(
             }
 
             LaunchedEffect(Unit) {
-                offsetX.animateTo(0f, animationSpec = tween(durationMillis = 300))
+                offsetX.animateTo(0f, animationSpec = tween())
                 focusRequester.requestFocus()
             }
         }

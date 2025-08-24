@@ -166,7 +166,7 @@ fun FoldersScreen(
                     .padding(top = innerPadding.calculateTopPadding())
                     .fillMaxSize()
                     .background(
-                        color = MaterialTheme.colorScheme.surfaceContainerLow,
+                        color = MaterialTheme.colorScheme.surface,
                         shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
                     )
                     .padding(
@@ -187,7 +187,7 @@ fun FoldersScreen(
                 ) {
                     if (!groupedFolders[true].isNullOrEmpty())
                         stickyHeader(key = "starred") {
-                            Surface(color = MaterialTheme.colorScheme.surfaceContainerLow) {
+                            Surface {
                                 Text(
                                     modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
                                     text = stringResource(Res.string.starred),
@@ -207,7 +207,7 @@ fun FoldersScreen(
 
                     if (groupedFolders.size == 2)
                         stickyHeader(key = "others") {
-                            Surface(color = MaterialTheme.colorScheme.surfaceContainerLow) {
+                            Surface {
                                 Text(
                                     modifier = Modifier.padding(bottom = 8.dp, start = 12.dp),
                                     text = stringResource(Res.string.others),
