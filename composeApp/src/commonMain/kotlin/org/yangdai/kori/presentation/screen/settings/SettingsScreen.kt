@@ -74,6 +74,7 @@ import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.presentation.component.dialog.dialogShape
 import org.yangdai.kori.presentation.component.setting.SettingsDetailPane
 import org.yangdai.kori.presentation.component.setting.SettingsListPane
+import org.yangdai.kori.presentation.screen.main.MainViewModel
 import kotlin.coroutines.cancellation.CancellationException
 
 @OptIn(
@@ -81,7 +82,7 @@ import kotlin.coroutines.cancellation.CancellationException
     ExperimentalComposeUiApi::class
 )
 @Composable
-fun SettingsScreen(navigateUp: () -> Unit) {
+fun SettingsScreen(mainViewModel: MainViewModel, navigateUp: () -> Unit) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Int>()
     val coroutineScope = rememberCoroutineScope()
     val selectedItem = navigator.currentDestination?.contentKey
@@ -193,7 +194,7 @@ fun SettingsScreen(navigateUp: () -> Unit) {
                         },
                         detailPane = {
                             AnimatedPane {
-                                SettingsDetailPane(selectedItem, isExpanded)
+                                SettingsDetailPane(selectedItem, isExpanded, mainViewModel)
                             }
                         }
                     )

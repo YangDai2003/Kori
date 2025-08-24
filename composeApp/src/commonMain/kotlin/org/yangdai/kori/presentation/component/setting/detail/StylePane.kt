@@ -64,11 +64,11 @@ import kori.composeapp.generated.resources.light
 import kori.composeapp.generated.resources.system_default
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.setting.SettingsHeader
+import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.screen.settings.AppColor
 import org.yangdai.kori.presentation.screen.settings.AppColor.Companion.toInt
 import org.yangdai.kori.presentation.screen.settings.AppTheme
 import org.yangdai.kori.presentation.screen.settings.AppTheme.Companion.toInt
-import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import org.yangdai.kori.presentation.screen.settings.StylePaneState
 import org.yangdai.kori.presentation.theme.DarkBlackColors
 import org.yangdai.kori.presentation.theme.DarkBlueColors
@@ -86,13 +86,13 @@ import org.yangdai.kori.presentation.theme.LocalAppConfig
 import org.yangdai.kori.presentation.util.Constants
 
 @Composable
-expect fun StylePane(settingsViewModel: SettingsViewModel)
+expect fun StylePane(mainViewModel: MainViewModel)
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ColumnScope.CommonStylePane(
     stylePaneState: StylePaneState,
-    settingsViewModel: SettingsViewModel
+    mainViewModel: MainViewModel
 ) {
     val hapticFeedback = LocalHapticFeedback.current
     SettingsHeader(stringResource(Res.string.font))
@@ -115,14 +115,14 @@ fun ColumnScope.CommonStylePane(
 
         val sliderState =
             rememberSliderState(
-                value = settingsViewModel.getFloatValue(Constants.Preferences.FONT_SIZE),
+                value = mainViewModel.getFloatValue(Constants.Preferences.FONT_SIZE),
                 valueRange = 0.75f..1.25f,
                 steps = 9
             )
         sliderState.onValueChange = {
             if (sliderState.isDragging) {
                 hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
-                settingsViewModel.putPreferenceValue(Constants.Preferences.FONT_SIZE, it)
+                mainViewModel.putPreferenceValue(Constants.Preferences.FONT_SIZE, it)
                 sliderState.value = it
             }
         }
@@ -166,21 +166,21 @@ fun ColumnScope.CommonStylePane(
                         if (stylePaneState.theme.toInt() != index) {
                             when (index) {
                                 0 -> {
-                                    settingsViewModel.putPreferenceValue(
+                                    mainViewModel.putPreferenceValue(
                                         Constants.Preferences.APP_THEME,
                                         AppTheme.SYSTEM.toInt()
                                     )
                                 }
 
                                 1 -> {
-                                    settingsViewModel.putPreferenceValue(
+                                    mainViewModel.putPreferenceValue(
                                         Constants.Preferences.APP_THEME,
                                         AppTheme.LIGHT.toInt()
                                     )
                                 }
 
                                 2 -> {
-                                    settingsViewModel.putPreferenceValue(
+                                    mainViewModel.putPreferenceValue(
                                         Constants.Preferences.APP_THEME,
                                         AppTheme.DARK.toInt()
                                     )
@@ -250,7 +250,7 @@ fun ColumnScope.CommonStylePane(
                         hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOn)
                     else
                         hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOff)
-                    settingsViewModel.putPreferenceValue(
+                    mainViewModel.putPreferenceValue(
                         Constants.Preferences.IS_APP_IN_AMOLED_MODE,
                         it
                     )
@@ -309,7 +309,7 @@ private val lightColorOptions = listOf(
 @Composable
 fun ColorPlatteRow(
     stylePaneState: StylePaneState,
-    settingsViewModel: SettingsViewModel
+    mainViewModel: MainViewModel
 ) = Row(
     modifier = Modifier
         .fillMaxWidth()
@@ -327,7 +327,7 @@ fun ColorPlatteRow(
             colorScheme = colorSchemePair.second
         ) {
             hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
-            settingsViewModel.putPreferenceValue(
+            mainViewModel.putPreferenceValue(
                 Constants.Preferences.APP_COLOR,
                 colorSchemePair.first.toInt()
             )

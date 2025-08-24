@@ -20,6 +20,7 @@ import kfile.PlatformFile
 import org.yangdai.kori.presentation.screen.file.FileScreen
 import org.yangdai.kori.presentation.screen.folders.FoldersScreen
 import org.yangdai.kori.presentation.screen.main.MainScreen
+import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.screen.note.NoteScreen
 import org.yangdai.kori.presentation.screen.settings.SettingsScreen
 import org.yangdai.kori.presentation.screen.template.TemplateScreen
@@ -29,6 +30,7 @@ import org.yangdai.kori.presentation.util.parseSharedContent
 @Composable
 actual fun AppNavHost(
     modifier: Modifier,
+    mainViewModel: MainViewModel,
     navHostController: NavHostController
 ) = NavHost(
     modifier = modifier,
@@ -48,7 +50,7 @@ actual fun AppNavHost(
     }
 ) {
     composable<Screen.Main> {
-        MainScreen { screen ->
+        MainScreen(mainViewModel) { screen ->
             navHostController.navigate(screen)
         }
         val activity = LocalActivity.current
@@ -137,7 +139,7 @@ actual fun AppNavHost(
                 setDimAmount(0.32f)
             }
         }
-        SettingsScreen {
+        SettingsScreen(mainViewModel) {
             navHostController.navigateUp()
         }
     }

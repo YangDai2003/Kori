@@ -34,14 +34,14 @@ import kori.composeapp.generated.resources.password
 import kori.composeapp.generated.resources.password_description
 import org.yangdai.kori.R
 import org.yangdai.kori.presentation.component.setting.DetailPaneItem
-import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
+import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.util.Constants
 
 @Composable
-actual fun SecurityPane(settingsViewModel: SettingsViewModel) {
+actual fun SecurityPane(mainViewModel: MainViewModel) {
 
     val context = LocalContext.current
-    val securityPaneState by settingsViewModel.securityPaneState.collectAsStateWithLifecycle()
+    val securityPaneState by mainViewModel.securityPaneState.collectAsStateWithLifecycle()
     val hapticFeedback = LocalHapticFeedback.current
 
     Column(
@@ -63,7 +63,7 @@ actual fun SecurityPane(settingsViewModel: SettingsViewModel) {
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOn)
                         else
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOff)
-                        settingsViewModel.putPreferenceValue(
+                        mainViewModel.putPreferenceValue(
                             Constants.Preferences.KEEP_SCREEN_ON,
                             checked
                         )
@@ -86,7 +86,7 @@ actual fun SecurityPane(settingsViewModel: SettingsViewModel) {
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOn)
                         else
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOff)
-                        settingsViewModel.putPreferenceValue(
+                        mainViewModel.putPreferenceValue(
                             Constants.Preferences.IS_SCREEN_PROTECTED,
                             checked
                         )
@@ -107,21 +107,21 @@ actual fun SecurityPane(settingsViewModel: SettingsViewModel) {
                     onCheckedChange = { checked ->
                         if (checked) {
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOn)
-                            settingsViewModel.putPreferenceValue(
+                            mainViewModel.putPreferenceValue(
                                 Constants.Preferences.IS_CREATING_PASSWORD,
                                 true
                             )
                         } else {
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOff)
-                            settingsViewModel.putPreferenceValue(
+                            mainViewModel.putPreferenceValue(
                                 Constants.Preferences.PASSWORD,
                                 ""
                             )
-                            settingsViewModel.putPreferenceValue(
+                            mainViewModel.putPreferenceValue(
                                 Constants.Preferences.IS_BIOMETRIC_ENABLED,
                                 false
                             )
-                            settingsViewModel.putPreferenceValue(
+                            mainViewModel.putPreferenceValue(
                                 Constants.Preferences.IS_CREATING_PASSWORD,
                                 false
                             )
@@ -146,7 +146,7 @@ actual fun SecurityPane(settingsViewModel: SettingsViewModel) {
                             val keyguardManager =
                                 context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
                             if (keyguardManager.isKeyguardSecure) {
-                                settingsViewModel.putPreferenceValue(
+                                mainViewModel.putPreferenceValue(
                                     Constants.Preferences.IS_BIOMETRIC_ENABLED,
                                     checked
                                 )

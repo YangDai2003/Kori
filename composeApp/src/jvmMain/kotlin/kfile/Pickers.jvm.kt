@@ -69,7 +69,8 @@ actual fun NoteExporter(
 }
 
 @Composable
-actual fun PlatformFilesPicker(onFilesSelected: (List<PlatformFile>) -> Unit) {
+actual fun PlatformFilesPicker(launch: Boolean, onFilesSelected: (List<PlatformFile>) -> Unit) {
+    if (!launch) return
     val fileDialog = FileDialog(
         null as Frame?,
         stringResource(Res.string.app_name),
@@ -93,7 +94,8 @@ actual fun PlatformFilesPicker(onFilesSelected: (List<PlatformFile>) -> Unit) {
 
 @OptIn(ExperimentalTime::class)
 @Composable
-actual fun JsonExporter(json: String, onJsonSaved: (Boolean) -> Unit) {
+actual fun JsonExporter(launch: Boolean, json: String?, onJsonSaved: (Boolean) -> Unit) {
+    if (!launch) return
     val fileDialog = FileDialog(
         null as Frame?,
         stringResource(Res.string.app_name),
@@ -105,13 +107,14 @@ actual fun JsonExporter(json: String, onJsonSaved: (Boolean) -> Unit) {
 
     if (fileDialog.file != null && fileDialog.directory != null) {
         val file = File(fileDialog.directory, fileDialog.file)
-        file.writeText(json)
+        file.writeText(json!!)
         onJsonSaved(file.exists())
     } else onJsonSaved(false)
 }
 
 @Composable
-actual fun JsonPicker(onJsonPicked: (String?) -> Unit) {
+actual fun JsonPicker(launch: Boolean, onJsonPicked: (String?) -> Unit) {
+    if (!launch) return
     val fileDialog = FileDialog(
         null as Frame?,
         stringResource(Res.string.app_name),

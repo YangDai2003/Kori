@@ -73,7 +73,7 @@ actual fun NoteExporter(
 }
 
 @Composable
-actual fun PlatformFilesPicker(onFilesSelected: (List<PlatformFile>) -> Unit) {
+actual fun PlatformFilesPicker(launch: Boolean, onFilesSelected: (List<PlatformFile>) -> Unit) {
     val context = LocalContext.current.applicationContext
     val openDocumentLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenMultipleDocuments()
@@ -82,14 +82,15 @@ actual fun PlatformFilesPicker(onFilesSelected: (List<PlatformFile>) -> Unit) {
         onFilesSelected(files)
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(launch) {
+        if (!launch) return@LaunchedEffect
         openDocumentLauncher.launch(arrayOf("text/*"))
     }
 }
 
 @OptIn(ExperimentalTime::class)
 @Composable
-actual fun JsonExporter(json: String, onJsonSaved: (Boolean) -> Unit) {
+actual fun JsonExporter(launch: Boolean, json: String?, onJsonSaved: (Boolean) -> Unit) {
     val context = LocalContext.current.applicationContext
     val mimeType = "application/json"
     val fileName = "kori_backup_${Clock.System.now().toEpochMilliseconds()}.json"
@@ -104,13 +105,14 @@ actual fun JsonExporter(json: String, onJsonSaved: (Boolean) -> Unit) {
         } ?: onJsonSaved(false)
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(launch) {
+        if (!launch) return@LaunchedEffect
         saveDocumentLauncher.launch(fileName)
     }
 }
 
 @Composable
-actual fun JsonPicker(onJsonPicked: (String?) -> Unit) {
+actual fun JsonPicker(launch: Boolean, onJsonPicked: (String?) -> Unit) {
     val context = LocalContext.current.applicationContext
     val openDocumentLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
@@ -122,7 +124,8 @@ actual fun JsonPicker(onJsonPicked: (String?) -> Unit) {
         } ?: onJsonPicked(null)
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(launch) {
+        if (!launch) return@LaunchedEffect
         openDocumentLauncher.launch(arrayOf("application/json"))
     }
 }

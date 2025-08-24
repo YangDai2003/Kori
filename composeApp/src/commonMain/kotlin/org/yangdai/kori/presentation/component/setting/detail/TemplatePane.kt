@@ -56,17 +56,17 @@ import kotlinx.datetime.todayIn
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.note.CustomTextField
 import org.yangdai.kori.presentation.component.setting.DetailPaneItem
-import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
+import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.util.Constants
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 @OptIn(FormatStringsInDatetimeFormats::class, ExperimentalTime::class)
 @Composable
-fun TemplatePane(viewModel: SettingsViewModel) {
+fun TemplatePane(mainViewModel: MainViewModel) {
 
     val uriHandler = LocalUriHandler.current
-    val templatePaneState by viewModel.templatePaneState.collectAsStateWithLifecycle()
+    val templatePaneState by mainViewModel.templatePaneState.collectAsStateWithLifecycle()
 
     var currentDateFormatter by remember { mutableStateOf("") }
     var currentTimeFormatter by remember { mutableStateOf("") }
@@ -148,7 +148,7 @@ fun TemplatePane(viewModel: SettingsViewModel) {
                     value = currentDateFormatter,
                     onValueChange = {
                         currentDateFormatter = it
-                        viewModel.putPreferenceValue(
+                        mainViewModel.putPreferenceValue(
                             Constants.Preferences.DATE_FORMATTER, it
                         )
                     },
@@ -195,7 +195,7 @@ fun TemplatePane(viewModel: SettingsViewModel) {
                     value = currentTimeFormatter,
                     onValueChange = {
                         currentTimeFormatter = it
-                        viewModel.putPreferenceValue(
+                        mainViewModel.putPreferenceValue(
                             Constants.Preferences.TIME_FORMATTER, it
                         )
                     },

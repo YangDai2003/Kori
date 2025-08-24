@@ -16,8 +16,6 @@ import org.yangdai.kori.presentation.screen.file.FileViewModel
 import org.yangdai.kori.presentation.screen.folders.FoldersViewModel
 import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.screen.note.NoteViewModel
-import org.yangdai.kori.presentation.screen.settings.DataViewModel
-import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import org.yangdai.kori.presentation.screen.template.TemplateViewModel
 
 expect fun databaseModule(): Module
@@ -29,10 +27,8 @@ fun appModule() = module {
     viewModelOf(::MainViewModel)
     viewModelOf(::FoldersViewModel)
     viewModelOf(::NoteViewModel)
-    viewModelOf(::SettingsViewModel)
     viewModelOf(::TemplateViewModel)
     viewModelOf(::FileViewModel)
-    viewModelOf(::DataViewModel)
 }
 
 object KoinInitializer {

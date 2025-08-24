@@ -88,7 +88,7 @@ fun ProgressDialog(
     val infinite = dataActionState.infinite
     val message = dataActionState.message
 
-    if (progress < 0f || progress > 1f) return
+    if (progress == Float.MIN_VALUE) return
 
     BasicAlertDialog(
         onDismissRequest = onDismissRequest,

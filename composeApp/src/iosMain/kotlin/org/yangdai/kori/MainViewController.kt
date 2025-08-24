@@ -23,8 +23,8 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.data.di.KoinInitializer
 import org.yangdai.kori.presentation.component.login.NumberLockScreen
 import org.yangdai.kori.presentation.navigation.AppNavHost
+import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.screen.settings.AppTheme
-import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import org.yangdai.kori.presentation.theme.KoriTheme
 import org.yangdai.kori.presentation.util.AppLockManager
 import org.yangdai.kori.presentation.util.Constants
@@ -36,9 +36,9 @@ fun MainViewController() = ComposeUIViewController(
         KoinInitializer.init()
     }
 ) {
-    val settingsViewModel: SettingsViewModel = koinViewModel<SettingsViewModel>()
-    val stylePaneState by settingsViewModel.stylePaneState.collectAsStateWithLifecycle()
-    val securityPaneState by settingsViewModel.securityPaneState.collectAsStateWithLifecycle()
+    val mainViewModel: MainViewModel = koinViewModel<MainViewModel>()
+    val stylePaneState by mainViewModel.stylePaneState.collectAsStateWithLifecycle()
+    val securityPaneState by mainViewModel.securityPaneState.collectAsStateWithLifecycle()
     val isUnlocked by AppLockManager.isUnlocked.collectAsStateWithLifecycle()
 
     LaunchedEffect(securityPaneState.keepScreenOn) {
@@ -81,7 +81,8 @@ fun MainViewController() = ComposeUIViewController(
                 AppNavHost(
                     modifier = Modifier
                         .blur(blur)
-                        .then(semanticsModifier)
+                        .then(semanticsModifier),
+                    mainViewModel = mainViewModel
                 )
                 if (showPassScreen) {
                     NumberLockScreen(
@@ -91,17 +92,17 @@ fun MainViewController() = ComposeUIViewController(
                         storedPassword = securityPaneState.password,
                         isCreatingPassword = securityPaneState.isCreatingPass,
                         onCreatingCanceled = {
-                            settingsViewModel.putPreferenceValue(
+                            mainViewModel.putPreferenceValue(
                                 Constants.Preferences.IS_CREATING_PASSWORD,
                                 false
                             )
                         },
                         onPassCreated = {
-                            settingsViewModel.putPreferenceValue(
+                            mainViewModel.putPreferenceValue(
                                 Constants.Preferences.PASSWORD,
                                 it
                             )
-                            settingsViewModel.putPreferenceValue(
+                            mainViewModel.putPreferenceValue(
                                 Constants.Preferences.IS_CREATING_PASSWORD,
                                 false
                             )

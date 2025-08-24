@@ -8,13 +8,13 @@ import org.yangdai.kori.presentation.component.dialog.ExportType
 expect fun PlatformFilePicker(onFileSelected: (PlatformFile?) -> Unit)
 
 @Composable
-expect fun PlatformFilesPicker(onFilesSelected: (List<PlatformFile>) -> Unit)
+expect fun PlatformFilesPicker(launch: Boolean, onFilesSelected: (List<PlatformFile>) -> Unit)
 
 @Composable
-expect fun JsonExporter(json: String, onJsonSaved: (Boolean) -> Unit)
+expect fun JsonExporter(launch: Boolean, json: String?, onJsonSaved: (Boolean) -> Unit)
 
 @Composable
-expect fun JsonPicker(onJsonPicked: (String?) -> Unit)
+expect fun JsonPicker(launch: Boolean, onJsonPicked: (String?) -> Unit)
 
 @Composable
 expect fun NoteExporter(

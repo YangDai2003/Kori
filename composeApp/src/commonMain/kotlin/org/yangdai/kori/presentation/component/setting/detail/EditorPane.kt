@@ -40,13 +40,13 @@ import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.SegmentText
 import org.yangdai.kori.presentation.component.SegmentedControl
 import org.yangdai.kori.presentation.component.setting.DetailPaneItem
-import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
+import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.util.Constants
 
 @Composable
-fun EditorPane(settingsViewModel: SettingsViewModel) {
+fun EditorPane(mainViewModel: MainViewModel) {
 
-    val editorPaneState by settingsViewModel.editorPaneState.collectAsStateWithLifecycle()
+    val editorPaneState by mainViewModel.editorPaneState.collectAsStateWithLifecycle()
     val hapticFeedback = LocalHapticFeedback.current
 
     Column(
@@ -93,7 +93,7 @@ fun EditorPane(settingsViewModel: SettingsViewModel) {
                 selectedSegmentIndex = if (editorPaneState.isDefaultReadingView) 1 else 0,
                 onSegmentSelected = { index ->
                     hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                    settingsViewModel.putPreferenceValue(
+                    mainViewModel.putPreferenceValue(
                         Constants.Preferences.IS_DEFAULT_READING_VIEW,
                         index == 1
                     )
@@ -114,7 +114,7 @@ fun EditorPane(settingsViewModel: SettingsViewModel) {
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOn)
                         else
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOff)
-                        settingsViewModel.putPreferenceValue(
+                        mainViewModel.putPreferenceValue(
                             Constants.Preferences.SHOW_LINE_NUMBER,
                             checked
                         )
@@ -135,7 +135,7 @@ fun EditorPane(settingsViewModel: SettingsViewModel) {
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOn)
                         else
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOff)
-                        settingsViewModel.putPreferenceValue(
+                        mainViewModel.putPreferenceValue(
                             Constants.Preferences.IS_MARKDOWN_LINT_ENABLED,
                             checked
                         )

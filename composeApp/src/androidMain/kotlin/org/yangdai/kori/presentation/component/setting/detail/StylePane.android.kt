@@ -22,15 +22,15 @@ import kori.composeapp.generated.resources.color_platte
 import org.yangdai.kori.R
 import org.yangdai.kori.presentation.component.setting.DetailPaneItem
 import org.yangdai.kori.presentation.component.setting.SettingsHeader
+import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.screen.settings.AppColor
 import org.yangdai.kori.presentation.screen.settings.AppColor.Companion.toInt
-import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import org.yangdai.kori.presentation.util.Constants
 
 @Composable
-actual fun StylePane(settingsViewModel: SettingsViewModel) {
+actual fun StylePane(mainViewModel: MainViewModel) {
 
-    val stylePaneState by settingsViewModel.stylePaneState.collectAsStateWithLifecycle()
+    val stylePaneState by mainViewModel.stylePaneState.collectAsStateWithLifecycle()
     val hapticFeedback = LocalHapticFeedback.current
 
     Column(Modifier.verticalScroll(rememberScrollState())) {
@@ -52,13 +52,13 @@ actual fun StylePane(settingsViewModel: SettingsViewModel) {
                         onCheckedChange = { checked ->
                             if (checked) {
                                 hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOn)
-                                settingsViewModel.putPreferenceValue(
+                                mainViewModel.putPreferenceValue(
                                     Constants.Preferences.APP_COLOR,
                                     AppColor.DYNAMIC.toInt()
                                 )
                             } else {
                                 hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOff)
-                                settingsViewModel.putPreferenceValue(
+                                mainViewModel.putPreferenceValue(
                                     Constants.Preferences.APP_COLOR,
                                     AppColor.PURPLE.toInt()
                                 )
@@ -70,9 +70,9 @@ actual fun StylePane(settingsViewModel: SettingsViewModel) {
         }
 
         AnimatedVisibility(stylePaneState.color != AppColor.DYNAMIC || Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-            ColorPlatteRow(stylePaneState, settingsViewModel)
+            ColorPlatteRow(stylePaneState, mainViewModel)
         }
 
-        CommonStylePane(stylePaneState, settingsViewModel)
+        CommonStylePane(stylePaneState, mainViewModel)
     }
 }

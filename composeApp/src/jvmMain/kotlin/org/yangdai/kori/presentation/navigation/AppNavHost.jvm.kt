@@ -17,6 +17,7 @@ import kfile.PlatformFile
 import org.yangdai.kori.presentation.screen.file.FileScreen
 import org.yangdai.kori.presentation.screen.folders.FoldersScreen
 import org.yangdai.kori.presentation.screen.main.MainScreen
+import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.screen.note.NoteScreen
 import org.yangdai.kori.presentation.screen.settings.SettingsScreen
 import org.yangdai.kori.presentation.screen.template.TemplateScreen
@@ -28,6 +29,7 @@ import java.io.File
 @Composable
 actual fun AppNavHost(
     modifier: Modifier,
+    mainViewModel: MainViewModel,
     navHostController: NavHostController
 ) = NavHost(
     modifier = modifier,
@@ -35,7 +37,7 @@ actual fun AppNavHost(
     startDestination = Screen.Main
 ) {
     composable<Screen.Main> {
-        MainScreen { screen ->
+        MainScreen(mainViewModel) { screen ->
             navHostController.navigate(screen)
         }
         DisposableEffect(Unit) {
@@ -88,7 +90,7 @@ actual fun AppNavHost(
             navDeepLink { uriPattern = "${Constants.DEEP_LINK}/settings" }
         )
     ) {
-        SettingsScreen {
+        SettingsScreen(mainViewModel) {
             navHostController.navigateUp()
         }
     }

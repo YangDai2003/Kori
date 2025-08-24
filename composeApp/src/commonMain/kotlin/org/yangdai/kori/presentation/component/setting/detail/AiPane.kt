@@ -63,14 +63,14 @@ import kori.composeapp.generated.resources.summarize
 import kori.composeapp.generated.resources.translate
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.setting.DetailPaneItem
+import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.screen.settings.AiProvider
-import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import org.yangdai.kori.presentation.util.Constants
 
 @Composable
-fun AiPane(settingsViewModel: SettingsViewModel) {
+fun AiPane(mainViewModel: MainViewModel) {
 
-    val aiPaneState by settingsViewModel.aiPaneState.collectAsStateWithLifecycle()
+    val aiPaneState by mainViewModel.aiPaneState.collectAsStateWithLifecycle()
     val hapticFeedback = LocalHapticFeedback.current
 
     Column(
@@ -95,7 +95,7 @@ fun AiPane(settingsViewModel: SettingsViewModel) {
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOn)
                         else
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOff)
-                        settingsViewModel.putPreferenceValue(
+                        mainViewModel.putPreferenceValue(
                             Constants.Preferences.IS_AI_ENABLED,
                             checked
                         )
@@ -120,12 +120,12 @@ fun AiPane(settingsViewModel: SettingsViewModel) {
                             onClick = {
                                 hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
                                 if (aiPaneState.aiFeatures.contains(feature.first)) {
-                                    settingsViewModel.putPreferenceValue(
+                                    mainViewModel.putPreferenceValue(
                                         Constants.Preferences.AI_FEATURES,
                                         aiPaneState.aiFeatures - feature.first
                                     )
                                 } else {
-                                    settingsViewModel.putPreferenceValue(
+                                    mainViewModel.putPreferenceValue(
                                         Constants.Preferences.AI_FEATURES,
                                         aiPaneState.aiFeatures + feature.first
                                     )
@@ -154,7 +154,7 @@ fun AiPane(settingsViewModel: SettingsViewModel) {
                             selected = item == aiPaneState.aiProvider,
                             onClick = {
                                 hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                                settingsViewModel.putPreferenceValue(
+                                mainViewModel.putPreferenceValue(
                                     Constants.Preferences.AI_PROVIDER,
                                     item.provider
                                 )
@@ -179,19 +179,19 @@ fun AiPane(settingsViewModel: SettingsViewModel) {
                 ) { page ->
                     when (page) {
                         AiProvider.entries.indexOf(AiProvider.Gemini) -> {
-                            GeminiSettings(settingsViewModel)
+                            GeminiSettings(mainViewModel)
                         }
 
                         AiProvider.entries.indexOf(AiProvider.OpenAI) -> {
-                            OpenAISettings(settingsViewModel)
+                            OpenAISettings(mainViewModel)
                         }
 
                         AiProvider.entries.indexOf(AiProvider.Ollama) -> {
-                            OllamaSettings(settingsViewModel)
+                            OllamaSettings(mainViewModel)
                         }
 
                         AiProvider.entries.indexOf(AiProvider.LMStudio) -> {
-                            LMStudioSettings(settingsViewModel)
+                            LMStudioSettings(mainViewModel)
                         }
                     }
                 }
@@ -264,25 +264,25 @@ private fun UrlTextField(
 
 // Gemini 设置项
 @Composable
-private fun GeminiSettings(settingsViewModel: SettingsViewModel) {
+private fun GeminiSettings(mainViewModel: MainViewModel) {
 
-    var apiKey by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.GEMINI_API_KEY)) }
-    var apiHost by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.GEMINI_API_HOST)) }
-    var model by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.GEMINI_MODEL)) }
+    var apiKey by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.GEMINI_API_KEY)) }
+    var apiHost by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.GEMINI_API_HOST)) }
+    var model by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.GEMINI_MODEL)) }
 
     Column(Modifier.padding(top = 16.dp)) {
         KeyTextField(
             value = apiKey,
             onValueChange = {
                 apiKey = it
-                settingsViewModel.putPreferenceValue(Constants.Preferences.GEMINI_API_KEY, it)
+                mainViewModel.putPreferenceValue(Constants.Preferences.GEMINI_API_KEY, it)
             }
         )
         UrlTextField(
             value = apiHost,
             onValueChange = {
                 apiHost = it
-                settingsViewModel.putPreferenceValue(Constants.Preferences.GEMINI_API_HOST, it)
+                mainViewModel.putPreferenceValue(Constants.Preferences.GEMINI_API_HOST, it)
             },
             defaultValue = "https://generativelanguage.googleapis.com"
         )
@@ -290,7 +290,7 @@ private fun GeminiSettings(settingsViewModel: SettingsViewModel) {
             value = model,
             onValueChange = {
                 model = it
-                settingsViewModel.putPreferenceValue(Constants.Preferences.GEMINI_MODEL, it)
+                mainViewModel.putPreferenceValue(Constants.Preferences.GEMINI_MODEL, it)
             },
             label = { Text(stringResource(Res.string.model)) },
             singleLine = true,
@@ -305,25 +305,25 @@ private fun GeminiSettings(settingsViewModel: SettingsViewModel) {
 
 // OpenAI 设置项
 @Composable
-private fun OpenAISettings(settingsViewModel: SettingsViewModel) {
+private fun OpenAISettings(mainViewModel: MainViewModel) {
 
-    var apiKey by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.OPENAI_API_KEY)) }
-    var apiHost by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.OPENAI_API_HOST)) }
-    var model by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.OPENAI_MODEL)) }
+    var apiKey by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.OPENAI_API_KEY)) }
+    var apiHost by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.OPENAI_API_HOST)) }
+    var model by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.OPENAI_MODEL)) }
 
     Column(Modifier.padding(top = 16.dp)) {
         KeyTextField(
             value = apiKey,
             onValueChange = {
                 apiKey = it
-                settingsViewModel.putPreferenceValue(Constants.Preferences.OPENAI_API_KEY, it)
+                mainViewModel.putPreferenceValue(Constants.Preferences.OPENAI_API_KEY, it)
             }
         )
         UrlTextField(
             value = apiHost,
             onValueChange = {
                 apiHost = it
-                settingsViewModel.putPreferenceValue(Constants.Preferences.OPENAI_API_HOST, it)
+                mainViewModel.putPreferenceValue(Constants.Preferences.OPENAI_API_HOST, it)
             },
             defaultValue = "https://api.openai.com"
         )
@@ -331,7 +331,7 @@ private fun OpenAISettings(settingsViewModel: SettingsViewModel) {
             value = model,
             onValueChange = {
                 model = it
-                settingsViewModel.putPreferenceValue(Constants.Preferences.OPENAI_MODEL, it)
+                mainViewModel.putPreferenceValue(Constants.Preferences.OPENAI_MODEL, it)
             },
             label = { Text(stringResource(Res.string.model)) },
             singleLine = true,
@@ -346,17 +346,17 @@ private fun OpenAISettings(settingsViewModel: SettingsViewModel) {
 
 // Ollama 设置项
 @Composable
-private fun OllamaSettings(settingsViewModel: SettingsViewModel) {
+private fun OllamaSettings(mainViewModel: MainViewModel) {
 
-    var baseUrl by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.OLLAMA_API_HOST)) }
-    var model by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.OLLAMA_MODEL)) }
+    var baseUrl by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.OLLAMA_API_HOST)) }
+    var model by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.OLLAMA_MODEL)) }
 
     Column(Modifier.padding(top = 16.dp)) {
         UrlTextField(
             value = baseUrl,
             onValueChange = {
                 baseUrl = it
-                settingsViewModel.putPreferenceValue(Constants.Preferences.OLLAMA_API_HOST, it)
+                mainViewModel.putPreferenceValue(Constants.Preferences.OLLAMA_API_HOST, it)
             },
             defaultValue = "http://localhost:11434"
         )
@@ -364,7 +364,7 @@ private fun OllamaSettings(settingsViewModel: SettingsViewModel) {
             value = model,
             onValueChange = {
                 model = it
-                settingsViewModel.putPreferenceValue(Constants.Preferences.OLLAMA_MODEL, it)
+                mainViewModel.putPreferenceValue(Constants.Preferences.OLLAMA_MODEL, it)
             },
             label = { Text(stringResource(Res.string.model)) },
             singleLine = true,
@@ -379,17 +379,17 @@ private fun OllamaSettings(settingsViewModel: SettingsViewModel) {
 
 // LM Studio 设置项
 @Composable
-private fun LMStudioSettings(settingsViewModel: SettingsViewModel) {
+private fun LMStudioSettings(mainViewModel: MainViewModel) {
 
-    var baseUrl by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.LMSTUDIO_API_HOST)) }
-    var model by remember { mutableStateOf(settingsViewModel.getStringValue(Constants.Preferences.LMSTUDIO_MODEL)) }
+    var baseUrl by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.LMSTUDIO_API_HOST)) }
+    var model by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.LMSTUDIO_MODEL)) }
 
     Column(Modifier.padding(top = 16.dp)) {
         UrlTextField(
             value = baseUrl,
             onValueChange = {
                 baseUrl = it
-                settingsViewModel.putPreferenceValue(Constants.Preferences.LMSTUDIO_API_HOST, it)
+                mainViewModel.putPreferenceValue(Constants.Preferences.LMSTUDIO_API_HOST, it)
             },
             defaultValue = "http://127.0.0.1:1234/v1"
         )
@@ -397,7 +397,7 @@ private fun LMStudioSettings(settingsViewModel: SettingsViewModel) {
             value = model,
             onValueChange = {
                 model = it
-                settingsViewModel.putPreferenceValue(Constants.Preferences.LMSTUDIO_MODEL, it)
+                mainViewModel.putPreferenceValue(Constants.Preferences.LMSTUDIO_MODEL, it)
             },
             label = { Text(stringResource(Res.string.model)) },
             singleLine = true,

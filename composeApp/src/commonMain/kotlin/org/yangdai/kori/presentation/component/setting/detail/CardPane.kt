@@ -35,16 +35,16 @@ import org.yangdai.kori.presentation.component.SegmentText
 import org.yangdai.kori.presentation.component.SegmentedControl
 import org.yangdai.kori.presentation.component.main.card.NoteItemProperties
 import org.yangdai.kori.presentation.component.main.Page
+import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.screen.settings.CardSize.Companion.toInt
-import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
 import org.yangdai.kori.presentation.util.Constants
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Composable
-fun CardPane(settingsViewModel: SettingsViewModel) {
+fun CardPane(mainViewModel: MainViewModel) {
 
-    val cardPaneState by settingsViewModel.cardPaneState.collectAsStateWithLifecycle()
+    val cardPaneState by mainViewModel.cardPaneState.collectAsStateWithLifecycle()
     val hapticFeedback = LocalHapticFeedback.current
 
     Box(Modifier.fillMaxSize()) {
@@ -90,7 +90,7 @@ fun CardPane(settingsViewModel: SettingsViewModel) {
                     selectedSegmentIndex = if (cardPaneState.clipOverflow) 1 else 0,
                     onSegmentSelected = { index ->
                         hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                        settingsViewModel.putPreferenceValue(
+                        mainViewModel.putPreferenceValue(
                             Constants.Preferences.CLIP_OVERFLOW_TEXT,
                             index == 1
                         )
@@ -122,7 +122,7 @@ fun CardPane(settingsViewModel: SettingsViewModel) {
                     selectedSegmentIndex = cardPaneState.cardSize.toInt(),
                     onSegmentSelected = { index ->
                         hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                        settingsViewModel.putPreferenceValue(
+                        mainViewModel.putPreferenceValue(
                             Constants.Preferences.CARD_SIZE,
                             index
                         )

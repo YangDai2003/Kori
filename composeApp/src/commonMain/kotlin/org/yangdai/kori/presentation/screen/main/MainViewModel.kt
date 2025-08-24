@@ -7,19 +7,29 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.ktor.utils.io.charsets.Charsets
 import io.ktor.utils.io.core.toByteArray
+import kfile.PlatformFile
+import kfile.getExtension
+import kfile.getFileName
+import kfile.getLastModified
+import kfile.readText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import org.yangdai.kori.data.local.dao.FolderDao
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
@@ -28,11 +38,23 @@ import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.domain.sort.FolderSortType
 import org.yangdai.kori.domain.sort.NoteSortType
+import org.yangdai.kori.presentation.screen.settings.AiPaneState
+import org.yangdai.kori.presentation.screen.settings.AiProvider
+import org.yangdai.kori.presentation.screen.settings.AppColor
+import org.yangdai.kori.presentation.screen.settings.AppTheme
+import org.yangdai.kori.presentation.screen.settings.BackupData
 import org.yangdai.kori.presentation.screen.settings.CardPaneState
 import org.yangdai.kori.presentation.screen.settings.CardSize
+import org.yangdai.kori.presentation.screen.settings.DataActionState
+import org.yangdai.kori.presentation.screen.settings.EditorPaneState
+import org.yangdai.kori.presentation.screen.settings.SecurityPaneState
+import org.yangdai.kori.presentation.screen.settings.StylePaneState
+import org.yangdai.kori.presentation.screen.settings.TemplatePaneState
 import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.util.SampleMarkdownNote
 import org.yangdai.kori.presentation.util.SampleTodoNote
+import kotlin.collections.map
+import kotlin.io.encoding.Base64
 import kotlin.math.round
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -148,16 +170,6 @@ class MainViewModel(
             started = SharingStarted.Companion.WhileSubscribed(5_000L),
             initialValue = emptyList()
         )
-
-    val cardPaneState = combine(
-        dataStoreRepository.intFlow(Constants.Preferences.CARD_SIZE),
-        dataStoreRepository.booleanFlow(Constants.Preferences.CLIP_OVERFLOW_TEXT)
-    ) { cardSize, clipOverflow ->
-        CardPaneState(
-            cardSize = CardSize.fromInt(cardSize),
-            clipOverflow = clipOverflow
-        )
-    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), CardPaneState())
 
     fun loadNotesByFolder(folderId: String) {
         _currentFolderId = folderId
@@ -310,5 +322,234 @@ class MainViewModel(
             )
         )
         return noteId
+    }
+
+    /*----*/
+
+    val stylePaneState = combine(
+        dataStoreRepository.intFlow(Constants.Preferences.APP_THEME),
+        dataStoreRepository.intFlow(Constants.Preferences.APP_COLOR),
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_APP_IN_AMOLED_MODE),
+        dataStoreRepository.floatFlow(Constants.Preferences.FONT_SIZE)
+    ) { theme, color, isAppInAmoledMode, fontSize ->
+        StylePaneState(
+            theme = AppTheme.fromInt(theme),
+            color = AppColor.fromInt(color),
+            isAppInAmoledMode = isAppInAmoledMode,
+            fontSize = fontSize
+        )
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), StylePaneState())
+
+    val securityPaneState = combine(
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_SCREEN_PROTECTED),
+        dataStoreRepository.stringFlow(Constants.Preferences.PASSWORD),
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_CREATING_PASSWORD),
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_BIOMETRIC_ENABLED),
+        dataStoreRepository.booleanFlow(Constants.Preferences.KEEP_SCREEN_ON)
+    ) { isScreenProtected, password, isCreatingPass, isBiometricEnabled, keepScreenOn ->
+        SecurityPaneState(
+            isScreenProtected = isScreenProtected,
+            password = password,
+            isCreatingPass = isCreatingPass,
+            isBiometricEnabled = isBiometricEnabled,
+            keepScreenOn = keepScreenOn
+        )
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), SecurityPaneState())
+
+    val editorPaneState = combine(
+        dataStoreRepository.booleanFlow(Constants.Preferences.SHOW_LINE_NUMBER),
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_MARKDOWN_LINT_ENABLED),
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_DEFAULT_READING_VIEW)
+    ) { showLineNumber, isMarkdownLintEnabled, isDefaultReadingView ->
+        EditorPaneState(
+            showLineNumber = showLineNumber,
+            isMarkdownLintEnabled = isMarkdownLintEnabled,
+            isDefaultReadingView = isDefaultReadingView
+        )
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), EditorPaneState())
+
+    val templatePaneState = combine(
+        dataStoreRepository.stringFlow(Constants.Preferences.DATE_FORMATTER),
+        dataStoreRepository.stringFlow(Constants.Preferences.TIME_FORMATTER)
+    ) { dateFormatter, timeFormatter ->
+        TemplatePaneState(
+            dateFormatter = dateFormatter,
+            timeFormatter = timeFormatter
+        )
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), TemplatePaneState())
+
+    val cardPaneState = combine(
+        dataStoreRepository.intFlow(Constants.Preferences.CARD_SIZE),
+        dataStoreRepository.booleanFlow(Constants.Preferences.CLIP_OVERFLOW_TEXT)
+    ) { cardSize, clipOverflow ->
+        CardPaneState(
+            cardSize = CardSize.fromInt(cardSize),
+            clipOverflow = clipOverflow
+        )
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), CardPaneState())
+
+    val aiPaneState = combine(
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_AI_ENABLED),
+        dataStoreRepository.stringSetFlow(Constants.Preferences.AI_FEATURES),
+        dataStoreRepository.stringFlow(Constants.Preferences.AI_PROVIDER)
+    ) { isAiEnabled, aiFeatures, aiProvider ->
+        AiPaneState(
+            isAiEnabled = isAiEnabled,
+            aiFeatures = aiFeatures,
+            aiProvider = AiProvider.fromString(aiProvider)
+        )
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), AiPaneState())
+
+    fun getStringValue(key: String): String =
+        dataStoreRepository.getString(key, "")
+
+    fun getFloatValue(key: String): Float =
+        dataStoreRepository.getFloat(key, 1f)
+
+    fun <T> putPreferenceValue(key: String, value: T) {
+        viewModelScope.launch {
+            when (value) {
+                is Int -> dataStoreRepository.putInt(key, value)
+                is Float -> dataStoreRepository.putFloat(key, value)
+                is Boolean -> dataStoreRepository.putBoolean(key, value)
+                is String -> dataStoreRepository.putString(key, value)
+                is Set<*> -> dataStoreRepository.putStringSet(
+                    key, value.filterIsInstance<String>().toSet()
+                )
+
+                else -> throw IllegalArgumentException("Unsupported value type")
+            }
+        }
+    }
+
+    /*----*/
+
+    private val _dataActionState = MutableStateFlow(DataActionState())
+    val dataActionState = _dataActionState.asStateFlow()
+    private var dataActionJob: Job? = null
+
+    fun cancelDataAction() {
+        dataActionJob?.cancel()
+        _dataActionState.value = DataActionState()
+    }
+
+    fun resetDatabase() {
+        dataActionJob?.cancel()
+        dataActionJob = viewModelScope.launch {
+            _dataActionState.value = DataActionState(infinite = true, progress = 0f)
+            delay(300L) // 等待进度弹窗出现
+            runCatching {
+                noteRepository.deleteAllNotes()
+                folderRepository.deleteAllFolders()
+            }.onSuccess {
+                _dataActionState.update { it.copy(progress = 1f) }
+                delay(3000L)
+                _dataActionState.value = DataActionState()
+            }.onFailure { throwable ->
+                _dataActionState.update { it.copy(message = throwable.message ?: "Error :(") }
+            }
+        }
+    }
+
+    @OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
+    fun importFiles(files: List<PlatformFile>, folderId: String?) {
+        dataActionJob?.cancel()
+        dataActionJob = viewModelScope.launch(Dispatchers.IO) {
+            _dataActionState.value = DataActionState(progress = 0f)
+            delay(300L)
+            runCatching {
+                files.forEachIndexed { index, it ->
+                    val title = it.getFileName()
+                    val content = it.readText()
+                    val modified = it.getLastModified().toString()
+                    val noteType = if (it.getExtension().lowercase() in listOf(
+                            "md",
+                            "markdown",
+                            "mkd",
+                            "mdwn",
+                            "mdown",
+                            "mdtxt",
+                            "mdtext",
+                            "html"
+                        )
+                    ) NoteType.MARKDOWN else NoteType.PLAIN_TEXT
+                    val noteEntity = NoteEntity(
+                        id = Uuid.random().toString(),
+                        title = title,
+                        content = content,
+                        createdAt = modified,
+                        updatedAt = modified,
+                        folderId = folderId,
+                        noteType = noteType
+                    )
+                    noteRepository.insertNote(noteEntity)
+                    _dataActionState.update { it.copy(progress = (index + 1) / files.size.toFloat()) }
+                }
+            }.onSuccess {
+                _dataActionState.update { it.copy(progress = 1f) }
+                delay(3000L)
+                _dataActionState.value = DataActionState()
+            }.onFailure { throwable ->
+                _dataActionState.update { it.copy(message = throwable.message ?: "Error :(") }
+            }
+        }
+    }
+
+    fun createBackupJson(onCreated: (String) -> Unit) {
+        dataActionJob?.cancel()
+        dataActionJob = viewModelScope.launch(Dispatchers.IO) {
+            _dataActionState.value = DataActionState(progress = 0f)
+            delay(300L)
+            runCatching {
+                val notes = (noteRepository.getAllNotes().firstOrNull() ?: emptyList()).map {
+                    it.copy(
+                        title = Base64.Default.encode(it.title.encodeToByteArray()),
+                        content = Base64.Default.encode(it.content.encodeToByteArray())
+                    )
+                }
+                _dataActionState.update { it.copy(progress = 0.33f) }
+                val folders = folderRepository.getFoldersWithNoteCounts()
+                    .firstOrNull()
+                    ?.map { it.folder }
+                    ?: emptyList()
+                val backupData = BackupData(notes, folders)
+                _dataActionState.update { it.copy(progress = 0.67f) }
+                val jsonString = Json.encodeToString(backupData)
+                onCreated(jsonString)
+            }.onSuccess {
+                _dataActionState.update { it.copy(progress = 1f) }
+                delay(1000L)
+                _dataActionState.value = DataActionState()
+            }.onFailure { throwable ->
+                _dataActionState.update { it.copy(message = throwable.message ?: "Error :(") }
+            }
+        }
+    }
+
+    fun restoreFromJson(json: String) {
+        dataActionJob?.cancel()
+        dataActionJob = viewModelScope.launch(Dispatchers.IO) {
+            _dataActionState.value = DataActionState(progress = 0f)
+            delay(300L)
+            runCatching {
+                val backupData = Json.decodeFromString<BackupData>(json)
+                folderRepository.insertFolders(backupData.folders)
+                _dataActionState.update { it.copy(progress = 0.33f) }
+                val decodedNotes = backupData.notes.map {
+                    it.copy(
+                        title = Base64.Default.decode(it.title).decodeToString(),
+                        content = Base64.Default.decode(it.content).decodeToString()
+                    )
+                }
+                _dataActionState.update { it.copy(progress = 0.67f) }
+                noteRepository.insertNotes(decodedNotes)
+            }.onSuccess {
+                _dataActionState.update { it.copy(progress = 1f) }
+                delay(3000L)
+                _dataActionState.value = DataActionState()
+            }.onFailure { throwable ->
+                _dataActionState.update { it.copy(message = throwable.message ?: "Error :(") }
+            }
+        }
     }
 }

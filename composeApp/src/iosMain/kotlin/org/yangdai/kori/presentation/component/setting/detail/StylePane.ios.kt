@@ -11,12 +11,12 @@ import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.color_platte
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.setting.SettingsHeader
-import org.yangdai.kori.presentation.screen.settings.SettingsViewModel
+import org.yangdai.kori.presentation.screen.main.MainViewModel
 
 @Composable
-actual fun StylePane(settingsViewModel: SettingsViewModel) {
+actual fun StylePane(mainViewModel: MainViewModel) {
 
-    val stylePaneState by settingsViewModel.stylePaneState.collectAsStateWithLifecycle()
+    val stylePaneState by mainViewModel.stylePaneState.collectAsStateWithLifecycle()
 
     Column(Modifier.verticalScroll(rememberScrollState())) {
 
@@ -24,8 +24,8 @@ actual fun StylePane(settingsViewModel: SettingsViewModel) {
 
         SettingsHeader(stringResource(Res.string.color_platte))
 
-        ColorPlatteRow(stylePaneState, settingsViewModel)
+        ColorPlatteRow(stylePaneState, mainViewModel)
 
-        CommonStylePane(stylePaneState, settingsViewModel)
+        CommonStylePane(stylePaneState, mainViewModel)
     }
 }
