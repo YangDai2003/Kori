@@ -16,7 +16,6 @@ import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.open_navigation_drawer
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.main.AdaptiveNavigationDrawerLayout
 import org.yangdai.kori.presentation.component.main.DrawerItem
@@ -29,7 +28,7 @@ import org.yangdai.kori.presentation.util.isScreenWidthExpanded
 
 @Composable
 fun MainScreen(
-    viewModel: MainViewModel = koinViewModel(),
+    viewModel: MainViewModel,
     navigateToScreen: (Screen) -> Unit
 ) {
     val scope = rememberCoroutineScope()

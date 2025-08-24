@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import org.yangdai.kori.data.local.dao.FolderDao
 import org.yangdai.kori.data.local.entity.NoteEntity
@@ -53,7 +54,6 @@ import org.yangdai.kori.presentation.screen.settings.TemplatePaneState
 import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.util.SampleMarkdownNote
 import org.yangdai.kori.presentation.util.SampleTodoNote
-import kotlin.collections.map
 import kotlin.io.encoding.Base64
 import kotlin.math.round
 import kotlin.time.Clock
@@ -435,7 +435,7 @@ class MainViewModel(
 
     fun resetDatabase() {
         dataActionJob?.cancel()
-        dataActionJob = viewModelScope.launch {
+        dataActionJob = viewModelScope.launch(Dispatchers.IO) {
             _dataActionState.value = DataActionState(infinite = true, progress = 0f)
             delay(300L) // 等待进度弹窗出现
             runCatching {
@@ -443,7 +443,7 @@ class MainViewModel(
                 folderRepository.deleteAllFolders()
             }.onSuccess {
                 _dataActionState.update { it.copy(progress = 1f) }
-                delay(3000L)
+                delay(1500L)
                 _dataActionState.value = DataActionState()
             }.onFailure { throwable ->
                 _dataActionState.update { it.copy(message = throwable.message ?: "Error :(") }
@@ -485,8 +485,8 @@ class MainViewModel(
                     noteRepository.insertNote(noteEntity)
                     _dataActionState.update { it.copy(progress = (index + 1) / files.size.toFloat()) }
                 }
-            }.onSuccess {
                 _dataActionState.update { it.copy(progress = 1f) }
+            }.onSuccess {
                 delay(3000L)
                 _dataActionState.value = DataActionState()
             }.onFailure { throwable ->
@@ -498,7 +498,7 @@ class MainViewModel(
     fun createBackupJson(onCreated: (String) -> Unit) {
         dataActionJob?.cancel()
         dataActionJob = viewModelScope.launch(Dispatchers.IO) {
-            _dataActionState.value = DataActionState(progress = 0f)
+            _dataActionState.value = DataActionState(infinite = true, progress = 0f)
             delay(300L)
             runCatching {
                 val notes = (noteRepository.getAllNotes().firstOrNull() ?: emptyList()).map {
@@ -507,18 +507,19 @@ class MainViewModel(
                         content = Base64.Default.encode(it.content.encodeToByteArray())
                     )
                 }
-                _dataActionState.update { it.copy(progress = 0.33f) }
                 val folders = folderRepository.getFoldersWithNoteCounts()
                     .firstOrNull()
                     ?.map { it.folder }
                     ?: emptyList()
                 val backupData = BackupData(notes, folders)
-                _dataActionState.update { it.copy(progress = 0.67f) }
                 val jsonString = Json.encodeToString(backupData)
-                onCreated(jsonString)
-            }.onSuccess {
                 _dataActionState.update { it.copy(progress = 1f) }
-                delay(1000L)
+                delay(300L)
+                withContext(Dispatchers.Main) {
+                    onCreated(jsonString)
+                }
+            }.onSuccess {
+                delay(1500L)
                 _dataActionState.value = DataActionState()
             }.onFailure { throwable ->
                 _dataActionState.update { it.copy(message = throwable.message ?: "Error :(") }
@@ -529,23 +530,21 @@ class MainViewModel(
     fun restoreFromJson(json: String) {
         dataActionJob?.cancel()
         dataActionJob = viewModelScope.launch(Dispatchers.IO) {
-            _dataActionState.value = DataActionState(progress = 0f)
+            _dataActionState.value = DataActionState(infinite = true, progress = 0f)
             delay(300L)
             runCatching {
                 val backupData = Json.decodeFromString<BackupData>(json)
                 folderRepository.insertFolders(backupData.folders)
-                _dataActionState.update { it.copy(progress = 0.33f) }
                 val decodedNotes = backupData.notes.map {
                     it.copy(
                         title = Base64.Default.decode(it.title).decodeToString(),
                         content = Base64.Default.decode(it.content).decodeToString()
                     )
                 }
-                _dataActionState.update { it.copy(progress = 0.67f) }
                 noteRepository.insertNotes(decodedNotes)
-            }.onSuccess {
                 _dataActionState.update { it.copy(progress = 1f) }
-                delay(3000L)
+            }.onSuccess {
+                delay(1500L)
                 _dataActionState.value = DataActionState()
             }.onFailure { throwable ->
                 _dataActionState.update { it.copy(message = throwable.message ?: "Error :(") }

@@ -203,31 +203,34 @@ actual fun JsonExporter(launch: Boolean, json: String?, onJsonSaved: (Boolean) -
             }
         }
     }
-    val documentPicker = remember {
-        UIDocumentPickerViewController(
-            forExportingURLs = listOf(fileURL),
-            asCopy = true
-        ).apply {
-            this.delegate = delegate
-            this.allowsMultipleSelection = false
-        }
-    }
 
     LaunchedEffect(launch) {
         if (!launch) return@LaunchedEffect
-        val nsString = json as NSString
-        val success = nsString.writeToURL(
-            url = fileURL,
-            atomically = true,
-            encoding = NSUTF8StringEncoding,
-            error = null
-        )
-        if (!success) return@LaunchedEffect
-        currentUIViewController.presentViewController(
-            documentPicker,
-            animated = true,
-            completion = null
-        )
+        if (json != null) {
+            val nsString = json as NSString
+            val success = nsString.writeToURL(
+                url = fileURL,
+                atomically = true,
+                encoding = NSUTF8StringEncoding,
+                error = null
+            )
+            if (!success) {
+                onJsonSaved(false)
+                return@LaunchedEffect
+            }
+            val documentPicker = UIDocumentPickerViewController(
+                forExportingURLs = listOf(fileURL),
+                asCopy = true
+            ).apply {
+                this.delegate = delegate
+                this.allowsMultipleSelection = false
+            }
+            currentUIViewController.presentViewController(
+                documentPicker,
+                animated = true,
+                completion = null
+            )
+        }
     }
 }
 

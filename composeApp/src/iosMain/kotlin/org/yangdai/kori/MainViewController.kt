@@ -3,10 +3,8 @@ package org.yangdai.kori
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -58,59 +56,55 @@ fun MainViewController() = ComposeUIViewController(
         }
     }
 
-    CompositionLocalProvider(
-        LocalMinimumInteractiveComponentSize provides 44.dp
+    KoriTheme(
+        darkMode = darkMode,
+        color = stylePaneState.color,
+        amoledMode = stylePaneState.isAppInAmoledMode,
+        fontScale = stylePaneState.fontSize
     ) {
-        KoriTheme(
-            darkMode = darkMode,
-            color = stylePaneState.color,
-            amoledMode = stylePaneState.isAppInAmoledMode,
-            fontScale = stylePaneState.fontSize
-        ) {
-            Surface {
-                val showPassScreen by remember {
-                    derivedStateOf {
-                        (securityPaneState.password.isNotEmpty() && !isUnlocked) ||
-                                securityPaneState.isCreatingPass
-                    }
+        Surface {
+            val showPassScreen by remember {
+                derivedStateOf {
+                    (securityPaneState.password.isNotEmpty() && !isUnlocked) ||
+                            securityPaneState.isCreatingPass
                 }
-                val blur by animateDpAsState(targetValue = if (showPassScreen) 16.dp else 0.dp)
-                val semanticsModifier =
-                    if (showPassScreen) Modifier.semantics(mergeDescendants = true) { hideFromAccessibility() }
-                    else Modifier
-                AppNavHost(
-                    modifier = Modifier
-                        .blur(blur)
-                        .then(semanticsModifier),
-                    mainViewModel = mainViewModel
+            }
+            val blur by animateDpAsState(targetValue = if (showPassScreen) 16.dp else 0.dp)
+            val semanticsModifier =
+                if (showPassScreen) Modifier.semantics(mergeDescendants = true) { hideFromAccessibility() }
+                else Modifier
+            AppNavHost(
+                modifier = Modifier
+                    .blur(blur)
+                    .then(semanticsModifier),
+                mainViewModel = mainViewModel
+            )
+            if (showPassScreen) {
+                NumberLockScreen(
+                    modifier = Modifier.background(
+                        MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.25f)
+                    ),
+                    storedPassword = securityPaneState.password,
+                    isCreatingPassword = securityPaneState.isCreatingPass,
+                    onCreatingCanceled = {
+                        mainViewModel.putPreferenceValue(
+                            Constants.Preferences.IS_CREATING_PASSWORD,
+                            false
+                        )
+                    },
+                    onPassCreated = {
+                        mainViewModel.putPreferenceValue(
+                            Constants.Preferences.PASSWORD,
+                            it
+                        )
+                        mainViewModel.putPreferenceValue(
+                            Constants.Preferences.IS_CREATING_PASSWORD,
+                            false
+                        )
+                        AppLockManager.unlock()
+                    },
+                    onAuthenticated = { AppLockManager.unlock() }
                 )
-                if (showPassScreen) {
-                    NumberLockScreen(
-                        modifier = Modifier.background(
-                            MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.25f)
-                        ),
-                        storedPassword = securityPaneState.password,
-                        isCreatingPassword = securityPaneState.isCreatingPass,
-                        onCreatingCanceled = {
-                            mainViewModel.putPreferenceValue(
-                                Constants.Preferences.IS_CREATING_PASSWORD,
-                                false
-                            )
-                        },
-                        onPassCreated = {
-                            mainViewModel.putPreferenceValue(
-                                Constants.Preferences.PASSWORD,
-                                it
-                            )
-                            mainViewModel.putPreferenceValue(
-                                Constants.Preferences.IS_CREATING_PASSWORD,
-                                false
-                            )
-                            AppLockManager.unlock()
-                        },
-                        onAuthenticated = { AppLockManager.unlock() }
-                    )
-                }
             }
         }
     }
