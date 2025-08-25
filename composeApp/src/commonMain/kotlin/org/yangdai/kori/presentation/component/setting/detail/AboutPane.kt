@@ -77,7 +77,7 @@ fun AboutPane() {
         val interactionSource = remember { MutableInteractionSource() }
         val isPressed by interactionSource.collectIsPressedAsState()
         val animatedProgress = animateFloatAsState(if (isPressed) 1f else 0f)
-        val backgroundColor = MaterialTheme.colorScheme.primaryContainer
+        val backgroundColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
         Box(
             modifier = Modifier
                 .size(240.dp)

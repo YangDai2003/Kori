@@ -31,6 +31,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
@@ -94,6 +95,7 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
 
             ListItem(
                 modifier = Modifier.padding(bottom = 8.dp).clip(CardDefaults.shape),
+                colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
                 headlineContent = { Text(stringResource(Res.string.add_sample_note)) },
                 trailingContent = {
                     var checked by remember { mutableStateOf(false) }
@@ -187,6 +189,7 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
             ListItem(
                 modifier = Modifier.padding(bottom = 8.dp).clip(CardDefaults.shape)
                     .clickable { showFilePickerDialog = true },
+                colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
                 headlineContent = { Text(stringResource(Res.string.edit_local_file)) },
                 trailingContent = {
                     Icon(
@@ -199,6 +202,7 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
             ListItem(
                 modifier = Modifier.padding(bottom = 8.dp).clip(CardDefaults.shape)
                     .clickable { showURLDialog = true },
+                colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
                 headlineContent = { Text(stringResource(Res.string.fetch_file_from_url)) },
                 trailingContent = {
                     Icon(

@@ -584,7 +584,7 @@ fun MainScreenContent(
                     .padding(top = innerPadding.calculateTopPadding())
                     .fillMaxSize()
                     .background(
-                        color = MaterialTheme.colorScheme.surfaceContainerLow,
+                        color = MaterialTheme.colorScheme.surface,
                         shape = if (isLargeScreen) RoundedCornerShape(topStart = 12.dp)
                         else RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
                     ),

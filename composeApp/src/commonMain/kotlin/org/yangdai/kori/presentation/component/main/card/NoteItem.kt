@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
@@ -65,6 +66,8 @@ fun LazyStaggeredGridItemScope.NoteItem(
 ) = Surface(
     modifier = Modifier.animateItem(),
     shape = CardDefaults.shape,
+    color = MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.8f)
+        .compositeOver(MaterialTheme.colorScheme.surfaceBright),
     border = if (isSelected) CardDefaults.outlinedCardBorder() else null
 ) {
     Box(

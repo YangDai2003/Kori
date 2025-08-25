@@ -8,6 +8,8 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowRight
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,6 +45,7 @@ actual fun WidgetListItem() {
                     manager.requestPinGlanceAppWidget(MyAppWidgetReceiver::class.java)
                 }
             },
+        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
         headlineContent = { Text(stringResource(R.string.home_widget)) },
         trailingContent = {
             Icon(

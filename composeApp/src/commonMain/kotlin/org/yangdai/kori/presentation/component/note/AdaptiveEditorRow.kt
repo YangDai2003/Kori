@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -204,7 +203,7 @@ fun AdaptiveEditorRow(
         }
     }
     val color by animateColorAsState(
-        targetValue = if (showElevation) BottomAppBarDefaults.containerColor
+        targetValue = if (showElevation) MaterialTheme.colorScheme.surfaceContainerLow
         else MaterialTheme.colorScheme.surface,
         label = "EditorRowColorAnimation"
     )
