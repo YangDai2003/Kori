@@ -565,7 +565,7 @@ fun MainScreenContent(
                 top = 16.dp,
                 start = 16.dp,
                 end = 16.dp,
-                bottom = innerPadding.calculateBottomPadding()
+                bottom = innerPadding.calculateBottomPadding() + 16.dp
             )
         }
         val noteItemProperties = remember(cardPaneState, viewModel.noteSortType) {

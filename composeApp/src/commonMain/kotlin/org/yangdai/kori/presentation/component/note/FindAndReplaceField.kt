@@ -199,7 +199,7 @@ fun CustomTextField(
         .fillMaxWidth()
         .height(48.dp),
     value = value,
-    onValueChange = { onValueChange(it) },
+    onValueChange = onValueChange,
     singleLine = true,
     interactionSource = interactionSource,
     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -239,13 +239,10 @@ fun CustomTextField(
                     interactionSource = interactionSource,
                     colors = OutlinedTextFieldDefaults.colors()
                         .copy(
-                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                            disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                             errorContainerColor = MaterialTheme.colorScheme.errorContainer,
-                            focusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            disabledTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
                             errorTextColor = MaterialTheme.colorScheme.onErrorContainer
                         ),
                     shape = MaterialTheme.shapes.small

@@ -13,17 +13,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridItemScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
@@ -63,11 +62,9 @@ fun LazyStaggeredGridItemScope.NoteItem(
     isSelectionMode: Boolean,
     onClick: () -> Unit,
     onLongClick: () -> Unit
-) = Surface(
+) = Card(
     modifier = Modifier.animateItem(),
-    shape = CardDefaults.shape,
-    color = MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.8f)
-        .compositeOver(MaterialTheme.colorScheme.surfaceBright),
+    colors = if (isSelected) CardDefaults.outlinedCardColors() else CardDefaults.elevatedCardColors(),
     border = if (isSelected) CardDefaults.outlinedCardBorder() else null
 ) {
     Box(
