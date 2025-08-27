@@ -88,14 +88,9 @@ fun FoldersDialog(
                                     contentDescription = null
                                 )
                             },
-                            headlineContent = {
-                                Text(stringResource(Res.string.all_notes))
-                            },
+                            headlineContent = { Text(stringResource(Res.string.all_notes)) },
                             trailingContent = {
-                                RadioButton(
-                                    selected = isSelected,
-                                    onClick = null
-                                )
+                                RadioButton(selected = isSelected, onClick = null)
                             },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                         )
@@ -109,9 +104,8 @@ fun FoldersDialog(
                                 Icon(
                                     imageVector = if (isSelected) Icons.Outlined.FolderOpen
                                     else Icons.Outlined.Folder,
-                                    tint = if (folder.colorValue != defaultFolderColor)
-                                        Color(folder.colorValue)
-                                    else MaterialTheme.colorScheme.onSurface,
+                                    tint = if (defaultFolderColor == folder.colorValue) MaterialTheme.colorScheme.primary
+                                    else Color(folder.colorValue),
                                     contentDescription = null
                                 )
                             },
@@ -123,10 +117,7 @@ fun FoldersDialog(
                                 )
                             },
                             trailingContent = {
-                                RadioButton(
-                                    selected = isSelected,
-                                    onClick = null
-                                )
+                                RadioButton(selected = isSelected, onClick = null)
                             },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                         )
