@@ -8,9 +8,8 @@ data class PlatformInfo(
 
 expect val currentPlatformInfo: PlatformInfo
 
-fun PlatformInfo.isDesktop(): Boolean {
-    return operatingSystem == OS.LINUX || operatingSystem == OS.MACOS || operatingSystem == OS.WINDOWS
-}
+fun PlatformInfo.isDesktop(): Boolean =
+    operatingSystem == OS.LINUX || operatingSystem == OS.MACOS || operatingSystem == OS.WINDOWS
 
 enum class OS {
     IOS,
