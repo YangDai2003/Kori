@@ -78,8 +78,7 @@ fun AiPane(mainViewModel: MainViewModel) {
             .imePadding()
             .padding(horizontal = 16.dp)
             .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .verticalScroll(rememberScrollState())
     ) {
 
         DetailPaneItem(

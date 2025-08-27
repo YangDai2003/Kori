@@ -72,15 +72,12 @@ fun EditorPane(mainViewModel: MainViewModel) {
                 supportingContent = { Text(stringResource(Res.string.default_view_for_note)) }
             )
 
-            val viewOptions =
-                listOf(
-                    stringResource(Res.string.editing_view),
-                    stringResource(Res.string.reading_view)
-                )
-
             SegmentedControl(
                 modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp),
-                segments = viewOptions,
+                segments = listOf(
+                    stringResource(Res.string.editing_view),
+                    stringResource(Res.string.reading_view)
+                ),
                 selectedSegmentIndex = if (editorPaneState.isDefaultReadingView) 1 else 0,
                 onSegmentSelected = { index ->
                     hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)

@@ -1,16 +1,28 @@
 package org.yangdai.kori.presentation.component.setting.detail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,6 +30,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kori.composeapp.generated.resources.Res
@@ -25,19 +40,32 @@ import kori.composeapp.generated.resources.card_size
 import kori.composeapp.generated.resources.clip
 import kori.composeapp.generated.resources.compact
 import kori.composeapp.generated.resources.default_size
+import kori.composeapp.generated.resources.drawing
 import kori.composeapp.generated.resources.ellipsis
+import kori.composeapp.generated.resources.markdown
+import kori.composeapp.generated.resources.plain_text
 import kori.composeapp.generated.resources.text_overflow
 import kori.composeapp.generated.resources.title_only
+import kori.composeapp.generated.resources.todo_text
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.component.SegmentText
 import org.yangdai.kori.presentation.component.SegmentedControl
+import org.yangdai.kori.presentation.component.main.card.DrawingImage
 import org.yangdai.kori.presentation.component.main.card.NoteItemProperties
-import org.yangdai.kori.presentation.component.main.Page
+import org.yangdai.kori.presentation.component.main.card.buildMarkdownAnnotatedString
+import org.yangdai.kori.presentation.component.main.card.buildPlainTextAnnotatedString
+import org.yangdai.kori.presentation.component.main.card.buildTodoAnnotatedString
 import org.yangdai.kori.presentation.screen.main.MainViewModel
+import org.yangdai.kori.presentation.screen.settings.CardSize
 import org.yangdai.kori.presentation.screen.settings.CardSize.Companion.toInt
 import org.yangdai.kori.presentation.util.Constants
+import org.yangdai.kori.presentation.util.SampleMarkdownNote
+import org.yangdai.kori.presentation.util.SampleTodoNote
+import org.yangdai.kori.presentation.util.formatInstant
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -48,17 +76,21 @@ fun CardPane(mainViewModel: MainViewModel) {
     val hapticFeedback = LocalHapticFeedback.current
 
     Box(Modifier.fillMaxSize()) {
-        Page(
-            notes = sampleNotes,
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            noteItemProperties = NoteItemProperties(
-                showCreatedTime = true,
-                cardSize = cardPaneState.cardSize,
-                clipOverflow = cardPaneState.clipOverflow
-            ),
-            selectedNotes = mutableSetOf(),
-            isSelectionMode = false
-        )
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 160.dp)
+        ) {
+            items(sampleNotes, key = { it.id }) { note ->
+                NoteItem(
+                    note = note,
+                    noteItemProperties = NoteItemProperties(
+                        cardSize = cardPaneState.cardSize,
+                        clipOverflow = cardPaneState.clipOverflow
+                    )
+                )
+            }
+        }
 
         Card(
             modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding().fillMaxWidth()
@@ -138,68 +170,114 @@ fun CardPane(mainViewModel: MainViewModel) {
 val sampleNotes = listOf(
     NoteEntity(
         id = Uuid.random().toString(),
-        title = "Grocery List for the Week",
-        content = "Don't forget to buy:\n- Milk\n- Eggs\n- Bread\n- Cheese\n- Fruits (Apples, Bananas)\n- Vegetables (Carrots, Broccoli)",
+        title = "Sample Note - Markdown",
+        content = SampleMarkdownNote,
         isPinned = true,
         noteType = NoteType.MARKDOWN
     ),
     NoteEntity(
         id = Uuid.random().toString(),
-        title = "Project Ideas",
-        content = "Some of the ideas for my project:\n1. Develop a mobile app that tracks daily water intake.\n2. Create a web application for managing personal finances.\n3. Build a simple game with Kotlin.\n4. Explore the possibility of creating a personal blog.",
-        isPinned = true,
-        noteType = NoteType.PLAIN_TEXT
-    ),
-    NoteEntity(
-        id = Uuid.random().toString(),
-        title = "Quick Reminder",
-        content = "Remember to call John about the meeting next week.",
-        isPinned = false
-    ),
-    NoteEntity(
-        id = Uuid.random().toString(),
-        title = "Thoughts on Kotlin",
-        content = "Kotlin is a modern, statically typed programming language targeting the JVM, Android, Browser, etc. Kotlin is concise and safe, designed to be interoperable with Java.",
-        isPinned = false,
-        noteType = NoteType.MARKDOWN
-    ),
-    NoteEntity(
-        id = Uuid.random().toString(),
-        title = "",
-        content = "A very long content here to test the ui display effect, this content is more than 200 characters.",
-        isPinned = false
-    ),
-    NoteEntity(
-        id = Uuid.random().toString(),
-        title = "A very very very very very very very long title",
+        title = "This is a note with a very long title, designed to test the scrolling behavior of long titles.",
         content = "A short content.",
         isPinned = false
     ),
     NoteEntity(
         id = Uuid.random().toString(),
-        title = "Books to read",
-        content = "1. The Lord of the Rings\n2. Pride and Prejudice\n3. The Hitchhiker's Guide to the Galaxy\n4. 1984\n5. To Kill a Mockingbird",
-        isPinned = true,
-        noteType = NoteType.MARKDOWN
-    ),
-    NoteEntity(
-        id = Uuid.random().toString(),
-        title = "My Note",
-        content = """
-                This is a very long text content for testing UI display effect. 
-                It contains multiple paragraphs to simulate real-world note content. 
-                The content also includes lists, links, bold, and italic text for comprehensive testing.
-                - item 1
-                - item 2
-                - item 3
-                 https://www.example.com
-
-                 **This is Bold Text**
-
-                 *This is Italic Text*
-                  More test content.
-        """.trimIndent(),
+        title = "Sample Note - Todo.txt",
+        content = SampleTodoNote,
         isPinned = false,
-        noteType = NoteType.MARKDOWN
+        noteType = NoteType.TODO
     )
 )
+
+@OptIn(ExperimentalTime::class)
+@Composable
+private fun LazyItemScope.NoteItem(
+    note: NoteEntity,
+    noteItemProperties: NoteItemProperties
+) = OutlinedCard(Modifier.padding(bottom = 8.dp).animateItem()) {
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        val title = note.title
+        if (title.isNotBlank()) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                modifier = Modifier.basicMarquee()
+            )
+        }
+
+        // 内容预览
+        if (noteItemProperties.cardSize != CardSize.TITLE_ONLY) {
+            val content = note.content.lineSequence().take(10).joinToString("\n")
+            when (note.noteType) {
+                NoteType.PLAIN_TEXT ->
+                    CardContentText(
+                        text = buildPlainTextAnnotatedString(content),
+                        noteItemProperties = noteItemProperties
+                    )
+
+                NoteType.MARKDOWN ->
+                    CardContentText(
+                        text = buildMarkdownAnnotatedString(content),
+                        noteItemProperties = noteItemProperties
+                    )
+
+                NoteType.TODO ->
+                    CardContentText(
+                        text = buildTodoAnnotatedString(content),
+                        noteItemProperties = noteItemProperties
+                    )
+
+                NoteType.Drawing ->
+                    DrawingImage(note = note, noteItemProperties = noteItemProperties)
+            }
+        }
+
+        // 底部行：笔记类型和更新时间信息
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (note.isPinned)
+                Icon(
+                    modifier = Modifier.padding(end = 8.dp).size(16.dp),
+                    imageVector = Icons.Default.PushPin,
+                    tint = MaterialTheme.colorScheme.primary,
+                    contentDescription = null,
+                )
+
+            Text(
+                text = when (note.noteType) {
+                    NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
+                    NoteType.MARKDOWN -> stringResource(Res.string.markdown)
+                    NoteType.TODO -> stringResource(Res.string.todo_text)
+                    NoteType.Drawing -> stringResource(Res.string.drawing)
+                },
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+            )
+
+            Spacer(Modifier.weight(1f))
+
+            val instant =
+                if (noteItemProperties.showCreatedTime) Instant.parse(note.createdAt)
+                else Instant.parse(note.updatedAt)
+            Text(
+                text = formatInstant(instant),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+            )
+        }
+    }
+}
+
+@Composable
+private fun CardContentText(text: AnnotatedString, noteItemProperties: NoteItemProperties) =
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        maxLines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 7 else 3,
+        overflow = if (noteItemProperties.clipOverflow) TextOverflow.Clip else TextOverflow.Ellipsis
+    )
