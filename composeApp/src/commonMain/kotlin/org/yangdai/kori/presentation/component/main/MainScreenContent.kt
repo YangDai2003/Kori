@@ -1,6 +1,7 @@
 package org.yangdai.kori.presentation.component.main
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -194,7 +195,7 @@ fun MainScreenContent(
             },
             placeholder = { Text(stringResource(Res.string.search)) },
             leadingIcon = {
-                AnimatedContent(isLargeScreen || searchBarState.currentValue == SearchBarValue.Expanded) { showSearchIcon ->
+                Crossfade(isLargeScreen || searchBarState.currentValue == SearchBarValue.Expanded) { showSearchIcon ->
                     if (showSearchIcon)
                         IconButton(
                             colors = IconButtonDefaults.iconButtonVibrantColors(),
@@ -212,7 +213,7 @@ fun MainScreenContent(
                 }
             },
             trailingIcon = {
-                AnimatedContent(searchBarState.currentValue == SearchBarValue.Expanded) { showClearIcon ->
+                Crossfade(searchBarState.currentValue == SearchBarValue.Expanded) { showClearIcon ->
                     if (showClearIcon)
                         IconButton(
                             onClick = {
@@ -415,7 +416,7 @@ fun MainScreenContent(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 maxLines = 3
                             ) {
-                                searchHistorySet.reversed().forEach { it ->
+                                searchHistorySet.forEach { it ->
                                     SuggestionChip(
                                         modifier = Modifier.defaultMinSize(48.dp),
                                         onClick = { textFieldState.setTextAndPlaceCursorAtEnd(it) },
