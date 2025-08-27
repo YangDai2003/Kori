@@ -99,7 +99,7 @@
     <string name="reading_view">Reading view</string>
     <string name="line_numbers">Line numbers</string>
     <string name="lint">Lint</string>
-    <string name="lint_description">When enabled, the Markdown text format and syntax will be checked in Standard mode to see if they meet the specification, and errors will be marked with red wavy lines.</string>
+    <string name="lint_description">When enabled, the Markdown text format and syntax will be checked to see if they meet the specification, and errors will be marked with red wavy lines.</string>
 
     <string name="date_format">Date format</string>
     <string name="time_format">Time format</string>
