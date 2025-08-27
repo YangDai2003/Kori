@@ -19,6 +19,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -76,10 +77,12 @@ fun TemplatePane(mainViewModel: MainViewModel) {
     var isDateInvalid by remember { mutableStateOf(false) }
     var isTimeInvalid by remember { mutableStateOf(false) }
 
-    // Update formatted date and time whenever formatters change
     LaunchedEffect(templatePaneState) {
         currentDateFormatter = templatePaneState.dateFormatter
         currentTimeFormatter = templatePaneState.timeFormatter
+    }
+
+    LaunchedEffect(currentDateFormatter, currentTimeFormatter) {
         runCatching {
             val today: LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
             val dateFormatter = LocalDate.Format {
@@ -106,6 +109,17 @@ fun TemplatePane(mainViewModel: MainViewModel) {
         }
     }
 
+    DisposableEffect(Unit) {
+        onDispose {
+            mainViewModel.putPreferenceValue(
+                Constants.Preferences.DATE_FORMATTER, currentDateFormatter
+            )
+            mainViewModel.putPreferenceValue(
+                Constants.Preferences.TIME_FORMATTER, currentTimeFormatter
+            )
+        }
+    }
+
     Column(
         Modifier
             .imePadding()
@@ -120,7 +134,7 @@ fun TemplatePane(mainViewModel: MainViewModel) {
                 .background(MaterialTheme.colorScheme.surface)
         ) {
             ListItem(
-                headlineContent = { Text(text = stringResource(Res.string.date_format)) },
+                headlineContent = { Text(stringResource(Res.string.date_format)) },
                 supportingContent = {
                     val annotatedString = buildAnnotatedString {
                         append(stringResource(Res.string.date_in_the_template_file_will_be_replaced_with_this_value))
@@ -145,12 +159,7 @@ fun TemplatePane(mainViewModel: MainViewModel) {
             Row(Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp)) {
                 CustomTextField(
                     value = currentDateFormatter,
-                    onValueChange = {
-                        currentDateFormatter = it
-                        mainViewModel.putPreferenceValue(
-                            Constants.Preferences.DATE_FORMATTER, it
-                        )
-                    },
+                    onValueChange = { currentDateFormatter = it },
                     isError = isDateInvalid,
                     leadingIcon = Icons.Outlined.DateRange,
                     placeholderText = "yyyy-MM-dd"
@@ -167,7 +176,7 @@ fun TemplatePane(mainViewModel: MainViewModel) {
                 .background(MaterialTheme.colorScheme.surface)
         ) {
             ListItem(
-                headlineContent = { Text(text = stringResource(Res.string.time_format)) },
+                headlineContent = { Text(stringResource(Res.string.time_format)) },
                 supportingContent = {
                     val annotatedString = buildAnnotatedString {
                         append(stringResource(Res.string.time_in_the_template_file_will_be_replaced_with_this_value))
@@ -192,12 +201,7 @@ fun TemplatePane(mainViewModel: MainViewModel) {
             Row(Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp)) {
                 CustomTextField(
                     value = currentTimeFormatter,
-                    onValueChange = {
-                        currentTimeFormatter = it
-                        mainViewModel.putPreferenceValue(
-                            Constants.Preferences.TIME_FORMATTER, it
-                        )
-                    },
+                    onValueChange = { currentTimeFormatter = it },
                     isError = isTimeInvalid,
                     leadingIcon = Icons.Outlined.AccessTime,
                     placeholderText = "HH:mm"

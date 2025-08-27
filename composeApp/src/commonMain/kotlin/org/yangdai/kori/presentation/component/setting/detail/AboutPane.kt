@@ -121,7 +121,7 @@ fun AboutPane() {
                         + currentPlatformInfo.version
                         + "\n" + currentPlatformInfo.deviceModel,
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.labelMedium
+                style = MaterialTheme.typography.labelSmallEmphasized
             )
         }
 

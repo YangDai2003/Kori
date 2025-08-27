@@ -105,7 +105,7 @@
     <string name="time_format">Time format</string>
     <string name="date_in_the_template_file_will_be_replaced_with_this_value">{{date}} in the template file will be replaced with this value.\n</string>
     <string name="you_can_also_use_date_yyyy_mm_dd_to_override_the_format_once">You can also use {{date:yyyy-MM-dd}} to override the format once.\n</string>
-    <string name="for_more_syntax_refer_to">"For more syntax, refer to "</string>
+    <string name="for_more_syntax_refer_to">For more syntax, refer to </string>
     <string name="format_reference">format reference</string>
     <string name="your_current_syntax_looks_like_this">\nYour current syntax looks like this: %1$s</string>
     <string name="time_in_the_template_file_will_be_replaced_with_this_value">{{time}} in the template file will be replaced with this value.\n</string>

@@ -177,8 +177,8 @@ val sampleNotes = listOf(
     ),
     NoteEntity(
         id = Uuid.random().toString(),
-        title = "This is a note with a very long title, designed to test the scrolling behavior of long titles.",
-        content = "A short content.",
+        title = "This is a note with a very long title, designed to test the animated marquee effect of long titles.",
+        content = "",
         isPinned = false
     ),
     NoteEntity(
