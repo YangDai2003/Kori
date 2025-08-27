@@ -21,7 +21,7 @@ fun ListPaneSection(
             .padding(horizontal = 16.dp)
             .padding(bottom = 16.dp),
         shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceBright.copy(alpha = 0.7f)
+        color = MaterialTheme.colorScheme.surfaceContainer
     ) {
         Column {
             items.forEachIndexed { index, item ->

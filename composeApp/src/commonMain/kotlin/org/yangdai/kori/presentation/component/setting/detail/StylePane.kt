@@ -159,7 +159,7 @@ fun ColumnScope.CommonStylePane(
     ) {
         modeOptions.forEachIndexed { index, text ->
             ListItem(
-                modifier = Modifier.selectable(
+                modifier = Modifier.clip(MaterialTheme.shapes.extraSmall).selectable(
                     selected = (index == stylePaneState.theme.toInt()),
                     onClick = {
                         hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
