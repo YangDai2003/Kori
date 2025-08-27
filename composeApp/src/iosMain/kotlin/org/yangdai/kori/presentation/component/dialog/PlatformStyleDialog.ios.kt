@@ -14,7 +14,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 actual fun ConfirmButton(colors: ButtonColors, onClick: () -> Unit) =
-    Button(colors = colors, onClick = onClick) { Text(stringResource(Res.string.confirm)) }
+    Button(onClick, colors = colors) { Text(stringResource(Res.string.confirm)) }
 
 @Composable
 actual fun DismissButton(onClick: () -> Unit) =

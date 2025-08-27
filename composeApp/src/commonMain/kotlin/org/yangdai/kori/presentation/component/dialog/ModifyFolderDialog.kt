@@ -100,7 +100,7 @@ fun SharedTransitionScope.ModifyFolderDialog(
 
             Canvas(
                 Modifier.fillMaxSize()
-                    .pointerInput(Unit) { detectTapGestures(onTap = { onDismissRequest() }) }
+                    .pointerInput(Unit) { detectTapGestures { onDismissRequest() } }
             ) {
                 drawRect(Color.Black, alpha = 0.6f)
             }
@@ -150,7 +150,7 @@ fun SharedTransitionScope.ModifyFolderDialog(
                 ) {
                     Text(
                         stringResource(Res.string.modify),
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.headlineSmallEmphasized
                             .copy(color = AlertDialogDefaults.titleContentColor)
                     )
                     FilledIconToggleButton(

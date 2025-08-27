@@ -135,10 +135,10 @@
     <string name="make_list">Make list</string>
     <string name="make_table">Make table</string>
 
-    <string name="share_note_as">Share note as</string>
+    <string name="share_as">Share as</string>
     <string name="file">File</string>
     <string name="text">Text</string>
-    <string name="export_as">Export note as</string>
+    <string name="export_as">Export as</string>
     <string name="data">Data</string>
     <string name="import_files">Import text files</string>
     <string name="import_files_description">Batch import text files. The file name will be used as the title, and the note type will be automatically detected.</string>

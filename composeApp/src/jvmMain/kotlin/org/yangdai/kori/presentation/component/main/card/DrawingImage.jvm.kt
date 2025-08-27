@@ -2,8 +2,10 @@ package org.yangdai.kori.presentation.component.main.card
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -20,7 +22,10 @@ actual fun DrawingImage(note: NoteEntity, noteItemProperties: NoteItemProperties
     val imageFile = File("$userHome/.kori/${note.id}/ink.png")
     val maxHeight = if (noteItemProperties.cardSize == CardSize.DEFAULT) 160.dp else 96.dp
     AsyncImage(
-        modifier = Modifier.fillMaxWidth().heightIn(max = maxHeight),
+        modifier = Modifier
+            .clip(MaterialTheme.shapes.extraSmall)
+            .fillMaxWidth()
+            .heightIn(max = maxHeight),
         model = ImageRequest.Builder(LocalPlatformContext.current)
             .data(imageFile)
             .addLastModifiedToFileCacheKey(true)

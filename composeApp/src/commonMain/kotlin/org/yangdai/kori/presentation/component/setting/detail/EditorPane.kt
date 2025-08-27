@@ -1,7 +1,6 @@
 package org.yangdai.kori.presentation.component.setting.detail
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -69,16 +68,8 @@ fun EditorPane(mainViewModel: MainViewModel) {
                         contentDescription = null
                     )
                 },
-                headlineContent = {
-                    Text(
-                        modifier = Modifier.basicMarquee(),
-                        text = stringResource(Res.string.default_view),
-                        maxLines = 1
-                    )
-                },
-                supportingContent = {
-                    Text(stringResource(Res.string.default_view_for_note))
-                }
+                headlineContent = { Text(stringResource(Res.string.default_view)) },
+                supportingContent = { Text(stringResource(Res.string.default_view_for_note)) }
             )
 
             val viewOptions =

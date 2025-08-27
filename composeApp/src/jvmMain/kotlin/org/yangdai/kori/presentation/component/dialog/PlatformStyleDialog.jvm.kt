@@ -16,21 +16,14 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 actual fun ConfirmButton(colors: ButtonColors, onClick: () -> Unit) =
-    Button(
-        onClick = onClick,
-        colors = colors,
-        shape = MaterialTheme.shapes.small
-    ) {
+    Button(onClick, colors = colors, shape = MaterialTheme.shapes.small) {
         Text(stringResource(Res.string.confirm))
     }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 actual fun DismissButton(onClick: () -> Unit) =
-    OutlinedButton(
-        onClick = onClick,
-        shape = MaterialTheme.shapes.small
-    ) {
+    OutlinedButton(onClick, shape = MaterialTheme.shapes.small) {
         Text(stringResource(Res.string.cancel))
     }
 

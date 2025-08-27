@@ -132,10 +132,10 @@
     <string name="make_list">Liste aufstellen</string>
     <string name="make_table">Tabelle aufstellen</string>
 
-    <string name="share_note_as">Notiz teilen als</string>
+    <string name="share_as">Teilen als</string>
     <string name="file">Datei</string>
     <string name="text">Text</string>
-    <string name="export_as">Notiz exportieren als</string>
+    <string name="export_as">Exportieren als</string>
     <string name="data">Daten</string>
     <string name="import_files">Textdateien importieren</string>
     <string name="import_files_description">Importieren Sie mehrere Textdateien. Der Dateiname wird als Titel verwendet und der Notiztyp wird automatisch erkannt.</string>

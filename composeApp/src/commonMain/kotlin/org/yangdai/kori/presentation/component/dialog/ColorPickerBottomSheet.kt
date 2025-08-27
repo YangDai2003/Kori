@@ -69,7 +69,7 @@ fun ColorPickerBottomSheet(
                 )
                 Text(
                     modifier = Modifier.align(Alignment.Center),
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Light,
                     text = color.toArgb().toHexColor(),
                     color = color

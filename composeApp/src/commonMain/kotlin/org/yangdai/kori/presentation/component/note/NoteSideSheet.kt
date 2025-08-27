@@ -108,7 +108,6 @@ fun NoteSideSheet(
     actionContent: @Composable ColumnScope.() -> Unit,
     drawerContent: @Composable ColumnScope.() -> Unit
 ) {
-    // 仅在 isDrawerOpen 为 true 时组合 Dialog
     if (isDrawerOpen) {
         val scope = rememberCoroutineScope()
         val focusRequester = remember { FocusRequester() }
@@ -174,7 +173,7 @@ fun NoteSideSheet(
                 val scrimColor = DrawerDefaults.scrimColor
                 Canvas(
                     Modifier.fillMaxSize().pointerInput(Unit) {
-                        detectTapGestures(onTap = { if (!isExiting) isExiting = true })
+                        detectTapGestures { if (!isExiting) isExiting = true }
                     }
                 ) {
                     val alpha = (fullOffsetPx - offsetX.value) / fullOffsetPx * 0.32f

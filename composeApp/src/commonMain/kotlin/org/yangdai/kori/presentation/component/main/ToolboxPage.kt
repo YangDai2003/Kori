@@ -56,6 +56,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import kfile.PlatformFilePicker
 import kfile.getPath
 import knet.DocumentService
 import kori.composeapp.generated.resources.Res
@@ -69,7 +70,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.component.dialog.ConfirmButton
 import org.yangdai.kori.presentation.component.dialog.DismissButton
-import kfile.PlatformFilePicker
 import org.yangdai.kori.presentation.component.dialog.dialogShape
 import org.yangdai.kori.presentation.navigation.Screen
 
@@ -95,7 +95,7 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
 
             ListItem(
                 modifier = Modifier.padding(bottom = 8.dp).clip(CardDefaults.shape),
-                colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
+                colors = ListItemDefaults.colors(containerColor = CardDefaults.elevatedCardColors().containerColor),
                 headlineContent = { Text(stringResource(Res.string.add_sample_note)) },
                 trailingContent = {
                     var checked by remember { mutableStateOf(false) }
@@ -189,7 +189,7 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
             ListItem(
                 modifier = Modifier.padding(bottom = 8.dp).clip(CardDefaults.shape)
                     .clickable { showFilePickerDialog = true },
-                colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
+                colors = ListItemDefaults.colors(containerColor = CardDefaults.elevatedCardColors().containerColor),
                 headlineContent = { Text(stringResource(Res.string.edit_local_file)) },
                 trailingContent = {
                     Icon(
@@ -202,7 +202,7 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
             ListItem(
                 modifier = Modifier.padding(bottom = 8.dp).clip(CardDefaults.shape)
                     .clickable { showURLDialog = true },
-                colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
+                colors = ListItemDefaults.colors(containerColor = CardDefaults.elevatedCardColors().containerColor),
                 headlineContent = { Text(stringResource(Res.string.fetch_file_from_url)) },
                 trailingContent = {
                     Icon(

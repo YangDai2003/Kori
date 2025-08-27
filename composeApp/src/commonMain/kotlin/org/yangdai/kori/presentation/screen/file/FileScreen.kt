@@ -1,36 +1,26 @@
 package org.yangdai.kori.presentation.screen.file
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.basicMarquee
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
@@ -43,17 +33,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.VerticalDragHandle
-import androidx.compose.material3.minimumInteractiveComponentSize
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -65,7 +47,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isCtrlPressed
@@ -79,7 +60,9 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kfile.AudioPicker
+import kfile.ImagesPicker
 import kfile.PlatformFile
+import kfile.VideoPicker
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.char_count
 import kori.composeapp.generated.resources.drawing
@@ -88,8 +71,6 @@ import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.paragraph_count
 import kori.composeapp.generated.resources.plain_text
 import kori.composeapp.generated.resources.right_panel_open
-import kori.composeapp.generated.resources.saveAsTemplate
-import kori.composeapp.generated.resources.templates
 import kori.composeapp.generated.resources.todo_text
 import kori.composeapp.generated.resources.type
 import kori.composeapp.generated.resources.updated
@@ -105,11 +86,9 @@ import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.isDesktop
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
 import org.yangdai.kori.presentation.component.TooltipIconButton
-import org.yangdai.kori.presentation.component.dialog.DialogMaxWidth
 import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
-import kfile.ImagesPicker
 import org.yangdai.kori.presentation.component.dialog.ShareDialog
-import kfile.VideoPicker
+import org.yangdai.kori.presentation.component.dialog.TemplatesBottomSheet
 import org.yangdai.kori.presentation.component.note.AdaptiveEditor
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorRow
 import org.yangdai.kori.presentation.component.note.AdaptiveView
@@ -124,7 +103,6 @@ import org.yangdai.kori.presentation.component.note.addImageLinks
 import org.yangdai.kori.presentation.component.note.addVideoLink
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditor
 import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
-import org.yangdai.kori.presentation.component.note.template.TemplateProcessor
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.util.formatInstant
@@ -148,8 +126,6 @@ fun FileScreen(
     val fileEditingState by viewModel.fileEditingState.collectAsStateWithLifecycle()
     val textState by viewModel.textState.collectAsStateWithLifecycle()
     val editorState by viewModel.editorState.collectAsStateWithLifecycle()
-    val formatterState by viewModel.formatterState.collectAsStateWithLifecycle()
-    val templates by viewModel.templates.collectAsStateWithLifecycle()
     val outline by viewModel.outline.collectAsStateWithLifecycle()
     val html by viewModel.html.collectAsStateWithLifecycle()
     val needSave by viewModel.needSave.collectAsStateWithLifecycle()
@@ -400,86 +376,11 @@ fun FileScreen(
         }
     }
 
-    val templatesSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val hideTemplatesBottomSheet: () -> Unit = {
-        coroutineScope.launch {
-            templatesSheetState.hide()
-        }.invokeOnCompletion {
-            if (!templatesSheetState.isVisible) {
-                showTemplatesBottomSheet = false
-            }
-        }
-    }
-    if (showTemplatesBottomSheet) {
-        ModalBottomSheet(
-            sheetState = templatesSheetState,
-            sheetGesturesEnabled = false,
-            sheetMaxWidth = DialogMaxWidth,
-            onDismissRequest = { showTemplatesBottomSheet = false },
-            dragHandle = {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(Res.string.templates),
-                        modifier = Modifier.padding(start = 16.dp)
-                    )
-                    IconButton(
-                        modifier = Modifier.padding(end = 4.dp, top = 4.dp)
-                            .minimumInteractiveComponentSize()
-                            .size(
-                                IconButtonDefaults.extraSmallContainerSize(
-                                    IconButtonDefaults.IconButtonWidthOption.Uniform
-                                )
-                            ),
-                        colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-                        onClick = hideTemplatesBottomSheet
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = null,
-                            modifier = Modifier.size(IconButtonDefaults.extraSmallIconSize)
-                        )
-                    }
-                }
-            }
-        ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                items(templates, key = { it.id }) { template ->
-                    ListItem(
-                        headlineContent = {
-                            Text(
-                                text = template.title,
-                                maxLines = 1,
-                                modifier = Modifier.basicMarquee()
-                            )
-                        },
-                        modifier = Modifier
-                            .padding(bottom = 8.dp)
-                            .clip(CircleShape)
-                            .clickable {
-                                val templateText = TemplateProcessor(
-                                    formatterState.dateFormatter, formatterState.timeFormatter,
-                                ).process(template.content)
-                                viewModel.contentState.edit { appendLine(templateText) }
-                                hideTemplatesBottomSheet()
-                            }
-                    )
-                }
-                item {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    TextButton(onClick = { viewModel.saveNoteAsTemplate() }) {
-                        Text(stringResource(Res.string.saveAsTemplate))
-                    }
-                }
-            }
-        }
-    }
+    TemplatesBottomSheet(
+        showTemplatesBottomSheet = showTemplatesBottomSheet,
+        onDismissRequest = { showTemplatesBottomSheet = false },
+        viewModel = viewModel
+    )
 
     if (showImagesPicker) {
         ImagesPicker("") {

@@ -84,13 +84,7 @@ fun DetailPaneItem(
 ) = ListItem(
     modifier = modifier.clip(MaterialTheme.shapes.large)
         .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier),
-    headlineContent = {
-        Text(
-            modifier = Modifier.basicMarquee(),
-            text = title,
-            maxLines = 1
-        )
-    },
+    headlineContent = { Text(title) },
     supportingContent = description?.let { { Text(description) } },
     leadingContent = icon?.let {
         {
@@ -116,13 +110,7 @@ fun DetailPaneItem(
 ) = ListItem(
     modifier = modifier.clip(MaterialTheme.shapes.large)
         .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier),
-    headlineContent = {
-        Text(
-            modifier = Modifier.basicMarquee(),
-            text = title,
-            maxLines = 1
-        )
-    },
+    headlineContent = { Text(title) },
     supportingContent = description?.let { { Text(description) } },
     leadingContent = icon?.let {
         {
