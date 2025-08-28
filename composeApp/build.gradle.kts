@@ -100,6 +100,7 @@ kotlin {
             implementation(libs.ktor.client.content.negotiation)
 
             implementation(libs.coil.compose)
+            implementation("ai.koog:koog-agents:0.4.1")
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
