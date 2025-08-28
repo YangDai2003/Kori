@@ -39,6 +39,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -64,18 +65,19 @@ import kfile.PlatformFile
 import kfile.VideoPicker
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.char_count
-import kori.composeapp.generated.resources.drawing
+import kori.composeapp.generated.resources.completed_tasks
 import kori.composeapp.generated.resources.line_count
-import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.paragraph_count
-import kori.composeapp.generated.resources.plain_text
+import kori.composeapp.generated.resources.pending_tasks
+import kori.composeapp.generated.resources.progress
 import kori.composeapp.generated.resources.right_panel_open
-import kori.composeapp.generated.resources.todo_text
-import kori.composeapp.generated.resources.type
+import kori.composeapp.generated.resources.total_tasks
 import kori.composeapp.generated.resources.updated
 import kori.composeapp.generated.resources.word_count
 import kori.composeapp.generated.resources.word_count_without_punctuation
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -403,7 +405,7 @@ fun FileScreen(
         isDrawerOpen = isSideSheetOpen,
         onDismiss = { isSideSheetOpen = false },
         outline = outline,
-        showOutline = fileEditingState.fileType == NoteType.MARKDOWN,
+        type = fileEditingState.fileType,
         onHeaderClick = { selectedHeader = it },
         navigateTo = { navigateToScreen(it) },
         actionContent = {
@@ -439,16 +441,6 @@ fun FileScreen(
             }
         },
         drawerContent = {
-            NoteSideSheetItem(
-                key = stringResource(Res.string.type),
-                value = when (fileEditingState.fileType) {
-                    NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
-                    NoteType.MARKDOWN -> stringResource(Res.string.markdown)
-                    NoteType.TODO -> stringResource(Res.string.todo_text)
-                    NoteType.Drawing -> stringResource(Res.string.drawing)
-                }
-            )
-
             val formattedUpdated = remember(fileEditingState.updatedAt) {
                 if (fileEditingState.updatedAt.isBlank()) ""
                 else formatInstant(Instant.parse(fileEditingState.updatedAt))
@@ -458,26 +450,65 @@ fun FileScreen(
                 value = formattedUpdated
             )
 
-            NoteSideSheetItem(
-                key = stringResource(Res.string.char_count),
-                value = formatNumber(textState.charCount)
-            )
-            NoteSideSheetItem(
-                key = stringResource(Res.string.word_count),
-                value = formatNumber(textState.wordCountWithPunctuation)
-            )
-            NoteSideSheetItem(
-                key = stringResource(Res.string.word_count_without_punctuation),
-                value = formatNumber(textState.wordCountWithoutPunctuation)
-            )
-            NoteSideSheetItem(
-                key = stringResource(Res.string.line_count),
-                value = formatNumber(textState.lineCount)
-            )
-            NoteSideSheetItem(
-                key = stringResource(Res.string.paragraph_count),
-                value = formatNumber(textState.paragraphCount)
-            )
+            if (fileEditingState.fileType == NoteType.PLAIN_TEXT || fileEditingState.fileType == NoteType.MARKDOWN) {
+                /**文本文件信息：字符数，单词数，行数，段落数**/
+                NoteSideSheetItem(
+                    key = stringResource(Res.string.char_count),
+                    value = formatNumber(textState.charCount)
+                )
+                NoteSideSheetItem(
+                    key = stringResource(Res.string.word_count),
+                    value = formatNumber(textState.wordCountWithPunctuation)
+                )
+                NoteSideSheetItem(
+                    key = stringResource(Res.string.word_count_without_punctuation),
+                    value = formatNumber(textState.wordCountWithoutPunctuation)
+                )
+                NoteSideSheetItem(
+                    key = stringResource(Res.string.line_count),
+                    value = formatNumber(textState.lineCount)
+                )
+                NoteSideSheetItem(
+                    key = stringResource(Res.string.paragraph_count),
+                    value = formatNumber(textState.paragraphCount)
+                )
+            } else if (fileEditingState.fileType == NoteType.TODO) {
+                /**总任务，已完成，待办，进度**/
+                var totalTasks by remember { mutableIntStateOf(0) }
+                var completedTasks by remember { mutableIntStateOf(0) }
+                var pendingTasks by remember { mutableIntStateOf(0) }
+                var progress by remember { mutableIntStateOf(0) }
+                LaunchedEffect(viewModel.contentState.text) {
+                    withContext(Dispatchers.Default) {
+                        val lines = viewModel.contentState.text.lines()
+                        totalTasks = lines.count { it.isNotBlank() }
+                        completedTasks =
+                            lines.count { it.trim().startsWith("x", ignoreCase = true) }
+                        pendingTasks = totalTasks - completedTasks
+                        progress = if (totalTasks > 0) {
+                            (completedTasks.toFloat() / totalTasks.toFloat() * 100).toInt()
+                        } else {
+                            0
+                        }
+                    }
+                }
+                NoteSideSheetItem(
+                    key = stringResource(Res.string.total_tasks),
+                    value = totalTasks.toString()
+                )
+                NoteSideSheetItem(
+                    key = stringResource(Res.string.completed_tasks),
+                    value = completedTasks.toString()
+                )
+                NoteSideSheetItem(
+                    key = stringResource(Res.string.pending_tasks),
+                    value = pendingTasks.toString()
+                )
+                NoteSideSheetItem(
+                    key = stringResource(Res.string.progress),
+                    value = "$progress%"
+                )
+            }
         }
     )
 

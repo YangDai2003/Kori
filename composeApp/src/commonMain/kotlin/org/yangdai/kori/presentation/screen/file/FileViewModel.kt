@@ -13,9 +13,6 @@ import kfile.getFileName
 import kfile.getLastModified
 import kfile.readText
 import kfile.writeText
-import kmark.MarkdownElementTypes
-import kmark.ast.ASTNode
-import kmark.ast.getTextInNode
 import kmark.flavours.gfm.GFMFlavourDescriptor
 import kmark.html.HtmlGenerator
 import kmark.parser.MarkdownParser
@@ -36,15 +33,12 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format
-import kotlinx.datetime.toLocalDateTime
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.presentation.component.note.HeaderNode
+import org.yangdai.kori.presentation.component.note.findHeadersRecursive
 import org.yangdai.kori.presentation.component.note.markdown.Properties.getPropertiesLineRange
 import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.screen.note.TextState
@@ -110,8 +104,8 @@ class FileViewModel(
     private val _fileEditingState = MutableStateFlow(FileEditingState())
     val fileEditingState = _fileEditingState.asStateFlow()
 
-    val flavor = GFMFlavourDescriptor()
-    val parser = MarkdownParser(flavor)
+    private val flavor = GFMFlavourDescriptor()
+    private val parser = MarkdownParser(flavor)
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     private val contentAndTreeFlow = contentSnapshotFlow.debounce(100).distinctUntilChanged()
@@ -157,50 +151,6 @@ class FileViewModel(
             initialValue = HeaderNode("", 0, IntRange.EMPTY)
         )
 
-    /**
-     * Recursively traverses the AST, finds headers, and builds the hierarchy.
-     */
-    private fun findHeadersRecursive(
-        node: ASTNode,
-        fullText: String,
-        headerStack: MutableList<HeaderNode>,
-        propertiesRange: IntRange?
-    ) {
-        // --- Check if the current node IS a header ---
-        val headerLevel = when (node.type) {
-            MarkdownElementTypes.ATX_1 -> 1
-            MarkdownElementTypes.ATX_2 -> 2
-            MarkdownElementTypes.ATX_3 -> 3
-            MarkdownElementTypes.ATX_4 -> 4
-            MarkdownElementTypes.ATX_5 -> 5
-            MarkdownElementTypes.ATX_6 -> 6
-            else -> 0 // Not a header type we are processing
-        }
-        if (headerLevel > 0) {
-            val range = IntRange(node.startOffset, node.endOffset - 1)
-            // --- Skip if inside properties range ---
-            if (propertiesRange == null || !propertiesRange.contains(range.first)) {
-                val title =
-                    node.getTextInNode(fullText).trim().dropWhile { it == '#' }.trim().toString()
-                val headerNode = HeaderNode(title, headerLevel, range)
-                // --- Manage Hierarchy ---
-                // Pop stack until parent level is less than current level
-                while (headerStack.last().level >= headerLevel && headerStack.size > 1) {
-                    headerStack.removeAt(headerStack.lastIndex)
-                }
-                // Add new header as child of the correct parent
-                headerStack.last().children.add(headerNode)
-                // Push new header onto stack to be the parent for subsequent deeper headers
-                headerStack.add(headerNode)
-            }
-            return // Stop descent once a header is processed
-        }
-        // --- If not a header, recurse into children ---
-        node.children.forEach { child ->
-            findHeadersRecursive(child, fullText, headerStack, propertiesRange)
-        }
-    }
-
     private val _initialContent = MutableStateFlow("")
     val needSave = combine(
         _initialContent,
@@ -227,7 +177,12 @@ class FileViewModel(
                     "mdtext",
                     "html"
                 )
-            ) NoteType.MARKDOWN else NoteType.PLAIN_TEXT
+            ) NoteType.MARKDOWN
+            else if (
+                title.contains("todo", ignoreCase = true)
+                && file.getExtension().lowercase() == "txt"
+            ) NoteType.TODO
+            else NoteType.PLAIN_TEXT
             titleState.setTextAndPlaceCursorAtEnd(title)
             contentState.setTextAndPlaceCursorAtEnd(content)
             titleState.undoState.clearHistory()
@@ -272,11 +227,7 @@ class FileViewModel(
             val noteEntity = NoteEntity(
                 id = Uuid.random().toString(),
                 title = titleState.text.toString()
-                    .ifBlank {
-                        "Template " + Clock.System.now()
-                            .toLocalDateTime(TimeZone.currentSystemDefault())
-                            .format(LocalDateTime.Formats.ISO)
-                    },
+                    .ifBlank { "Template_${Clock.System.now().toEpochMilliseconds()}" },
                 content = contentState.text.toString(),
                 folderId = null,
                 createdAt = currentTime,

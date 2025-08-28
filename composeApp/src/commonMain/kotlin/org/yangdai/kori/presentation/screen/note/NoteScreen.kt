@@ -89,17 +89,12 @@ import kori.composeapp.generated.resources.all_notes
 import kori.composeapp.generated.resources.char_count
 import kori.composeapp.generated.resources.completed_tasks
 import kori.composeapp.generated.resources.created
-import kori.composeapp.generated.resources.drawing
 import kori.composeapp.generated.resources.line_count
-import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.paragraph_count
 import kori.composeapp.generated.resources.pending_tasks
-import kori.composeapp.generated.resources.plain_text
 import kori.composeapp.generated.resources.progress
 import kori.composeapp.generated.resources.right_panel_open
-import kori.composeapp.generated.resources.todo_text
 import kori.composeapp.generated.resources.total_tasks
-import kori.composeapp.generated.resources.type
 import kori.composeapp.generated.resources.updated
 import kori.composeapp.generated.resources.word_count
 import kori.composeapp.generated.resources.word_count_without_punctuation
@@ -512,7 +507,7 @@ fun NoteScreen(
         isDrawerOpen = isSideSheetOpen,
         onDismiss = { isSideSheetOpen = false },
         outline = outline,
-        showOutline = noteEditingState.noteType == NoteType.MARKDOWN,
+        type = noteEditingState.noteType,
         onHeaderClick = { selectedHeader = it },
         navigateTo = { navigateToScreen(it) },
         actionContent = {
@@ -572,16 +567,6 @@ fun NoteScreen(
             }
         },
         drawerContent = {
-            /**通用侧边栏信息：类型，时间**/
-            NoteSideSheetItem(
-                key = stringResource(Res.string.type),
-                value = when (noteEditingState.noteType) {
-                    NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
-                    NoteType.MARKDOWN -> stringResource(Res.string.markdown)
-                    NoteType.TODO -> stringResource(Res.string.todo_text)
-                    NoteType.Drawing -> stringResource(Res.string.drawing)
-                }
-            )
             val formattedCreated = remember(noteEditingState.createdAt) {
                 if (noteEditingState.createdAt.isBlank()) ""
                 else formatInstant(Instant.parse(noteEditingState.createdAt))

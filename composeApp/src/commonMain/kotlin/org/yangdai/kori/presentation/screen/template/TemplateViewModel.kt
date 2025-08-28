@@ -8,9 +8,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import kmark.MarkdownElementTypes
-import kmark.ast.ASTNode
-import kmark.ast.getTextInNode
 import kmark.flavours.gfm.GFMFlavourDescriptor
 import kmark.html.HtmlGenerator
 import kmark.parser.MarkdownParser
@@ -35,6 +32,7 @@ import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.presentation.component.note.HeaderNode
+import org.yangdai.kori.presentation.component.note.findHeadersRecursive
 import org.yangdai.kori.presentation.component.note.markdown.Properties.getPropertiesLineRange
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.navigation.UiEvent
@@ -47,7 +45,7 @@ import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalTime::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalTime::class, ExperimentalFoundationApi::class, ExperimentalUuidApi::class)
 class TemplateViewModel(
     savedStateHandle: SavedStateHandle,
     dataStoreRepository: DataStoreRepository,
@@ -64,10 +62,10 @@ class TemplateViewModel(
     // 笔记状态
     val titleState = TextFieldState()
     val contentState = TextFieldState()
-    val contentSnapshotFlow = snapshotFlow { contentState.text }
-    val flavor = GFMFlavourDescriptor()
-    val parser = MarkdownParser(flavor)
-    var oNote = NoteEntity(isTemplate = true)
+    private val contentSnapshotFlow = snapshotFlow { contentState.text }
+    private val flavor = GFMFlavourDescriptor()
+    private val parser = MarkdownParser(flavor)
+    private var oNote = NoteEntity(isTemplate = true)
 
     init {
         viewModelScope.launch {
@@ -75,13 +73,14 @@ class TemplateViewModel(
                 val currentTime = Clock.System.now().toString()
                 _noteEditingState.update {
                     it.copy(
-                        id = route.id,
+                        id = Uuid.random().toString(),
                         createdAt = currentTime,
                         updatedAt = currentTime,
                         isTemplate = true,
                         noteType = NoteType.entries[route.noteType]
                     )
                 }
+                oNote = NoteEntity(isTemplate = true)
             } else {
                 noteRepository.getNoteById(route.id)?.let { note ->
                     titleState.setTextAndPlaceCursorAtEnd(note.title)
@@ -168,61 +167,16 @@ class TemplateViewModel(
             initialValue = HeaderNode("", 0, IntRange.EMPTY)
         )
 
-    /**
-     * Recursively traverses the AST, finds headers, and builds the hierarchy.
-     */
-    private fun findHeadersRecursive(
-        node: ASTNode,
-        fullText: String,
-        headerStack: MutableList<HeaderNode>,
-        propertiesRange: IntRange?
-    ) {
-        // --- Check if the current node IS a header ---
-        val headerLevel = when (node.type) {
-            MarkdownElementTypes.ATX_1 -> 1
-            MarkdownElementTypes.ATX_2 -> 2
-            MarkdownElementTypes.ATX_3 -> 3
-            MarkdownElementTypes.ATX_4 -> 4
-            MarkdownElementTypes.ATX_5 -> 5
-            MarkdownElementTypes.ATX_6 -> 6
-            else -> 0 // Not a header type we are processing
-        }
-        if (headerLevel > 0) {
-            val range = IntRange(node.startOffset, node.endOffset - 1)
-            // --- Skip if inside properties range ---
-            if (propertiesRange == null || !propertiesRange.contains(range.first)) {
-                val title =
-                    node.getTextInNode(fullText).trim().dropWhile { it == '#' }.trim().toString()
-                val headerNode = HeaderNode(title, headerLevel, range)
-                // --- Manage Hierarchy ---
-                // Pop stack until parent level is less than current level
-                while (headerStack.last().level >= headerLevel && headerStack.size > 1) {
-                    headerStack.removeAt(headerStack.lastIndex)
-                }
-                // Add new header as child of the correct parent
-                headerStack.last().children.add(headerNode)
-                // Push new header onto stack to be the parent for subsequent deeper headers
-                headerStack.add(headerNode)
-            }
-            return // Stop descent once a header is processed
-        }
-        // --- If not a header, recurse into children ---
-        node.children.forEach { child ->
-            findHeadersRecursive(child, fullText, headerStack, propertiesRange)
-        }
-    }
-
     fun updateNoteType(noteType: NoteType) {
         _noteEditingState.update {
             it.copy(noteType = noteType)
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     fun saveOrUpdateNote() {
         if (_noteEditingState.value.isDeleted) return
         viewModelScope.launch {
-            val noteEntity = NoteEntity(
+            val newNote = NoteEntity(
                 id = _noteEditingState.value.id,
                 title = titleState.text.toString(),
                 content = contentState.text.toString(),
@@ -234,20 +188,25 @@ class TemplateViewModel(
                 isPinned = false,
                 noteType = _noteEditingState.value.noteType
             )
-            if (noteEntity.id.isEmpty() && (noteEntity.title.isNotBlank() || noteEntity.content.isNotBlank())) {
-                val id = Uuid.random().toString()
-                val title = noteEntity.title
-                    .ifBlank {
-                        val defaultTitle = "Untitled_${Clock.System.now().toEpochMilliseconds()}"
-                        titleState.setTextAndPlaceCursorAtEnd(defaultTitle)
-                        defaultTitle
-                    }
-                noteRepository.insertNote(noteEntity.copy(id = id, title = title))
-                _noteEditingState.update { it.copy(id = id) }
+            if (oNote.id.isEmpty()) {
+                if (newNote.title.isNotBlank() || newNote.content.isNotBlank()) {
+                    val title = newNote.title
+                        .ifBlank {
+                            val defaultTitle =
+                                "Template_${Clock.System.now().toEpochMilliseconds()}"
+                            titleState.setTextAndPlaceCursorAtEnd(defaultTitle)
+                            defaultTitle
+                        }
+                    noteRepository.insertNote(newNote.copy(title = title))
+                    oNote = newNote.copy(title = title)
+                }
             } else {
-                if (oNote.title != noteEntity.title || oNote.content != noteEntity.content ||
-                    oNote.noteType != noteEntity.noteType
-                ) noteRepository.updateNote(noteEntity)
+                if (oNote.title != newNote.title || oNote.content != newNote.content ||
+                    oNote.noteType != newNote.noteType
+                ) {
+                    noteRepository.updateNote(newNote)
+                    oNote = newNote
+                }
             }
         }
     }
@@ -255,7 +214,7 @@ class TemplateViewModel(
     fun deleteTemplate() {
         viewModelScope.launch {
             _noteEditingState.update { it.copy(isDeleted = true) }
-            if (_noteEditingState.value.id.isNotEmpty()) {
+            if (oNote.id.isNotEmpty()) {
                 noteRepository.deleteNoteById(_noteEditingState.value.id)
             }
             _uiEventChannel.send(UiEvent.NavigateUp)
