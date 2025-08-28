@@ -390,12 +390,10 @@ class MainViewModel(
 
     val aiPaneState = combine(
         dataStoreRepository.booleanFlow(Constants.Preferences.IS_AI_ENABLED),
-        dataStoreRepository.stringSetFlow(Constants.Preferences.AI_FEATURES),
         dataStoreRepository.stringFlow(Constants.Preferences.AI_PROVIDER)
-    ) { isAiEnabled, aiFeatures, aiProvider ->
+    ) { isAiEnabled, aiProvider ->
         AiPaneState(
             isAiEnabled = isAiEnabled,
-            aiFeatures = aiFeatures,
             aiProvider = AiProvider.fromString(aiProvider)
         )
     }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), AiPaneState())

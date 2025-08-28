@@ -30,7 +30,6 @@ object Constants {
         const val CLIP_OVERFLOW_TEXT = "clip_overflow_text"
 
         const val IS_AI_ENABLED = "is_ai_enabled"
-        const val AI_FEATURES = "ai_features"
         const val AI_PROVIDER = "ai_provider"
 
         const val GEMINI_API_KEY = "gemini_api_key"

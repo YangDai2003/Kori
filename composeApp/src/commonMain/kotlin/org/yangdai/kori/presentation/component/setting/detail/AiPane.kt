@@ -1,26 +1,21 @@
 package org.yangdai.kori.presentation.component.setting.detail
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.GeneratingTokens
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.IconToggleButton
@@ -54,13 +49,8 @@ import kori.composeapp.generated.resources.cowriter
 import kori.composeapp.generated.resources.cowriter_description
 import kori.composeapp.generated.resources.host
 import kori.composeapp.generated.resources.key
-import kori.composeapp.generated.resources.make_list
-import kori.composeapp.generated.resources.make_table
 import kori.composeapp.generated.resources.model
 import kori.composeapp.generated.resources.reset
-import kori.composeapp.generated.resources.rewrite
-import kori.composeapp.generated.resources.summarize
-import kori.composeapp.generated.resources.translate
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.setting.DetailPaneItem
 import org.yangdai.kori.presentation.screen.main.MainViewModel
@@ -105,44 +95,6 @@ fun AiPane(mainViewModel: MainViewModel) {
 
         AnimatedVisibility(visible = aiPaneState.isAiEnabled) {
             Column {
-                val features = listOf(
-                    "rewrite" to stringResource(Res.string.rewrite),
-                    "summarize" to stringResource(Res.string.summarize),
-                    "translate" to stringResource(Res.string.translate),
-                    "list" to stringResource(Res.string.make_list),
-                    "table" to stringResource(Res.string.make_table),
-                )
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    features.forEach { feature ->
-                        FilterChip(
-                            selected = aiPaneState.aiFeatures.contains(feature.first),
-                            onClick = {
-                                hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                                if (aiPaneState.aiFeatures.contains(feature.first)) {
-                                    mainViewModel.putPreferenceValue(
-                                        Constants.Preferences.AI_FEATURES,
-                                        aiPaneState.aiFeatures - feature.first
-                                    )
-                                } else {
-                                    mainViewModel.putPreferenceValue(
-                                        Constants.Preferences.AI_FEATURES,
-                                        aiPaneState.aiFeatures + feature.first
-                                    )
-                                }
-                            },
-                            label = { Text(feature.second) },
-                            leadingIcon = {
-                                if (aiPaneState.aiFeatures.contains(feature.first))
-                                    Icon(
-                                        modifier = Modifier.size(16.dp),
-                                        imageVector = Icons.Outlined.Done,
-                                        contentDescription = null
-                                    )
-                                else null
-                            }
-                        )
-                    }
-                }
                 PrimaryScrollableTabRow(
                     selectedTabIndex = AiProvider.entries.indexOf(aiPaneState.aiProvider),
                     containerColor = MaterialTheme.colorScheme.surfaceContainerLow,

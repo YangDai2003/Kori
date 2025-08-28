@@ -154,6 +154,33 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/INDEX.LIST"
+            /*
+            6 files found with path 'META-INF/INDEX.LIST' from inputs:
+ - io.netty:netty-handler:4.1.118.Final/netty-handler-4.1.118.Final.jar
+ - io.netty:netty-transport-native-unix-common:4.1.118.Final/netty-transport-native-unix-common-4.1.118.Final.jar
+ - io.netty:netty-codec:4.1.118.Final/netty-codec-4.1.118.Final.jar
+ - io.netty:netty-transport:4.1.118.Final/netty-transport-4.1.118.Final.jar
+ - io.netty:netty-resolver:4.1.118.Final/netty-resolver-4.1.118.Final.jar
+ - io.netty:netty-buffer:4.1.118.Final/netty-buffer-4.1.118.Final.jar
+Adding a packaging block may help, please refer to
+https://developer.android.com/reference/tools/gradle-api/com/android/build/api/dsl/Packaging
+for more information
+             */
+            excludes += "META-INF/io.netty.versions.properties"
+            /*
+            7 files found with path 'META-INF/io.netty.versions.properties' from inputs:
+ - io.netty:netty-handler:4.1.118.Final/netty-handler-4.1.118.Final.jar
+ - io.netty:netty-transport-native-unix-common:4.1.118.Final/netty-transport-native-unix-common-4.1.118.Final.jar
+ - io.netty:netty-codec:4.1.118.Final/netty-codec-4.1.118.Final.jar
+ - io.netty:netty-transport:4.1.118.Final/netty-transport-4.1.118.Final.jar
+ - io.netty:netty-resolver:4.1.118.Final/netty-resolver-4.1.118.Final.jar
+ - io.netty:netty-buffer:4.1.118.Final/netty-buffer-4.1.118.Final.jar
+ - io.netty:netty-common:4.1.118.Final/netty-common-4.1.118.Final.jar
+Adding a packaging block may help, please refer to
+https://developer.android.com/reference/tools/gradle-api/com/android/build/api/dsl/Packaging
+for more information
+             */
         }
     }
     buildTypes {

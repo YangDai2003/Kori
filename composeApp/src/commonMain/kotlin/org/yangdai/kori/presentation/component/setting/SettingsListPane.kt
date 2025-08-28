@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
+import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.Language
@@ -24,15 +25,18 @@ import kori.composeapp.generated.resources.backup
 import kori.composeapp.generated.resources.card
 import kori.composeapp.generated.resources.card_size
 import kori.composeapp.generated.resources.color_platte
+import kori.composeapp.generated.resources.cowriter
 import kori.composeapp.generated.resources.dark_mode
 import kori.composeapp.generated.resources.data
 import kori.composeapp.generated.resources.date_format
 import kori.composeapp.generated.resources.default_view
 import kori.composeapp.generated.resources.editor
 import kori.composeapp.generated.resources.guide
+import kori.composeapp.generated.resources.key
 import kori.composeapp.generated.resources.language
 import kori.composeapp.generated.resources.language_description
 import kori.composeapp.generated.resources.line_numbers
+import kori.composeapp.generated.resources.model
 import kori.composeapp.generated.resources.password
 import kori.composeapp.generated.resources.privacy_policy
 import kori.composeapp.generated.resources.restore_from_backup
@@ -132,16 +136,16 @@ fun SettingsListPane(
                     onClick = { navigateToDetail(5) }
                 )
             },
-//                {
-//                    ListPaneItem(
-//                        title = stringResource(Res.string.cowriter),
-//                        description = stringResource(Res.string.model)
-//                                + "  •  " + "API ${stringResource(Res.string.key)}",
-//                        icon = Icons.Outlined.AutoAwesome,
-//                        isSelected = selectedItem == 6,
-//                        onClick = { navigateToDetail(6) }
-//                    )
-//                }
+            {
+                ListPaneItem(
+                    title = stringResource(Res.string.cowriter),
+                    description = stringResource(Res.string.model)
+                            + "  •  " + "API ${stringResource(Res.string.key)}",
+                    icon = Icons.Outlined.AutoAwesome,
+                    isSelected = selectedItem == 6,
+                    onClick = { navigateToDetail(6) }
+                )
+            }
         )
     )
     ListPaneSection(

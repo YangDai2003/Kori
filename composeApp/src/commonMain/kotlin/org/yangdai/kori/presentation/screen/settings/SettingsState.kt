@@ -41,7 +41,6 @@ data class CardPaneState(
 @Immutable
 data class AiPaneState(
     val isAiEnabled: Boolean = false,
-    val aiFeatures: Set<String> = emptySet(),
     val aiProvider: AiProvider = AiProvider.Gemini
 )
 
