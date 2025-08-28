@@ -197,7 +197,8 @@ private fun LinkText(text: String, url: String) = Text(
 private fun UrlTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    defaultValue: String
+    defaultValue: String,
+    supportingText: @Composable (() -> Unit)? = null
 ) = OutlinedTextField(
     value = value,
     onValueChange = onValueChange,
@@ -209,6 +210,7 @@ private fun UrlTextField(
                 Text(stringResource(Res.string.reset))
             }
     },
+    supportingText = supportingText,
     singleLine = true,
     modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
 )
@@ -235,7 +237,8 @@ private fun GeminiSettings(mainViewModel: MainViewModel) {
                 apiHost = it
                 mainViewModel.putPreferenceValue(Constants.Preferences.GEMINI_API_HOST, it)
             },
-            defaultValue = "https://generativelanguage.googleapis.com"
+            defaultValue = "generativelanguage.googleapis.com",
+            supportingText = { Text("https://$apiHost/v1beta/models") }
         )
         OutlinedTextField(
             value = model,
@@ -276,7 +279,8 @@ private fun OpenAISettings(mainViewModel: MainViewModel) {
                 apiHost = it
                 mainViewModel.putPreferenceValue(Constants.Preferences.OPENAI_API_HOST, it)
             },
-            defaultValue = "https://api.openai.com"
+            defaultValue = "api.openai.com",
+            supportingText = { Text("https://$apiHost/v1/chat/completions") }
         )
         OutlinedTextField(
             value = model,
@@ -309,7 +313,8 @@ private fun OllamaSettings(mainViewModel: MainViewModel) {
                 baseUrl = it
                 mainViewModel.putPreferenceValue(Constants.Preferences.OLLAMA_API_HOST, it)
             },
-            defaultValue = "http://localhost:11434"
+            defaultValue = "localhost:11434",
+            supportingText = { Text("http://$baseUrl/v1/chat/completions") }
         )
         OutlinedTextField(
             value = model,
@@ -342,7 +347,8 @@ private fun LMStudioSettings(mainViewModel: MainViewModel) {
                 baseUrl = it
                 mainViewModel.putPreferenceValue(Constants.Preferences.LMSTUDIO_API_HOST, it)
             },
-            defaultValue = "http://127.0.0.1:1234/v1"
+            defaultValue = "127.0.0.1:1234",
+            supportingText = { Text("http://$baseUrl/v1/chat/completions") }
         )
         OutlinedTextField(
             value = model,
