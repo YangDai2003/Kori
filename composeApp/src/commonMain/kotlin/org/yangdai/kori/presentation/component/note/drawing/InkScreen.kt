@@ -316,14 +316,14 @@ fun InkScreen(
                         Key.Z -> {
                             if (drawState.actions.isNotEmpty()) {
                                 drawState.undoActions.add(drawState.actions.last())
-                                drawState.actions.removeLast()
+                                drawState.actions.removeAt(drawState.actions.lastIndex)
                             }
                         }
 
                         Key.Y -> {
                             if (drawState.undoActions.isNotEmpty()) {
                                 drawState.actions.add(drawState.undoActions.last())
-                                drawState.undoActions.removeLast()
+                                drawState.undoActions.removeAt(drawState.undoActions.lastIndex)
                             }
                         }
 
@@ -369,7 +369,7 @@ fun InkScreen(
                             enabled = drawState.actions.isNotEmpty(),
                             onClick = {
                                 drawState.undoActions.add(drawState.actions.last())
-                                drawState.actions.removeLast()
+                                drawState.actions.removeAt(drawState.actions.lastIndex)
                             }
                         ) {
                             Icon(
@@ -387,7 +387,7 @@ fun InkScreen(
                             enabled = drawState.undoActions.isNotEmpty(),
                             onClick = {
                                 drawState.actions.add(drawState.undoActions.last())
-                                drawState.undoActions.removeLast()
+                                drawState.undoActions.removeAt(drawState.undoActions.lastIndex)
                             }
                         ) {
                             Icon(

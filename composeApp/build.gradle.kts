@@ -136,14 +136,15 @@ android {
         versionCode = 9
         versionName = "1.0.9"
     }
-    splits {
-        abi {
-            isEnable = true
-            reset()
-            include("armeabi-v7a", "arm64-v8a")
-            isUniversalApk = true
-        }
-    }
+    // https://issuetracker.google.com/issues/402800800
+//    splits {
+//        abi {
+//            isEnable = true
+//            reset()
+//            include("armeabi-v7a", "arm64-v8a")
+//            isUniversalApk = true
+//        }
+//    }
     androidResources {
         @Suppress("UnstableApiUsage")
         //noinspection MissingResourcesProperties
