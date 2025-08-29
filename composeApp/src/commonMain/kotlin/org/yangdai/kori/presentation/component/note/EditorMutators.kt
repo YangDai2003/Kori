@@ -2,13 +2,12 @@ package org.yangdai.kori.presentation.component.note
 
 import androidx.compose.foundation.text.input.TextFieldBuffer
 import androidx.compose.ui.text.TextRange
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.todayIn
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 fun TextFieldBuffer.moveCursorLeftStateless() {
     if (selection.min > 0) {
@@ -149,7 +148,7 @@ fun TextFieldBuffer.alert(type: String) {
  *
  * @param str 通常是 "x "，代表完成状态的字符串。
  */
-@OptIn(ExperimentalTime::class, FormatStringsInDatetimeFormats::class)
+@OptIn(FormatStringsInDatetimeFormats::class)
 fun TextFieldBuffer.toggleLineStart(str: String) {
     val text = toString()
     if (selection.min > text.length) return

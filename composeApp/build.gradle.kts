@@ -61,7 +61,6 @@ kotlin {
             implementation(libs.androidx.biometric)
             implementation(libs.androidx.documentfile)
             implementation(libs.androidx.browser)
-            implementation(libs.ktor.client.okhttp)
             implementation(libs.androidx.glance)
             implementation(libs.androidx.glance.appwidget)
             implementation(libs.androidx.webkit)
@@ -95,20 +94,14 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.koin.compose.viewmodel.navigation)
 
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.serialization.kotlinx.json)
-            implementation(libs.ktor.client.content.negotiation)
-
             implementation(libs.coil.compose)
-            implementation("ai.koog:koog-agents:0.4.1")
+            implementation(libs.koog.agents)
         }
         iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
-            implementation(libs.ktor.client.okhttp)
             val javafxVersion = "21.0.8"
             //noinspection UseTomlInstead,NewerVersionAvailable
             implementation("org.openjfx:javafx-base:$javafxVersion:$platform")

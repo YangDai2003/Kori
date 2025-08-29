@@ -45,6 +45,7 @@ import kori.composeapp.generated.resources.time_in_the_template_file_will_be_rep
 import kori.composeapp.generated.resources.you_can_also_use_date_yyyy_mm_dd_to_override_the_format_once
 import kori.composeapp.generated.resources.you_can_also_use_time_hh_mm_to_override_the_format_once
 import kori.composeapp.generated.resources.your_current_syntax_looks_like_this
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
@@ -58,10 +59,8 @@ import org.yangdai.kori.presentation.component.note.CustomTextField
 import org.yangdai.kori.presentation.component.setting.DetailPaneItem
 import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.util.Constants
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
-@OptIn(FormatStringsInDatetimeFormats::class, ExperimentalTime::class)
+@OptIn(FormatStringsInDatetimeFormats::class)
 @Composable
 fun TemplatePane(mainViewModel: MainViewModel) {
 

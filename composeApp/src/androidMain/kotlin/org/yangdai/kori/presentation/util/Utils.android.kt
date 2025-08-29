@@ -19,10 +19,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
 import androidx.documentfile.provider.DocumentFile
 import kfile.normalizeFileName
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format
-import kotlinx.datetime.toLocalDateTime
 import org.yangdai.kori.R
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
@@ -57,7 +53,7 @@ actual fun formatInstant(instant: Instant): String {
         val date = Date.from(instant.toJavaInstant())
         dateTimeFormatter.format(date)
     } catch (_: Exception) {
-        instant.toLocalDateTime(TimeZone.currentSystemDefault()).format(LocalDateTime.Formats.ISO)
+        instant.toString()
     }
 }
 

@@ -12,6 +12,7 @@ import kfile.getExtension
 import kfile.getFileName
 import kfile.getLastModified
 import kfile.readText
+import knet.ai.AI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.IO
@@ -40,7 +41,6 @@ import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.domain.sort.FolderSortType
 import org.yangdai.kori.domain.sort.NoteSortType
 import org.yangdai.kori.presentation.screen.settings.AiPaneState
-import org.yangdai.kori.presentation.screen.settings.AiProvider
 import org.yangdai.kori.presentation.screen.settings.AppColor
 import org.yangdai.kori.presentation.screen.settings.AppTheme
 import org.yangdai.kori.presentation.screen.settings.BackupData
@@ -394,7 +394,7 @@ class MainViewModel(
     ) { isAiEnabled, aiProvider ->
         AiPaneState(
             isAiEnabled = isAiEnabled,
-            aiProvider = AiProvider.fromString(aiProvider)
+            llmProvider = AI.providers[aiProvider] ?: AI.providers.values.first()
         )
     }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), AiPaneState())
 

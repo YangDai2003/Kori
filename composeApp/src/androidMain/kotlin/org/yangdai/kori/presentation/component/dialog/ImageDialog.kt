@@ -48,10 +48,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
+import java.net.URL
 
 sealed interface ImageState {
     data object Loading : ImageState
@@ -133,7 +133,7 @@ class ImageViewModel : ViewModel() {
 
     private suspend fun downloadAndSaveImage(context: Context, imageUrl: String): String {
         return withContext(Dispatchers.IO) {
-            val connection = imageUrl.toHttpUrl().toUrl().openConnection() as HttpURLConnection
+            val connection = URL(imageUrl).openConnection() as HttpURLConnection
             connection.connect()
             val fileName = "img_${System.currentTimeMillis()}"
             val file = File(context.cacheDir, fileName)

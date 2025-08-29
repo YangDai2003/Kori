@@ -125,7 +125,6 @@
     <string name="cowriter_description">接入第三方人工智能模型</string>
     <string name="model">模型</string>
     <string name="key">密钥</string>
-    <string name="host">域名</string>
     <string name="rewrite">重写</string>
     <string name="summarize">总结</string>
     <string name="translate">翻译</string>

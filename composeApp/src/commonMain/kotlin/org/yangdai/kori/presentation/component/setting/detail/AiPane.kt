@@ -1,6 +1,13 @@
 package org.yangdai.kori.presentation.component.setting.detail
 
+import ai.koog.prompt.executor.clients.anthropic.AnthropicClientSettings
+import ai.koog.prompt.executor.clients.deepseek.DeepSeekClientSettings
+import ai.koog.prompt.executor.clients.google.GoogleClientSettings
+import ai.koog.prompt.executor.clients.openai.OpenAIClientSettings
+import ai.koog.prompt.llm.LLMProvider
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +23,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.GeneratingTokens
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.IconToggleButton
@@ -32,10 +47,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
@@ -44,17 +62,27 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import knet.ai.AI
+import knet.ai.TestConnectionResult
+import knet.ai.providers.Anthropic
+import knet.ai.providers.DeepSeek
+import knet.ai.providers.Gemini
+import knet.ai.providers.LMStudio
+import knet.ai.providers.Ollama
+import knet.ai.providers.OpenAI
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.cowriter
 import kori.composeapp.generated.resources.cowriter_description
-import kori.composeapp.generated.resources.host
 import kori.composeapp.generated.resources.key
 import kori.composeapp.generated.resources.model
 import kori.composeapp.generated.resources.reset
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.setting.DetailPaneItem
 import org.yangdai.kori.presentation.screen.main.MainViewModel
-import org.yangdai.kori.presentation.screen.settings.AiProvider
 import org.yangdai.kori.presentation.util.Constants
 
 @Composable
@@ -62,12 +90,15 @@ fun AiPane(mainViewModel: MainViewModel) {
 
     val aiPaneState by mainViewModel.aiPaneState.collectAsStateWithLifecycle()
     val hapticFeedback = LocalHapticFeedback.current
+    val focusManager = LocalFocusManager.current
+    val scope = rememberCoroutineScope()
 
     Column(
         Modifier
             .imePadding()
             .padding(horizontal = 16.dp)
             .fillMaxSize()
+            .pointerInput(Unit) { detectTapGestures { focusManager.clearFocus() } }
             .verticalScroll(rememberScrollState())
     ) {
 
@@ -94,54 +125,59 @@ fun AiPane(mainViewModel: MainViewModel) {
         )
 
         AnimatedVisibility(visible = aiPaneState.isAiEnabled) {
-            Column {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                val pagerState = rememberPagerState { AI.providers.size }
                 PrimaryScrollableTabRow(
-                    selectedTabIndex = AiProvider.entries.indexOf(aiPaneState.aiProvider),
+                    selectedTabIndex = pagerState.currentPage,
                     containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                    divider = {},
                     edgePadding = 0.dp
                 ) {
-                    AiProvider.entries.forEach { item ->
+                    AI.providers.entries.forEachIndexed { i, item ->
                         Tab(
-                            selected = item == aiPaneState.aiProvider,
+                            selected = i == pagerState.currentPage,
                             onClick = {
-                                hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                                mainViewModel.putPreferenceValue(
-                                    Constants.Preferences.AI_PROVIDER,
-                                    item.provider
-                                )
+                                scope.launch {
+                                    pagerState.animateScrollToPage(i)
+                                }
                             },
-                            text = { Text(item.provider) }
+                            text = { Text(item.value.display) }
                         )
                     }
                 }
 
-                val pagerState =
-                    rememberPagerState(initialPage = AiProvider.entries.indexOf(aiPaneState.aiProvider)) { AiProvider.entries.size }
-                LaunchedEffect(aiPaneState.aiProvider) {
-                    val index = AiProvider.entries.indexOf(aiPaneState.aiProvider)
-                    if (index != pagerState.currentPage) {
-                        pagerState.animateScrollToPage(index)
-                    }
-                }
+                HorizontalDivider()
+
                 HorizontalPager(
                     state = pagerState,
                     verticalAlignment = Alignment.Top,
                     userScrollEnabled = false
                 ) { page ->
                     when (page) {
-                        AiProvider.entries.indexOf(AiProvider.Gemini) -> {
+                        AI.providers.keys.indexOf(LLMProvider.Google.id) -> {
                             GeminiSettings(mainViewModel)
                         }
 
-                        AiProvider.entries.indexOf(AiProvider.OpenAI) -> {
+                        AI.providers.keys.indexOf(LLMProvider.OpenAI.id) -> {
                             OpenAISettings(mainViewModel)
                         }
 
-                        AiProvider.entries.indexOf(AiProvider.Ollama) -> {
+                        AI.providers.keys.indexOf(LLMProvider.Anthropic.id) -> {
+                            AnthropicSettings(mainViewModel)
+                        }
+
+                        AI.providers.keys.indexOf(LLMProvider.Ollama.id) -> {
                             OllamaSettings(mainViewModel)
                         }
 
-                        AiProvider.entries.indexOf(AiProvider.LMStudio) -> {
+                        AI.providers.keys.indexOf(LLMProvider.DeepSeek.id) -> {
+                            DeepSeekSettings(mainViewModel)
+                        }
+
+                        AI.providers.keys.indexOf(LMStudio.id) -> {
                             LMStudioSettings(mainViewModel)
                         }
                     }
@@ -197,30 +233,178 @@ private fun LinkText(text: String, url: String) = Text(
 private fun UrlTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    defaultValue: String,
-    supportingText: @Composable (() -> Unit)? = null
+    defaultValue: String
 ) = OutlinedTextField(
     value = value,
     onValueChange = onValueChange,
-    label = { Text("API " + stringResource(Res.string.host)) },
+    label = { Text("Base URL") },
     placeholder = { Text(defaultValue, maxLines = 1) },
-    trailingIcon = {
-        if (value != defaultValue)
+    trailingIcon = if (value != defaultValue) {
+        {
             TextButton(onClick = { onValueChange(defaultValue) }) {
                 Text(stringResource(Res.string.reset))
             }
+        }
+    } else {
+        null
     },
-    supportingText = supportingText,
     singleLine = true,
     modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
 )
 
-// Gemini 设置项
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ModelTextField(
+    modelOptions: Set<String>,
+    value: String,
+    onValueChange: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        modifier = Modifier.fillMaxWidth(),
+        expanded = expanded,
+        onExpandedChange = { expanded = it }
+    ) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text(stringResource(Res.string.model)) },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            modelOptions.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option) },
+                    onClick = {
+                        onValueChange(option)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DynamicModelTextField(
+    baseUrl: String,
+    value: String,
+    onValueChange: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var modelOptions by remember { mutableStateOf(emptyList<String>()) }
+
+    LaunchedEffect(expanded) {
+        if (!expanded) return@LaunchedEffect
+        withContext(Dispatchers.IO) {
+            modelOptions = AI.getAvailableModels(baseUrl)
+        }
+    }
+
+    ExposedDropdownMenuBox(
+        modifier = Modifier.fillMaxWidth(),
+        expanded = expanded,
+        onExpandedChange = { expanded = it }
+    ) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text(stringResource(Res.string.model)) },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            modelOptions.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option) },
+                    onClick = {
+                        onValueChange(option)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TestConnectionColumn(
+    llmProvider: LLMProvider,
+    model: String,
+    apiKey: String = "",
+    baseUrl: String = ""
+) {
+    val scope = rememberCoroutineScope()
+    var isTesting by remember { mutableStateOf(false) }
+    var testConnectionResult by remember { mutableStateOf<TestConnectionResult?>(null) }
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        FilledTonalButton(
+            colors = ButtonDefaults.filledTonalButtonColors(
+                containerColor = if (isTesting || testConnectionResult == null) {
+                    MaterialTheme.colorScheme.secondaryContainer
+                } else {
+                    if (testConnectionResult!!.success) {
+                        MaterialTheme.colorScheme.secondaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.errorContainer
+                    }
+                }
+            ),
+            onClick = {
+                scope.launch(Dispatchers.IO) {
+                    isTesting = true
+                    testConnectionResult = AI.testConnection(
+                        lLMProvider = llmProvider,
+                        model = model,
+                        apiKey = apiKey,
+                        baseUrl = baseUrl
+                    )
+                    isTesting = false
+                }
+            }
+        ) {
+            AnimatedContent(isTesting) {
+                if (it) {
+                    CircularProgressIndicator()
+                } else {
+                    Text("Test")
+                }
+            }
+        }
+
+        AnimatedVisibility(testConnectionResult != null) {
+            testConnectionResult?.let {
+                if (it.success) {
+                    Text("Success\n" + it.message)
+                } else {
+                    Text("Failure\n" + it.message)
+                }
+            }
+        }
+    }
+}
+
 @Composable
 private fun GeminiSettings(mainViewModel: MainViewModel) {
 
     var apiKey by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.GEMINI_API_KEY)) }
-    var apiHost by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.GEMINI_API_HOST)) }
+    var baseUrl by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.GEMINI_BASE_URL)) }
     var model by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.GEMINI_MODEL)) }
 
     Column(Modifier.padding(top = 16.dp)) {
@@ -232,37 +416,39 @@ private fun GeminiSettings(mainViewModel: MainViewModel) {
             }
         )
         UrlTextField(
-            value = apiHost,
+            value = baseUrl,
             onValueChange = {
-                apiHost = it
-                mainViewModel.putPreferenceValue(Constants.Preferences.GEMINI_API_HOST, it)
+                baseUrl = it
+                mainViewModel.putPreferenceValue(Constants.Preferences.GEMINI_BASE_URL, it)
             },
-            defaultValue = "generativelanguage.googleapis.com",
-            supportingText = { Text("https://$apiHost/v1beta/models") }
+            defaultValue = GoogleClientSettings().baseUrl
         )
-        OutlinedTextField(
+        ModelTextField(
+            modelOptions = Gemini.modelOptions.keys,
             value = model,
             onValueChange = {
                 model = it
                 mainViewModel.putPreferenceValue(Constants.Preferences.GEMINI_MODEL, it)
-            },
-            label = { Text(stringResource(Res.string.model)) },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
+            }
         )
         LinkText(
             text = "Google AI Studio",
             url = "https://aistudio.google.com/prompts/new_chat"
         )
+        TestConnectionColumn(
+            llmProvider = LLMProvider.Google,
+            apiKey = apiKey,
+            baseUrl = baseUrl,
+            model = model
+        )
     }
 }
 
-// OpenAI 设置项
 @Composable
 private fun OpenAISettings(mainViewModel: MainViewModel) {
 
     var apiKey by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.OPENAI_API_KEY)) }
-    var apiHost by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.OPENAI_API_HOST)) }
+    var baseUrl by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.OPENAI_BASE_URL)) }
     var model by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.OPENAI_MODEL)) }
 
     Column(Modifier.padding(top = 16.dp)) {
@@ -274,36 +460,124 @@ private fun OpenAISettings(mainViewModel: MainViewModel) {
             }
         )
         UrlTextField(
-            value = apiHost,
+            value = baseUrl,
             onValueChange = {
-                apiHost = it
-                mainViewModel.putPreferenceValue(Constants.Preferences.OPENAI_API_HOST, it)
+                baseUrl = it
+                mainViewModel.putPreferenceValue(Constants.Preferences.OPENAI_BASE_URL, it)
             },
-            defaultValue = "api.openai.com",
-            supportingText = { Text("https://$apiHost/v1/chat/completions") }
+            defaultValue = OpenAIClientSettings().baseUrl
         )
-        OutlinedTextField(
+        ModelTextField(
+            modelOptions = OpenAI.modelOptions.keys,
             value = model,
             onValueChange = {
                 model = it
                 mainViewModel.putPreferenceValue(Constants.Preferences.OPENAI_MODEL, it)
-            },
-            label = { Text(stringResource(Res.string.model)) },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
+            }
         )
         LinkText(
             text = "OpenAI Platform",
             url = "https://platform.openai.com/docs/overview"
         )
+        TestConnectionColumn(
+            llmProvider = LLMProvider.OpenAI,
+            apiKey = apiKey,
+            baseUrl = baseUrl,
+            model = model
+        )
     }
 }
 
-// Ollama 设置项
+@Composable
+private fun AnthropicSettings(mainViewModel: MainViewModel) {
+    var apiKey by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.ANTHROPIC_API_KEY)) }
+    var baseUrl by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.ANTHROPIC_BASE_URL)) }
+    var model by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.ANTHROPIC_MODEL)) }
+
+    Column(Modifier.padding(top = 16.dp)) {
+        KeyTextField(
+            value = apiKey,
+            onValueChange = {
+                apiKey = it
+                mainViewModel.putPreferenceValue(Constants.Preferences.ANTHROPIC_API_KEY, it)
+            }
+        )
+        UrlTextField(
+            value = baseUrl,
+            onValueChange = {
+                baseUrl = it
+                mainViewModel.putPreferenceValue(Constants.Preferences.ANTHROPIC_BASE_URL, it)
+            },
+            defaultValue = AnthropicClientSettings().baseUrl
+        )
+        ModelTextField(
+            modelOptions = Anthropic.modelOptions.keys,
+            value = model,
+            onValueChange = {
+                model = it
+                mainViewModel.putPreferenceValue(Constants.Preferences.ANTHROPIC_MODEL, it)
+            }
+        )
+        LinkText(
+            text = "Anthropic Console",
+            url = "https://console.anthropic.com"
+        )
+        TestConnectionColumn(
+            llmProvider = LLMProvider.Anthropic,
+            apiKey = apiKey,
+            baseUrl = baseUrl,
+            model = model
+        )
+    }
+}
+
+@Composable
+private fun DeepSeekSettings(mainViewModel: MainViewModel) {
+    var apiKey by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.DEEPSEEK_API_KEY)) }
+    var baseUrl by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.DEEPSEEK_BASE_URL)) }
+    var model by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.DEEPSEEK_MODEL)) }
+
+    Column(Modifier.padding(top = 16.dp)) {
+        KeyTextField(
+            value = apiKey,
+            onValueChange = {
+                apiKey = it
+                mainViewModel.putPreferenceValue(Constants.Preferences.DEEPSEEK_API_KEY, it)
+            }
+        )
+        UrlTextField(
+            value = baseUrl,
+            onValueChange = {
+                baseUrl = it
+                mainViewModel.putPreferenceValue(Constants.Preferences.DEEPSEEK_BASE_URL, it)
+            },
+            defaultValue = DeepSeekClientSettings().baseUrl
+        )
+        ModelTextField(
+            modelOptions = DeepSeek.modelOptions.keys,
+            value = model,
+            onValueChange = {
+                model = it
+                mainViewModel.putPreferenceValue(Constants.Preferences.DEEPSEEK_MODEL, it)
+            }
+        )
+        LinkText(
+            text = "DeepSeek Platform",
+            url = "https://platform.deepseek.com"
+        )
+        TestConnectionColumn(
+            llmProvider = LLMProvider.DeepSeek,
+            apiKey = apiKey,
+            baseUrl = baseUrl,
+            model = model
+        )
+    }
+}
+
 @Composable
 private fun OllamaSettings(mainViewModel: MainViewModel) {
 
-    var baseUrl by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.OLLAMA_API_HOST)) }
+    var baseUrl by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.OLLAMA_BASE_URL)) }
     var model by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.OLLAMA_MODEL)) }
 
     Column(Modifier.padding(top = 16.dp)) {
@@ -311,58 +585,61 @@ private fun OllamaSettings(mainViewModel: MainViewModel) {
             value = baseUrl,
             onValueChange = {
                 baseUrl = it
-                mainViewModel.putPreferenceValue(Constants.Preferences.OLLAMA_API_HOST, it)
+                mainViewModel.putPreferenceValue(Constants.Preferences.OLLAMA_BASE_URL, it)
             },
-            defaultValue = "localhost:11434",
-            supportingText = { Text("http://$baseUrl/v1/chat/completions") }
+            defaultValue = "http://localhost:11434"
         )
-        OutlinedTextField(
+        ModelTextField(
+            modelOptions = Ollama.modelOptions.keys,
             value = model,
             onValueChange = {
                 model = it
                 mainViewModel.putPreferenceValue(Constants.Preferences.OLLAMA_MODEL, it)
-            },
-            label = { Text(stringResource(Res.string.model)) },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
+            }
         )
         LinkText(
             text = "Ollama API",
             url = "https://github.com/ollama/ollama/blob/main/docs/api.md"
         )
+        TestConnectionColumn(
+            llmProvider = LLMProvider.Ollama,
+            baseUrl = baseUrl,
+            model = model
+        )
     }
 }
 
-// LM Studio 设置项
 @Composable
 private fun LMStudioSettings(mainViewModel: MainViewModel) {
 
-    var baseUrl by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.LMSTUDIO_API_HOST)) }
-    var model by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.LMSTUDIO_MODEL)) }
+    var baseUrl by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.LM_STUDIO_BASE_URL)) }
+    var model by remember { mutableStateOf(mainViewModel.getStringValue(Constants.Preferences.LM_STUDIO_MODEL)) }
 
     Column(Modifier.padding(top = 16.dp)) {
         UrlTextField(
             value = baseUrl,
             onValueChange = {
                 baseUrl = it
-                mainViewModel.putPreferenceValue(Constants.Preferences.LMSTUDIO_API_HOST, it)
+                mainViewModel.putPreferenceValue(Constants.Preferences.LM_STUDIO_BASE_URL, it)
             },
-            defaultValue = "127.0.0.1:1234",
-            supportingText = { Text("http://$baseUrl/v1/chat/completions") }
+            defaultValue = "http://127.0.0.1:1234"
         )
-        OutlinedTextField(
+        DynamicModelTextField(
+            baseUrl = baseUrl,
             value = model,
             onValueChange = {
                 model = it
-                mainViewModel.putPreferenceValue(Constants.Preferences.LMSTUDIO_MODEL, it)
-            },
-            label = { Text(stringResource(Res.string.model)) },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
+                mainViewModel.putPreferenceValue(Constants.Preferences.LM_STUDIO_MODEL, it)
+            }
         )
         LinkText(
-            text = "LM Studio API",
-            url = "https://lmstudio.ai/docs/app/api"
+            text = "LM Studio Docs",
+            url = "https://lmstudio.ai/docs/app/api/endpoints/openai"
+        )
+        TestConnectionColumn(
+            llmProvider = LMStudio,
+            baseUrl = baseUrl,
+            model = model
         )
     }
 }

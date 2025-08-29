@@ -128,7 +128,6 @@
     <string name="cowriter_description">Access to third-party AI models</string>
     <string name="model">Model</string>
     <string name="key">Key</string>
-    <string name="host">Host</string>
     <string name="rewrite">Rewrite</string>
     <string name="summarize">Summarize</string>
     <string name="translate">Translate</string>

@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asSkiaBitmap
 import androidx.compose.ui.platform.ClipEntry
@@ -55,6 +54,7 @@ private val dateTimeFormatter by lazy {
 
 @OptIn(ExperimentalTime::class)
 actual fun formatInstant(instant: Instant): String {
+    val instant = kotlinx.datetime.Instant.fromEpochMilliseconds(instant.toEpochMilliseconds())
     return dateTimeFormatter.stringFromDate(instant.toNSDate())
 }
 
@@ -110,15 +110,6 @@ actual fun Modifier.clickToLanguageSetting(): Modifier {
             UIApplication.sharedApplication.openURL(settingsUrl, mapOf<Any?, Any?>(), null)
         }
     }
-}
-
-fun Color.toUIColor(): UIColor {
-    return UIColor.colorWithRed(
-        red = red.toDouble(),
-        green = green.toDouble(),
-        blue = blue.toDouble(),
-        alpha = alpha.toDouble()
-    )
 }
 
 fun Int.toUIColor(): UIColor {

@@ -33,18 +33,26 @@ object Constants {
         const val AI_PROVIDER = "ai_provider"
 
         const val GEMINI_API_KEY = "gemini_api_key"
-        const val GEMINI_API_HOST = "gemini_api_host"
+        const val GEMINI_BASE_URL = "gemini_base_url"
         const val GEMINI_MODEL = "gemini_model"
 
         const val OPENAI_API_KEY = "openai_api_key"
-        const val OPENAI_API_HOST = "openai_api_host"
+        const val OPENAI_BASE_URL = "openai_base_url"
         const val OPENAI_MODEL = "openai_model"
 
-        const val OLLAMA_API_HOST = "ollama_api_host"
+        const val ANTHROPIC_API_KEY = "anthropic_api_key"
+        const val ANTHROPIC_BASE_URL = "anthropic_base_url"
+        const val ANTHROPIC_MODEL = "anthropic_model"
+
+        const val DEEPSEEK_API_KEY = "deepseek_api_key"
+        const val DEEPSEEK_BASE_URL = "deepseek_base_url"
+        const val DEEPSEEK_MODEL = "deepseek_model"
+
+        const val OLLAMA_BASE_URL = "ollama_base_url"
         const val OLLAMA_MODEL = "ollama_model"
 
-        const val LMSTUDIO_API_HOST = "lmstudio_api_host"
-        const val LMSTUDIO_MODEL = "lmstudio_model"
+        const val LM_STUDIO_BASE_URL = "lm_studio_base_url"
+        const val LM_STUDIO_MODEL = "lm_studio_model"
     }
 }
 

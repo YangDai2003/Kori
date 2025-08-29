@@ -1,5 +1,6 @@
 package org.yangdai.kori.presentation.component.note.template
 
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
@@ -7,8 +8,6 @@ import kotlinx.datetime.format
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 class TemplateProcessor(
     defaultDateFormat: String = "yyyy-MM-dd",
@@ -24,7 +23,7 @@ class TemplateProcessor(
     private val dateWithFormatPattern = "\\{\\{date:([^}]+)\\}\\}"
     private val timeWithFormatPattern = "\\{\\{time:([^}]+)\\}\\}"
 
-    @OptIn(FormatStringsInDatetimeFormats::class, ExperimentalTime::class)
+    @OptIn(FormatStringsInDatetimeFormats::class)
     fun process(content: String): String {
         if (content.isBlank()) return content
 

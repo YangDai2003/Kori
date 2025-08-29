@@ -1,5 +1,6 @@
 package org.yangdai.kori.presentation.screen.settings
 
+import ai.koog.prompt.llm.LLMProvider
 import androidx.compose.runtime.Immutable
 
 @Immutable
@@ -41,19 +42,8 @@ data class CardPaneState(
 @Immutable
 data class AiPaneState(
     val isAiEnabled: Boolean = false,
-    val aiProvider: AiProvider = AiProvider.Gemini
+    val llmProvider: LLMProvider = LLMProvider.Google
 )
-
-enum class AiProvider(val provider: String) {
-    Gemini("Gemini"),
-    OpenAI("Open AI"),
-    Ollama("Ollama"),
-    LMStudio("LM Studio");
-
-    companion object {
-        fun fromString(value: String) = entries.firstOrNull { it.provider == value } ?: Gemini
-    }
-}
 
 enum class CardSize(private val value: Int) {
     DEFAULT(0),

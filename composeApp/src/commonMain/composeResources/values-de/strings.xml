@@ -125,7 +125,6 @@
     <string name="cowriter_description">Zugriff auf KI-Modelle von Drittanbietern</string>
     <string name="model">Modell</string>
     <string name="key">Schlüssel</string>
-    <string name="host">Host</string>
     <string name="rewrite">Umschreiben</string>
     <string name="summarize">Zusammenfassen</string>
     <string name="translate">Übersetzen</string>
