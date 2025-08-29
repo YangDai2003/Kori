@@ -1,5 +1,7 @@
 package org.yangdai.kori.presentation.screen.note
 
+import ai.koog.agents.utils.SuitableForIO
+import ai.koog.prompt.llm.LLMProvider
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -11,9 +13,12 @@ import androidx.navigation.toRoute
 import kmark.flavours.gfm.GFMFlavourDescriptor
 import kmark.html.HtmlGenerator
 import kmark.parser.MarkdownParser
+import knet.ai.AI
+import knet.ai.providers.LMStudio
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,6 +35,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.yangdai.kori.data.local.dao.FolderDao
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
@@ -37,6 +43,7 @@ import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.domain.sort.FolderSortType
+import org.yangdai.kori.presentation.component.note.GenerateNoteButtonState
 import org.yangdai.kori.presentation.component.note.HeaderNode
 import org.yangdai.kori.presentation.component.note.findHeadersRecursive
 import org.yangdai.kori.presentation.component.note.markdown.Properties.getPropertiesLineRange
@@ -55,7 +62,7 @@ class NoteViewModel(
     savedStateHandle: SavedStateHandle,
     private val folderRepository: FolderRepository,
     private val noteRepository: NoteRepository,
-    dataStoreRepository: DataStoreRepository
+    private val dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
     private val route = savedStateHandle.toRoute<Screen.Note>()
 
@@ -297,6 +304,119 @@ class NoteViewModel(
                 noteType = _noteEditingState.value.noteType
             )
             noteRepository.insertNote(noteEntity)
+        }
+    }
+
+    /*----*/
+
+    val isGenerateNoteButtonVisible = combine(
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_AI_ENABLED),
+        contentSnapshotFlow,
+        snapshotFlow { _noteEditingState.value.noteType }
+    ) { isAiEnabled, content, noteType ->
+        isAiEnabled && content.isEmpty() && noteType != NoteType.Drawing
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), false)
+
+    private val _generateNoteButtonState = MutableStateFlow(GenerateNoteButtonState())
+    val generateNoteButtonState = _generateNoteButtonState.asStateFlow()
+
+    // LLM Config: Base URL, Model, API Key
+    private suspend fun getLLMConfig(llmProvider: LLMProvider): Triple<String, String, String> {
+        return withContext(Dispatchers.IO) {
+            when (llmProvider) {
+                LLMProvider.Google -> {
+                    val baseUrl =
+                        dataStoreRepository.getString(Constants.Preferences.GEMINI_BASE_URL, "")
+                    val model =
+                        dataStoreRepository.getString(Constants.Preferences.GEMINI_MODEL, "")
+                    val apiKey =
+                        dataStoreRepository.getString(Constants.Preferences.GEMINI_API_KEY, "")
+                    Triple(baseUrl, model, apiKey)
+                }
+
+                LLMProvider.OpenAI -> {
+                    val baseUrl =
+                        dataStoreRepository.getString(Constants.Preferences.OPENAI_BASE_URL, "")
+                    val model =
+                        dataStoreRepository.getString(Constants.Preferences.OPENAI_MODEL, "")
+                    val apiKey =
+                        dataStoreRepository.getString(Constants.Preferences.OPENAI_API_KEY, "")
+                    Triple(baseUrl, model, apiKey)
+                }
+
+                LLMProvider.Anthropic -> {
+                    val baseUrl =
+                        dataStoreRepository.getString(Constants.Preferences.ANTHROPIC_BASE_URL, "")
+                    val model =
+                        dataStoreRepository.getString(Constants.Preferences.ANTHROPIC_MODEL, "")
+                    val apiKey =
+                        dataStoreRepository.getString(Constants.Preferences.ANTHROPIC_API_KEY, "")
+                    Triple(baseUrl, model, apiKey)
+                }
+
+                LLMProvider.DeepSeek -> {
+                    val baseUrl =
+                        dataStoreRepository.getString(Constants.Preferences.DEEPSEEK_BASE_URL, "")
+                    val model =
+                        dataStoreRepository.getString(Constants.Preferences.DEEPSEEK_MODEL, "")
+                    val apiKey =
+                        dataStoreRepository.getString(Constants.Preferences.DEEPSEEK_API_KEY, "")
+                    Triple(baseUrl, model, apiKey)
+                }
+
+                LLMProvider.Ollama -> {
+                    val baseUrl =
+                        dataStoreRepository.getString(Constants.Preferences.OLLAMA_BASE_URL, "")
+                    val model =
+                        dataStoreRepository.getString(Constants.Preferences.OLLAMA_MODEL, "")
+                    Triple(baseUrl, model, "")
+                }
+
+                LMStudio -> {
+                    val baseUrl =
+                        dataStoreRepository.getString(Constants.Preferences.LM_STUDIO_BASE_URL, "")
+                    val model =
+                        dataStoreRepository.getString(Constants.Preferences.LM_STUDIO_MODEL, "")
+                    Triple(baseUrl, model, "")
+                }
+
+                else -> {
+                    Triple("", "", "")
+                }
+            }
+        }
+    }
+
+    fun createNoteByPrompt(prompt: String) {
+        viewModelScope.launch(Dispatchers.SuitableForIO) {
+            _generateNoteButtonState.value = GenerateNoteButtonState(isGenerating = true)
+            val defaultProviderId = dataStoreRepository.getString(
+                Constants.Preferences.AI_PROVIDER,
+                AI.providers.keys.first()
+            )
+            val llmProvider = AI.providers[defaultProviderId] ?: AI.providers.values.first()
+            val llmConfig = getLLMConfig(llmProvider)
+            val response = AI.generateText(
+                lLMProvider = llmProvider,
+                baseUrl = llmConfig.first,
+                model = llmConfig.second,
+                apiKey = llmConfig.third,
+                prompt = prompt,
+                systemPrompt = when (_noteEditingState.value.noteType) {
+                    NoteType.PLAIN_TEXT -> AI.SystemPrompt.PLAIN_TEXT
+                    NoteType.MARKDOWN -> AI.SystemPrompt.MARKDOWN
+                    NoteType.TODO -> AI.SystemPrompt.TODO_TXT
+                    else -> ""
+                }
+            )
+            if (!response.success) {
+                _generateNoteButtonState.update { it.copy(errorMessage = response.message) }
+            } else {
+                withContext(Dispatchers.Main) {
+                    contentState.setTextAndPlaceCursorAtEnd(response.message)
+                }
+            }
+            _generateNoteButtonState.update { it.copy(isGenerating = false) }
         }
     }
 }

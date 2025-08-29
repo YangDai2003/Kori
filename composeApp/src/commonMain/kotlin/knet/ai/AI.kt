@@ -29,7 +29,8 @@ import knet.ai.providers.OpenAI
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-data class TestConnectionResult(
+@Serializable
+data class GenerateResult(
     val success: Boolean = false,
     val message: String = ""
 )
@@ -41,6 +42,67 @@ data class ModelsResponse(val data: List<Model>)
 data class Model(val id: String)
 
 object AI {
+    object SystemPrompt {
+        const val MARKDOWN = """
+            Your response must be formatted in Markdown.
+            You should use standard Markdown syntax for formatting text, such as:
+            - Headings (#, ##, ###, ####, #####, ######)
+            - Bold (**text**) and Italic (_text_)
+            - Unordered lists (using -, *, or +)
+            - Ordered lists (e.g., 1., 2., 3.)
+            - Blockquotes (> text)
+            - Strikethrough (~~text~~)
+            - Task lists (- [ ] text, - [x] text)
+            - Code blocks (```language\ncode\n```) and inline code (`code`)
+            - Links ([title](https://www.example.com))
+            - Images (![alt text](https://www.example.com/image.png))
+            - Horizontal rules (--- or *** or ___)
+            - HTML tags
+            
+            For mathematical formulas, you must use LaTeX syntax:
+            - For inline formulas, enclose the expression in single dollar signs.
+            - For formula blocks, enclose the expression in double dollar signs. For example:
+            $$
+            \int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+            $$
+            
+            For diagrams, you must use Mermaid syntax and enclose the entire Mermaid code block within a `<pre class="mermaid"></pre>` tag. For example:
+            <pre class="mermaid">
+            graph TD;
+                A-->B;
+                A-->C;
+                B-->D;
+                C-->D;
+            </pre>
+            
+            Ensure your entire output strictly adheres to these formatting rules.
+        """
+
+        const val PLAIN_TEXT = """
+            Your response must be in plain text only. Do not use any Markdown or HTML syntax for formatting. 
+        """
+
+        const val TODO_TXT = """
+            Your response must strictly follow the todo.txt format rules.
+            
+            Each line in your output must be a single task. A task can have the following components in this specific order:
+            1.  An optional completion marker 'x ' at the beginning if the task is done.
+            2.  An optional priority level, which is an uppercase letter in parentheses, e.g., `(A)`. This must be followed by a space.
+            3.  An optional completion date (YYYY-MM-DD) followed by an optional creation date (YYYY-MM-DD). The completion date is only present if the task is marked as complete ('x ').
+            4.  The task description.
+            5.  Optional context tags, prefixed with `@`, e.g., `@email`.
+            6.  Optional project tags, prefixed with `+`, e.g., `+project-name`.
+            
+            Example of a valid todo.txt line:
+            `(A) 2025-12-31 Finalize the project report +knet-ai @work`
+            
+            Another example of a completed task:
+            `x 2025-08-28 2025-08-26 Call the client to confirm meeting details @calls`
+            
+            Do not add any explanations, introductory text, or formatting beyond what is specified in the todo.txt format. Your entire output must consist of one or more lines formatted correctly according to these rules.
+        """
+    }
+
     val providers = mapOf(
         LLMProvider.Google.id to LLMProvider.Google,
         LLMProvider.OpenAI.id to LLMProvider.OpenAI,
@@ -50,7 +112,7 @@ object AI {
         LMStudio.id to LMStudio
     )
 
-    fun getAIAgent(
+    private fun getAIAgent(
         lLMProvider: LLMProvider,
         model: String,
         apiKey: String = "",
@@ -114,19 +176,42 @@ object AI {
         )
     }
 
+    suspend fun generateText(
+        lLMProvider: LLMProvider,
+        model: String,
+        prompt: String,
+        apiKey: String = "",
+        baseUrl: String = "",
+        systemPrompt: String = ""
+    ): GenerateResult {
+        return try {
+            val systemPrompt =
+                "You are a helpful assistant for a note-taking application.\n$systemPrompt"
+            val agent = getAIAgent(lLMProvider, model, apiKey, baseUrl, systemPrompt)
+            val result = agent.run(prompt)
+            GenerateResult(success = true, message = result)
+        } catch (e: Exception) {
+            println("Error generating text: ${e.message}")
+            GenerateResult(
+                success = false,
+                message = e.message ?: "An unknown error occurred while generating text :("
+            )
+        }
+    }
+
     suspend fun testConnection(
         lLMProvider: LLMProvider,
         model: String,
         apiKey: String = "",
         baseUrl: String = ""
-    ): TestConnectionResult {
+    ): GenerateResult {
         return try {
             val agent = getAIAgent(lLMProvider, model, apiKey, baseUrl)
             val result = agent.run("Hi")
-            TestConnectionResult(success = true, message = result)
+            GenerateResult(success = true, message = result)
         } catch (e: Exception) {
             println("Error testing connection: ${e.message}")
-            TestConnectionResult(
+            GenerateResult(
                 success = false,
                 message = e.message ?: "An unknown error occurred :("
             )

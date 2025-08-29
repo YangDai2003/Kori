@@ -6,7 +6,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
@@ -122,6 +124,7 @@ import org.yangdai.kori.presentation.component.note.AdaptiveView
 import org.yangdai.kori.presentation.component.note.EditorProperties
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
+import org.yangdai.kori.presentation.component.note.GenerateNoteButton
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.note.TitleTextField
@@ -156,6 +159,8 @@ fun NoteScreen(
     val editorState by viewModel.editorState.collectAsStateWithLifecycle()
     val outline by viewModel.outline.collectAsStateWithLifecycle()
     val html by viewModel.html.collectAsStateWithLifecycle()
+    val isGenerateNoteButtonVisible by viewModel.isGenerateNoteButtonVisible.collectAsStateWithLifecycle()
+    val generateNoteButtonState by viewModel.generateNoteButtonState.collectAsStateWithLifecycle()
 
     DisposableEffect(Unit) {
         onDispose {
@@ -450,6 +455,14 @@ fun NoteScreen(
                 }
             }
         }
+    }
+
+    AnimatedVisibility(
+        visible = isGenerateNoteButtonVisible,
+        enter = fadeIn() + slideInHorizontally { -it },
+        exit = fadeOut() + slideOutHorizontally { -it }
+    ) {
+        GenerateNoteButton(generateNoteButtonState) { viewModel.createNoteByPrompt(it) }
     }
 
     AnimatedVisibility(

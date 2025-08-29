@@ -7,8 +7,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
-import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.GeneratingTokens
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Palette
@@ -141,7 +141,7 @@ fun SettingsListPane(
                     title = stringResource(Res.string.cowriter),
                     description = stringResource(Res.string.model)
                             + "  •  " + "API ${stringResource(Res.string.key)}",
-                    icon = Icons.Outlined.AutoAwesome,
+                    icon = Icons.Outlined.GeneratingTokens,
                     isSelected = selectedItem == 6,
                     onClick = { navigateToDetail(6) }
                 )

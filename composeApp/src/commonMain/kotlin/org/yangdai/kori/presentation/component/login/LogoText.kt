@@ -86,9 +86,9 @@ fun AnimatedGradientText(
     )
 }
 
-private val brandColor1 = Color(0xFF4285F4)
-private val brandColor2 = Color(0xFF9B72CB)
-private val brandColor3 = Color(0xFFD96570)
+val brandColor1 = Color(0xFF4285F4)
+val brandColor2 = Color(0xFF9B72CB)
+val brandColor3 = Color(0xFFD96570)
 
 private val colors = listOf(
     brandColor1,
