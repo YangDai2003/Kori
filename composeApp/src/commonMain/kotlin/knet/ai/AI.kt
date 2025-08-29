@@ -186,7 +186,7 @@ object AI {
     ): GenerateResult {
         return try {
             val systemPrompt =
-                "You are a helpful assistant for a note-taking application.\n$systemPrompt"
+                "You are a helpful assistant for a note-taking application. Your primary role is to generate content that will be directly inserted into a user's note. Therefore, your responses should be concise, well-structured, and formatted as if they are part of a larger document. Avoid conversational language, introductions, or summaries unless explicitly asked for. Generate only the requested content in a direct, written style suitable for notes.\n$systemPrompt"
             val agent = getAIAgent(lLMProvider, model, apiKey, baseUrl, systemPrompt)
             val result = agent.run(prompt)
             GenerateResult(success = true, message = result)

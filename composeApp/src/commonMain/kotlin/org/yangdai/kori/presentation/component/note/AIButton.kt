@@ -49,10 +49,19 @@ import androidx.compose.ui.draw.innerShadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.key
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import kori.composeapp.generated.resources.Res
+import kori.composeapp.generated.resources.describe_the_note_you_want_to_generate
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.yangdai.kori.presentation.component.login.brandColor1
 import org.yangdai.kori.presentation.component.login.brandColor2
@@ -139,7 +148,16 @@ fun GenerateNoteButton(
             ) {
                 val focusRequester = remember { FocusRequester() }
                 OutlinedTextField(
-                    modifier = widthModifier.focusRequester(focusRequester),
+                    modifier = widthModifier.focusRequester(focusRequester).onPreviewKeyEvent {
+                        if (it.isCtrlPressed && it.key == Key.Enter && it.type == KeyEventType.KeyUp) {
+                            if (inputMode && !state.isGenerating) {
+                                startGenerating(prompt.text.toString())
+                                true
+                            } else {
+                                false
+                            }
+                        } else false
+                    },
                     state = prompt,
                     readOnly = state.isGenerating,
                     isError = state.errorMessage != null,
@@ -150,7 +168,7 @@ fun GenerateNoteButton(
                         disabledBorderColor = Color.Transparent,
                     ),
                     trailingIcon = { Spacer(Modifier.size(48.dp)) },
-                    placeholder = { Text("描述你想创建的笔记内容") }
+                    placeholder = { Text(stringResource(Res.string.describe_the_note_you_want_to_generate)) }
                 )
                 LaunchedEffect(Unit) {
                     delay(300L)
