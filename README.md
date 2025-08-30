@@ -19,7 +19,7 @@ provide a consistent note-taking experience across all platforms.
 [<img alt="Get it on GitHub" src="screenshots/github.png" width="200px">](https://github.com/YangDai2003/Kori/releases)
 
 To balance the account fees of the app store, the app will be sold at a very low price. You can also
-get it for free from GitHub. The app itself is no different.
+get it for free from GitHub. The app itself is no different. Thank you for your support and understanding.
 
 ## ✨ Key Features
 
@@ -65,6 +65,29 @@ Kori is packed with features designed to enhance your productivity and creativit
 - **Comprehensive Mouse and Keyboard Support:** The app has been thoroughly adapted for seamless
   interaction with mice and external physical keyboards.
 - **Responsive Design:** Optimized for various screen sizes and device orientations.
+
+## 🖼️ Screenshots
+
+### Phone
+
+![Screenshot](screenshots/phone_1.png)
+![Screenshot](screenshots/phone_2.png)
+![Screenshot](screenshots/phone_3.png)
+![Screenshot](screenshots/widget_1.png)
+![Screenshot](screenshots/widget_2.png)
+![Screenshot](screenshots/widget_3.png)
+
+### Tablet
+
+![Screenshot](screenshots/tablet_1.png)
+![Screenshot](screenshots/tablet_2.png)
+![Screenshot](screenshots/tablet_3.png)
+
+### Desktop
+
+![Screenshot](screenshots/desktop_1.png)
+![Screenshot](screenshots/desktop_2.png)
+![Screenshot](screenshots/desktop_3.png)
 
 ## 🌎 Translations
 
