@@ -19,7 +19,8 @@ provide a consistent note-taking experience across all platforms.
 [<img alt="Get it on GitHub" src="screenshots/github.png" width="200px">](https://github.com/YangDai2003/Kori/releases)
 
 To balance the account fees of the app store, the app will be sold at a very low price. You can also
-get it for free from GitHub. The app itself is no different. Thank you for your support and understanding.
+get it for free from GitHub. The app itself is no different. Thank you for your support and
+understanding.
 
 ## ✨ Key Features
 
@@ -70,24 +71,30 @@ Kori is packed with features designed to enhance your productivity and creativit
 
 ### Phone
 
-![Screenshot](screenshots/phone_1.png)
-![Screenshot](screenshots/phone_2.png)
-![Screenshot](screenshots/phone_3.png)
-![Screenshot](screenshots/widget_1.png)
-![Screenshot](screenshots/widget_2.png)
-![Screenshot](screenshots/widget_3.png)
+<p align="center">
+  <img src="screenshots/phone_1.png" width="30%" alt=""/>
+  <img src="screenshots/phone_2.png" width="30%" alt=""/>
+  <img src="screenshots/phone_3.png" width="30%" alt=""/>
+  <img src="screenshots/widget_1.png" width="30%" alt=""/>
+  <img src="screenshots/widget_2.png" width="30%" alt=""/>
+  <img src="screenshots/widget_3.png" width="30%" alt=""/>
+</p>
 
 ### Tablet
 
-![Screenshot](screenshots/tablet_1.png)
-![Screenshot](screenshots/tablet_2.png)
-![Screenshot](screenshots/tablet_3.png)
+<p align="center">
+  <img src="screenshots/tablet_1.png" width="32%" alt=""/>
+  <img src="screenshots/tablet_2.png" width="32%" alt=""/>
+  <img src="screenshots/tablet_3.png" width="32%" alt=""/>
+</p>
 
 ### Desktop
 
-![Screenshot](screenshots/desktop_1.png)
-![Screenshot](screenshots/desktop_2.png)
-![Screenshot](screenshots/desktop_3.png)
+<p align="center">
+  <img src="screenshots/desktop_1.png" width="32%" alt=""/>
+  <img src="screenshots/desktop_2.png" width="32%" alt=""/>
+  <img src="screenshots/desktop_3.png" width="32%" alt=""/>
+</p>
 
 ## 🌎 Translations
 
