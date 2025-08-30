@@ -335,7 +335,8 @@ fun NoteScreen(
                             isLintActive = editorState.isMarkdownLintEnabled,
                             headerRange = selectedHeader,
                             findAndReplaceState = findAndReplaceState,
-                            isAIEnabled = isAIEnabled
+                            isAIEnabled = isAIEnabled,
+                            onAIContextMenuEvent = { viewModel.onAIContextMenuEvent(it) }
                         )
                     },
                     viewer = if (noteEditingState.noteType == NoteType.MARKDOWN || noteEditingState.noteType == NoteType.TODO) { modifier ->
@@ -379,7 +380,7 @@ fun NoteScreen(
         GenerateNoteButton(
             startGenerating = { prompt, onSuccess, onError ->
                 if (prompt.isNotBlank())
-                    viewModel.createNoteByPrompt(prompt, onSuccess, onError)
+                    viewModel.generateNoteFromPrompt(prompt, onSuccess, onError)
                 else
                     onError("Prompt cannot be empty")
             }

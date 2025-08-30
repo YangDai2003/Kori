@@ -1,7 +1,6 @@
 package knet.ai
 
 import ai.koog.agents.core.agent.AIAgent
-import ai.koog.prompt.dsl.prompt
 import ai.koog.prompt.executor.clients.LLMClient
 import ai.koog.prompt.executor.clients.anthropic.AnthropicClientSettings
 import ai.koog.prompt.executor.clients.anthropic.AnthropicLLMClient
@@ -16,7 +15,6 @@ import ai.koog.prompt.executor.ollama.client.OllamaClient
 import ai.koog.prompt.llm.LLMCapability
 import ai.koog.prompt.llm.LLMProvider
 import ai.koog.prompt.llm.LLModel
-import ai.koog.prompt.message.Attachment
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -115,6 +113,34 @@ object AI {
         """
     }
 
+    object EventPrompt {
+        const val REWRITE = """
+            Your task is to rewrite the following text provided by the user.
+            You must adhere to the following instructions:
+            1. Preserve the original meaning and core information.
+            2. Improve clarity, conciseness, and readability.
+            3. Correct any grammatical errors, spelling mistakes, and awkward phrasing.
+            4. Maintain a consistent tone and style.
+            5. Do not introduce new information or your personal opinions.
+            6. The rewritten text must be a direct replacement for the original.
+            7. Your output must contain only the rewritten text, without any introductory or concluding phrases like "Here is the rewritten text:".
+            
+            Now, rewrite the following text:
+        """
+
+        const val SUMMARIZE = """
+            Your task is to create a concise summary of the following text provided by the user.
+            You must adhere to the following instructions:
+            1. Identify and extract the main ideas and key points.
+            2. The summary must be significantly shorter than the original text but retain its core message.
+            3. Do not include minor details, your personal opinions, or information not present in the original text.
+            4. The summary must be written in clear and coherent prose.
+            5. Your output must contain only the summary, without any introductory or concluding phrases like "Here is the summary:".
+            
+            Now, summarize the following text:
+        """
+    }
+
     val providers = mapOf(
         LLMProvider.Google.id to LLMProvider.Google,
         LLMProvider.OpenAI.id to LLMProvider.OpenAI,
@@ -180,25 +206,20 @@ object AI {
         }
     }
 
-    suspend fun generateText(
+    suspend fun executePrompt(
         lLMProvider: LLMProvider,
         model: String,
         userInput: String,
         apiKey: String = "",
         baseUrl: String = "",
-        systemPrompt: String = "",
-        attachments: List<Attachment> = emptyList()
+        systemPrompt: String = ""
     ): GenerationResult {
         return try {
             val systemPrompt = SystemPrompt.SYSTEM + "\n" + systemPrompt
             val (client, llmModel) = getClientAndModel(lLMProvider, model, apiKey, baseUrl)
-            val promptExecutor = SingleLLMPromptExecutor(client)
-            val prompt = prompt("ai-notepad-chat") {
-                system(systemPrompt)
-                user(content = userInput, attachments = attachments)
-            }
-            val responses = promptExecutor.execute(prompt, llmModel)
-            val result = responses.joinToString("\n") { it.content }.trim()
+            val agent =
+                AIAgent(SingleLLMPromptExecutor(client), llmModel, systemPrompt = systemPrompt)
+            val result = agent.run(userInput)
             GenerationResult.Success(result)
         } catch (e: Exception) {
             println("Error generating text: ${e.stackTraceToString()}")

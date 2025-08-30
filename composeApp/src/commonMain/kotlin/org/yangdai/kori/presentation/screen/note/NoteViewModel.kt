@@ -6,6 +6,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.text.substring
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -44,6 +45,7 @@ import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.domain.sort.FolderSortType
+import org.yangdai.kori.presentation.component.note.AIContextMenuEvent
 import org.yangdai.kori.presentation.component.note.HeaderNode
 import org.yangdai.kori.presentation.component.note.addInNewLine
 import org.yangdai.kori.presentation.component.note.findHeadersRecursive
@@ -383,7 +385,7 @@ class NoteViewModel(
         }
     }
 
-    fun createNoteByPrompt(
+    fun generateNoteFromPrompt(
         userInput: String,
         onSuccess: () -> Unit,
         onError: (errorMessage: String) -> Unit
@@ -395,7 +397,7 @@ class NoteViewModel(
             )
             val llmProvider = AI.providers[defaultProviderId] ?: AI.providers.values.first()
             val llmConfig = getLLMConfig(llmProvider)
-            val response = AI.generateText(
+            val response = AI.executePrompt(
                 lLMProvider = llmProvider,
                 baseUrl = llmConfig.first,
                 model = llmConfig.second,
@@ -421,6 +423,39 @@ class NoteViewModel(
                         onSuccess()
                     }
                 }
+            }
+        }
+    }
+
+    fun onAIContextMenuEvent(event: AIContextMenuEvent) {
+        viewModelScope.launch(Dispatchers.SuitableForIO) {
+            val selection = contentState.selection
+            if (selection.collapsed) return@launch
+            val selectedText = contentState.text.substring(selection)
+            val defaultProviderId = dataStoreRepository.getString(
+                Constants.Preferences.AI_PROVIDER,
+                AI.providers.keys.first()
+            )
+            val llmProvider = AI.providers[defaultProviderId] ?: AI.providers.values.first()
+            val llmConfig = getLLMConfig(llmProvider)
+            val response = AI.executePrompt(
+                lLMProvider = llmProvider,
+                baseUrl = llmConfig.first,
+                model = llmConfig.second,
+                apiKey = llmConfig.third,
+                userInput = when (event) {
+                    AIContextMenuEvent.Rewrite -> AI.EventPrompt.REWRITE
+                    AIContextMenuEvent.Summarize -> AI.EventPrompt.SUMMARIZE
+                } + "\n" + selectedText,
+                systemPrompt = when (_noteEditingState.value.noteType) {
+                    NoteType.PLAIN_TEXT -> AI.SystemPrompt.PLAIN_TEXT
+                    NoteType.MARKDOWN -> AI.SystemPrompt.MARKDOWN
+                    NoteType.TODO -> AI.SystemPrompt.TODO_TXT
+                    else -> ""
+                }
+            )
+            if (response is GenerationResult.Success) {
+                contentState.edit { replace(selection.min, selection.max, response.text) }
             }
         }
     }
