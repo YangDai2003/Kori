@@ -122,67 +122,69 @@ fun AdaptiveEditor(
     findAndReplaceState: FindAndReplaceState,
     isAIEnabled: Boolean = false,
     onAIContextMenuEvent: (AIContextMenuEvent) -> Unit = {}
-) = when (noteType) {
-    NoteType.MARKDOWN -> {
-        TextEditor(
-            modifier = modifier,
-            textFieldModifier = Modifier.markdownKeyEvents(textFieldState)
-                .dragAndDropText(textFieldState)
-                .aiContextMenu(!textFieldState.selection.collapsed && isAIEnabled) {
-                    onAIContextMenuEvent(it)
-                },
-            textState = textFieldState,
-            scrollState = scrollState,
-            findAndReplaceState = findAndReplaceState,
-            headerRange = headerRange,
-            editorProperties = EditorProperties(
-                isReadOnly = isReadOnly,
-                isLineNumberVisible = isLineNumberVisible,
-                isLintActive = isLintActive
-            ),
-            outputTransformation = remember { MarkdownTransformation() }
-        )
+) {
+    val aiModifier = if (isAIEnabled && !textFieldState.selection.collapsed) {
+        Modifier.aiContextMenu { onAIContextMenuEvent(it) }
+    } else {
+        Modifier
     }
 
-    NoteType.TODO -> {
-        TextEditor(
-            modifier = modifier,
-            textFieldModifier = Modifier.todoTextKeyEvents(textFieldState)
-                .dragAndDropText(textFieldState)
-                .aiContextMenu(!textFieldState.selection.collapsed && isAIEnabled) {
-                    onAIContextMenuEvent(it)
-                },
-            textState = textFieldState,
-            scrollState = scrollState,
-            findAndReplaceState = findAndReplaceState,
-            editorProperties = EditorProperties(
-                isReadOnly = isReadOnly,
-                isLineNumberVisible = isLineNumberVisible
-            ),
-            outputTransformation = remember { TodoTransformation() }
-        )
-    }
+    when (noteType) {
+        NoteType.MARKDOWN -> {
+            TextEditor(
+                modifier = modifier,
+                textFieldModifier = Modifier.markdownKeyEvents(textFieldState)
+                    .dragAndDropText(textFieldState)
+                    .then(aiModifier),
+                textState = textFieldState,
+                scrollState = scrollState,
+                findAndReplaceState = findAndReplaceState,
+                headerRange = headerRange,
+                editorProperties = EditorProperties(
+                    isReadOnly = isReadOnly,
+                    isLineNumberVisible = isLineNumberVisible,
+                    isLintActive = isLintActive
+                ),
+                outputTransformation = remember { MarkdownTransformation() }
+            )
+        }
 
-    NoteType.PLAIN_TEXT -> {
-        TextEditor(
-            modifier = modifier,
-            textFieldModifier = Modifier.plainTextKeyEvents(textFieldState)
-                .dragAndDropText(textFieldState)
-                .aiContextMenu(!textFieldState.selection.collapsed && isAIEnabled) {
-                    onAIContextMenuEvent(it)
-                },
-            textState = textFieldState,
-            scrollState = scrollState,
-            findAndReplaceState = findAndReplaceState,
-            editorProperties = EditorProperties(
-                isReadOnly = isReadOnly,
-                isLineNumberVisible = isLineNumberVisible
-            ),
-            outputTransformation = remember { PlainTextTransformation() }
-        )
-    }
+        NoteType.TODO -> {
+            TextEditor(
+                modifier = modifier,
+                textFieldModifier = Modifier.todoTextKeyEvents(textFieldState)
+                    .dragAndDropText(textFieldState)
+                    .then(aiModifier),
+                textState = textFieldState,
+                scrollState = scrollState,
+                findAndReplaceState = findAndReplaceState,
+                editorProperties = EditorProperties(
+                    isReadOnly = isReadOnly,
+                    isLineNumberVisible = isLineNumberVisible
+                ),
+                outputTransformation = remember { TodoTransformation() }
+            )
+        }
 
-    else -> {}
+        NoteType.PLAIN_TEXT -> {
+            TextEditor(
+                modifier = modifier,
+                textFieldModifier = Modifier.plainTextKeyEvents(textFieldState)
+                    .dragAndDropText(textFieldState)
+                    .then(aiModifier),
+                textState = textFieldState,
+                scrollState = scrollState,
+                findAndReplaceState = findAndReplaceState,
+                editorProperties = EditorProperties(
+                    isReadOnly = isReadOnly,
+                    isLineNumberVisible = isLineNumberVisible
+                ),
+                outputTransformation = remember { PlainTextTransformation() }
+            )
+        }
+
+        else -> {}
+    }
 }
 
 @Composable

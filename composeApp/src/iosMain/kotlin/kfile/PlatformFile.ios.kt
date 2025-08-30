@@ -1,7 +1,6 @@
 package kfile
 
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.datetime.toKotlinInstant
 import platform.Foundation.NSDate
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSString
@@ -9,6 +8,7 @@ import platform.Foundation.NSURL
 import platform.Foundation.NSURLIsDirectoryKey
 import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.stringWithContentsOfURL
+import platform.Foundation.timeIntervalSince1970
 import platform.Foundation.writeToURL
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -58,10 +58,16 @@ actual suspend fun PlatformFile.delete(): Boolean {
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalTime::class)
 actual fun PlatformFile.getLastModified(): Instant {
-    val attributes = NSFileManager.defaultManager.attributesOfItemAtPath(
-        url.path ?: return Clock.System.now(),
-        null
-    )
-    return (attributes?.get("NSFileModificationDate") as? NSDate)?.toKotlinInstant()
-        ?: Clock.System.now()
+    val path = url.path ?: return Clock.System.now()
+    val attributes = NSFileManager.defaultManager.attributesOfItemAtPath(path, null)
+    val nsDate = attributes?.get("NSFileModificationDate") as? NSDate ?: return Clock.System.now()
+    return nsDate.toInstant()
+}
+
+@OptIn(ExperimentalTime::class)
+private fun NSDate.toInstant(): Instant {
+    val secs = timeIntervalSince1970()
+    val fullSeconds = secs.toLong()
+    val nanos = (secs - fullSeconds) * 1_000_000_000
+    return Instant.fromEpochSeconds(fullSeconds, nanos.toLong())
 }

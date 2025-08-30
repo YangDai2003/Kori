@@ -35,14 +35,10 @@ actual fun Modifier.dragAndDropText(textFieldState: TextFieldState): Modifier {
 }
 
 @Composable
-actual fun Modifier.aiContextMenu(
-    enabled: Boolean,
-    onEvent: (AIContextMenuEvent) -> Unit
-): Modifier {
+actual fun Modifier.aiContextMenu(onEvent: (AIContextMenuEvent) -> Unit): Modifier {
     val rewriteLabel = stringResource(Res.string.rewrite)
     val summarizeLabel = stringResource(Res.string.summarize)
     return appendTextContextMenuComponents {
-        if (!enabled) return@appendTextContextMenuComponents
         separator()
         item(key = AIContextMenuEvent.Rewrite, label = rewriteLabel) {
             onEvent(AIContextMenuEvent.Rewrite)

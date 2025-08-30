@@ -13,4 +13,4 @@ sealed interface AIContextMenuEvent {
 }
 
 @Composable
-expect fun Modifier.aiContextMenu(enabled: Boolean, onEvent: (AIContextMenuEvent) -> Unit): Modifier
+expect fun Modifier.aiContextMenu(onEvent: (AIContextMenuEvent) -> Unit): Modifier
