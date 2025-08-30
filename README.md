@@ -15,10 +15,24 @@
 Kori is an evolution of [Open Note](https://github.com/YangDai2003/OpenNote-Compose), aiming to
 provide a consistent note-taking experience across all platforms.
 
-## Features
+## ✨ Key Features
 
-- Supports multiple formats: _Drawing_, _Markdown_, _TXT_, _LaTeX_, _Mermaid_, and _Todo.txt_.
-- Compose Multiplatform project targeting _Android_, _iOS_, _Desktop_, and _Web(planned)_.
+Kori is packed with features designed to enhance your productivity and creativity:
+
+* **✍️ Multi-Format Support**: Unleash your ideas with comprehensive support for various formats,
+  including _Drawing_, _Markdown_, _TXT_, _LaTeX_, _Mermaid_ diagrams, and organized _Todo.txt_
+  lists.
+
+* **💻 Truly Cross-Platform**: Enjoy a unified experience whether you're on _Android_, _iOS_,
+  _Windows_, _macOS_, or _Linux_. A _Web_ version is also planned for the future.
+
+* **🤖 Intelligent & Optional AI Assistance**:
+    * Boost your writing with deeply integrated AI capabilities for content generation,
+      summarization, rewriting, and more.
+    * Connect to a wide range of large language models (LLMs) from providers like _Google_,
+      _OpenAI_, _Anthropic_, and _DeepSeek_ using your own API keys.
+    * Flexibly use self-hosted models (e.g., _Ollama_, _LMStudio_) by configuring the base URL.
+    * All AI features are entirely optional. **You can completely disable all AI functionalities**.
 
 ## 🌎 Translations
 
@@ -35,5 +49,7 @@ You can find the Privacy Policy and Required Permissions in the [Privacy Policy]
 
 ## 🎈 Contribution
 
-Any form of contribution is welcome! If you find a bug or have a new feature request, please create
-an issue. If you want to contribute code directly to this project, you can make a pull request.
+* **Report an Issue**: Encounter a problem? Let us know
+  by [creating an issue](https://github.com/YangDai2003/Kori/issues).
+* **Contribute Code**: Have a fix or a new feature? Feel free
+  to [submit a pull request](https://github.com/YangDai2003/Kori/pulls).

@@ -25,7 +25,7 @@ The app uses the following open-source libraries:
 - **Room**: For local database management and persistence.
 - **DataStore**: For storing key-value pairs or typed objects with protocol buffers.
 - **Koin**: For dependency injection.
-- **Ktor**: For making network requests.
+- **Koog**: For fetching LLM responses.
 - **Coil**: For image loading and caching.
 - **AndroidX Biometric**: For biometric authentication (e.g., fingerprint).
 - **AndroidX DocumentFile**: For accessing and managing documents.
