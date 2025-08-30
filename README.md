@@ -10,7 +10,7 @@
 ![LaTeX](https://img.shields.io/badge/latex-%23008080.svg?style=for-the-badge&logo=latex&logoColor=white)
 ![Markdown](https://img.shields.io/badge/markdown-%23000000.svg?style=for-the-badge&logo=markdown&logoColor=white)
 
-# Kori
+# Kori - A Unified Note-Taking Experience for All Platforms with AI Capabilities
 
 Kori is an evolution of [Open Note](https://github.com/YangDai2003/OpenNote-Compose), aiming to
 provide a consistent note-taking experience across all platforms.
@@ -26,7 +26,7 @@ Kori is packed with features designed to enhance your productivity and creativit
 * **💻 Truly Cross-Platform**: Enjoy a unified experience whether you're on _Android_, _iOS_,
   _Windows_, _macOS_, or _Linux_. A _Web_ version is also planned for the future.
 
-* **🤖 Intelligent & Optional AI Assistance**:
+* **🤖 Intelligent & Optional AI Co-writer**:
     * Boost your writing with deeply integrated AI capabilities for content generation,
       summarization, rewriting, and more.
     * Connect to a wide range of large language models (LLMs) from providers like _Google_,
@@ -49,7 +49,7 @@ You can find the Privacy Policy and Required Permissions in the [Privacy Policy]
 
 ## 🎈 Contribution
 
-* **Report an Issue**: Encounter a problem? Let us know
-  by [creating an issue](https://github.com/YangDai2003/Kori/issues).
-* **Contribute Code**: Have a fix or a new feature? Feel free
-  to [submit a pull request](https://github.com/YangDai2003/Kori/pulls).
+* **Report an Issue**: Encounter a problem? Report it
+  on [creating an issue](https://github.com/YangDai2003/Kori/issues).
+* **Contribute Code**: Have a fix or a new feature? Contribute it
+  on [submit a pull request](https://github.com/YangDai2003/Kori/pulls).
