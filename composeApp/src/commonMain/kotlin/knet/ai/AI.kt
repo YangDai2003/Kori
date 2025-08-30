@@ -1,6 +1,8 @@
 package knet.ai
 
 import ai.koog.agents.core.agent.AIAgent
+import ai.koog.prompt.dsl.prompt
+import ai.koog.prompt.executor.clients.LLMClient
 import ai.koog.prompt.executor.clients.anthropic.AnthropicClientSettings
 import ai.koog.prompt.executor.clients.anthropic.AnthropicLLMClient
 import ai.koog.prompt.executor.clients.deepseek.DeepSeekClientSettings
@@ -12,13 +14,14 @@ import ai.koog.prompt.executor.clients.openai.OpenAILLMClient
 import ai.koog.prompt.executor.llms.SingleLLMPromptExecutor
 import ai.koog.prompt.executor.ollama.client.OllamaClient
 import ai.koog.prompt.llm.LLMCapability
+import ai.koog.prompt.llm.LLMProvider
+import ai.koog.prompt.llm.LLModel
+import ai.koog.prompt.message.Attachment
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
-import io.ktor.client.request.get
-import ai.koog.prompt.llm.LLMProvider
-import ai.koog.prompt.llm.LLModel
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.json
 import knet.ai.providers.Anthropic
 import knet.ai.providers.DeepSeek
@@ -30,10 +33,13 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 @Serializable
-data class GenerateResult(
-    val success: Boolean = false,
-    val message: String = ""
-)
+sealed class GenerationResult {
+    @Serializable
+    data class Success(val text: String) : GenerationResult()
+
+    @Serializable
+    data class Error(val errorMessage: String) : GenerationResult()
+}
 
 @Serializable
 data class ModelsResponse(val data: List<Model>)
@@ -43,6 +49,14 @@ data class Model(val id: String)
 
 object AI {
     object SystemPrompt {
+        const val SYSTEM = """
+            You are a helpful assistant for a note-taking application.
+            Your primary role is to generate content that will be directly inserted into a user's note.
+            Therefore, your responses should be concise, well-structured, and formatted as if they are part of a larger document.
+            Avoid conversational language, introductions, or summaries unless explicitly asked for.
+            Generate only the requested content in a direct, written style suitable for notes.
+            Unless the user specifies a different language, you must respond in the same language as the user's prompt.
+        """
         const val MARKDOWN = """
             Your response must be formatted in Markdown.
             You should use standard Markdown syntax for formatting text, such as:
@@ -77,11 +91,9 @@ object AI {
             
             Ensure your entire output strictly adheres to these formatting rules.
         """
-
         const val PLAIN_TEXT = """
             Your response must be in plain text only. Do not use any Markdown or HTML syntax for formatting. 
         """
-
         const val TODO_TXT = """
             Your response must strictly follow the todo.txt format rules.
             
@@ -94,10 +106,10 @@ object AI {
             6.  Optional project tags, prefixed with `+`, e.g., `+project-name`.
             
             Example of a valid todo.txt line:
-            `(A) 2025-12-31 Finalize the project report +knet-ai @work`
+            (A) 2025-12-31 Finalize the project report +knet-ai @work
             
             Another example of a completed task:
-            `x 2025-08-28 2025-08-26 Call the client to confirm meeting details @calls`
+            x 2025-08-28 2025-08-26 Call the client to confirm meeting details @calls
             
             Do not add any explanations, introductory text, or formatting beyond what is specified in the todo.txt format. Your entire output must consist of one or more lines formatted correctly according to these rules.
         """
@@ -112,89 +124,86 @@ object AI {
         LMStudio.id to LMStudio
     )
 
-    private fun getAIAgent(
+    private fun getClientAndModel(
         lLMProvider: LLMProvider,
         model: String,
         apiKey: String = "",
-        baseUrl: String = "",
-        systemPrompt: String = ""
-    ): AIAgent<String, String> {
-        val (client, llmModel) = when (lLMProvider) {
-            LLMProvider.Google -> {
-                val settings =
-                    if (baseUrl.isNotBlank()) GoogleClientSettings(baseUrl = baseUrl) else GoogleClientSettings()
-                GoogleLLMClient(apiKey, settings) to Gemini.getModel(model)
-            }
-
-            LLMProvider.OpenAI -> {
-                val settings =
-                    if (baseUrl.isNotBlank()) OpenAIClientSettings(baseUrl = baseUrl) else OpenAIClientSettings()
-                OpenAILLMClient(apiKey, settings) to OpenAI.getModel(model)
-            }
-
-            LLMProvider.Anthropic -> {
-                val settings =
-                    if (baseUrl.isNotBlank()) AnthropicClientSettings(baseUrl = baseUrl) else AnthropicClientSettings()
-                AnthropicLLMClient(apiKey, settings) to Anthropic.getModel(model)
-            }
-
-            LLMProvider.DeepSeek -> {
-                val settings =
-                    if (baseUrl.isNotBlank()) DeepSeekClientSettings(baseUrl = baseUrl) else DeepSeekClientSettings()
-                DeepSeekLLMClient(apiKey, settings) to DeepSeek.getModel(model)
-            }
-
-            LLMProvider.Ollama -> {
-                val client =
-                    if (baseUrl.isNotBlank()) OllamaClient(baseUrl = baseUrl) else OllamaClient()
-                client to Ollama.getModel(model)
-            }
-
-            LMStudio -> {
-                val settings =
-                    if (baseUrl.isNotBlank()) OpenAIClientSettings(baseUrl = baseUrl) else OpenAIClientSettings()
-                val llModel = LLModel(
-                    provider = LLMProvider.OpenAI,
-                    id = model,
-                    capabilities = listOf(
-                        LLMCapability.Schema.JSON.Basic,
-                        LLMCapability.Temperature
-                    ),
-                    contextLength = 4096L
-                )
-                OpenAILLMClient(apiKey, settings) to llModel
-            }
-
-            else -> {
-                throw IllegalArgumentException("Unsupported LLM provider: $lLMProvider")
-            }
+        baseUrl: String = ""
+    ): Pair<LLMClient, LLModel> = when (lLMProvider) {
+        LLMProvider.Google -> {
+            val settings =
+                if (baseUrl.isNotBlank()) GoogleClientSettings(baseUrl = baseUrl) else GoogleClientSettings()
+            GoogleLLMClient(apiKey, settings) to Gemini.getModel(model)
         }
-        return AIAgent(
-            executor = SingleLLMPromptExecutor(client),
-            llmModel = llmModel,
-            systemPrompt = systemPrompt
-        )
+
+        LLMProvider.OpenAI -> {
+            val settings =
+                if (baseUrl.isNotBlank()) OpenAIClientSettings(baseUrl = baseUrl) else OpenAIClientSettings()
+            OpenAILLMClient(apiKey, settings) to OpenAI.getModel(model)
+        }
+
+        LLMProvider.Anthropic -> {
+            val settings =
+                if (baseUrl.isNotBlank()) AnthropicClientSettings(baseUrl = baseUrl) else AnthropicClientSettings()
+            AnthropicLLMClient(apiKey, settings) to Anthropic.getModel(model)
+        }
+
+        LLMProvider.DeepSeek -> {
+            val settings =
+                if (baseUrl.isNotBlank()) DeepSeekClientSettings(baseUrl = baseUrl) else DeepSeekClientSettings()
+            DeepSeekLLMClient(apiKey, settings) to DeepSeek.getModel(model)
+        }
+
+        LLMProvider.Ollama -> {
+            val client =
+                if (baseUrl.isNotBlank()) OllamaClient(baseUrl = baseUrl) else OllamaClient()
+            client to Ollama.getModel(model)
+        }
+
+        LMStudio -> {
+            val settings =
+                if (baseUrl.isNotBlank()) OpenAIClientSettings(baseUrl = baseUrl) else OpenAIClientSettings()
+            val llModel = LLModel(
+                provider = LLMProvider.OpenAI,
+                id = model,
+                capabilities = listOf(
+                    LLMCapability.Schema.JSON.Basic,
+                    LLMCapability.Temperature
+                ),
+                contextLength = 4096L
+            )
+            OpenAILLMClient(apiKey, settings) to llModel
+        }
+
+        else -> {
+            throw IllegalArgumentException("Unsupported LLM provider: $lLMProvider")
+        }
     }
 
     suspend fun generateText(
         lLMProvider: LLMProvider,
         model: String,
-        prompt: String,
+        userInput: String,
         apiKey: String = "",
         baseUrl: String = "",
-        systemPrompt: String = ""
-    ): GenerateResult {
+        systemPrompt: String = "",
+        attachments: List<Attachment> = emptyList()
+    ): GenerationResult {
         return try {
-            val systemPrompt =
-                "You are a helpful assistant for a note-taking application. Your primary role is to generate content that will be directly inserted into a user's note. Therefore, your responses should be concise, well-structured, and formatted as if they are part of a larger document. Avoid conversational language, introductions, or summaries unless explicitly asked for. Generate only the requested content in a direct, written style suitable for notes.\n$systemPrompt"
-            val agent = getAIAgent(lLMProvider, model, apiKey, baseUrl, systemPrompt)
-            val result = agent.run(prompt)
-            GenerateResult(success = true, message = result)
+            val systemPrompt = SystemPrompt.SYSTEM + "\n" + systemPrompt
+            val (client, llmModel) = getClientAndModel(lLMProvider, model, apiKey, baseUrl)
+            val promptExecutor = SingleLLMPromptExecutor(client)
+            val prompt = prompt("ai-notepad-chat") {
+                system(systemPrompt)
+                user(content = userInput, attachments = attachments)
+            }
+            val responses = promptExecutor.execute(prompt, llmModel)
+            val result = responses.joinToString("\n") { it.content }.trim()
+            GenerationResult.Success(result)
         } catch (e: Exception) {
-            println("Error generating text: ${e.message}")
-            GenerateResult(
-                success = false,
-                message = e.message ?: "An unknown error occurred while generating text :("
+            println("Error generating text: ${e.stackTraceToString()}")
+            GenerationResult.Error(
+                e.message ?: "An unknown error occurred while generating text :("
             )
         }
     }
@@ -204,17 +213,15 @@ object AI {
         model: String,
         apiKey: String = "",
         baseUrl: String = ""
-    ): GenerateResult {
+    ): GenerationResult {
         return try {
-            val agent = getAIAgent(lLMProvider, model, apiKey, baseUrl)
+            val (client, llmModel) = getClientAndModel(lLMProvider, model, apiKey, baseUrl)
+            val agent = AIAgent(SingleLLMPromptExecutor(client), llmModel)
             val result = agent.run("Hi")
-            GenerateResult(success = true, message = result)
+            GenerationResult.Success(result)
         } catch (e: Exception) {
-            println("Error testing connection: ${e.message}")
-            GenerateResult(
-                success = false,
-                message = e.message ?: "An unknown error occurred :("
-            )
+            println("Error testing connection: ${e.stackTraceToString()}")
+            GenerationResult.Error(e.message ?: "An unknown error occurred :(")
         }
     }
 

@@ -6,6 +6,7 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.aspectRatio
@@ -37,7 +38,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.yangdai.kori.OS
 import org.yangdai.kori.currentPlatformInfo
@@ -183,7 +183,7 @@ class EditorRowScopeImpl(val showElevation: Boolean) : EditorRowScope {
  * @param type The type of note, which determines the editor row to be displayed (Markdown, Plain Text...).
  * @param scrollState The scroll state for the editor.
  * @param textFieldState The state of the text field used in the editor.
- * @param bottomPadding The padding at the bottom of the editor row.
+ * @param paddingValues The paddings at the bottom and start of the editor row.
  * @param isTemplate Whether the editor row is displayed in a template.
  * @param onEditorRowAction A callback function triggered by editor row actions.
  */
@@ -193,7 +193,7 @@ fun AdaptiveEditorRow(
     type: NoteType,
     scrollState: ScrollState,
     textFieldState: TextFieldState,
-    bottomPadding: Dp,
+    paddingValues: PaddingValues,
     isTemplate: Boolean = false,
     onEditorRowAction: (EditorRowAction) -> Unit = { _ -> }
 ) {
@@ -210,11 +210,8 @@ fun AdaptiveEditorRow(
 
     val scope = remember(showElevation) { EditorRowScopeImpl(showElevation) }
 
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = color
-    ) {
-        Column(Modifier.padding(bottom = bottomPadding)) {
+    Surface(modifier = Modifier.fillMaxWidth(), color = color) {
+        Column(Modifier.padding(paddingValues)) {
             AnimatedVisibility(visible) {
                 with(scope) {
                     when (type) {

@@ -7,6 +7,7 @@ import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -361,7 +362,7 @@ fun FileScreen(
                 visible = !isReadView && !isSearching,
                 type = fileEditingState.fileType,
                 scrollState = scrollState,
-                bottomPadding = innerPadding.calculateBottomPadding(),
+                paddingValues = PaddingValues(bottom = innerPadding.calculateBottomPadding()),
                 textFieldState = viewModel.contentState
             ) { action ->
                 when (action) {

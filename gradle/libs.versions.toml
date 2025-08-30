@@ -24,7 +24,7 @@ androidx-biometric = "1.4.0-alpha04"
 androidx-documentfile = "1.1.0"
 androidx-browser = "1.9.0"
 androidx-glance = "1.2.0-beta01"
-composeHotReload = "1.0.0-beta05"
+composeHotReload = "1.0.0-beta06"
 webkit = "1.14.0"
 
 [libraries]

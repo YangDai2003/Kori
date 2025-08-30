@@ -14,6 +14,7 @@ import kmark.flavours.gfm.GFMFlavourDescriptor
 import kmark.html.HtmlGenerator
 import kmark.parser.MarkdownParser
 import knet.ai.AI
+import knet.ai.GenerationResult
 import knet.ai.providers.LMStudio
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -43,8 +44,8 @@ import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.domain.sort.FolderSortType
-import org.yangdai.kori.presentation.component.note.GenerateNoteButtonState
 import org.yangdai.kori.presentation.component.note.HeaderNode
+import org.yangdai.kori.presentation.component.note.addInNewLine
 import org.yangdai.kori.presentation.component.note.findHeadersRecursive
 import org.yangdai.kori.presentation.component.note.markdown.Properties.getPropertiesLineRange
 import org.yangdai.kori.presentation.navigation.Screen
@@ -311,14 +312,9 @@ class NoteViewModel(
 
     val isGenerateNoteButtonVisible = combine(
         dataStoreRepository.booleanFlow(Constants.Preferences.IS_AI_ENABLED),
-        contentSnapshotFlow,
         snapshotFlow { _noteEditingState.value.noteType }
-    ) { isAiEnabled, content, noteType ->
-        isAiEnabled && content.isEmpty() && noteType != NoteType.Drawing
-    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), false)
-
-    private val _generateNoteButtonState = MutableStateFlow(GenerateNoteButtonState())
-    val generateNoteButtonState = _generateNoteButtonState.asStateFlow()
+    ) { isAiEnabled, noteType -> isAiEnabled && noteType != NoteType.Drawing }
+        .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), false)
 
     // LLM Config: Base URL, Model, API Key
     private suspend fun getLLMConfig(llmProvider: LLMProvider): Triple<String, String, String> {
@@ -387,9 +383,12 @@ class NoteViewModel(
         }
     }
 
-    fun createNoteByPrompt(prompt: String) {
+    fun createNoteByPrompt(
+        userInput: String,
+        onSuccess: () -> Unit,
+        onError: (errorMessage: String) -> Unit
+    ) {
         viewModelScope.launch(Dispatchers.SuitableForIO) {
-            _generateNoteButtonState.value = GenerateNoteButtonState(isGenerating = true)
             val defaultProviderId = dataStoreRepository.getString(
                 Constants.Preferences.AI_PROVIDER,
                 AI.providers.keys.first()
@@ -401,7 +400,7 @@ class NoteViewModel(
                 baseUrl = llmConfig.first,
                 model = llmConfig.second,
                 apiKey = llmConfig.third,
-                prompt = prompt,
+                userInput = userInput,
                 systemPrompt = when (_noteEditingState.value.noteType) {
                     NoteType.PLAIN_TEXT -> AI.SystemPrompt.PLAIN_TEXT
                     NoteType.MARKDOWN -> AI.SystemPrompt.MARKDOWN
@@ -409,14 +408,20 @@ class NoteViewModel(
                     else -> ""
                 }
             )
-            if (!response.success) {
-                _generateNoteButtonState.update { it.copy(errorMessage = response.message) }
-            } else {
-                withContext(Dispatchers.Main) {
-                    contentState.setTextAndPlaceCursorAtEnd(response.message)
+            when (response) {
+                is GenerationResult.Error -> {
+                    withContext(Dispatchers.Main) {
+                        onError(response.errorMessage)
+                    }
+                }
+
+                is GenerationResult.Success -> {
+                    contentState.edit { addInNewLine(response.text) }
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
                 }
             }
-            _generateNoteButtonState.update { it.copy(isGenerating = false) }
         }
     }
 }

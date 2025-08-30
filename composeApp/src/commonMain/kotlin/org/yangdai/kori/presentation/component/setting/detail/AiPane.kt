@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -66,7 +67,7 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import knet.ai.AI
-import knet.ai.GenerateResult
+import knet.ai.GenerationResult
 import knet.ai.providers.Anthropic
 import knet.ai.providers.DeepSeek
 import knet.ai.providers.Gemini
@@ -153,7 +154,7 @@ fun AiPane(mainViewModel: MainViewModel) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     if (aiPaneState.llmProvider == item.value)
                                         Icon(
-                                            modifier = Modifier.padding(end = 4.dp),
+                                            modifier = Modifier.padding(end = 4.dp).size(16.dp),
                                             imageVector = Icons.Default.Favorite,
                                             tint = MaterialTheme.colorScheme.tertiary,
                                             contentDescription = null
@@ -365,7 +366,7 @@ private fun TestConnectionColumn(
 ) {
     val scope = rememberCoroutineScope()
     var isTesting by remember { mutableStateOf(false) }
-    var generateResult by remember { mutableStateOf<GenerateResult?>(null) }
+    var generateResult by remember { mutableStateOf<GenerationResult?>(null) }
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -375,10 +376,9 @@ private fun TestConnectionColumn(
                 containerColor = if (isTesting || generateResult == null) {
                     MaterialTheme.colorScheme.secondaryContainer
                 } else {
-                    if (generateResult!!.success) {
-                        MaterialTheme.colorScheme.secondaryContainer
-                    } else {
-                        MaterialTheme.colorScheme.errorContainer
+                    when (generateResult) {
+                        is GenerationResult.Error -> MaterialTheme.colorScheme.errorContainer
+                        else -> MaterialTheme.colorScheme.secondaryContainer
                     }
                 }
             ),
@@ -406,11 +406,12 @@ private fun TestConnectionColumn(
 
         AnimatedVisibility(generateResult != null) {
             generateResult?.let {
-                if (it.success) {
-                    Text("Success\n" + it.message)
-                } else {
-                    Text("Failure\n" + it.message)
-                }
+                Text(
+                    text = when (it) {
+                        is GenerationResult.Error -> "Failure\n" + it.errorMessage
+                        is GenerationResult.Success -> "Success\n" + it.text
+                    }
+                )
             }
         }
     }

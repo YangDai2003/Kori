@@ -18,6 +18,7 @@ import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -160,7 +161,6 @@ fun NoteScreen(
     val outline by viewModel.outline.collectAsStateWithLifecycle()
     val html by viewModel.html.collectAsStateWithLifecycle()
     val isGenerateNoteButtonVisible by viewModel.isGenerateNoteButtonVisible.collectAsStateWithLifecycle()
-    val generateNoteButtonState by viewModel.generateNoteButtonState.collectAsStateWithLifecycle()
 
     DisposableEffect(Unit) {
         onDispose {
@@ -444,7 +444,10 @@ fun NoteScreen(
                 visible = !isReadView && !isSearching,
                 type = noteEditingState.noteType,
                 scrollState = scrollState,
-                bottomPadding = innerPadding.calculateBottomPadding(),
+                paddingValues = PaddingValues(
+                    bottom = innerPadding.calculateBottomPadding(),
+                    start = if (isGenerateNoteButtonVisible && noteEditingState.noteType != NoteType.PLAIN_TEXT) 52.dp else 0.dp,
+                ),
                 textFieldState = viewModel.contentState
             ) { action ->
                 when (action) {
@@ -458,11 +461,18 @@ fun NoteScreen(
     }
 
     AnimatedVisibility(
-        visible = isGenerateNoteButtonVisible,
+        visible = isGenerateNoteButtonVisible && !isReadView && !isSearching,
         enter = fadeIn() + slideInHorizontally { -it },
         exit = fadeOut() + slideOutHorizontally { -it }
     ) {
-        GenerateNoteButton(generateNoteButtonState) { viewModel.createNoteByPrompt(it) }
+        GenerateNoteButton(
+            startGenerating = { prompt, onSuccess, onError ->
+                if (prompt.isNotBlank())
+                    viewModel.createNoteByPrompt(prompt, onSuccess, onError)
+                else
+                    onError("Prompt cannot be empty")
+            }
+        )
     }
 
     AnimatedVisibility(
