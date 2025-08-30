@@ -327,8 +327,8 @@ fun NoteScreen(
                     editor = { modifier ->
                         AdaptiveEditor(
                             modifier = modifier,
-                            type = noteEditingState.noteType,
-                            textState = viewModel.contentState,
+                            noteType = noteEditingState.noteType,
+                            textFieldState = viewModel.contentState,
                             scrollState = scrollState,
                             isReadOnly = isReadView,
                             isLineNumberVisible = editorState.showLineNumber,

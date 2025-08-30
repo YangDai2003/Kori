@@ -245,8 +245,8 @@ fun FileScreen(
                     editor = { modifier ->
                         AdaptiveEditor(
                             modifier = modifier,
-                            type = fileEditingState.fileType,
-                            textState = viewModel.contentState,
+                            noteType = fileEditingState.fileType,
+                            textFieldState = viewModel.contentState,
                             scrollState = scrollState,
                             isReadOnly = isReadView,
                             isLineNumberVisible = editorState.showLineNumber,

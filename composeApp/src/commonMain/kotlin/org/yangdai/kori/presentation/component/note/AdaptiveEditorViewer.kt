@@ -100,8 +100,8 @@ fun ColumnScope.AdaptiveEditorViewer(
  * A composable function that renders an adaptive editor based on the provided `NoteType`.
  *
  * @param modifier Modifier to be applied to the editor.
- * @param type The type of note, which determines the editor to be displayed (Markdown, Plain Text...).
- * @param textState The state of the text field used in the editor.
+ * @param noteType The type of note, which determines the editor to be displayed (Markdown, Plain Text...).
+ * @param textFieldState The state of the text field used in the editor.
  * @param scrollState The scroll state for the editor.
  * @param isReadOnly Whether the editor is in read-only mode.
  * @param isLineNumberVisible Whether line numbers are visible in the editor.
@@ -112,24 +112,26 @@ fun ColumnScope.AdaptiveEditorViewer(
 @Composable
 fun AdaptiveEditor(
     modifier: Modifier,
-    type: NoteType,
-    textState: TextFieldState,
+    noteType: NoteType,
+    textFieldState: TextFieldState,
     scrollState: ScrollState,
     isReadOnly: Boolean,
     isLineNumberVisible: Boolean,
     isLintActive: Boolean,
     headerRange: IntRange?,
     findAndReplaceState: FindAndReplaceState,
-    isAIEnabled: Boolean = false
-) = when (type) {
+    isAIEnabled: Boolean = false,
+    onAIContextMenuEvent: (AIContextMenuEvent) -> Unit = {}
+) = when (noteType) {
     NoteType.MARKDOWN -> {
         TextEditor(
             modifier = modifier,
-            textFieldModifier = Modifier.markdownKeyEvents(textState).dragAndDropText(textState)
-                .aiContextMenu(!textState.selection.collapsed && isAIEnabled) {
-
+            textFieldModifier = Modifier.markdownKeyEvents(textFieldState)
+                .dragAndDropText(textFieldState)
+                .aiContextMenu(!textFieldState.selection.collapsed && isAIEnabled) {
+                    onAIContextMenuEvent(it)
                 },
-            textState = textState,
+            textState = textFieldState,
             scrollState = scrollState,
             findAndReplaceState = findAndReplaceState,
             headerRange = headerRange,
@@ -145,8 +147,12 @@ fun AdaptiveEditor(
     NoteType.TODO -> {
         TextEditor(
             modifier = modifier,
-            textFieldModifier = Modifier.todoTextKeyEvents(textState).dragAndDropText(textState),
-            textState = textState,
+            textFieldModifier = Modifier.todoTextKeyEvents(textFieldState)
+                .dragAndDropText(textFieldState)
+                .aiContextMenu(!textFieldState.selection.collapsed && isAIEnabled) {
+                    onAIContextMenuEvent(it)
+                },
+            textState = textFieldState,
             scrollState = scrollState,
             findAndReplaceState = findAndReplaceState,
             editorProperties = EditorProperties(
@@ -160,8 +166,12 @@ fun AdaptiveEditor(
     NoteType.PLAIN_TEXT -> {
         TextEditor(
             modifier = modifier,
-            textFieldModifier = Modifier.plainTextKeyEvents(textState).dragAndDropText(textState),
-            textState = textState,
+            textFieldModifier = Modifier.plainTextKeyEvents(textFieldState)
+                .dragAndDropText(textFieldState)
+                .aiContextMenu(!textFieldState.selection.collapsed && isAIEnabled) {
+                    onAIContextMenuEvent(it)
+                },
+            textState = textFieldState,
             scrollState = scrollState,
             findAndReplaceState = findAndReplaceState,
             editorProperties = EditorProperties(
