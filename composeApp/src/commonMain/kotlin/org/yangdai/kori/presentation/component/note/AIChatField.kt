@@ -28,6 +28,7 @@ import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.GeneratingTokens
+import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
@@ -243,5 +244,19 @@ fun GenerateNoteButton(startGenerating: (prompt: String, onSuccess: () -> Unit, 
                     }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalComposeUiApi::class)
+@Composable
+fun LoadingScrim() {
+    BackHandler {}
+    Box(
+        modifier = Modifier.fillMaxSize()
+            .pointerInput(Unit) { }
+            .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.32f)),
+        contentAlignment = Alignment.Center
+    ) {
+        ContainedLoadingIndicator()
     }
 }

@@ -116,6 +116,7 @@ import org.yangdai.kori.presentation.component.note.AdaptiveViewer
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.GenerateNoteButton
+import org.yangdai.kori.presentation.component.note.LoadingScrim
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.note.TitleTextField
@@ -617,5 +618,14 @@ fun NoteScreen(
             html = html,
             onDismissRequest = { showExportDialog = false }
         )
+    }
+
+    val isGenerating by viewModel.isGenerating.collectAsStateWithLifecycle()
+    AnimatedVisibility(
+        visible = isGenerating,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        LoadingScrim()
     }
 }

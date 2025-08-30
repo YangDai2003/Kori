@@ -6,7 +6,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.substring
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -419,14 +418,7 @@ class NoteViewModel(
                 }
 
                 is GenerationResult.Success -> {
-                    val initSelection = contentState.selection
-                    contentState.edit {
-                        addAfter(response.text)
-                        selection = TextRange(
-                            start = initSelection.min + response.text.length,
-                            end = initSelection.max + response.text.length
-                        )
-                    }
+                    contentState.edit { addAfter(response.text) }
                     withContext(Dispatchers.Main) {
                         onSuccess()
                     }
@@ -435,10 +427,14 @@ class NoteViewModel(
         }
     }
 
+    private val _isGenerating = MutableStateFlow(false)
+    val isGenerating = _isGenerating.asStateFlow()
+
     fun onAIContextMenuEvent(event: AIContextMenuEvent) {
         viewModelScope.launch(Dispatchers.SuitableForIO) {
             val selection = contentState.selection
             if (selection.collapsed) return@launch
+            _isGenerating.update { true }
             val selectedText = contentState.text.substring(selection)
             val defaultProviderId = dataStoreRepository.getString(
                 Constants.Preferences.AI_PROVIDER,
@@ -465,6 +461,7 @@ class NoteViewModel(
             if (response is GenerationResult.Success) {
                 contentState.edit { replace(selection.min, selection.max, response.text) }
             }
+            _isGenerating.update { false }
         }
     }
 }
