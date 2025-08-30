@@ -1,9 +1,12 @@
 package org.yangdai.kori.presentation.screen.template
 
+import ai.koog.agents.utils.SuitableForIO
+import ai.koog.prompt.llm.LLMProvider
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.text.substring
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,9 +14,13 @@ import androidx.navigation.toRoute
 import kmark.flavours.gfm.GFMFlavourDescriptor
 import kmark.html.HtmlGenerator
 import kmark.parser.MarkdownParser
+import knet.ai.AI
+import knet.ai.GenerationResult
+import knet.ai.providers.LMStudio
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,11 +34,14 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.NoteRepository
+import org.yangdai.kori.presentation.component.note.AIContextMenuEvent
 import org.yangdai.kori.presentation.component.note.HeaderNode
+import org.yangdai.kori.presentation.component.note.addAfter
 import org.yangdai.kori.presentation.component.note.findHeadersRecursive
 import org.yangdai.kori.presentation.component.note.markdown.Properties.getPropertiesLineRange
 import org.yangdai.kori.presentation.navigation.Screen
@@ -48,7 +58,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalTime::class, ExperimentalFoundationApi::class, ExperimentalUuidApi::class)
 class TemplateViewModel(
     savedStateHandle: SavedStateHandle,
-    dataStoreRepository: DataStoreRepository,
+    private val dataStoreRepository: DataStoreRepository,
     private val noteRepository: NoteRepository
 ) : ViewModel() {
     private val route = savedStateHandle.toRoute<Screen.Template>()
@@ -218,6 +228,161 @@ class TemplateViewModel(
                 noteRepository.deleteNoteById(_noteEditingState.value.id)
             }
             _uiEventChannel.send(UiEvent.NavigateUp)
+        }
+    }
+
+    /*----*/
+
+    val isAIEnabled = combine(
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_AI_ENABLED),
+        snapshotFlow { _noteEditingState.value.noteType }
+    ) { isAiEnabled, noteType -> isAiEnabled && noteType != NoteType.Drawing }
+        .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), false)
+
+    // LLM Config: Base URL, Model, API Key
+    private suspend fun getLLMConfig(llmProvider: LLMProvider): Triple<String, String, String> {
+        return withContext(Dispatchers.IO) {
+            when (llmProvider) {
+                LLMProvider.Google -> {
+                    val baseUrl =
+                        dataStoreRepository.getString(Constants.Preferences.GEMINI_BASE_URL, "")
+                    val model =
+                        dataStoreRepository.getString(Constants.Preferences.GEMINI_MODEL, "")
+                    val apiKey =
+                        dataStoreRepository.getString(Constants.Preferences.GEMINI_API_KEY, "")
+                    Triple(baseUrl, model, apiKey)
+                }
+
+                LLMProvider.OpenAI -> {
+                    val baseUrl =
+                        dataStoreRepository.getString(Constants.Preferences.OPENAI_BASE_URL, "")
+                    val model =
+                        dataStoreRepository.getString(Constants.Preferences.OPENAI_MODEL, "")
+                    val apiKey =
+                        dataStoreRepository.getString(Constants.Preferences.OPENAI_API_KEY, "")
+                    Triple(baseUrl, model, apiKey)
+                }
+
+                LLMProvider.Anthropic -> {
+                    val baseUrl =
+                        dataStoreRepository.getString(Constants.Preferences.ANTHROPIC_BASE_URL, "")
+                    val model =
+                        dataStoreRepository.getString(Constants.Preferences.ANTHROPIC_MODEL, "")
+                    val apiKey =
+                        dataStoreRepository.getString(Constants.Preferences.ANTHROPIC_API_KEY, "")
+                    Triple(baseUrl, model, apiKey)
+                }
+
+                LLMProvider.DeepSeek -> {
+                    val baseUrl =
+                        dataStoreRepository.getString(Constants.Preferences.DEEPSEEK_BASE_URL, "")
+                    val model =
+                        dataStoreRepository.getString(Constants.Preferences.DEEPSEEK_MODEL, "")
+                    val apiKey =
+                        dataStoreRepository.getString(Constants.Preferences.DEEPSEEK_API_KEY, "")
+                    Triple(baseUrl, model, apiKey)
+                }
+
+                LLMProvider.Ollama -> {
+                    val baseUrl =
+                        dataStoreRepository.getString(Constants.Preferences.OLLAMA_BASE_URL, "")
+                    val model =
+                        dataStoreRepository.getString(Constants.Preferences.OLLAMA_MODEL, "")
+                    Triple(baseUrl, model, "")
+                }
+
+                LMStudio -> {
+                    val baseUrl =
+                        dataStoreRepository.getString(Constants.Preferences.LM_STUDIO_BASE_URL, "")
+                    val model =
+                        dataStoreRepository.getString(Constants.Preferences.LM_STUDIO_MODEL, "")
+                    Triple(baseUrl, model, "")
+                }
+
+                else -> {
+                    Triple("", "", "")
+                }
+            }
+        }
+    }
+
+    fun generateNoteFromPrompt(
+        userInput: String,
+        onSuccess: () -> Unit,
+        onError: (errorMessage: String) -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.SuitableForIO) {
+            val defaultProviderId = dataStoreRepository.getString(
+                Constants.Preferences.AI_PROVIDER,
+                AI.providers.keys.first()
+            )
+            val llmProvider = AI.providers[defaultProviderId] ?: AI.providers.values.first()
+            val llmConfig = getLLMConfig(llmProvider)
+            val response = AI.executePrompt(
+                lLMProvider = llmProvider,
+                baseUrl = llmConfig.first,
+                model = llmConfig.second,
+                apiKey = llmConfig.third,
+                userInput = userInput,
+                systemPrompt = when (_noteEditingState.value.noteType) {
+                    NoteType.PLAIN_TEXT -> AI.SystemPrompt.PLAIN_TEXT
+                    NoteType.MARKDOWN -> AI.SystemPrompt.MARKDOWN
+                    NoteType.TODO -> AI.SystemPrompt.TODO_TXT
+                    else -> ""
+                }
+            )
+            when (response) {
+                is GenerationResult.Error -> {
+                    withContext(Dispatchers.Main) {
+                        onError(response.errorMessage)
+                    }
+                }
+
+                is GenerationResult.Success -> {
+                    contentState.edit { addAfter(response.text) }
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                }
+            }
+        }
+    }
+
+    private val _isGenerating = MutableStateFlow(false)
+    val isGenerating = _isGenerating.asStateFlow()
+
+    fun onAIContextMenuEvent(event: AIContextMenuEvent) {
+        viewModelScope.launch(Dispatchers.SuitableForIO) {
+            val selection = contentState.selection
+            if (selection.collapsed) return@launch
+            _isGenerating.update { true }
+            val selectedText = contentState.text.substring(selection)
+            val defaultProviderId = dataStoreRepository.getString(
+                Constants.Preferences.AI_PROVIDER,
+                AI.providers.keys.first()
+            )
+            val llmProvider = AI.providers[defaultProviderId] ?: AI.providers.values.first()
+            val llmConfig = getLLMConfig(llmProvider)
+            val response = AI.executePrompt(
+                lLMProvider = llmProvider,
+                baseUrl = llmConfig.first,
+                model = llmConfig.second,
+                apiKey = llmConfig.third,
+                userInput = when (event) {
+                    AIContextMenuEvent.Rewrite -> AI.EventPrompt.REWRITE
+                    AIContextMenuEvent.Summarize -> AI.EventPrompt.SUMMARIZE
+                } + "\n" + selectedText,
+                systemPrompt = when (_noteEditingState.value.noteType) {
+                    NoteType.PLAIN_TEXT -> AI.SystemPrompt.PLAIN_TEXT
+                    NoteType.MARKDOWN -> AI.SystemPrompt.MARKDOWN
+                    NoteType.TODO -> AI.SystemPrompt.TODO_TXT
+                    else -> ""
+                }
+            )
+            if (response is GenerationResult.Success) {
+                contentState.edit { replace(selection.min, selection.max, response.text) }
+            }
+            _isGenerating.update { false }
         }
     }
 }

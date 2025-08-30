@@ -1,6 +1,10 @@
 package org.yangdai.kori.presentation.screen.file
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -83,6 +87,8 @@ import org.yangdai.kori.presentation.component.note.AdaptiveEditorViewer
 import org.yangdai.kori.presentation.component.note.AdaptiveViewer
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
+import org.yangdai.kori.presentation.component.note.GenerateNoteButton
+import org.yangdai.kori.presentation.component.note.LoadingScrim
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.note.TitleTextField
@@ -112,6 +118,7 @@ fun FileScreen(
     val outline by viewModel.outline.collectAsStateWithLifecycle()
     val html by viewModel.html.collectAsStateWithLifecycle()
     val needSave by viewModel.needSave.collectAsStateWithLifecycle()
+    val isAIEnabled by viewModel.isAIEnabled.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.loadFile(file)
@@ -252,7 +259,9 @@ fun FileScreen(
                             isLineNumberVisible = editorState.showLineNumber,
                             isLintActive = editorState.isMarkdownLintEnabled,
                             headerRange = selectedHeader,
-                            findAndReplaceState = findAndReplaceState
+                            findAndReplaceState = findAndReplaceState,
+                            isAIEnabled = isAIEnabled,
+                            onAIContextMenuEvent = { viewModel.onAIContextMenuEvent(it) }
                         )
                     },
                     viewer = if (fileEditingState.fileType == NoteType.MARKDOWN || fileEditingState.fileType == NoteType.TODO) { modifier ->
@@ -272,7 +281,10 @@ fun FileScreen(
                 visible = !isReadView && !isSearching,
                 type = fileEditingState.fileType,
                 scrollState = scrollState,
-                paddingValues = PaddingValues(bottom = innerPadding.calculateBottomPadding()),
+                paddingValues = PaddingValues(
+                    bottom = innerPadding.calculateBottomPadding(),
+                    start = if (isAIEnabled && fileEditingState.fileType != NoteType.PLAIN_TEXT) 52.dp else 0.dp,
+                ),
                 textFieldState = viewModel.contentState
             ) { action ->
                 when (action) {
@@ -283,6 +295,21 @@ fun FileScreen(
                 }
             }
         }
+    }
+
+    AnimatedVisibility(
+        visible = isAIEnabled && !isReadView && !isSearching,
+        enter = fadeIn() + slideInHorizontally { -it },
+        exit = fadeOut() + slideOutHorizontally { -it }
+    ) {
+        GenerateNoteButton(
+            startGenerating = { prompt, onSuccess, onError ->
+                if (prompt.isNotBlank())
+                    viewModel.generateNoteFromPrompt(prompt, onSuccess, onError)
+                else
+                    onError("Prompt cannot be empty")
+            }
+        )
     }
 
     TemplatesBottomSheet(
@@ -445,5 +472,14 @@ fun FileScreen(
             ),
             onDismissRequest = { showShareDialog = false }
         )
+    }
+
+    val isGenerating by viewModel.isGenerating.collectAsStateWithLifecycle()
+    AnimatedVisibility(
+        visible = isGenerating,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        LoadingScrim()
     }
 }

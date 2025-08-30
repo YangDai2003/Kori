@@ -1,6 +1,10 @@
 package org.yangdai.kori.presentation.screen.template
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -81,6 +85,8 @@ import org.yangdai.kori.presentation.component.note.AdaptiveEditorRow
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorViewer
 import org.yangdai.kori.presentation.component.note.AdaptiveViewer
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
+import org.yangdai.kori.presentation.component.note.GenerateNoteButton
+import org.yangdai.kori.presentation.component.note.LoadingScrim
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.note.TitleTextField
@@ -105,6 +111,7 @@ fun TemplateScreen(
     val editorState by viewModel.editorState.collectAsStateWithLifecycle()
     val html by viewModel.html.collectAsStateWithLifecycle()
     val outline by viewModel.outline.collectAsStateWithLifecycle()
+    val isAIEnabled by viewModel.isAIEnabled.collectAsStateWithLifecycle()
 
     DisposableEffect(Unit) {
         onDispose {
@@ -239,7 +246,9 @@ fun TemplateScreen(
                             isLineNumberVisible = editorState.showLineNumber,
                             isLintActive = editorState.isMarkdownLintEnabled,
                             headerRange = selectedHeader,
-                            findAndReplaceState = findAndReplaceState
+                            findAndReplaceState = findAndReplaceState,
+                            isAIEnabled = isAIEnabled,
+                            onAIContextMenuEvent = { viewModel.onAIContextMenuEvent(it) }
                         )
                     },
                     viewer = if (noteEditingState.noteType == NoteType.MARKDOWN || noteEditingState.noteType == NoteType.TODO) { modifier ->
@@ -259,11 +268,29 @@ fun TemplateScreen(
                 visible = !isReadView && !isSearching,
                 type = noteEditingState.noteType,
                 scrollState = scrollState,
-                paddingValues = PaddingValues(bottom = innerPadding.calculateBottomPadding()),
+                paddingValues = PaddingValues(
+                    bottom = innerPadding.calculateBottomPadding(),
+                    start = if (isAIEnabled && noteEditingState.noteType != NoteType.PLAIN_TEXT) 52.dp else 0.dp,
+                ),
                 textFieldState = viewModel.contentState,
                 isTemplate = true
             )
         }
+    }
+
+    AnimatedVisibility(
+        visible = isAIEnabled && !isReadView && !isSearching,
+        enter = fadeIn() + slideInHorizontally { -it },
+        exit = fadeOut() + slideOutHorizontally { -it }
+    ) {
+        GenerateNoteButton(
+            startGenerating = { prompt, onSuccess, onError ->
+                if (prompt.isNotBlank())
+                    viewModel.generateNoteFromPrompt(prompt, onSuccess, onError)
+                else
+                    onError("Prompt cannot be empty")
+            }
+        )
     }
 
     NoteSideSheet(
@@ -429,5 +456,14 @@ fun TemplateScreen(
             html = html,
             onDismissRequest = { showExportDialog = false }
         )
+    }
+
+    val isGenerating by viewModel.isGenerating.collectAsStateWithLifecycle()
+    AnimatedVisibility(
+        visible = isGenerating,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        LoadingScrim()
     }
 }
