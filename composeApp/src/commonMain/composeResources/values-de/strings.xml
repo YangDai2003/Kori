@@ -126,7 +126,7 @@
     <string name="model">Modell</string>
     <string name="key">Schlüssel</string>
     <string name="set_as_default">Als Standard festlegen</string>
-    <string name="describe_the_note_you_want_to_generate">Beschreiben Sie die Notiz, die Sie erstellen möchten...</string>
+    <string name="describe_the_note_you_want_to_generate">Beschreiben Sie die Notiz, die Sie erstellen möchten</string>
     <string name="rewrite">Umschreiben</string>
     <string name="summarize">Zusammenfassen</string>
 

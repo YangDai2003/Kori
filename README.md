@@ -15,6 +15,12 @@
 Kori is an evolution of [Open Note](https://github.com/YangDai2003/OpenNote-Compose), aiming to
 provide a consistent note-taking experience across all platforms.
 
+[<img alt="Get it on Google Play" src="screenshots/google_play.png" width="200px">](https://play.google.com/store/apps/details?id=org.yangdai.kori&pcampaignid=web_share)
+[<img alt="Get it on GitHub" src="screenshots/github.png" width="200px">](https://github.com/YangDai2003/Kori/releases)
+
+To balance the account fees of the app store, the app will be sold at a very low price. You can also
+get it for free from GitHub. The app itself is no different.
+
 ## ✨ Key Features
 
 Kori is packed with features designed to enhance your productivity and creativity:
@@ -33,6 +39,32 @@ Kori is packed with features designed to enhance your productivity and creativit
       _OpenAI_, _Anthropic_, and _DeepSeek_ using your own API keys.
     * Flexibly use self-hosted models (e.g., _Ollama_, _LMStudio_) by configuring the base URL.
     * All AI features are entirely optional. **You can completely disable all AI functionalities**.
+
+### Advanced Capabilities:
+
+- **Note SideSheet**: Automatically generates a **note outline** based on heading levels, allowing
+  you to click and scroll to the corresponding section. Displays **word count, line count, and more
+  ** at a glance.
+- **Find and replace**: The note is too long and you can't find the location of a certain text? Want
+  to modify it in batches but it's too annoying to edit one by one? Try this feature.
+- **Note Templates:** Insert notes from the "Templates" folder as templates, with automatic date and
+  time formatting.
+- **Local Image, Video and Audio Support:** Directly import local images, videos and audio from the
+  device into notes, with in-app preview.
+
+### Additional Features:
+
+- **Accept Shared Text:** The app can directly receive text shared from other applications and
+  create a new note with it.
+- **Directly Open Documents:** The app can be selected as handler for various text document types (
+  such as .txt, .md, and .html), allowing them to be opened directly and converted into notes.
+- **Export Options:** Notes can be exported in various formats, including TXT, Markdown, PDF, and
+  HTML, for versatile sharing and usage.
+- **Material 3 Expressive Design:** Adheres to Material Design 3 Expressive guidelines for a modern
+  and cohesive user interface.
+- **Comprehensive Mouse and Keyboard Support:** The app has been thoroughly adapted for seamless
+  interaction with mice and external physical keyboards.
+- **Responsive Design:** Optimized for various screen sizes and device orientations.
 
 ## 🌎 Translations
 
