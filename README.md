@@ -72,12 +72,12 @@ Kori is packed with features designed to enhance your productivity and creativit
 ### Phone
 
 <p align="center">
-  <img src="screenshots/phone_1.png" width="30%" alt=""/>
-  <img src="screenshots/phone_2.png" width="30%" alt=""/>
-  <img src="screenshots/phone_3.png" width="30%" alt=""/>
-  <img src="screenshots/widget_1.png" width="30%" alt=""/>
-  <img src="screenshots/widget_2.png" width="30%" alt=""/>
-  <img src="screenshots/widget_3.png" width="30%" alt=""/>
+  <img src="screenshots/phone_1.png" width="16%" alt=""/>
+  <img src="screenshots/phone_2.png" width="16%" alt=""/>
+  <img src="screenshots/phone_3.png" width="16%" alt=""/>
+  <img src="screenshots/widget_1.png" width="16%" alt=""/>
+  <img src="screenshots/widget_2.png" width="16%" alt=""/>
+  <img src="screenshots/widget_3.png" width="16%" alt=""/>
 </p>
 
 ### Tablet
