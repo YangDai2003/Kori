@@ -60,7 +60,7 @@ object AI {
             You should use standard Markdown syntax for formatting text, such as:
             - Headings (#, ##, ###, ####, #####, ######)
             - Bold (**text**) and Italic (_text_)
-            - Unordered lists (using -, *, or +)
+            - Unordered lists (- text, + text)
             - Ordered lists (e.g., 1., 2., 3.)
             - Blockquotes (> text)
             - Strikethrough (~~text~~)

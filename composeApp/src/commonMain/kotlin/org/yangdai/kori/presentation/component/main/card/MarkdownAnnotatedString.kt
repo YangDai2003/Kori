@@ -18,6 +18,9 @@ fun buildMarkdownAnnotatedString(text: String) =
         applyTableStyles(text, isInCodeBlock)
         applyInlineMathStyles(text, isInCodeBlock)
         findAndApplyMathBlockStyles(text)
+        applyBoldStyles(text, isInCodeBlock)
+        applyItalicStyles(text, isInCodeBlock)
+        applyStrikethroughStyles(text, isInCodeBlock)
     }
 
 /**
@@ -293,4 +296,73 @@ private fun AnnotatedString.Builder.findAndApplyMathBlockStyles(
         }
     }
     return ranges
+}
+
+private fun AnnotatedString.Builder.applyBoldStyles(
+    originalText: String,
+    isInCodeBlock: (Int) -> Boolean
+) {
+    MarkdownFormat.boldRegex.findAll(originalText).forEach { match ->
+        if (isInCodeBlock(match.range.first)) return@forEach
+
+        val marker = match.groupValues[1]
+        val markerSize = marker.length
+
+        // 高亮标记 (e.g., **)
+        addStyle(MarkdownFormat.marker, match.range.first, match.range.first + markerSize)
+        addStyle(MarkdownFormat.marker, match.range.last - markerSize + 1, match.range.last + 1)
+
+        // 对内容应用加粗样式
+        addStyle(
+            MarkdownFormat.boldStyle,
+            match.range.first + markerSize,
+            match.range.last - markerSize + 1
+        )
+    }
+}
+
+private fun AnnotatedString.Builder.applyItalicStyles(
+    originalText: String,
+    isInCodeBlock: (Int) -> Boolean
+) {
+    // 注意：这个正则表达式会匹配 *...* 和 _..._ 但会避免匹配 **...** 和 __...__ 的一部分
+    MarkdownFormat.italicRegex.findAll(originalText).forEach { match ->
+        if (isInCodeBlock(match.range.first)) return@forEach
+
+        val marker = match.groupValues[1]
+        val markerSize = marker.length
+
+        // 高亮标记 (e.g., *)
+        addStyle(MarkdownFormat.marker, match.range.first, match.range.first + markerSize)
+        addStyle(MarkdownFormat.marker, match.range.last - markerSize + 1, match.range.last + 1)
+
+        // 对内容应用斜体样式
+        addStyle(
+            MarkdownFormat.italicStyle,
+            match.range.first + markerSize,
+            match.range.last - markerSize + 1
+        )
+    }
+}
+
+private fun AnnotatedString.Builder.applyStrikethroughStyles(
+    originalText: String,
+    isInCodeBlock: (Int) -> Boolean
+) {
+    MarkdownFormat.strikethroughRegex.findAll(originalText).forEach { match ->
+        if (isInCodeBlock(match.range.first)) return@forEach
+
+        val markerSize = 2 // "~~" 的长度
+
+        // 高亮标记 (~~)
+        addStyle(MarkdownFormat.marker, match.range.first, match.range.first + markerSize)
+        addStyle(MarkdownFormat.marker, match.range.last - markerSize + 1, match.range.last + 1)
+
+        // 对内容应用删除线样式
+        addStyle(
+            MarkdownFormat.strikethroughStyle,
+            match.range.first + markerSize,
+            match.range.last - markerSize + 1
+        )
+    }
 }

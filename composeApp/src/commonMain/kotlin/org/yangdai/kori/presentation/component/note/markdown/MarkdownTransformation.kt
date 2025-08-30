@@ -28,6 +28,9 @@ class MarkdownTransformation : OutputTransformation {
         applyTableStyles(isInCodeBlock)
         applyInlineMathStyles(isInCodeBlock)
         findAndApplyMathBlockStyles()
+        applyBoldStyles(isInCodeBlock)
+        applyItalicStyles(isInCodeBlock)
+        applyStrikethroughStyles(isInCodeBlock)
     }
 
     /**
@@ -278,6 +281,66 @@ class MarkdownTransformation : OutputTransformation {
         }
         return ranges
     }
+
+    private fun TextFieldBuffer.applyBoldStyles(isInCodeBlock: (Int) -> Boolean) {
+        MarkdownFormat.boldRegex.findAll(originalText).forEach { match ->
+            if (isInCodeBlock(match.range.first)) return@forEach
+
+            val marker = match.groupValues[1]
+            val markerSize = marker.length
+
+            // 高亮标记 (e.g., **)
+            addStyle(MarkdownFormat.marker, match.range.first, match.range.first + markerSize)
+            addStyle(MarkdownFormat.marker, match.range.last - markerSize + 1, match.range.last + 1)
+
+            // 对内容应用加粗样式
+            addStyle(
+                MarkdownFormat.boldStyle,
+                match.range.first + markerSize,
+                match.range.last - markerSize + 1
+            )
+        }
+    }
+
+    private fun TextFieldBuffer.applyItalicStyles(isInCodeBlock: (Int) -> Boolean) {
+        // 注意：这个正则表达式会匹配 *...* 和 _..._ 但会避免匹配 **...** 和 __...__ 的一部分
+        MarkdownFormat.italicRegex.findAll(originalText).forEach { match ->
+            if (isInCodeBlock(match.range.first)) return@forEach
+
+            val marker = match.groupValues[1]
+            val markerSize = marker.length
+
+            // 高亮标记 (e.g., *)
+            addStyle(MarkdownFormat.marker, match.range.first, match.range.first + markerSize)
+            addStyle(MarkdownFormat.marker, match.range.last - markerSize + 1, match.range.last + 1)
+
+            // 对内容应用斜体样式
+            addStyle(
+                MarkdownFormat.italicStyle,
+                match.range.first + markerSize,
+                match.range.last - markerSize + 1
+            )
+        }
+    }
+
+    private fun TextFieldBuffer.applyStrikethroughStyles(isInCodeBlock: (Int) -> Boolean) {
+        MarkdownFormat.strikethroughRegex.findAll(originalText).forEach { match ->
+            if (isInCodeBlock(match.range.first)) return@forEach
+
+            val markerSize = 2 // "~~" 的长度
+
+            // 高亮标记 (~~)
+            addStyle(MarkdownFormat.marker, match.range.first, match.range.first + markerSize)
+            addStyle(MarkdownFormat.marker, match.range.last - markerSize + 1, match.range.last + 1)
+
+            // 对内容应用删除线样式
+            addStyle(
+                MarkdownFormat.strikethroughStyle,
+                match.range.first + markerSize,
+                match.range.last - markerSize + 1
+            )
+        }
+    }
 }
 
 object MarkdownFormat {
@@ -296,6 +359,9 @@ object MarkdownFormat {
     val monoContent = SpanStyle(fontFamily = FontFamily.Monospace)
     val linkText = SpanStyle(color = linkColor, textDecoration = TextDecoration.Underline)
     val linkUrl = SpanStyle(color = Color.Gray, fontStyle = FontStyle.Italic)
+    val boldStyle = SpanStyle(fontWeight = FontWeight.Bold)
+    val italicStyle = SpanStyle(fontStyle = FontStyle.Italic)
+    val strikethroughStyle = SpanStyle(textDecoration = TextDecoration.LineThrough)
 
     // 为不同 alert 类型定义更鲜明的样式
     val noteStyle = SpanStyle(color = Color(0xFF2F81F7), background = Color(0x142F81F7))
@@ -356,4 +422,32 @@ object MarkdownFormat {
     val inlineMathRegex = Regex("""(?<!\$)\$([^\n$]+?)\$(?!\$)""")
     val latexRegex = Regex("""(\\[a-zA-Z]+)|(\d+(?:\.\d+)?)|([{}()\[\]])|([+*/=^_,.<>|-])""")
     val mathBlockRegex = Regex("""\$\$([\s\S]+?)\$\$""")
+
+    /**
+     * 匹配 **粗体** 或 __粗体__
+     * - `(\*\*|__)`: 第1捕获组，匹配 `**` 或 `__`
+     * - `(?=\S)`: 正向先行断言，确保标记后面紧跟一个非空白字符
+     * - `(.+?)`: 第2捕获组，非贪婪地匹配任何字符
+     * - `(?<=\S)`: 反向先行断言，确保标记前面紧跟一个非空白字符
+     * - `\1`: 反向引用，确保开始和结束标记匹配
+     */
+    val boldRegex = Regex("""(\*\*|__)(?=\S)(.+?)(?<=\S)\1""")
+
+    /**
+     * 匹配 *斜体* 或 _斜体_
+     * - `(?<![*_])`: 反向先行断言，确保前面不是另一个 `*` 或 `_` (避免匹配粗体)
+     * - `(\*|_)`: 第1捕获组，匹配 `*` 或 `_`
+     * - `(?![*_])`: 正向先行断言，确保后面不是另一个 `*` 或 `_`
+     * - `(?=\S)(.+?)(?<=\S)`: 与粗体逻辑相同，匹配内容
+     * - `\1`: 确保开始和结束标记匹配
+     */
+    val italicRegex = Regex("""(?<![*_])([*_])(?![*_])(?=\S)(.+?)(?<=\S)\1(?![*_])""")
+
+    /**
+     * 匹配 ~~删除线~~
+     * - `(~~)`: 捕获组
+     * - `(?=\S)(.+?)(?<=\S)`: 与粗体逻辑相同
+     * - `\1`: 确保开始和结束标记匹配
+     */
+    val strikethroughRegex = Regex("""(~~)(?=\S)(.+?)(?<=\S)\1""")
 }

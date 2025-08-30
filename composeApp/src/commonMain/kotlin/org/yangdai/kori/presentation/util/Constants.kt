@@ -96,15 +96,9 @@ val SampleMarkdownNote = """
     ###### Heading 6
     ```
 
-    ## Text Formatting
+    ## Basic Text Formatting
 
-    **Bold text** or __also bold__
-
-    *Italic text* or _also italic_
-
-    ***Bold and italic*** or ___also bold and italic___
-
-    ~~Strikethrough~~ or <del>also strikethrough</del>
+    **Bold** & _italic_ & ~~strikethrough~~
 
     <ins>Underline</ins> and <mark>Highlight</mark>
 
