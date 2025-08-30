@@ -113,7 +113,7 @@ private fun parseTodoLines(lines: List<String>): Pair<List<TodoItem>, List<TodoI
 }
 
 @Composable
-fun TodoView(
+fun TodoViewer(
     todoText: String,
     modifier: Modifier = Modifier,
 ) {

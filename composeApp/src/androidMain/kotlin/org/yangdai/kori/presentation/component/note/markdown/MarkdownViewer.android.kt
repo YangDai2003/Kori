@@ -41,7 +41,7 @@ import kotlin.math.roundToInt
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
-actual fun MarkdownView(
+actual fun MarkdownViewer(
     modifier: Modifier,
     html: String,
     scrollState: ScrollState,

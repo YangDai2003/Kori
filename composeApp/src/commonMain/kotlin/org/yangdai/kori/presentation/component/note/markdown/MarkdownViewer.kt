@@ -42,7 +42,7 @@ data class MarkdownStyles(
 }
 
 @Composable
-expect fun MarkdownView(
+expect fun MarkdownViewer(
     modifier: Modifier,
     html: String,
     scrollState: ScrollState,

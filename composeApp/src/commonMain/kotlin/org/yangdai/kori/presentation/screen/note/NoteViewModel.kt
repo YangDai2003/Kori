@@ -310,7 +310,7 @@ class NoteViewModel(
 
     /*----*/
 
-    val isGenerateNoteButtonVisible = combine(
+    val isAIEnabled = combine(
         dataStoreRepository.booleanFlow(Constants.Preferences.IS_AI_ENABLED),
         snapshotFlow { _noteEditingState.value.noteType }
     ) { isAiEnabled, noteType -> isAiEnabled && noteType != NoteType.Drawing }

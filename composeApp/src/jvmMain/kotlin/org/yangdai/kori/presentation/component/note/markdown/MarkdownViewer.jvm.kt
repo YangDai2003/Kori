@@ -66,7 +66,7 @@ private fun processHtml(
 
 @Suppress("SetJavaScriptEnabled")
 @Composable
-actual fun MarkdownView(
+actual fun MarkdownViewer(
     modifier: Modifier,
     html: String,
     scrollState: ScrollState,

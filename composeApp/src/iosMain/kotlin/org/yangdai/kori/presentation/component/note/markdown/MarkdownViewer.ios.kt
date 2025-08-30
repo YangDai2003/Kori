@@ -84,7 +84,7 @@ private fun processHtml(
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
-actual fun MarkdownView(
+actual fun MarkdownViewer(
     modifier: Modifier,
     html: String,
     scrollState: ScrollState,
