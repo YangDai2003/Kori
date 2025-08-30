@@ -43,7 +43,6 @@ actual fun Modifier.aiContextMenu(onEvent: (AIContextMenuEvent) -> Unit): Modifi
         item(key = AIContextMenuEvent.Rewrite, label = rewriteLabel) {
             onEvent(AIContextMenuEvent.Rewrite)
         }
-        separator()
         item(key = AIContextMenuEvent.Summarize, label = summarizeLabel) {
             onEvent(AIContextMenuEvent.Summarize)
         }

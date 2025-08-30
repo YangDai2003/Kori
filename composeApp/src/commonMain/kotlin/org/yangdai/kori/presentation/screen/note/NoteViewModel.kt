@@ -6,6 +6,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.substring
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -47,7 +48,7 @@ import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.domain.sort.FolderSortType
 import org.yangdai.kori.presentation.component.note.AIContextMenuEvent
 import org.yangdai.kori.presentation.component.note.HeaderNode
-import org.yangdai.kori.presentation.component.note.addInNewLine
+import org.yangdai.kori.presentation.component.note.addAfter
 import org.yangdai.kori.presentation.component.note.findHeadersRecursive
 import org.yangdai.kori.presentation.component.note.markdown.Properties.getPropertiesLineRange
 import org.yangdai.kori.presentation.navigation.Screen
@@ -418,7 +419,14 @@ class NoteViewModel(
                 }
 
                 is GenerationResult.Success -> {
-                    contentState.edit { addInNewLine(response.text) }
+                    val initSelection = contentState.selection
+                    contentState.edit {
+                        addAfter(response.text)
+                        selection = TextRange(
+                            start = initSelection.min + response.text.length,
+                            end = initSelection.max + response.text.length
+                        )
+                    }
                     withContext(Dispatchers.Main) {
                         onSuccess()
                     }
