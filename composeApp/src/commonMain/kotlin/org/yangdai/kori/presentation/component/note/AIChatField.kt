@@ -171,6 +171,7 @@ fun GenerateNoteButton(startGenerating: (prompt: String, onSuccess: () -> Unit, 
                     state = prompt,
                     readOnly = isGenerating,
                     isError = errorMessage != null,
+                    textStyle = MaterialTheme.typography.bodyMedium,
                     shape = MaterialTheme.shapes.extraLargeIncreased,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color.Transparent,
@@ -178,7 +179,12 @@ fun GenerateNoteButton(startGenerating: (prompt: String, onSuccess: () -> Unit, 
                         disabledBorderColor = Color.Transparent,
                     ),
                     trailingIcon = { Spacer(Modifier.size(48.dp)) },
-                    placeholder = { Text(stringResource(Res.string.describe_the_note_you_want_to_generate)) }
+                    placeholder = {
+                        Text(
+                            stringResource(Res.string.describe_the_note_you_want_to_generate),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
                 )
                 LaunchedEffect(Unit) {
                     delay(300L)

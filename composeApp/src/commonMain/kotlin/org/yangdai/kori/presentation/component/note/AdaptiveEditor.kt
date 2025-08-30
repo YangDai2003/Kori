@@ -23,7 +23,7 @@ import org.yangdai.kori.presentation.component.note.todo.TodoTextEditor
  */
 @Composable
 fun AdaptiveEditor(
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
     type: NoteType,
     textState: TextFieldState,
     scrollState: ScrollState,
