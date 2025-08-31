@@ -109,7 +109,6 @@ fun DataPane(mainViewModel: MainViewModel) {
 
         DetailPaneItem(
             title = "Migrate from OpenNote JSON File",
-            description = stringResource(Res.string.restore_description),
             icon = Icons.Outlined.Restore,
             onClick = { launchOpenNoteJsonPicker = true }
         )
