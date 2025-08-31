@@ -33,8 +33,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import org.yangdai.kori.data.local.dao.FolderDao
+import org.yangdai.kori.data.local.entity.FolderEntity
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
+import org.yangdai.kori.data.local.entity.defaultFolderColor
 import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
@@ -48,9 +50,11 @@ import org.yangdai.kori.presentation.screen.settings.CardPaneState
 import org.yangdai.kori.presentation.screen.settings.CardSize
 import org.yangdai.kori.presentation.screen.settings.DataActionState
 import org.yangdai.kori.presentation.screen.settings.EditorPaneState
+import org.yangdai.kori.presentation.screen.settings.OpenNoteBackupData
 import org.yangdai.kori.presentation.screen.settings.SecurityPaneState
 import org.yangdai.kori.presentation.screen.settings.StylePaneState
 import org.yangdai.kori.presentation.screen.settings.TemplatePaneState
+import org.yangdai.kori.presentation.screen.settings.decryptBackupDataWithCompatibility
 import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.util.SampleMarkdownNote
 import org.yangdai.kori.presentation.util.SampleTodoNote
@@ -58,6 +62,7 @@ import kotlin.io.encoding.Base64
 import kotlin.math.round
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -470,7 +475,12 @@ class MainViewModel(
                             "mdtext",
                             "html"
                         )
-                    ) NoteType.MARKDOWN else NoteType.PLAIN_TEXT
+                    ) NoteType.MARKDOWN
+                    else if (
+                        title.contains("todo", ignoreCase = true)
+                        && it.getExtension().lowercase() == "txt"
+                    ) NoteType.TODO
+                    else NoteType.PLAIN_TEXT
                     val noteEntity = NoteEntity(
                         id = Uuid.random().toString(),
                         title = title,
@@ -540,6 +550,49 @@ class MainViewModel(
                     )
                 }
                 noteRepository.insertNotes(decodedNotes)
+                _dataActionState.update { it.copy(progress = 1f) }
+            }.onSuccess {
+                delay(1500L)
+                _dataActionState.value = DataActionState()
+            }.onFailure { throwable ->
+                _dataActionState.update { it.copy(message = throwable.message ?: "Error :(") }
+            }
+        }
+    }
+
+    @OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
+    fun restoreFromOpenNoteJson(json: String) {
+        dataActionJob?.cancel()
+        dataActionJob = viewModelScope.launch(Dispatchers.IO) {
+            _dataActionState.value = DataActionState(infinite = true, progress = 0f)
+            delay(300L)
+            runCatching {
+                val decryptedJson = decryptBackupDataWithCompatibility(json)
+                val backupData = Json.decodeFromString<OpenNoteBackupData>(decryptedJson)
+                val longToUuidMap: Map<Long?, String> = backupData.folders.associate {
+                    it.id to Uuid.random().toString()
+                }
+                val folders = backupData.folders.map {
+                    FolderEntity(
+                        id = longToUuidMap[it.id] ?: Uuid.random().toString(),
+                        name = it.name,
+                        colorValue = it.color?.toLong() ?: defaultFolderColor
+                    )
+                }
+                val notes = backupData.notes.map {
+                    val folderId = it.folderId?.let { id -> longToUuidMap[id] }
+                    NoteEntity(
+                        id = Uuid.random().toString(),
+                        title = it.title,
+                        content = it.content,
+                        createdAt = Instant.fromEpochMilliseconds(it.timestamp).toString(),
+                        isDeleted = it.isDeleted,
+                        folderId = folderId,
+                        noteType = NoteType.MARKDOWN
+                    )
+                }
+                folderRepository.insertFolders(folders)
+                noteRepository.insertNotes(notes)
                 _dataActionState.update { it.copy(progress = 1f) }
             }.onSuccess {
                 delay(1500L)

@@ -10,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CleaningServices
 import androidx.compose.material.icons.outlined.Restore
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -52,6 +53,7 @@ fun DataPane(mainViewModel: MainViewModel) {
     var launchFilesPicker by remember { mutableStateOf(false) }
     var launchJsonExporter by remember { mutableStateOf(false) }
     var launchJsonPicker by remember { mutableStateOf(false) }
+    var launchOpenNoteJsonPicker by remember { mutableStateOf(false) }
     var selectFolderId by rememberSaveable { mutableStateOf<String?>(null) }
     var json by rememberSaveable { mutableStateOf<String?>(null) }
 
@@ -103,6 +105,15 @@ fun DataPane(mainViewModel: MainViewModel) {
             onClick = { showWarningDialog = true }
         )
 
+        HorizontalDivider(Modifier.padding(vertical = 8.dp))
+
+        DetailPaneItem(
+            title = "Migrate from OpenNote JSON File",
+            description = stringResource(Res.string.restore_description),
+            icon = Icons.Outlined.Restore,
+            onClick = { launchOpenNoteJsonPicker = true }
+        )
+
         Spacer(Modifier.height(8.dp))
     }
 
@@ -130,6 +141,11 @@ fun DataPane(mainViewModel: MainViewModel) {
     JsonPicker(launchJsonPicker) { json ->
         if (json != null) mainViewModel.restoreFromJson(json)
         launchJsonPicker = false
+    }
+
+    JsonPicker(launchOpenNoteJsonPicker) { json ->
+        if (json != null) mainViewModel.restoreFromOpenNoteJson(json)
+        launchOpenNoteJsonPicker = false
     }
 
     if (showWarningDialog)
