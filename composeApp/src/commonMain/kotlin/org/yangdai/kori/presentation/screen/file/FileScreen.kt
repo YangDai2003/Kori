@@ -3,8 +3,6 @@ package org.yangdai.kori.presentation.screen.file
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -69,14 +67,13 @@ import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
 import org.yangdai.kori.presentation.component.dialog.ShareDialog
 import org.yangdai.kori.presentation.component.dialog.TemplatesBottomSheet
+import org.yangdai.kori.presentation.component.note.AIAssistChips
 import org.yangdai.kori.presentation.component.note.AdaptiveEditor
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorRow
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorViewer
 import org.yangdai.kori.presentation.component.note.AdaptiveViewer
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
-import org.yangdai.kori.presentation.component.note.GenerateNoteButton
-import org.yangdai.kori.presentation.component.note.LoadingScrim
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.note.TitleTextField
@@ -103,7 +100,8 @@ fun FileScreen(
     val editorState by viewModel.editorState.collectAsStateWithLifecycle()
     val processedContent by viewModel.processedContent.collectAsStateWithLifecycle()
     val needSave by viewModel.needSave.collectAsStateWithLifecycle()
-    val isAIEnabled by viewModel.isAIEnabled.collectAsStateWithLifecycle()
+    val showAI by viewModel.showAI.collectAsStateWithLifecycle()
+    val isGenerating by viewModel.isGenerating.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.loadFile(file)
@@ -244,9 +242,7 @@ fun FileScreen(
                             isLineNumberVisible = editorState.showLineNumber,
                             isLintActive = editorState.isMarkdownLintEnabled,
                             headerRange = selectedHeader,
-                            findAndReplaceState = findAndReplaceState,
-                            isAIEnabled = isAIEnabled,
-                            onAIContextMenuEvent = { viewModel.onAIContextMenuEvent(it) }
+                            findAndReplaceState = findAndReplaceState
                         )
                     },
                     viewer = if (editingState.fileType == NoteType.MARKDOWN || editingState.fileType == NoteType.TODO) { modifier ->
@@ -266,7 +262,7 @@ fun FileScreen(
                 scrollState = scrollState,
                 paddingValues = PaddingValues(
                     bottom = innerPadding.calculateBottomPadding(),
-                    start = if (isAIEnabled && editingState.fileType != NoteType.PLAIN_TEXT) 52.dp else 0.dp,
+                    start = if (showAI && viewModel.contentState.selection.collapsed && editingState.fileType != NoteType.PLAIN_TEXT) 52.dp else 0.dp,
                 ),
                 textFieldState = viewModel.contentState
             ) { action ->
@@ -281,18 +277,14 @@ fun FileScreen(
     }
 
     AnimatedVisibility(
-        visible = isAIEnabled && !isReadView && !isSearching,
-        enter = fadeIn() + slideInHorizontally { -it },
-        exit = fadeOut() + slideOutHorizontally { -it }
+        visible = showAI && !isReadView && !isSearching,
+        enter = fadeIn(),
+        exit = fadeOut()
     ) {
-        GenerateNoteButton(
-            startGenerating = { prompt, onSuccess, onError ->
-                if (prompt.isNotBlank())
-                    viewModel.generateNoteFromPrompt(prompt, onSuccess, onError)
-                else
-                    onError("Prompt cannot be empty")
-            }
-        )
+        AIAssistChips(
+            isGenerating = isGenerating,
+            isTextSelectionCollapsed = viewModel.contentState.selection.collapsed,
+        ) { viewModel.onAIAssistEvent(it) }
     }
 
     TemplatesBottomSheet(
@@ -395,14 +387,5 @@ fun FileScreen(
             ),
             onDismissRequest = { showShareDialog = false }
         )
-    }
-
-    val isGenerating by viewModel.isGenerating.collectAsStateWithLifecycle()
-    AnimatedVisibility(
-        visible = isGenerating,
-        enter = fadeIn(),
-        exit = fadeOut()
-    ) {
-        LoadingScrim()
     }
 }

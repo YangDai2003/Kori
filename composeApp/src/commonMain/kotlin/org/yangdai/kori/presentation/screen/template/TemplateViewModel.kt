@@ -38,9 +38,8 @@ import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.NoteRepository
-import org.yangdai.kori.presentation.component.note.AIContextMenuEvent
+import org.yangdai.kori.presentation.component.note.AIAssistEvent
 import org.yangdai.kori.presentation.component.note.ProcessedContent
-import org.yangdai.kori.presentation.component.note.addAfter
 import org.yangdai.kori.presentation.component.note.processMarkdown
 import org.yangdai.kori.presentation.component.note.processTodo
 import org.yangdai.kori.presentation.navigation.Screen
@@ -199,7 +198,7 @@ class TemplateViewModel(
 
     /*----*/
 
-    val isAIEnabled = combine(
+    val showAI = combine(
         dataStoreRepository.booleanFlow(Constants.Preferences.IS_AI_ENABLED),
         snapshotFlow { _templateEditingState.value.noteType }
     ) { isAiEnabled, noteType -> isAiEnabled && noteType != NoteType.Drawing }
@@ -272,56 +271,13 @@ class TemplateViewModel(
         }
     }
 
-    fun generateNoteFromPrompt(
-        userInput: String,
-        onSuccess: () -> Unit,
-        onError: (errorMessage: String) -> Unit
-    ) {
-        viewModelScope.launch(Dispatchers.SuitableForIO) {
-            val defaultProviderId = dataStoreRepository.getString(
-                Constants.Preferences.AI_PROVIDER,
-                AI.providers.keys.first()
-            )
-            val llmProvider = AI.providers[defaultProviderId] ?: AI.providers.values.first()
-            val llmConfig = getLLMConfig(llmProvider)
-            val response = AI.executePrompt(
-                lLMProvider = llmProvider,
-                baseUrl = llmConfig.first,
-                model = llmConfig.second,
-                apiKey = llmConfig.third,
-                userInput = userInput,
-                systemPrompt = when (_templateEditingState.value.noteType) {
-                    NoteType.PLAIN_TEXT -> AI.SystemPrompt.PLAIN_TEXT
-                    NoteType.MARKDOWN -> AI.SystemPrompt.MARKDOWN
-                    NoteType.TODO -> AI.SystemPrompt.TODO_TXT
-                    else -> ""
-                }
-            )
-            when (response) {
-                is GenerationResult.Error -> {
-                    withContext(Dispatchers.Main) {
-                        onError(response.errorMessage)
-                    }
-                }
-
-                is GenerationResult.Success -> {
-                    contentState.edit { addAfter(response.text) }
-                    withContext(Dispatchers.Main) {
-                        onSuccess()
-                    }
-                }
-            }
-        }
-    }
-
     private val _isGenerating = MutableStateFlow(false)
     val isGenerating = _isGenerating.asStateFlow()
 
-    fun onAIContextMenuEvent(event: AIContextMenuEvent) {
+    fun onAIAssistEvent(event: AIAssistEvent) {
         viewModelScope.launch(Dispatchers.SuitableForIO) {
-            val selection = contentState.selection
-            if (selection.collapsed) return@launch
             _isGenerating.update { true }
+            val selection = contentState.selection
             val selectedText = contentState.text.substring(selection)
             val defaultProviderId = dataStoreRepository.getString(
                 Constants.Preferences.AI_PROVIDER,
@@ -335,9 +291,10 @@ class TemplateViewModel(
                 model = llmConfig.second,
                 apiKey = llmConfig.third,
                 userInput = when (event) {
-                    AIContextMenuEvent.Rewrite -> AI.EventPrompt.REWRITE
-                    AIContextMenuEvent.Summarize -> AI.EventPrompt.SUMMARIZE
-                } + "\n" + selectedText,
+                    AIAssistEvent.Rewrite -> AI.EventPrompt.REWRITE + "\n" + selectedText
+                    AIAssistEvent.Summarize -> AI.EventPrompt.SUMMARIZE + "\n" + selectedText
+                    is AIAssistEvent.Generate -> event.prompt
+                },
                 systemPrompt = when (_templateEditingState.value.noteType) {
                     NoteType.PLAIN_TEXT -> AI.SystemPrompt.PLAIN_TEXT
                     NoteType.MARKDOWN -> AI.SystemPrompt.MARKDOWN
