@@ -66,7 +66,7 @@ import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.ExportDialog
 import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
 import org.yangdai.kori.presentation.component.dialog.ShareDialog
-import org.yangdai.kori.presentation.component.note.AIAssistChips
+import org.yangdai.kori.presentation.component.note.AIAssist
 import org.yangdai.kori.presentation.component.note.AdaptiveEditor
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorRow
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorViewer
@@ -263,7 +263,7 @@ fun TemplateScreen(
         enter = fadeIn(),
         exit = fadeOut()
     ) {
-        AIAssistChips(
+        AIAssist(
             isGenerating = isGenerating,
             isTextSelectionCollapsed = viewModel.contentState.selection.collapsed,
         ) { viewModel.onAIAssistEvent(it) }

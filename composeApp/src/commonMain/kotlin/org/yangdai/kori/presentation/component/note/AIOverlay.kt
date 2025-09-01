@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -131,7 +130,7 @@ sealed interface AIAssistEvent {
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun AIAssistChips(
+fun AIAssist(
     isGenerating: Boolean,
     isTextSelectionCollapsed: Boolean,
     onEvent: (AIAssistEvent) -> Unit
@@ -144,7 +143,7 @@ fun AIAssistChips(
     if (!isTextSelectionCollapsed) {
         Row(
             modifier = Modifier.imePadding()
-                .navigationBarsPadding()
+                .systemBarsPadding()
                 .displayCutoutPadding()
                 .padding(bottom = 48.dp)
                 .horizontalScroll(rememberScrollState()),
