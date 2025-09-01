@@ -320,6 +320,9 @@ class FileViewModel(
                 userInput = when (event) {
                     AIAssistEvent.Rewrite -> AI.EventPrompt.REWRITE + "\n" + selectedText
                     AIAssistEvent.Summarize -> AI.EventPrompt.SUMMARIZE + "\n" + selectedText
+                    AIAssistEvent.Elaborate -> AI.EventPrompt.ELABORATE + "\n" + selectedText
+                    AIAssistEvent.Proofread -> AI.EventPrompt.PROOFREAD + "\n" + selectedText
+                    AIAssistEvent.Shorten -> AI.EventPrompt.SHORTEN + "\n" + selectedText
                     is AIAssistEvent.Generate -> event.prompt
                 },
                 systemPrompt = when (_fileEditingState.value.fileType) {

@@ -130,6 +130,9 @@
     <string name="describe_the_note_you_want_to_generate">Beschreiben Sie die Notiz, die Sie erstellen möchten</string>
     <string name="rewrite">Umschreiben</string>
     <string name="summarize">Zusammenfassen</string>
+    <string name="proofread">Überprüfen</string>
+    <string name="shorten">Kürzen</string>
+    <string name="elaborate">Erweitern</string>
 
     <string name="share_as">Teilen als</string>
     <string name="file">Datei</string>

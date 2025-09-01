@@ -133,6 +133,9 @@
     <string name="describe_the_note_you_want_to_generate">Describe the note you want to generate</string>
     <string name="rewrite">Rewrite</string>
     <string name="summarize">Summarize</string>
+    <string name="proofread">Proofread</string>
+    <string name="shorten">Shorten</string>
+    <string name="elaborate">Elaborate</string>
 
     <string name="share_as">Share as</string>
     <string name="file">File</string>

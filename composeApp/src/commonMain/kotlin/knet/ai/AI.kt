@@ -129,6 +129,11 @@ object AI {
     }
 
     object EventPrompt {
+        /**
+         * 任务：全面重写文本。
+         * 目标：在保留原意的基础上，提升文本的清晰度、流畅性和整体质量。
+         * 这会显著改变句式和用词。
+         */
         const val REWRITE = """
             Your task is to rewrite the following text provided by the user.
             You must adhere to the following instructions:
@@ -143,6 +148,11 @@ object AI {
             Now, rewrite the following text:
         """
 
+        /**
+         * 任务：创建一段独立的摘要。
+         * 目标：将长文本提炼成一段新的、简短的文字，抓住核心要点。
+         * 产出的是一段全新的、概括性的内容。
+         */
         const val SUMMARIZE = """
             Your task is to create a concise summary of the following text provided by the user.
             You must adhere to the following instructions:
@@ -153,6 +163,56 @@ object AI {
             5. Your output must contain only the summary, without any introductory or concluding phrases like "Here is the summary:".
             
             Now, summarize the following text:
+        """
+
+        /**
+         * 任务：仅校对并修正错误。
+         * 目标：修正语法、拼写和标点错误，但最大限度地保留原文的风格和措辞。
+         * 这是一个比 REWRITE 更保守的操作，适用于用户只想修复错误而不希望重塑句子的情况。
+         */
+        const val PROOFREAD = """
+            Your task is to proofread and correct the following text for grammar and spelling errors.
+            You must adhere to the following instructions:
+            1. Correct all grammatical errors, spelling mistakes, and typos.
+            2. Improve punctuation where necessary for clarity.
+            3. Do not alter the original wording, sentence structure, or meaning unless it is grammatically incorrect.
+            4. Your output must contain only the corrected text, without any introductory or concluding phrases.
+            
+            Now, proofread and correct the following text:
+        """
+
+        /**
+         * 任务：精简原文，使其更紧凑。
+         * 目标：在保留原文结构和风格的基础上，删除冗余词汇和多余的句子，降低字数。
+         * 这与 SUMMARIZE 不同，它是在原文上“做减法”，而不是创作新的摘要。
+         */
+        const val SHORTEN = """
+            Your task is to make the following text more concise by shortening it.
+            You must adhere to the following instructions:
+            1. Reduce the word count while preserving the original meaning and all essential information.
+            2. Remove redundant words, filler phrases, and overly complex sentences.
+            3. Combine sentences where it improves flow and conciseness.
+            4. The goal is to create a tighter version of the original text, not a separate summary.
+            5. Your output must contain only the shortened text, without any introductory or concluding phrases.
+            
+            Now, shorten the following text:
+        """
+
+        /**
+         * 任务：扩充原文，增加细节。
+         * 目标：将一个简短的想法或句子，扩展成一个内容更丰富、更完整的段落。
+         * 适用于用户有了一个灵感，但需要帮助来充实它的情况。
+         */
+        const val ELABORATE = """
+            Your task is to elaborate on the following idea or short text, expanding it to be more detailed.
+            You must adhere to the following instructions:
+            1. Expand on the provided points, adding more detail, examples, or explanations to make it more comprehensive.
+            2. Ensure the new text flows logically and maintains a coherent structure.
+            3. The goal is to add meaningful content, not just filler words.
+            4. Maintain a tone consistent with the original idea.
+            5. Your output must contain only the elaborated text, without any introductory or concluding phrases.
+            
+            Now, elaborate on the following text:
         """
     }
 

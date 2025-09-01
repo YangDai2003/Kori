@@ -28,13 +28,12 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DriveFileRenameOutline
 import androidx.compose.material.icons.outlined.GeneratingTokens
-import androidx.compose.material.icons.outlined.Summarize
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ContainedLoadingIndicator
@@ -75,7 +74,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.describe_the_note_you_want_to_generate
+import kori.composeapp.generated.resources.elaborate
+import kori.composeapp.generated.resources.proofread
 import kori.composeapp.generated.resources.rewrite
+import kori.composeapp.generated.resources.shorten
 import kori.composeapp.generated.resources.summarize
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
@@ -102,13 +104,11 @@ private fun LoadingScrim() {
 @Composable
 private fun AIAssistChip(
     onClick: () -> Unit,
-    label: String,
-    icon: @Composable (() -> Unit)? = null
+    label: String
 ) = AssistChip(
     modifier = Modifier.focusProperties { canFocus = false },
     onClick = onClick,
     label = { Text(label) },
-    leadingIcon = icon,
     border = BorderStroke(
         width = 1.dp,
         brush = Brush.verticalGradient(
@@ -123,6 +123,9 @@ private fun AIAssistChip(
 sealed interface AIAssistEvent {
     data object Rewrite : AIAssistEvent
     data object Summarize : AIAssistEvent
+    data object Proofread : AIAssistEvent
+    data object Shorten : AIAssistEvent
+    data object Elaborate : AIAssistEvent
     data class Generate(val prompt: String) : AIAssistEvent
 }
 
@@ -143,21 +146,33 @@ fun AIAssistChips(
             modifier = Modifier.imePadding()
                 .navigationBarsPadding()
                 .displayCutoutPadding()
-                .padding(bottom = 48.dp, start = 8.dp)
+                .padding(bottom = 48.dp)
                 .horizontalScroll(rememberScrollState()),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
+            Spacer(Modifier.width(6.dp))
+            AIAssistChip(
+                onClick = { onEvent(AIAssistEvent.Proofread) },
+                label = stringResource(Res.string.proofread)
+            )
+            AIAssistChip(
+                onClick = { onEvent(AIAssistEvent.Shorten) },
+                label = stringResource(Res.string.shorten)
+            )
+            AIAssistChip(
+                onClick = { onEvent(AIAssistEvent.Elaborate) },
+                label = stringResource(Res.string.elaborate)
+            )
             AIAssistChip(
                 onClick = { onEvent(AIAssistEvent.Rewrite) },
-                label = stringResource(Res.string.rewrite),
-                icon = { Icon(Icons.Outlined.DriveFileRenameOutline, null) }
+                label = stringResource(Res.string.rewrite)
             )
             AIAssistChip(
                 onClick = { onEvent(AIAssistEvent.Summarize) },
-                label = stringResource(Res.string.summarize),
-                icon = { Icon(Icons.Outlined.Summarize, null) }
+                label = stringResource(Res.string.summarize)
             )
+            Spacer(Modifier.width(6.dp))
         }
     } else {
         val backgroundColor by animateColorAsState(
