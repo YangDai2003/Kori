@@ -61,6 +61,7 @@ import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.draw.innerShadow
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -104,6 +105,7 @@ private fun AIAssistChip(
     label: String,
     icon: @Composable (() -> Unit)? = null
 ) = AssistChip(
+    modifier = Modifier.focusProperties { canFocus = false },
     onClick = onClick,
     label = { Text(label) },
     leadingIcon = icon,
@@ -136,12 +138,12 @@ fun AIAssistChips(
 ) {
     val prompt = rememberTextFieldState()
     var inputMode by rememberSaveable { mutableStateOf(false) }
-    if (!isTextSelectionCollapsed)
+    if (!isTextSelectionCollapsed) {
         Row(
             modifier = Modifier.imePadding()
                 .navigationBarsPadding()
                 .displayCutoutPadding()
-                .padding(bottom = 48.dp, start = 4.dp)
+                .padding(bottom = 48.dp, start = 8.dp)
                 .horizontalScroll(rememberScrollState()),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -157,7 +159,7 @@ fun AIAssistChips(
                 icon = { Icon(Icons.Outlined.Summarize, null) }
             )
         }
-    else {
+    } else {
         val backgroundColor by animateColorAsState(
             if (inputMode) MaterialTheme.colorScheme.scrim.copy(alpha = 0.32f)
             else Color.Transparent
