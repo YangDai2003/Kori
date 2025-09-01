@@ -52,7 +52,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -79,18 +78,9 @@ import kfile.ImagesPicker
 import kfile.VideoPicker
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.all_notes
-import kori.composeapp.generated.resources.char_count
-import kori.composeapp.generated.resources.completed_tasks
 import kori.composeapp.generated.resources.created
-import kori.composeapp.generated.resources.line_count
-import kori.composeapp.generated.resources.paragraph_count
-import kori.composeapp.generated.resources.pending_tasks
-import kori.composeapp.generated.resources.progress
 import kori.composeapp.generated.resources.right_panel_open
-import kori.composeapp.generated.resources.total_tasks
 import kori.composeapp.generated.resources.updated
-import kori.composeapp.generated.resources.word_count
-import kori.composeapp.generated.resources.word_count_without_punctuation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -119,19 +109,19 @@ import org.yangdai.kori.presentation.component.note.GenerateNoteButton
 import org.yangdai.kori.presentation.component.note.LoadingScrim
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
+import org.yangdai.kori.presentation.component.note.ProcessedContent
 import org.yangdai.kori.presentation.component.note.TitleTextField
 import org.yangdai.kori.presentation.component.note.addAudioLink
 import org.yangdai.kori.presentation.component.note.addImageLinks
 import org.yangdai.kori.presentation.component.note.addVideoLink
 import org.yangdai.kori.presentation.component.note.drawing.DrawState
-import org.yangdai.kori.presentation.component.note.drawing.InNoteDrawPreview
+import org.yangdai.kori.presentation.component.note.drawing.DrawingViewer
 import org.yangdai.kori.presentation.component.note.drawing.InkScreen
 import org.yangdai.kori.presentation.component.note.drawing.rememberDrawState
 import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.util.formatInstant
-import org.yangdai.kori.presentation.util.formatNumber
 import org.yangdai.kori.presentation.util.isScreenWidthExpanded
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -144,11 +134,9 @@ fun NoteScreen(
     navigateUp: () -> Unit
 ) {
     val foldersWithNoteCounts by viewModel.foldersWithNoteCounts.collectAsStateWithLifecycle()
-    val noteEditingState by viewModel.noteEditingState.collectAsStateWithLifecycle()
-    val textState by viewModel.textState.collectAsStateWithLifecycle()
+    val editingState by viewModel.editingState.collectAsStateWithLifecycle()
     val editorState by viewModel.editorState.collectAsStateWithLifecycle()
-    val outline by viewModel.outline.collectAsStateWithLifecycle()
-    val html by viewModel.html.collectAsStateWithLifecycle()
+    val processedContent by viewModel.processedContent.collectAsStateWithLifecycle()
     val isAIEnabled by viewModel.isAIEnabled.collectAsStateWithLifecycle()
 
     DisposableEffect(Unit) {
@@ -165,18 +153,18 @@ fun NoteScreen(
 
     var isReadView by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(editorState.isDefaultReadingView) {
-        if (editorState.isDefaultReadingView && noteEditingState.id.isNotEmpty()) {
+        if (editorState.isDefaultReadingView && editingState.id.isNotEmpty()) {
             isReadView = true
         }
     }
 
     var folderName by rememberSaveable { mutableStateOf("") }
-    LaunchedEffect(noteEditingState.folderId, foldersWithNoteCounts) {
+    LaunchedEffect(editingState.folderId, foldersWithNoteCounts) {
         withContext(Dispatchers.Default) {
-            folderName = if (noteEditingState.folderId == null) {
+            folderName = if (editingState.folderId == null) {
                 getString(Res.string.all_notes)
             } else {
-                foldersWithNoteCounts.find { it.folder.id == noteEditingState.folderId }?.folder?.name
+                foldersWithNoteCounts.find { it.folder.id == editingState.folderId }?.folder?.name
                     ?: getString(Res.string.all_notes)
             }
         }
@@ -256,14 +244,14 @@ fun NoteScreen(
                         if (isLargeScreen)
                             TitleTextField(
                                 state = viewModel.titleState,
-                                readOnly = isReadView && noteEditingState.noteType != NoteType.Drawing,
+                                readOnly = isReadView && editingState.noteType != NoteType.Drawing,
                                 modifier = Modifier.padding(horizontal = 16.dp)
                             )
                     }
                 },
                 navigationIcon = { PlatformStyleTopAppBarNavigationIcon(navigateUp) },
                 actions = {
-                    if (!isReadView && noteEditingState.noteType != NoteType.Drawing)
+                    if (!isReadView && editingState.noteType != NoteType.Drawing)
                         TooltipIconButton(
                             tipText = "Ctrl + F",
                             icon = if (isSearching) Icons.Default.SearchOff
@@ -306,20 +294,20 @@ fun NoteScreen(
                     else {
                         TitleTextField(
                             state = viewModel.titleState,
-                            readOnly = isReadView && noteEditingState.noteType != NoteType.Drawing,
+                            readOnly = isReadView && editingState.noteType != NoteType.Drawing,
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                         )
                     }
                 }
 
-            if (noteEditingState.noteType == NoteType.Drawing) {
-                InNoteDrawPreview(
+            if (editingState.noteType == NoteType.Drawing) {
+                DrawingViewer(
                     modifier = Modifier.fillMaxWidth()
                         .padding(horizontal = 16.dp)
                         .verticalScroll(scrollState)
                         .clickable { isReadView = !isReadView },
                     imageBitmap = cachedImageBitmap.value,
-                    uuid = noteEditingState.id
+                    uuid = editingState.id
                 )
             } else {
                 AdaptiveEditorViewer(
@@ -328,7 +316,7 @@ fun NoteScreen(
                     editor = { modifier ->
                         AdaptiveEditor(
                             modifier = modifier,
-                            noteType = noteEditingState.noteType,
+                            noteType = editingState.noteType,
                             textFieldState = viewModel.contentState,
                             scrollState = scrollState,
                             isReadOnly = isReadView,
@@ -340,12 +328,10 @@ fun NoteScreen(
                             onAIContextMenuEvent = { viewModel.onAIContextMenuEvent(it) }
                         )
                     },
-                    viewer = if (noteEditingState.noteType == NoteType.MARKDOWN || noteEditingState.noteType == NoteType.TODO) { modifier ->
+                    viewer = if (editingState.noteType == NoteType.MARKDOWN || editingState.noteType == NoteType.TODO) { modifier ->
                         AdaptiveViewer(
                             modifier = modifier,
-                            noteType = noteEditingState.noteType,
-                            html = html,
-                            rawText = viewModel.contentState.text.toString(),
+                            processedContent = processedContent,
                             scrollState = scrollState,
                             isSheetVisible = isSideSheetOpen || showFolderDialog || showTemplatesBottomSheet,
                             printTrigger = printTrigger
@@ -355,11 +341,11 @@ fun NoteScreen(
             }
             AdaptiveEditorRow(
                 visible = !isReadView && !isSearching,
-                type = noteEditingState.noteType,
+                type = editingState.noteType,
                 scrollState = scrollState,
                 paddingValues = PaddingValues(
                     bottom = innerPadding.calculateBottomPadding(),
-                    start = if (isAIEnabled && noteEditingState.noteType != NoteType.PLAIN_TEXT) 52.dp else 0.dp,
+                    start = if (isAIEnabled && editingState.noteType != NoteType.PLAIN_TEXT) 52.dp else 0.dp,
                 ),
                 textFieldState = viewModel.contentState
             ) { action ->
@@ -389,12 +375,12 @@ fun NoteScreen(
     }
 
     AnimatedVisibility(
-        visible = noteEditingState.noteType == NoteType.Drawing && !isReadView,
+        visible = editingState.noteType == NoteType.Drawing && !isReadView,
         enter = scaleIn(initialScale = 0.95f) + slideInVertically { it / 20 } + fadeIn(),
         exit = scaleOut(targetScale = 0.95f) + slideOutVertically { it / 20 } + fadeOut()
     ) {
         val drawState = rememberDrawState(viewModel.contentState.text.toString())
-        InkScreen(drawState, noteEditingState.id, cachedImageBitmap) {
+        InkScreen(drawState, editingState.id, cachedImageBitmap) {
             viewModel.contentState.setTextAndPlaceCursorAtEnd(DrawState.serializeDrawState(drawState))
             isReadView = true
         }
@@ -402,7 +388,7 @@ fun NoteScreen(
 
     if (showFolderDialog) {
         FoldersDialog(
-            oFolderId = noteEditingState.folderId,
+            oFolderId = editingState.folderId,
             foldersWithNoteCounts = foldersWithNoteCounts,
             onDismissRequest = { showFolderDialog = false },
             onSelect = { folderId ->
@@ -419,21 +405,21 @@ fun NoteScreen(
     )
 
     if (showImagesPicker) {
-        ImagesPicker(noteEditingState.id) {
+        ImagesPicker(editingState.id) {
             if (it.isNotEmpty()) viewModel.contentState.edit { addImageLinks(it) }
             showImagesPicker = false
         }
     }
 
     if (showVideoPicker) {
-        VideoPicker(noteEditingState.id) {
+        VideoPicker(editingState.id) {
             if (it != null) viewModel.contentState.edit { addVideoLink(it) }
             showVideoPicker = false
         }
     }
 
     if (showAudioPicker) {
-        AudioPicker(noteEditingState.id) {
+        AudioPicker(editingState.id) {
             if (it != null) viewModel.contentState.edit { addAudioLink(it) }
             showAudioPicker = false
         }
@@ -442,14 +428,14 @@ fun NoteScreen(
     NoteSideSheet(
         isDrawerOpen = isSideSheetOpen,
         onDismiss = { isSideSheetOpen = false },
-        outline = outline,
-        type = noteEditingState.noteType,
+        text = viewModel.contentState.text.toString(),
+        noteType = editingState.noteType,
         onHeaderClick = { selectedHeader = it },
         navigateTo = { navigateToScreen(it) },
         actionContent = {
             val hapticFeedback = LocalHapticFeedback.current
             IconToggleButton(
-                checked = noteEditingState.isPinned,
+                checked = editingState.isPinned,
                 onCheckedChange = {
                     if (it) hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOn)
                     else hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOff)
@@ -457,9 +443,9 @@ fun NoteScreen(
                 }
             ) {
                 Icon(
-                    imageVector = if (noteEditingState.isPinned) Icons.Default.PushPin else Icons.Outlined.PushPin,
+                    imageVector = if (editingState.isPinned) Icons.Default.PushPin else Icons.Outlined.PushPin,
                     contentDescription = null,
-                    tint = if (noteEditingState.isPinned) MaterialTheme.colorScheme.primary
+                    tint = if (editingState.isPinned) MaterialTheme.colorScheme.primary
                     else LocalContentColor.current
                 )
             }
@@ -471,7 +457,7 @@ fun NoteScreen(
                 )
             }
 
-            if (noteEditingState.noteType != NoteType.Drawing) {
+            if (editingState.noteType != NoteType.Drawing) {
                 IconButton(onClick = { showNoteTypeDialog = true }) {
                     Icon(
                         imageVector = Icons.Outlined.SwapHorizontalCircle,
@@ -493,7 +479,7 @@ fun NoteScreen(
                 }
             }
 
-            AnimatedVisibility(noteEditingState.noteType == NoteType.MARKDOWN) {
+            AnimatedVisibility(editingState.noteType == NoteType.MARKDOWN) {
                 IconButton(onClick = { printTrigger.value = true }) {
                     Icon(
                         imageVector = Icons.Outlined.Print,
@@ -503,88 +489,28 @@ fun NoteScreen(
             }
         },
         drawerContent = {
-            val formattedCreated = remember(noteEditingState.createdAt) {
-                if (noteEditingState.createdAt.isBlank()) ""
-                else formatInstant(Instant.parse(noteEditingState.createdAt))
+            val formattedCreated = remember(editingState.createdAt) {
+                if (editingState.createdAt.isBlank()) ""
+                else formatInstant(Instant.parse(editingState.createdAt))
             }
             NoteSideSheetItem(
                 key = stringResource(Res.string.created),
                 value = formattedCreated
             )
-            val formattedUpdated = remember(noteEditingState.updatedAt) {
-                if (noteEditingState.updatedAt.isBlank()) ""
-                else formatInstant(Instant.parse(noteEditingState.updatedAt))
+            val formattedUpdated = remember(editingState.updatedAt) {
+                if (editingState.updatedAt.isBlank()) ""
+                else formatInstant(Instant.parse(editingState.updatedAt))
             }
             NoteSideSheetItem(
                 key = stringResource(Res.string.updated),
                 value = formattedUpdated
             )
-
-            if (noteEditingState.noteType == NoteType.PLAIN_TEXT || noteEditingState.noteType == NoteType.MARKDOWN) {
-                /**文本文件信息：字符数，单词数，行数，段落数**/
-                NoteSideSheetItem(
-                    key = stringResource(Res.string.char_count),
-                    value = formatNumber(textState.charCount)
-                )
-                NoteSideSheetItem(
-                    key = stringResource(Res.string.word_count),
-                    value = formatNumber(textState.wordCountWithPunctuation)
-                )
-                NoteSideSheetItem(
-                    key = stringResource(Res.string.word_count_without_punctuation),
-                    value = formatNumber(textState.wordCountWithoutPunctuation)
-                )
-                NoteSideSheetItem(
-                    key = stringResource(Res.string.line_count),
-                    value = formatNumber(textState.lineCount)
-                )
-                NoteSideSheetItem(
-                    key = stringResource(Res.string.paragraph_count),
-                    value = formatNumber(textState.paragraphCount)
-                )
-            } else if (noteEditingState.noteType == NoteType.TODO) {
-                /**总任务，已完成，待办，进度**/
-                var totalTasks by remember { mutableIntStateOf(0) }
-                var completedTasks by remember { mutableIntStateOf(0) }
-                var pendingTasks by remember { mutableIntStateOf(0) }
-                var progress by remember { mutableIntStateOf(0) }
-                LaunchedEffect(viewModel.contentState.text) {
-                    withContext(Dispatchers.Default) {
-                        val lines = viewModel.contentState.text.lines()
-                        totalTasks = lines.count { it.isNotBlank() }
-                        completedTasks =
-                            lines.count { it.trim().startsWith("x", ignoreCase = true) }
-                        pendingTasks = totalTasks - completedTasks
-                        progress = if (totalTasks > 0) {
-                            (completedTasks.toFloat() / totalTasks.toFloat() * 100).toInt()
-                        } else {
-                            0
-                        }
-                    }
-                }
-                NoteSideSheetItem(
-                    key = stringResource(Res.string.total_tasks),
-                    value = totalTasks.toString()
-                )
-                NoteSideSheetItem(
-                    key = stringResource(Res.string.completed_tasks),
-                    value = completedTasks.toString()
-                )
-                NoteSideSheetItem(
-                    key = stringResource(Res.string.pending_tasks),
-                    value = pendingTasks.toString()
-                )
-                NoteSideSheetItem(
-                    key = stringResource(Res.string.progress),
-                    value = "$progress%"
-                )
-            }
         }
     )
 
     if (showNoteTypeDialog) {
         NoteTypeDialog(
-            oNoteType = noteEditingState.noteType,
+            oNoteType = editingState.noteType,
             onDismissRequest = { showNoteTypeDialog = false },
             onNoteTypeSelected = { noteType ->
                 showNoteTypeDialog = false
@@ -598,9 +524,9 @@ fun NoteScreen(
             noteEntity = NoteEntity(
                 title = viewModel.titleState.text.toString(),
                 content = viewModel.contentState.text.toString(),
-                noteType = noteEditingState.noteType,
-                createdAt = noteEditingState.createdAt,
-                updatedAt = noteEditingState.updatedAt
+                noteType = editingState.noteType,
+                createdAt = editingState.createdAt,
+                updatedAt = editingState.updatedAt
             ),
             onDismissRequest = { showShareDialog = false }
         )
@@ -611,11 +537,14 @@ fun NoteScreen(
             noteEntity = NoteEntity(
                 title = viewModel.titleState.text.toString(),
                 content = viewModel.contentState.text.toString(),
-                noteType = noteEditingState.noteType,
-                createdAt = noteEditingState.createdAt,
-                updatedAt = noteEditingState.updatedAt
+                noteType = editingState.noteType,
+                createdAt = editingState.createdAt,
+                updatedAt = editingState.updatedAt
             ),
-            html = html,
+            html = when (val processedContent = processedContent) {
+                is ProcessedContent.Markdown -> processedContent.html
+                else -> ""
+            },
             onDismissRequest = { showExportDialog = false }
         )
     }

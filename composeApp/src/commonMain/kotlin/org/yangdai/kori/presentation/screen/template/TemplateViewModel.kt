@@ -11,9 +11,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import kmark.flavours.gfm.GFMFlavourDescriptor
-import kmark.html.HtmlGenerator
-import kmark.parser.MarkdownParser
 import knet.ai.AI
 import knet.ai.GenerationResult
 import knet.ai.providers.LMStudio
@@ -27,9 +24,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -40,14 +39,12 @@ import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.presentation.component.note.AIContextMenuEvent
-import org.yangdai.kori.presentation.component.note.HeaderNode
+import org.yangdai.kori.presentation.component.note.ProcessedContent
 import org.yangdai.kori.presentation.component.note.addAfter
-import org.yangdai.kori.presentation.component.note.findHeadersRecursive
-import org.yangdai.kori.presentation.component.note.markdown.Properties.getPropertiesLineRange
+import org.yangdai.kori.presentation.component.note.processMarkdown
+import org.yangdai.kori.presentation.component.note.processTodo
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.navigation.UiEvent
-import org.yangdai.kori.presentation.screen.note.NoteEditingState
-import org.yangdai.kori.presentation.screen.note.TextState
 import org.yangdai.kori.presentation.screen.settings.EditorPaneState
 import org.yangdai.kori.presentation.util.Constants
 import kotlin.time.Clock
@@ -63,8 +60,8 @@ class TemplateViewModel(
 ) : ViewModel() {
     private val route = savedStateHandle.toRoute<Screen.Template>()
 
-    private val _noteEditingState = MutableStateFlow(NoteEditingState())
-    val noteEditingState = _noteEditingState.asStateFlow()
+    private val _templateEditingState = MutableStateFlow(TemplateEditingState())
+    val editingState = _templateEditingState.asStateFlow()
 
     private val _uiEventChannel = Channel<UiEvent>()
     val uiEventFlow = _uiEventChannel.receiveAsFlow()
@@ -73,20 +70,18 @@ class TemplateViewModel(
     val titleState = TextFieldState()
     val contentState = TextFieldState()
     private val contentSnapshotFlow = snapshotFlow { contentState.text }
-    private val flavor = GFMFlavourDescriptor()
-    private val parser = MarkdownParser(flavor)
     private var oNote = NoteEntity(isTemplate = true)
+    private val _isInitialized = MutableStateFlow(false)
 
     init {
         viewModelScope.launch {
             if (route.id.isEmpty()) {
                 val currentTime = Clock.System.now().toString()
-                _noteEditingState.update {
+                _templateEditingState.update {
                     it.copy(
                         id = Uuid.random().toString(),
                         createdAt = currentTime,
                         updatedAt = currentTime,
-                        isTemplate = true,
                         noteType = NoteType.entries[route.noteType]
                     )
                 }
@@ -95,16 +90,12 @@ class TemplateViewModel(
                 noteRepository.getNoteById(route.id)?.let { note ->
                     titleState.setTextAndPlaceCursorAtEnd(note.title)
                     contentState.setTextAndPlaceCursorAtEnd(note.content)
-                    _noteEditingState.update {
+                    _templateEditingState.update {
                         it.copy(
                             id = note.id,
                             createdAt = note.createdAt,
                             updatedAt = note.updatedAt,
-                            isPinned = note.isPinned,
-                            isDeleted = note.isDeleted,
-                            folderId = note.folderId,
-                            noteType = note.noteType,
-                            isTemplate = note.isTemplate
+                            noteType = note.noteType
                         )
                     }
                     oNote = note
@@ -112,6 +103,7 @@ class TemplateViewModel(
             }
             titleState.undoState.clearHistory()
             contentState.undoState.clearHistory()
+            _isInitialized.update { true }
         }
     }
 
@@ -126,77 +118,51 @@ class TemplateViewModel(
     }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), EditorPaneState())
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    val textState = contentSnapshotFlow.debounce(100).distinctUntilChanged()
-        .mapLatest { TextState.fromText(it) }
-        .flowOn(Dispatchers.Default)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Companion.WhileSubscribed(5_000L),
-            initialValue = TextState()
-        )
+    val processedContent = _isInitialized.filter { it }
+        .flatMapLatest {
+            snapshotFlow { _templateEditingState.value.noteType }
+                .flatMapLatest { noteType ->
+                    when (noteType) {
+                        NoteType.MARKDOWN -> contentSnapshotFlow.debounce(100)
+                            .map { content ->
+                                val processed = processMarkdown(content.toString())
+                                ProcessedContent.Markdown(processed)
+                            }
 
-    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    private val contentAndTreeFlow = contentSnapshotFlow.debounce(100).distinctUntilChanged()
-        .mapLatest { content ->
-            val text = content.toString()
-            val tree = parser.buildMarkdownTreeFromString(text)
-            text to tree
-        }
-        .flowOn(Dispatchers.Default)
+                        NoteType.TODO -> contentSnapshotFlow.debounce(100)
+                            .map { content ->
+                                val (undone, done) = processTodo(content.lines())
+                                ProcessedContent.Todo(undone, done)
+                            }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val html = contentAndTreeFlow
-        .mapLatest { (content, tree) ->
-            HtmlGenerator(content, tree, flavor, true).generateHtml()
-        }
-        .flowOn(Dispatchers.Default)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = ""
-        )
-
-    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
-    val outline = contentAndTreeFlow.debounce(1000)
-        .mapLatest { (content, tree) ->
-            val root = HeaderNode("", 0, IntRange.EMPTY)
-            if (content.isBlank()) return@mapLatest root
-            val propertiesLineRange = content.getPropertiesLineRange()
-            try {
-                val headerStack = mutableListOf(root)
-                findHeadersRecursive(tree, content, headerStack, propertiesLineRange)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            root
+                        else -> flowOf(ProcessedContent.Empty)
+                    }
+                }
         }
         .flowOn(Dispatchers.Default)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = HeaderNode("", 0, IntRange.EMPTY)
+            initialValue = ProcessedContent.Empty
         )
 
     fun updateNoteType(noteType: NoteType) {
-        _noteEditingState.update {
+        _templateEditingState.update {
             it.copy(noteType = noteType)
         }
     }
 
     fun saveOrUpdateNote() {
-        if (_noteEditingState.value.isDeleted) return
+        if (_templateEditingState.value.isDeleted) return
         viewModelScope.launch {
             val newNote = NoteEntity(
-                id = _noteEditingState.value.id,
+                id = _templateEditingState.value.id,
                 title = titleState.text.toString(),
                 content = contentState.text.toString(),
-                folderId = null,
-                createdAt = _noteEditingState.value.createdAt,
+                createdAt = _templateEditingState.value.createdAt,
                 updatedAt = Clock.System.now().toString(),
-                isDeleted = false,
                 isTemplate = true,
-                isPinned = false,
-                noteType = _noteEditingState.value.noteType
+                noteType = _templateEditingState.value.noteType
             )
             if (oNote.id.isEmpty()) {
                 if (newNote.title.isNotBlank() || newNote.content.isNotBlank()) {
@@ -223,9 +189,9 @@ class TemplateViewModel(
 
     fun deleteTemplate() {
         viewModelScope.launch {
-            _noteEditingState.update { it.copy(isDeleted = true) }
+            _templateEditingState.update { it.copy(isDeleted = true) }
             if (oNote.id.isNotEmpty()) {
-                noteRepository.deleteNoteById(_noteEditingState.value.id)
+                noteRepository.deleteNoteById(_templateEditingState.value.id)
             }
             _uiEventChannel.send(UiEvent.NavigateUp)
         }
@@ -235,7 +201,7 @@ class TemplateViewModel(
 
     val isAIEnabled = combine(
         dataStoreRepository.booleanFlow(Constants.Preferences.IS_AI_ENABLED),
-        snapshotFlow { _noteEditingState.value.noteType }
+        snapshotFlow { _templateEditingState.value.noteType }
     ) { isAiEnabled, noteType -> isAiEnabled && noteType != NoteType.Drawing }
         .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), false)
 
@@ -324,7 +290,7 @@ class TemplateViewModel(
                 model = llmConfig.second,
                 apiKey = llmConfig.third,
                 userInput = userInput,
-                systemPrompt = when (_noteEditingState.value.noteType) {
+                systemPrompt = when (_templateEditingState.value.noteType) {
                     NoteType.PLAIN_TEXT -> AI.SystemPrompt.PLAIN_TEXT
                     NoteType.MARKDOWN -> AI.SystemPrompt.MARKDOWN
                     NoteType.TODO -> AI.SystemPrompt.TODO_TXT
@@ -372,7 +338,7 @@ class TemplateViewModel(
                     AIContextMenuEvent.Rewrite -> AI.EventPrompt.REWRITE
                     AIContextMenuEvent.Summarize -> AI.EventPrompt.SUMMARIZE
                 } + "\n" + selectedText,
-                systemPrompt = when (_noteEditingState.value.noteType) {
+                systemPrompt = when (_templateEditingState.value.noteType) {
                     NoteType.PLAIN_TEXT -> AI.SystemPrompt.PLAIN_TEXT
                     NoteType.MARKDOWN -> AI.SystemPrompt.MARKDOWN
                     NoteType.TODO -> AI.SystemPrompt.TODO_TXT

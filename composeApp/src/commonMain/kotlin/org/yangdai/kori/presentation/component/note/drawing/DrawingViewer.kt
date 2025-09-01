@@ -5,4 +5,4 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 
 @Composable
-expect fun InNoteDrawPreview(uuid: String, imageBitmap: ImageBitmap?, modifier: Modifier = Modifier)
+expect fun DrawingViewer(uuid: String, imageBitmap: ImageBitmap?, modifier: Modifier = Modifier)

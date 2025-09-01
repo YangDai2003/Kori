@@ -11,9 +11,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import kmark.flavours.gfm.GFMFlavourDescriptor
-import kmark.html.HtmlGenerator
-import kmark.parser.MarkdownParser
 import knet.ai.AI
 import knet.ai.GenerationResult
 import knet.ai.providers.LMStudio
@@ -29,10 +26,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -46,10 +44,10 @@ import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.domain.sort.FolderSortType
 import org.yangdai.kori.presentation.component.note.AIContextMenuEvent
-import org.yangdai.kori.presentation.component.note.HeaderNode
+import org.yangdai.kori.presentation.component.note.ProcessedContent
 import org.yangdai.kori.presentation.component.note.addAfter
-import org.yangdai.kori.presentation.component.note.findHeadersRecursive
-import org.yangdai.kori.presentation.component.note.markdown.Properties.getPropertiesLineRange
+import org.yangdai.kori.presentation.component.note.processMarkdown
+import org.yangdai.kori.presentation.component.note.processTodo
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.screen.settings.EditorPaneState
@@ -78,11 +76,9 @@ class NoteViewModel(
     val uiEventFlow = _uiEventChannel.receiveAsFlow()
 
     private val _noteEditingState = MutableStateFlow(NoteEditingState())
-    val noteEditingState = _noteEditingState.asStateFlow()
-
-    private val flavor = GFMFlavourDescriptor()
-    private val parser = MarkdownParser(flavor)
+    val editingState = _noteEditingState.asStateFlow()
     private var oNote = NoteEntity()
+    private val _isInitialized = MutableStateFlow(false)
 
     init {
         viewModelScope.launch {
@@ -121,6 +117,7 @@ class NoteViewModel(
             }
             titleState.undoState.clearHistory()
             contentState.undoState.clearHistory()
+            _isInitialized.update { true }
         }
     }
 
@@ -153,16 +150,6 @@ class NoteViewModel(
         )
     }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), EditorPaneState())
 
-    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    val textState = contentSnapshotFlow.debounce(100).distinctUntilChanged()
-        .mapLatest { TextState.fromText(it) }
-        .flowOn(Dispatchers.Default)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Companion.WhileSubscribed(5_000L),
-            initialValue = TextState()
-        )
-
     @OptIn(ExperimentalCoroutinesApi::class)
     val foldersWithNoteCounts: StateFlow<List<FolderDao.FolderWithNoteCount>> = dataStoreRepository
         .intFlow(Constants.Preferences.FOLDER_SORT_TYPE)
@@ -178,45 +165,32 @@ class NoteViewModel(
         )
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    private val contentAndTreeFlow = contentSnapshotFlow.debounce(100).distinctUntilChanged()
-        .mapLatest { content ->
-            val text = content.toString()
-            val tree = parser.buildMarkdownTreeFromString(text)
-            text to tree
-        }
-        .flowOn(Dispatchers.Default)
+    val processedContent = _isInitialized.filter { it }
+        .flatMapLatest {
+            snapshotFlow { _noteEditingState.value.noteType }
+                .flatMapLatest { noteType ->
+                    when (noteType) {
+                        NoteType.MARKDOWN -> contentSnapshotFlow.debounce(100)
+                            .map { content ->
+                                val processed = processMarkdown(content.toString())
+                                ProcessedContent.Markdown(processed)
+                            }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val html = contentAndTreeFlow
-        .mapLatest { (content, tree) ->
-            HtmlGenerator(content, tree, flavor, true).generateHtml()
+                        NoteType.TODO -> contentSnapshotFlow.debounce(100)
+                            .map { content ->
+                                val (undone, done) = processTodo(content.lines())
+                                ProcessedContent.Todo(undone, done)
+                            }
+
+                        else -> flowOf(ProcessedContent.Empty)
+                    }
+                }
         }
         .flowOn(Dispatchers.Default)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = ""
-        )
-
-    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
-    val outline = contentAndTreeFlow.debounce(1000)
-        .mapLatest { (content, tree) ->
-            val root = HeaderNode("", 0, IntRange.EMPTY)
-            if (content.isBlank()) return@mapLatest root
-            val propertiesLineRange = content.getPropertiesLineRange()
-            try {
-                val headerStack = mutableListOf(root)
-                findHeadersRecursive(tree, content, headerStack, propertiesLineRange)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            root
-        }
-        .flowOn(Dispatchers.Default)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = HeaderNode("", 0, IntRange.EMPTY)
+            initialValue = ProcessedContent.Empty
         )
 
     fun saveOrUpdateNote() {

@@ -10,6 +10,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
+import kmark.flavours.gfm.GFMFlavourDescriptor
+import kmark.parser.MarkdownParser
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownStyles.Companion.rememberMarkdownStyles
 import org.yangdai.kori.presentation.theme.linkColor
 import org.yangdai.kori.presentation.util.toHexColor
@@ -39,6 +41,11 @@ data class MarkdownStyles(
             return remember(colorScheme) { fromColorScheme(colorScheme) }
         }
     }
+}
+
+object MarkdownDefaults {
+    val flavor = GFMFlavourDescriptor()
+    val parser = MarkdownParser(flavor)
 }
 
 @Composable

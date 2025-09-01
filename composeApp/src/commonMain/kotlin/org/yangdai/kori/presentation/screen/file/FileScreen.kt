@@ -32,7 +32,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -55,20 +54,9 @@ import kfile.ImagesPicker
 import kfile.PlatformFile
 import kfile.VideoPicker
 import kori.composeapp.generated.resources.Res
-import kori.composeapp.generated.resources.char_count
-import kori.composeapp.generated.resources.completed_tasks
-import kori.composeapp.generated.resources.line_count
-import kori.composeapp.generated.resources.paragraph_count
-import kori.composeapp.generated.resources.pending_tasks
-import kori.composeapp.generated.resources.progress
 import kori.composeapp.generated.resources.right_panel_open
-import kori.composeapp.generated.resources.total_tasks
 import kori.composeapp.generated.resources.updated
-import kori.composeapp.generated.resources.word_count
-import kori.composeapp.generated.resources.word_count_without_punctuation
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -99,7 +87,6 @@ import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.util.formatInstant
-import org.yangdai.kori.presentation.util.formatNumber
 import org.yangdai.kori.presentation.util.isScreenWidthExpanded
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -112,11 +99,9 @@ fun FileScreen(
     navigateToScreen: (Screen) -> Unit,
     navigateUp: () -> Unit
 ) {
-    val fileEditingState by viewModel.fileEditingState.collectAsStateWithLifecycle()
-    val textState by viewModel.textState.collectAsStateWithLifecycle()
+    val editingState by viewModel.editingState.collectAsStateWithLifecycle()
     val editorState by viewModel.editorState.collectAsStateWithLifecycle()
-    val outline by viewModel.outline.collectAsStateWithLifecycle()
-    val html by viewModel.html.collectAsStateWithLifecycle()
+    val processedContent by viewModel.processedContent.collectAsStateWithLifecycle()
     val needSave by viewModel.needSave.collectAsStateWithLifecycle()
     val isAIEnabled by viewModel.isAIEnabled.collectAsStateWithLifecycle()
 
@@ -243,7 +228,7 @@ fun FileScreen(
                 FindAndReplaceField(findAndReplaceState)
             }
 
-            if (fileEditingState.fileType == NoteType.Drawing) {
+            if (editingState.fileType == NoteType.Drawing) {
                 // 不存在绘画类型文件
             } else {
                 AdaptiveEditorViewer(
@@ -252,7 +237,7 @@ fun FileScreen(
                     editor = { modifier ->
                         AdaptiveEditor(
                             modifier = modifier,
-                            noteType = fileEditingState.fileType,
+                            noteType = editingState.fileType,
                             textFieldState = viewModel.contentState,
                             scrollState = scrollState,
                             isReadOnly = isReadView,
@@ -264,12 +249,10 @@ fun FileScreen(
                             onAIContextMenuEvent = { viewModel.onAIContextMenuEvent(it) }
                         )
                     },
-                    viewer = if (fileEditingState.fileType == NoteType.MARKDOWN || fileEditingState.fileType == NoteType.TODO) { modifier ->
+                    viewer = if (editingState.fileType == NoteType.MARKDOWN || editingState.fileType == NoteType.TODO) { modifier ->
                         AdaptiveViewer(
                             modifier = modifier,
-                            noteType = fileEditingState.fileType,
-                            html = html,
-                            rawText = viewModel.contentState.text.toString(),
+                            processedContent = processedContent,
                             scrollState = scrollState,
                             isSheetVisible = isSideSheetOpen || showTemplatesBottomSheet,
                             printTrigger = printTrigger
@@ -279,11 +262,11 @@ fun FileScreen(
             }
             AdaptiveEditorRow(
                 visible = !isReadView && !isSearching,
-                type = fileEditingState.fileType,
+                type = editingState.fileType,
                 scrollState = scrollState,
                 paddingValues = PaddingValues(
                     bottom = innerPadding.calculateBottomPadding(),
-                    start = if (isAIEnabled && fileEditingState.fileType != NoteType.PLAIN_TEXT) 52.dp else 0.dp,
+                    start = if (isAIEnabled && editingState.fileType != NoteType.PLAIN_TEXT) 52.dp else 0.dp,
                 ),
                 textFieldState = viewModel.contentState
             ) { action ->
@@ -342,8 +325,8 @@ fun FileScreen(
     NoteSideSheet(
         isDrawerOpen = isSideSheetOpen,
         onDismiss = { isSideSheetOpen = false },
-        outline = outline,
-        type = fileEditingState.fileType,
+        text = viewModel.contentState.text.toString(),
+        noteType = editingState.fileType,
         onHeaderClick = { selectedHeader = it },
         navigateTo = { navigateToScreen(it) },
         actionContent = {
@@ -369,7 +352,7 @@ fun FileScreen(
                     )
                 }
 
-            AnimatedVisibility(fileEditingState.fileType == NoteType.MARKDOWN) {
+            AnimatedVisibility(editingState.fileType == NoteType.MARKDOWN) {
                 IconButton(onClick = { printTrigger.value = true }) {
                     Icon(
                         imageVector = Icons.Outlined.Print,
@@ -379,80 +362,20 @@ fun FileScreen(
             }
         },
         drawerContent = {
-            val formattedUpdated = remember(fileEditingState.updatedAt) {
-                if (fileEditingState.updatedAt.isBlank()) ""
-                else formatInstant(Instant.parse(fileEditingState.updatedAt))
+            val formattedUpdated = remember(editingState.updatedAt) {
+                if (editingState.updatedAt.isBlank()) ""
+                else formatInstant(Instant.parse(editingState.updatedAt))
             }
             NoteSideSheetItem(
                 key = stringResource(Res.string.updated),
                 value = formattedUpdated
             )
-
-            if (fileEditingState.fileType == NoteType.PLAIN_TEXT || fileEditingState.fileType == NoteType.MARKDOWN) {
-                /**文本文件信息：字符数，单词数，行数，段落数**/
-                NoteSideSheetItem(
-                    key = stringResource(Res.string.char_count),
-                    value = formatNumber(textState.charCount)
-                )
-                NoteSideSheetItem(
-                    key = stringResource(Res.string.word_count),
-                    value = formatNumber(textState.wordCountWithPunctuation)
-                )
-                NoteSideSheetItem(
-                    key = stringResource(Res.string.word_count_without_punctuation),
-                    value = formatNumber(textState.wordCountWithoutPunctuation)
-                )
-                NoteSideSheetItem(
-                    key = stringResource(Res.string.line_count),
-                    value = formatNumber(textState.lineCount)
-                )
-                NoteSideSheetItem(
-                    key = stringResource(Res.string.paragraph_count),
-                    value = formatNumber(textState.paragraphCount)
-                )
-            } else if (fileEditingState.fileType == NoteType.TODO) {
-                /**总任务，已完成，待办，进度**/
-                var totalTasks by remember { mutableIntStateOf(0) }
-                var completedTasks by remember { mutableIntStateOf(0) }
-                var pendingTasks by remember { mutableIntStateOf(0) }
-                var progress by remember { mutableIntStateOf(0) }
-                LaunchedEffect(viewModel.contentState.text) {
-                    withContext(Dispatchers.Default) {
-                        val lines = viewModel.contentState.text.lines()
-                        totalTasks = lines.count { it.isNotBlank() }
-                        completedTasks =
-                            lines.count { it.trim().startsWith("x", ignoreCase = true) }
-                        pendingTasks = totalTasks - completedTasks
-                        progress = if (totalTasks > 0) {
-                            (completedTasks.toFloat() / totalTasks.toFloat() * 100).toInt()
-                        } else {
-                            0
-                        }
-                    }
-                }
-                NoteSideSheetItem(
-                    key = stringResource(Res.string.total_tasks),
-                    value = totalTasks.toString()
-                )
-                NoteSideSheetItem(
-                    key = stringResource(Res.string.completed_tasks),
-                    value = completedTasks.toString()
-                )
-                NoteSideSheetItem(
-                    key = stringResource(Res.string.pending_tasks),
-                    value = pendingTasks.toString()
-                )
-                NoteSideSheetItem(
-                    key = stringResource(Res.string.progress),
-                    value = "$progress%"
-                )
-            }
         }
     )
 
     if (showNoteTypeDialog) {
         NoteTypeDialog(
-            oNoteType = fileEditingState.fileType,
+            oNoteType = editingState.fileType,
             onDismissRequest = { showNoteTypeDialog = false },
             onNoteTypeSelected = { noteType ->
                 showNoteTypeDialog = false
@@ -466,9 +389,9 @@ fun FileScreen(
             noteEntity = NoteEntity(
                 title = viewModel.titleState.text.toString(),
                 content = viewModel.contentState.text.toString(),
-                noteType = fileEditingState.fileType,
-                createdAt = fileEditingState.updatedAt,
-                updatedAt = fileEditingState.updatedAt
+                noteType = editingState.fileType,
+                createdAt = editingState.updatedAt,
+                updatedAt = editingState.updatedAt
             ),
             onDismissRequest = { showShareDialog = false }
         )

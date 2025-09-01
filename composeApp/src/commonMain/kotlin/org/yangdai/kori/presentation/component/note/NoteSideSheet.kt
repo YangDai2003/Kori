@@ -45,6 +45,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -83,22 +84,36 @@ import kmark.MarkdownElementTypes
 import kmark.ast.ASTNode
 import kmark.ast.getTextInNode
 import kori.composeapp.generated.resources.Res
+import kori.composeapp.generated.resources.char_count
+import kori.composeapp.generated.resources.completed_tasks
 import kori.composeapp.generated.resources.drawing
+import kori.composeapp.generated.resources.line_count
 import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.outline
 import kori.composeapp.generated.resources.overview
+import kori.composeapp.generated.resources.paragraph_count
+import kori.composeapp.generated.resources.pending_tasks
 import kori.composeapp.generated.resources.plain_text
+import kori.composeapp.generated.resources.progress
 import kori.composeapp.generated.resources.right_panel_close
 import kori.composeapp.generated.resources.settings
 import kori.composeapp.generated.resources.todo_text
+import kori.composeapp.generated.resources.total_tasks
 import kori.composeapp.generated.resources.type
+import kori.composeapp.generated.resources.word_count
+import kori.composeapp.generated.resources.word_count_without_punctuation
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.component.TooltipIconButton
+import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults
+import org.yangdai.kori.presentation.component.note.markdown.Properties.getPropertiesLineRange
 import org.yangdai.kori.presentation.navigation.Screen
+import org.yangdai.kori.presentation.util.formatNumber
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -110,8 +125,8 @@ private val ActionWidth = 48.dp
 fun NoteSideSheet(
     isDrawerOpen: Boolean,
     onDismiss: () -> Unit,
-    type: NoteType,
-    outline: HeaderNode,
+    noteType: NoteType,
+    text: String,
     onHeaderClick: (IntRange) -> Unit,
     navigateTo: (Screen) -> Unit,
     actionContent: @Composable ColumnScope.() -> Unit,
@@ -255,6 +270,35 @@ fun NoteSideSheet(
                     ) {
                         var isAllExpanded by rememberSaveable { mutableStateOf(true) }
 
+                        var outline by remember {
+                            mutableStateOf(HeaderNode("", 0, IntRange.EMPTY))
+                        }
+
+                        LaunchedEffect(text, noteType) {
+                            withContext(Dispatchers.Default) {
+                                val root = HeaderNode("", 0, IntRange.EMPTY)
+                                // 只有 Markdown 才有大纲
+                                if (noteType != NoteType.MARKDOWN || text.isBlank()) {
+                                    outline = root
+                                    return@withContext
+                                }
+                                val tree = MarkdownDefaults.parser.buildMarkdownTreeFromString(text)
+                                val propertiesLineRange = text.getPropertiesLineRange()
+                                try {
+                                    val headerStack = mutableListOf(root)
+                                    findHeadersRecursive(
+                                        tree,
+                                        text,
+                                        headerStack,
+                                        propertiesLineRange
+                                    )
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+                                outline = root
+                            }
+                        }
+
                         LazyColumn(Modifier.fillMaxSize()) {
                             // 顶部操作按钮
                             item {
@@ -293,7 +337,7 @@ fun NoteSideSheet(
                                     Column(Modifier.padding(start = 16.dp, end = 12.dp)) {
                                         NoteSideSheetItem(
                                             key = stringResource(Res.string.type),
-                                            value = when (type) {
+                                            value = when (noteType) {
                                                 NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
                                                 NoteType.MARKDOWN -> stringResource(Res.string.markdown)
                                                 NoteType.TODO -> stringResource(Res.string.todo_text)
@@ -301,12 +345,80 @@ fun NoteSideSheet(
                                             }
                                         )
                                         drawerContent()
+                                        if (noteType == NoteType.PLAIN_TEXT || noteType == NoteType.MARKDOWN) {
+                                            var textState by remember { mutableStateOf(TextState()) }
+                                            LaunchedEffect(text) {
+                                                withContext(Dispatchers.Default) {
+                                                    textState = TextState.fromText(text)
+                                                }
+                                            }
+                                            /**文本文件信息：字符数，单词数，行数，段落数**/
+                                            NoteSideSheetItem(
+                                                key = stringResource(Res.string.char_count),
+                                                value = formatNumber(textState.charCount)
+                                            )
+                                            NoteSideSheetItem(
+                                                key = stringResource(Res.string.word_count),
+                                                value = formatNumber(textState.wordCountWithPunctuation)
+                                            )
+                                            NoteSideSheetItem(
+                                                key = stringResource(Res.string.word_count_without_punctuation),
+                                                value = formatNumber(textState.wordCountWithoutPunctuation)
+                                            )
+                                            NoteSideSheetItem(
+                                                key = stringResource(Res.string.line_count),
+                                                value = formatNumber(textState.lineCount)
+                                            )
+                                            NoteSideSheetItem(
+                                                key = stringResource(Res.string.paragraph_count),
+                                                value = formatNumber(textState.paragraphCount)
+                                            )
+                                        } else if (noteType == NoteType.TODO) {
+                                            /**总任务，已完成，待办，进度**/
+                                            var totalTasks by remember { mutableIntStateOf(0) }
+                                            var completedTasks by remember { mutableIntStateOf(0) }
+                                            var pendingTasks by remember { mutableIntStateOf(0) }
+                                            var progress by remember { mutableIntStateOf(0) }
+                                            LaunchedEffect(text) {
+                                                withContext(Dispatchers.Default) {
+                                                    val lines = text.lines()
+                                                    totalTasks = lines.count { it.isNotBlank() }
+                                                    completedTasks =
+                                                        lines.count {
+                                                            it.trim()
+                                                                .startsWith("x", ignoreCase = true)
+                                                        }
+                                                    pendingTasks = totalTasks - completedTasks
+                                                    progress = if (totalTasks > 0) {
+                                                        (completedTasks.toFloat() / totalTasks.toFloat() * 100).toInt()
+                                                    } else {
+                                                        0
+                                                    }
+                                                }
+                                            }
+                                            NoteSideSheetItem(
+                                                key = stringResource(Res.string.total_tasks),
+                                                value = totalTasks.toString()
+                                            )
+                                            NoteSideSheetItem(
+                                                key = stringResource(Res.string.completed_tasks),
+                                                value = completedTasks.toString()
+                                            )
+                                            NoteSideSheetItem(
+                                                key = stringResource(Res.string.pending_tasks),
+                                                value = pendingTasks.toString()
+                                            )
+                                            NoteSideSheetItem(
+                                                key = stringResource(Res.string.progress),
+                                                value = "$progress%"
+                                            )
+                                        }
                                     }
                                 }
                             }
 
                             // ... 大纲部分 (outline) ...
-                            if (outline.children.isNotEmpty() && type == NoteType.MARKDOWN)
+                            if (outline.children.isNotEmpty() && noteType == NoteType.MARKDOWN)
                                 item {
                                     HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
                                     Row(
@@ -332,7 +444,7 @@ fun NoteSideSheet(
                                     }
                                 }
 
-                            if (outline.children.isNotEmpty() && type == NoteType.MARKDOWN)
+                            if (outline.children.isNotEmpty() && noteType == NoteType.MARKDOWN)
                                 items(outline.children) { header ->
                                     HeaderItem(
                                         header = header,
@@ -355,7 +467,7 @@ fun NoteSideSheet(
 }
 
 @Stable
-data class HeaderNode(
+private data class HeaderNode(
     val title: String,
     val level: Int,
     val range: IntRange,
@@ -396,7 +508,6 @@ fun NoteSideSheetItem(
         style = MaterialTheme.typography.bodyLarge
     )
 }
-
 
 @Composable
 private fun HeaderItem(
@@ -477,7 +588,7 @@ private fun HeaderItem(
 /**
  * Recursively traverses the AST, finds headers, and builds the hierarchy.
  */
-fun findHeadersRecursive(
+private fun findHeadersRecursive(
     node: ASTNode,
     fullText: String,
     headerStack: MutableList<HeaderNode>,
@@ -515,5 +626,94 @@ fun findHeadersRecursive(
     // --- If not a header, recurse into children ---
     node.children.forEach { child ->
         findHeadersRecursive(child, fullText, headerStack, propertiesRange)
+    }
+}
+
+private data class TextState(
+    val charCount: Int = 0,
+    val wordCountWithPunctuation: Int = 0,
+    val wordCountWithoutPunctuation: Int = 0,
+    val lineCount: Int = 0,
+    val paragraphCount: Int = 0
+) {
+    companion object {
+        private val cjkRanges = arrayOf(
+            0x4E00..0x9FFF,  // CJK 统一汉字
+            0x3400..0x4DBF,  // CJK 扩展 A
+            0x20000..0x2A6DF,// CJK 扩展 B
+            0xF900..0xFAFF,  // CJK 兼容汉字
+            0x2F800..0x2FA1F // CJK 兼容扩展
+        )
+
+        private fun isCJK(ch: Int): Boolean {
+            return cjkRanges.any { ch in it }
+        }
+
+        private fun isPunctuation(ch: Char): Boolean {
+            return ch in "，。、：；？！\"'（）《》「」【】!§$%&/()=?`*_:;><|,.#+~\\´{[]}"
+        }
+
+        fun fromText(text: CharSequence): TextState {
+            if (text.isBlank()) return TextState()
+
+            val charCount = text.length
+            var lineCount = 1
+            var paragraphCount = 1
+            var punctuationIncludedWordCount = 0
+            var nonPunctuationWordCount = 0
+
+            var state = 0
+            val inWord = 1
+            val previousWasNewline = 2
+
+            var i = 0
+            while (i < text.length) {
+                val ch = text[i]
+                when {
+                    ch == '\n' -> {
+                        state = state and inWord.inv()
+                        lineCount++
+
+                        if ((state and previousWasNewline) != 0) {
+                            paragraphCount++
+                        }
+                        state = state or previousWasNewline
+                    }
+
+                    ch.isWhitespace() -> {
+                        state = state and (inWord or previousWasNewline).inv()
+                    }
+
+                    isCJK(ch.code) -> {
+                        punctuationIncludedWordCount++
+                        nonPunctuationWordCount++
+                        state = state and (inWord or previousWasNewline).inv()
+                    }
+
+                    isPunctuation(ch) -> {
+                        punctuationIncludedWordCount++
+                        state = state and (inWord or previousWasNewline).inv()
+                    }
+
+                    else -> {
+                        if ((state and inWord) == 0) {
+                            state = state or inWord
+                            punctuationIncludedWordCount++
+                            nonPunctuationWordCount++
+                        }
+                        state = state and previousWasNewline.inv()
+                    }
+                }
+                i++
+            }
+
+            return TextState(
+                charCount = charCount,
+                wordCountWithPunctuation = punctuationIncludedWordCount,
+                wordCountWithoutPunctuation = nonPunctuationWordCount,
+                lineCount = lineCount,
+                paragraphCount = paragraphCount
+            )
+        }
     }
 }

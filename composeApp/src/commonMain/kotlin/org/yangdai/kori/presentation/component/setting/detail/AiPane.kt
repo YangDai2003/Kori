@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -61,6 +62,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withLink
@@ -81,6 +84,7 @@ import kori.composeapp.generated.resources.key
 import kori.composeapp.generated.resources.model
 import kori.composeapp.generated.resources.reset
 import kori.composeapp.generated.resources.set_as_default
+import kori.composeapp.generated.resources.test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
@@ -230,6 +234,10 @@ private fun KeyTextField(value: String, onValueChange: (String) -> Unit) {
                 )
             }
         },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Done
+        ),
         modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
     )
 }
@@ -265,6 +273,7 @@ private fun UrlTextField(
     } else {
         null
     },
+    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Done),
     singleLine = true,
     modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
 )
@@ -399,7 +408,7 @@ private fun TestConnectionColumn(
                 if (it) {
                     CircularProgressIndicator()
                 } else {
-                    Text("Test")
+                    Text(stringResource(Res.string.test))
                 }
             }
         }

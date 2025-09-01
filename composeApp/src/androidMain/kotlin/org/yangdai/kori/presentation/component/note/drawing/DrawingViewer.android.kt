@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
@@ -16,11 +17,13 @@ import coil3.request.addLastModifiedToFileCacheKey
 import java.io.File
 
 @Composable
-actual fun InNoteDrawPreview(uuid: String, imageBitmap: ImageBitmap?, modifier: Modifier) =
+actual fun DrawingViewer(uuid: String, imageBitmap: ImageBitmap?, modifier: Modifier) =
     Column(modifier) {
         if (imageBitmap == null) {
-            val userHome = System.getProperty("user.home")
-            val imageFile = File("$userHome/.kori/$uuid/ink.png")
+            val context = LocalContext.current.applicationContext
+            val noteDir = File(context.filesDir, uuid)
+            if (!noteDir.exists()) noteDir.mkdirs()
+            val imageFile = File(noteDir, "ink.png")
             AsyncImage(
                 modifier = Modifier.fillMaxWidth(),
                 model = ImageRequest.Builder(LocalPlatformContext.current)

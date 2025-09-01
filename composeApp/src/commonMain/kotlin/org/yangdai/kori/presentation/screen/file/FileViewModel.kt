@@ -16,9 +16,6 @@ import kfile.getFileName
 import kfile.getLastModified
 import kfile.readText
 import kfile.writeText
-import kmark.flavours.gfm.GFMFlavourDescriptor
-import kmark.html.HtmlGenerator
-import kmark.parser.MarkdownParser
 import knet.ai.AI
 import knet.ai.GenerationResult
 import knet.ai.providers.LMStudio
@@ -32,9 +29,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -45,12 +44,11 @@ import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.presentation.component.note.AIContextMenuEvent
-import org.yangdai.kori.presentation.component.note.HeaderNode
+import org.yangdai.kori.presentation.component.note.ProcessedContent
 import org.yangdai.kori.presentation.component.note.addAfter
-import org.yangdai.kori.presentation.component.note.findHeadersRecursive
-import org.yangdai.kori.presentation.component.note.markdown.Properties.getPropertiesLineRange
+import org.yangdai.kori.presentation.component.note.processMarkdown
+import org.yangdai.kori.presentation.component.note.processTodo
 import org.yangdai.kori.presentation.navigation.UiEvent
-import org.yangdai.kori.presentation.screen.note.TextState
 import org.yangdai.kori.presentation.screen.settings.EditorPaneState
 import org.yangdai.kori.presentation.screen.settings.TemplatePaneState
 import org.yangdai.kori.presentation.util.Constants
@@ -70,97 +68,10 @@ class FileViewModel(
     private val contentSnapshotFlow = snapshotFlow { contentState.text }
     private val _uiEventChannel = Channel<UiEvent>()
     val uiEventFlow = _uiEventChannel.receiveAsFlow()
-
-    val formatterState = combine(
-        dataStoreRepository.stringFlow(Constants.Preferences.DATE_FORMATTER),
-        dataStoreRepository.stringFlow(Constants.Preferences.TIME_FORMATTER)
-    ) { dateFormatter, timeFormatter ->
-        TemplatePaneState(
-            dateFormatter = dateFormatter,
-            timeFormatter = timeFormatter
-        )
-    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), TemplatePaneState())
-
-    val templates = noteRepository.getAllTemplates()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Companion.WhileSubscribed(5_000L),
-            initialValue = emptyList()
-        )
-
-    val editorState = combine(
-        dataStoreRepository.booleanFlow(Constants.Preferences.SHOW_LINE_NUMBER),
-        dataStoreRepository.booleanFlow(Constants.Preferences.IS_MARKDOWN_LINT_ENABLED),
-        dataStoreRepository.booleanFlow(Constants.Preferences.IS_DEFAULT_READING_VIEW)
-    ) { showLineNumber, isMarkdownLintEnabled, isDefaultReadingView ->
-        EditorPaneState(
-            showLineNumber = showLineNumber,
-            isMarkdownLintEnabled = isMarkdownLintEnabled,
-            isDefaultReadingView = isDefaultReadingView
-        )
-    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), EditorPaneState())
-
-    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    val textState = contentSnapshotFlow.debounce(100).distinctUntilChanged()
-        .mapLatest { TextState.Companion.fromText(it) }
-        .flowOn(Dispatchers.Default)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Companion.WhileSubscribed(5_000L),
-            initialValue = TextState()
-        )
-
     private val _fileEditingState = MutableStateFlow(FileEditingState())
-    val fileEditingState = _fileEditingState.asStateFlow()
-
-    private val flavor = GFMFlavourDescriptor()
-    private val parser = MarkdownParser(flavor)
-
-    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    private val contentAndTreeFlow = contentSnapshotFlow.debounce(100).distinctUntilChanged()
-        .mapLatest { content ->
-            val text = content.toString()
-            val tree = parser.buildMarkdownTreeFromString(text)
-            text to tree
-        }
-        .flowOn(Dispatchers.Default)
-
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val html = contentAndTreeFlow
-        .mapLatest { (content, tree) ->
-            HtmlGenerator(content, tree, flavor, true).generateHtml()
-        }
-        .flowOn(Dispatchers.Default)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = ""
-        )
-
-
-    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
-    val outline = contentAndTreeFlow.debounce(1000)
-        .mapLatest { (content, tree) ->
-            val root = HeaderNode("", 0, IntRange.EMPTY)
-            if (content.isBlank()) return@mapLatest root
-            val propertiesLineRange = content.getPropertiesLineRange()
-            try {
-                val headerStack = mutableListOf(root)
-                findHeadersRecursive(tree, content, headerStack, propertiesLineRange)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            root
-        }
-        .flowOn(Dispatchers.Default)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = HeaderNode("", 0, IntRange.EMPTY)
-        )
-
+    val editingState = _fileEditingState.asStateFlow()
     private val _initialContent = MutableStateFlow("")
+    private val _isInitialized = MutableStateFlow(false)
     val needSave = combine(
         _initialContent,
         contentSnapshotFlow
@@ -205,8 +116,67 @@ class FileViewModel(
                     fileType = noteType
                 )
             }
+            _isInitialized.update { true }
         }
     }
+
+    val formatterState = combine(
+        dataStoreRepository.stringFlow(Constants.Preferences.DATE_FORMATTER),
+        dataStoreRepository.stringFlow(Constants.Preferences.TIME_FORMATTER)
+    ) { dateFormatter, timeFormatter ->
+        TemplatePaneState(
+            dateFormatter = dateFormatter,
+            timeFormatter = timeFormatter
+        )
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), TemplatePaneState())
+
+    val templates = noteRepository.getAllTemplates()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Companion.WhileSubscribed(5_000L),
+            initialValue = emptyList()
+        )
+
+    val editorState = combine(
+        dataStoreRepository.booleanFlow(Constants.Preferences.SHOW_LINE_NUMBER),
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_MARKDOWN_LINT_ENABLED),
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_DEFAULT_READING_VIEW)
+    ) { showLineNumber, isMarkdownLintEnabled, isDefaultReadingView ->
+        EditorPaneState(
+            showLineNumber = showLineNumber,
+            isMarkdownLintEnabled = isMarkdownLintEnabled,
+            isDefaultReadingView = isDefaultReadingView
+        )
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), EditorPaneState())
+
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    val processedContent = _isInitialized.filter { it }
+        .flatMapLatest {
+            snapshotFlow { _fileEditingState.value.fileType }
+                .flatMapLatest { noteType ->
+                    when (noteType) {
+                        NoteType.MARKDOWN -> contentSnapshotFlow.debounce(100)
+                            .map { content ->
+                                val processed = processMarkdown(content.toString())
+                                ProcessedContent.Markdown(processed)
+                            }
+
+                        NoteType.TODO -> contentSnapshotFlow.debounce(100)
+                            .map { content ->
+                                val (undone, done) = processTodo(content.lines())
+                                ProcessedContent.Todo(undone, done)
+                            }
+
+                        else -> flowOf(ProcessedContent.Empty)
+                    }
+                }
+        }
+        .flowOn(Dispatchers.Default)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000L),
+            initialValue = ProcessedContent.Empty
+        )
 
     fun saveFile(file: PlatformFile) {
         viewModelScope.launch(Dispatchers.IO) {

@@ -13,22 +13,18 @@ import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.addLastModifiedToFileCacheKey
-import platform.Foundation.NSFileManager
-import platform.Foundation.NSURL
+import java.io.File
 
 @Composable
-actual fun InNoteDrawPreview(uuid: String, imageBitmap: ImageBitmap?, modifier: Modifier) =
+actual fun DrawingViewer(uuid: String, imageBitmap: ImageBitmap?, modifier: Modifier) =
     Column(modifier) {
         if (imageBitmap == null) {
-            val documentDirectory = NSFileManager.defaultManager.URLsForDirectory(
-                platform.Foundation.NSDocumentDirectory,
-                platform.Foundation.NSUserDomainMask
-            ).firstOrNull() as? NSURL
-            val imagePath = documentDirectory?.URLByAppendingPathComponent("$uuid/ink.png")?.path
+            val userHome = System.getProperty("user.home")
+            val imageFile = File("$userHome/.kori/$uuid/ink.png")
             AsyncImage(
                 modifier = Modifier.fillMaxWidth(),
                 model = ImageRequest.Builder(LocalPlatformContext.current)
-                    .data(imagePath)
+                    .data(imageFile)
                     .addLastModifiedToFileCacheKey(true)
                     .build(),
                 contentScale = ContentScale.FillWidth,

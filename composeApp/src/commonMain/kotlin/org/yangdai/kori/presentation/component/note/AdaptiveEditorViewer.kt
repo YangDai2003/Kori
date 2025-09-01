@@ -7,6 +7,7 @@ import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -190,30 +191,27 @@ fun AdaptiveEditor(
 @Composable
 fun AdaptiveViewer(
     modifier: Modifier,
-    noteType: NoteType,
-    html: String,
-    rawText: String,
+    processedContent: ProcessedContent,
     scrollState: ScrollState,
     isSheetVisible: Boolean,
     printTrigger: MutableState<Boolean>
-) = when (noteType) {
-
-    NoteType.MARKDOWN -> {
+) = when (processedContent) {
+    ProcessedContent.Empty -> Spacer(modifier)
+    is ProcessedContent.Markdown -> {
         MarkdownViewer(
             modifier = modifier,
-            html = html,
+            html = processedContent.html,
             scrollState = scrollState,
             isSheetVisible = isSheetVisible,
             printTrigger = printTrigger
         )
     }
 
-    NoteType.TODO -> {
+    is ProcessedContent.Todo -> {
         TodoViewer(
             modifier = modifier,
-            todoText = rawText
+            undoneItems = processedContent.undoneItems,
+            doneItems = processedContent.doneItems
         )
     }
-
-    else -> {}
 }

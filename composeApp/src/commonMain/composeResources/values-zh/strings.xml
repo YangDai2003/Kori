@@ -125,6 +125,7 @@
     <string name="cowriter_description">接入第三方人工智能模型</string>
     <string name="model">模型</string>
     <string name="key">密钥</string>
+    <string name="test">测试</string>
     <string name="set_as_default">设为默认</string>
     <string name="describe_the_note_you_want_to_generate">描述你想要添加的内容</string>
     <string name="rewrite">改写</string>
