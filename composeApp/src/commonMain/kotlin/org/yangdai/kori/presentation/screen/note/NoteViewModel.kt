@@ -11,6 +11,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import knet.ConnectivityObserver
 import knet.ai.AI
 import knet.ai.GenerationResult
 import knet.ai.providers.LMStudio
@@ -62,7 +63,8 @@ class NoteViewModel(
     savedStateHandle: SavedStateHandle,
     private val folderRepository: FolderRepository,
     private val noteRepository: NoteRepository,
-    private val dataStoreRepository: DataStoreRepository
+    private val dataStoreRepository: DataStoreRepository,
+    connectivityObserver: ConnectivityObserver,
 ) : ViewModel() {
     private val route = savedStateHandle.toRoute<Screen.Note>()
 
@@ -286,10 +288,12 @@ class NoteViewModel(
     /*----*/
 
     val showAI = combine(
+        connectivityObserver.observe(),
         dataStoreRepository.booleanFlow(Constants.Preferences.IS_AI_ENABLED),
         snapshotFlow { _noteEditingState.value.noteType }
-    ) { isAiEnabled, noteType -> isAiEnabled && noteType != NoteType.Drawing }
-        .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), false)
+    ) { status, isAiEnabled, noteType ->
+        status == ConnectivityObserver.Status.Connected && isAiEnabled && noteType != NoteType.Drawing
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), false)
 
     // LLM Config: Base URL, Model, API Key
     private suspend fun getLLMConfig(llmProvider: LLMProvider): Triple<String, String, String> {

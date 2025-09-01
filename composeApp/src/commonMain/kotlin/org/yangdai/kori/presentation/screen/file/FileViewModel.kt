@@ -16,6 +16,7 @@ import kfile.getFileName
 import kfile.getLastModified
 import kfile.readText
 import kfile.writeText
+import knet.ConnectivityObserver
 import knet.ai.AI
 import knet.ai.GenerationResult
 import knet.ai.providers.LMStudio
@@ -59,7 +60,8 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalTime::class)
 class FileViewModel(
     private val noteRepository: NoteRepository,
-    private val dataStoreRepository: DataStoreRepository
+    private val dataStoreRepository: DataStoreRepository,
+    connectivityObserver: ConnectivityObserver
 ) : ViewModel() {
     // 笔记状态
     val titleState = TextFieldState()
@@ -222,10 +224,12 @@ class FileViewModel(
     /*----*/
 
     val showAI = combine(
+        connectivityObserver.observe(),
         dataStoreRepository.booleanFlow(Constants.Preferences.IS_AI_ENABLED),
         snapshotFlow { _fileEditingState.value.fileType }
-    ) { isAiEnabled, noteType -> isAiEnabled && noteType != NoteType.Drawing }
-        .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), false)
+    ) { status, isAiEnabled, noteType ->
+        status == ConnectivityObserver.Status.Connected && isAiEnabled && noteType != NoteType.Drawing
+    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), false)
 
     // LLM Config: Base URL, Model, API Key
     private suspend fun getLLMConfig(llmProvider: LLMProvider): Triple<String, String, String> {

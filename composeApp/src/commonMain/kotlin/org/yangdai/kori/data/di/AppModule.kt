@@ -18,7 +18,7 @@ import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.screen.note.NoteViewModel
 import org.yangdai.kori.presentation.screen.template.TemplateViewModel
 
-expect fun databaseModule(): Module
+expect fun platformModule(): Module
 
 fun appModule() = module {
     single<FolderRepository> { FolderRepositoryImpl(get()) }
@@ -37,7 +37,7 @@ object KoinInitializer {
             appDeclaration()
             modules(
                 listOf(
-                    databaseModule(),
+                    platformModule(),
                     appModule()
                 )
             )
