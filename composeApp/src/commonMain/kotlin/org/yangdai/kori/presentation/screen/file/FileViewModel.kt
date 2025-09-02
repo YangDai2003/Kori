@@ -1,7 +1,6 @@
 package org.yangdai.kori.presentation.screen.file
 
 import ai.koog.agents.utils.SuitableForIO
-import ai.koog.prompt.llm.LLMProvider
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -19,7 +18,6 @@ import kfile.writeText
 import knet.ConnectivityObserver
 import knet.ai.AI
 import knet.ai.GenerationResult
-import knet.ai.providers.LMStudio
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -39,7 +37,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.domain.repository.DataStoreRepository
@@ -52,6 +49,7 @@ import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.screen.settings.EditorPaneState
 import org.yangdai.kori.presentation.screen.settings.TemplatePaneState
 import org.yangdai.kori.presentation.util.Constants
+import org.yangdai.kori.presentation.util.Constants.LLMConfig.getLLMConfig
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
@@ -231,73 +229,6 @@ class FileViewModel(
         status == ConnectivityObserver.Status.Connected && isAiEnabled && noteType != NoteType.Drawing
     }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), false)
 
-    // LLM Config: Base URL, Model, API Key
-    private suspend fun getLLMConfig(llmProvider: LLMProvider): Triple<String, String, String> {
-        return withContext(Dispatchers.IO) {
-            when (llmProvider) {
-                LLMProvider.Google -> {
-                    val baseUrl =
-                        dataStoreRepository.getString(Constants.Preferences.GEMINI_BASE_URL, "")
-                    val model =
-                        dataStoreRepository.getString(Constants.Preferences.GEMINI_MODEL, "")
-                    val apiKey =
-                        dataStoreRepository.getString(Constants.Preferences.GEMINI_API_KEY, "")
-                    Triple(baseUrl, model, apiKey)
-                }
-
-                LLMProvider.OpenAI -> {
-                    val baseUrl =
-                        dataStoreRepository.getString(Constants.Preferences.OPENAI_BASE_URL, "")
-                    val model =
-                        dataStoreRepository.getString(Constants.Preferences.OPENAI_MODEL, "")
-                    val apiKey =
-                        dataStoreRepository.getString(Constants.Preferences.OPENAI_API_KEY, "")
-                    Triple(baseUrl, model, apiKey)
-                }
-
-                LLMProvider.Anthropic -> {
-                    val baseUrl =
-                        dataStoreRepository.getString(Constants.Preferences.ANTHROPIC_BASE_URL, "")
-                    val model =
-                        dataStoreRepository.getString(Constants.Preferences.ANTHROPIC_MODEL, "")
-                    val apiKey =
-                        dataStoreRepository.getString(Constants.Preferences.ANTHROPIC_API_KEY, "")
-                    Triple(baseUrl, model, apiKey)
-                }
-
-                LLMProvider.DeepSeek -> {
-                    val baseUrl =
-                        dataStoreRepository.getString(Constants.Preferences.DEEPSEEK_BASE_URL, "")
-                    val model =
-                        dataStoreRepository.getString(Constants.Preferences.DEEPSEEK_MODEL, "")
-                    val apiKey =
-                        dataStoreRepository.getString(Constants.Preferences.DEEPSEEK_API_KEY, "")
-                    Triple(baseUrl, model, apiKey)
-                }
-
-                LLMProvider.Ollama -> {
-                    val baseUrl =
-                        dataStoreRepository.getString(Constants.Preferences.OLLAMA_BASE_URL, "")
-                    val model =
-                        dataStoreRepository.getString(Constants.Preferences.OLLAMA_MODEL, "")
-                    Triple(baseUrl, model, "")
-                }
-
-                LMStudio -> {
-                    val baseUrl =
-                        dataStoreRepository.getString(Constants.Preferences.LM_STUDIO_BASE_URL, "")
-                    val model =
-                        dataStoreRepository.getString(Constants.Preferences.LM_STUDIO_MODEL, "")
-                    Triple(baseUrl, model, "")
-                }
-
-                else -> {
-                    Triple("", "", "")
-                }
-            }
-        }
-    }
-
     private val _isGenerating = MutableStateFlow(false)
     val isGenerating = _isGenerating.asStateFlow()
 
@@ -311,7 +242,7 @@ class FileViewModel(
                 AI.providers.keys.first()
             )
             val llmProvider = AI.providers[defaultProviderId] ?: AI.providers.values.first()
-            val llmConfig = getLLMConfig(llmProvider)
+            val llmConfig = getLLMConfig(llmProvider, dataStoreRepository)
             val response = AI.executePrompt(
                 lLMProvider = llmProvider,
                 baseUrl = llmConfig.first,

@@ -190,6 +190,6 @@ private fun CardContentText(text: AnnotatedString, noteItemProperties: NoteItemP
     Text(
         text = text,
         style = MaterialTheme.typography.bodyMedium,
-        maxLines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 7 else 3,
+        maxLines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 8 else 3,
         overflow = if (noteItemProperties.clipOverflow) TextOverflow.Clip else TextOverflow.Ellipsis
     )

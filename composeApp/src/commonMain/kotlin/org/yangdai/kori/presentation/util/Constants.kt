@@ -1,5 +1,12 @@
 package org.yangdai.kori.presentation.util
 
+import ai.koog.prompt.llm.LLMProvider
+import knet.ai.providers.LMStudio
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.withContext
+import org.yangdai.kori.domain.repository.DataStoreRepository
+
 object Constants {
     const val DEEP_LINK = "kori://screen"
 
@@ -31,7 +38,9 @@ object Constants {
 
         const val IS_AI_ENABLED = "is_ai_enabled"
         const val AI_PROVIDER = "ai_provider"
+    }
 
+    object LLMConfig {
         const val GEMINI_API_KEY = "gemini_api_key"
         const val GEMINI_BASE_URL = "gemini_base_url"
         const val GEMINI_MODEL = "gemini_model"
@@ -53,6 +62,76 @@ object Constants {
 
         const val LM_STUDIO_BASE_URL = "lm_studio_base_url"
         const val LM_STUDIO_MODEL = "lm_studio_model"
+
+        // LLM Config: Base URL, Model, API Key
+        suspend fun getLLMConfig(
+            llmProvider: LLMProvider,
+            dataStoreRepository: DataStoreRepository
+        ): Triple<String, String, String> {
+            return withContext(Dispatchers.IO) {
+                when (llmProvider) {
+                    LLMProvider.Google -> {
+                        val baseUrl =
+                            dataStoreRepository.getString(GEMINI_BASE_URL, "")
+                        val model =
+                            dataStoreRepository.getString(GEMINI_MODEL, "")
+                        val apiKey =
+                            dataStoreRepository.getString(GEMINI_API_KEY, "")
+                        Triple(baseUrl, model, apiKey)
+                    }
+
+                    LLMProvider.OpenAI -> {
+                        val baseUrl =
+                            dataStoreRepository.getString(OPENAI_BASE_URL, "")
+                        val model =
+                            dataStoreRepository.getString(OPENAI_MODEL, "")
+                        val apiKey =
+                            dataStoreRepository.getString(OPENAI_API_KEY, "")
+                        Triple(baseUrl, model, apiKey)
+                    }
+
+                    LLMProvider.Anthropic -> {
+                        val baseUrl =
+                            dataStoreRepository.getString(ANTHROPIC_BASE_URL, "")
+                        val model =
+                            dataStoreRepository.getString(ANTHROPIC_MODEL, "")
+                        val apiKey =
+                            dataStoreRepository.getString(ANTHROPIC_API_KEY, "")
+                        Triple(baseUrl, model, apiKey)
+                    }
+
+                    LLMProvider.DeepSeek -> {
+                        val baseUrl =
+                            dataStoreRepository.getString(DEEPSEEK_BASE_URL, "")
+                        val model =
+                            dataStoreRepository.getString(DEEPSEEK_MODEL, "")
+                        val apiKey =
+                            dataStoreRepository.getString(DEEPSEEK_API_KEY, "")
+                        Triple(baseUrl, model, apiKey)
+                    }
+
+                    LLMProvider.Ollama -> {
+                        val baseUrl =
+                            dataStoreRepository.getString(OLLAMA_BASE_URL, "")
+                        val model =
+                            dataStoreRepository.getString(OLLAMA_MODEL, "")
+                        Triple(baseUrl, model, "")
+                    }
+
+                    LMStudio -> {
+                        val baseUrl =
+                            dataStoreRepository.getString(LM_STUDIO_BASE_URL, "")
+                        val model =
+                            dataStoreRepository.getString(LM_STUDIO_MODEL, "")
+                        Triple(baseUrl, model, "")
+                    }
+
+                    else -> {
+                        Triple("", "", "")
+                    }
+                }
+            }
+        }
     }
 }
 
