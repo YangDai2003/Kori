@@ -234,6 +234,7 @@ compose.desktop {
             isEnabled = false
         }
         nativeDistributions {
+            modules("jdk.unsupported", "jdk.unsupported.desktop", "java.net.http", "jdk.jsobject")
             macOS {
                 appCategory = "public.app-category.productivity"
                 bundleID = "org.yangdai.kori"
