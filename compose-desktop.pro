@@ -1,1 +1,60 @@
 -keep class * extends androidx.room.RoomDatabase { <init>(); }
+
+-dontwarn ch.qos.logback.**
+-dontwarn org.apache.logging.log4j.**
+-dontwarn org.apache.commons.logging.**
+-dontwarn org.apache.log4j.**
+-dontwarn rx.**
+-dontwarn io.reactivex.**
+-dontwarn reactor.blockhound.**
+-dontwarn org.reactivestreams.**
+-dontwarn io.micrometer.**
+-dontwarn org.LatencyUtils.**
+-dontwarn org.HdrHistogram.**
+-dontwarn zipkin2.**
+-dontwarn brave.**
+-dontwarn javax.enterprise.**
+-dontwarn javax.annotation.**
+-dontwarn org.osgi.annotation.bundle.**
+-dontwarn io.netty.internal.tcnative.**
+-dontwarn org.jboss.marshalling.**
+-dontwarn org.conscrypt.**
+-dontwarn org.bouncycastle.**
+-dontwarn org.eclipse.jetty.**
+-dontwarn io.netty.incubator.**
+-dontwarn io.netty.channel.epoll.**
+-dontwarn io.netty.channel.kqueue.**
+-dontwarn io.netty.resolver.dns.**
+-dontwarn com.oracle.svm.core.annotate.**
+-dontwarn org.graalvm.nativeimage.hosted.**
+-dontwarn com.google.protobuf.**
+-dontwarn io.grpc.**
+-dontwarn com.google.common.**
+-dontwarn com.google.errorprone.annotations.**
+-dontwarn com.google.auto.value.**
+-dontwarn com.fasterxml.jackson.**
+-dontwarn com.aayushatharva.brotli4j.**
+-dontwarn com.jcraft.jzlib.**
+-dontwarn com.ning.compress.**
+-dontwarn net.jpountz.**
+-dontwarn com.github.luben.zstd.**
+-dontwarn lzma.sdk.**
+-dontwarn org.apache.commons.pool2.**
+-dontwarn sun.misc.**
+-dontwarn android.**
+-dontwarn okio.**
+-dontwarn org.openjsse.**
+-dontwarn kotlinx.**
+-dontwarn io.opentelemetry.api.incubator.**
+
+-keep class io.lettuce.core.** { *; }
+-keep class io.netty.** { *; }
+-keep class io.opentelemetry.** { *; }
+-keep class okhttp3.** { *; }
+-keep class com.typesafe.config.** { *; }
+-keep class io.ktor.** { *; }
+-keep class reactor.** { *; }
+-keep class okio.** { *; }
+-keep class kotlinx.** { *; }
+-keep class org.slf4j.** { *; }
+-keep class org.reactivestreams.** { *; }
