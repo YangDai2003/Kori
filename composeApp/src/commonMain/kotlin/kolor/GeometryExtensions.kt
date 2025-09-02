@@ -25,9 +25,6 @@ internal operator fun IntSize.times(scale: Float) =
 internal val IntSize.radius get() = min(width, height) * 0.5f
 
 internal val Offset.minCoordinate get() = min(x, y) // exists for Size but not Offset
-internal fun Offset.distanceTo(other: Offset) = sqrt(
-    (x - other.x) * (x - other.x) + (y - other.y) * (y - other.y),
-)
 
 internal fun Offset.midpoint(other: Offset) = (this + other) * 0.5f
 internal fun Offset.length() = sqrt(x * x + y * y)

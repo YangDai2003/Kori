@@ -77,7 +77,7 @@ internal class CheckedListItemGeneratingProvider : SimpleTagProvider("li") {
     }
 
     private fun getIsCheckedString(node: ASTNode?, text: String): String {
-        var isChecked = node?.getTextInNode(text)?.let {
+        val isChecked = node?.getTextInNode(text)?.let {
             it.length > 1 && it[1] != ' '
         } == true
 
