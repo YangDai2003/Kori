@@ -149,6 +149,7 @@
     <string name="reset_database_description">Löschen Sie alle Daten in der Datenbank (einschließlich aller Notizen und Ordner).</string>
     <string name="backup">Sichern</string>
     <string name="restore_from_backup">Wiederherstellung</string>
+    <string name="migrate_from_open_note">Migrieren von OpenNote JSON-Datei</string>
 
     <string name="toolbox">Werkzeugkasten</string>
     <string name="edit_local_file">Lokale Datei bearbeiten</string>

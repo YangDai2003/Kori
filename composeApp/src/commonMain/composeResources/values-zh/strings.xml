@@ -149,6 +149,7 @@
     <string name="reset_database_warning">重置数据库会导致所有笔记和文件夹被彻底删除且不可恢复，请决定是否继续操作?</string>
     <string name="backup">备份</string>
     <string name="restore_from_backup">还原</string>
+    <string name="migrate_from_open_note">从 OpenNote JSON 文件迁移</string>
 
     <string name="toolbox">工具箱</string>
     <string name="edit_local_file">编辑本机文件</string>

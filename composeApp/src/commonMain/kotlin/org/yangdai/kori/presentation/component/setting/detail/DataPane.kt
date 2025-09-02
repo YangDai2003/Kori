@@ -32,6 +32,7 @@ import kori.composeapp.generated.resources.backup_json_24px
 import kori.composeapp.generated.resources.import_files
 import kori.composeapp.generated.resources.import_files_description
 import kori.composeapp.generated.resources.import_text_files_24px
+import kori.composeapp.generated.resources.migrate_from_open_note
 import kori.composeapp.generated.resources.reset_database
 import kori.composeapp.generated.resources.reset_database_description
 import kori.composeapp.generated.resources.reset_database_warning
@@ -108,7 +109,7 @@ fun DataPane(mainViewModel: MainViewModel) {
         HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
         DetailPaneItem(
-            title = "Migrate from OpenNote JSON File",
+            title = stringResource(Res.string.migrate_from_open_note),
             icon = Icons.Outlined.Restore,
             onClick = { launchOpenNoteJsonPicker = true }
         )

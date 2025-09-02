@@ -103,6 +103,8 @@ actual fun MarkdownViewer(
                 isVerticalScrollBarEnabled = true
                 isHorizontalScrollBarEnabled = false
                 settings.apply {
+                    allowFileAccess = true
+                    allowContentAccess = true
                     domStorageEnabled = true
                     javaScriptEnabled = true
                     loadsImagesAutomatically = true

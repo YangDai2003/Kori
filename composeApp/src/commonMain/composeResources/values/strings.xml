@@ -152,6 +152,7 @@
     <string name="reset_database_warning">Resetting the database will cause all notes and folders to be completely deleted and irrecoverable. Please decide whether to continue?</string>
     <string name="backup">Backup</string>
     <string name="restore_from_backup">Restore</string>
+    <string name="migrate_from_open_note">Migrate from OpenNote JSON File</string>
 
     <string name="toolbox">Toolbox</string>
     <string name="edit_local_file">Edit local file</string>
