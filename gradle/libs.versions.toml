@@ -10,14 +10,12 @@ compose-adaptive = "1.2.0-alpha06"
 koogAgents = "0.4.1"
 kotlin = "2.2.10"
 kotlinx-coroutines = "1.10.2"
-#noinspection NewerVersionAvailable 兼容koog
-kotlinxDatetime = "0.6.2"
 room = "2.7.2"
 sqlite = "2.5.2"
 dataStore = "1.1.7"
 ksp = "2.2.10-2.0.2"
 kotlinxSerializationJson = "1.9.0"
-koin = "4.1.0"
+koin = "4.1.1"
 androidx-biometric = "1.4.0-alpha04"
 androidx-documentfile = "1.1.0"
 androidx-browser = "1.9.0"
@@ -29,7 +27,6 @@ webkit = "1.14.0"
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 koog-agents = { module = "ai.koog:koog-agents", version.ref = "koogAgents" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
-kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }

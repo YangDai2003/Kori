@@ -81,7 +81,6 @@ kotlin {
             implementation(libs.androidx.room.paging)
             implementation(libs.androidx.dataStore)
             implementation(libs.kotlinx.serialization.json)
-            implementation(libs.kotlinx.datetime)
             implementation(libs.androidx.sqlite.bundled)
 
             implementation(project.dependencies.platform(libs.koin.bom))
@@ -93,8 +92,7 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.koog.agents)
         }
-        iosMain.dependencies {
-        }
+        iosMain.dependencies {}
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
