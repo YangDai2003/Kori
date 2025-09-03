@@ -66,11 +66,8 @@ kotlin {
             implementation(libs.androidx.webkit)
         }
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
             implementation(compose.materialIconsExtended)
-            implementation(compose.ui)
+            implementation(compose.material3)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
@@ -80,7 +77,6 @@ kotlin {
             implementation(libs.compose.adaptive)
             implementation(libs.compose.adaptive.navigation)
             implementation(libs.compose.adaptive.layout)
-            implementation(libs.compose.material3)
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.room.paging)
             implementation(libs.androidx.dataStore)

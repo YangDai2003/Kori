@@ -32,13 +32,7 @@ actual fun ShareImageButton(imageBitmap: ImageBitmap) {
                         NSURL.fileURLWithPath(filePath).let { fileURL ->
                             val activityViewController =
                                 UIActivityViewController(listOf(fileURL), null)
-                            var currentViewController =
-                                UIApplication.sharedApplication.keyWindow?.rootViewController
-                            while (currentViewController?.presentedViewController != null) {
-                                currentViewController =
-                                    currentViewController.presentedViewController
-                            }
-                            currentViewController?.presentViewController(
+                            UIApplication.sharedApplication.keyWindow?.rootViewController?.presentViewController(
                                 viewControllerToPresent = activityViewController,
                                 animated = true,
                                 completion = null

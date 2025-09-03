@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -34,7 +35,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.IconToggleButton
@@ -142,12 +142,11 @@ fun AiPane(mainViewModel: MainViewModel) {
                 PrimaryScrollableTabRow(
                     selectedTabIndex = pagerState.currentPage,
                     containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                    divider = {},
                     edgePadding = 0.dp
                 ) {
                     AI.providers.entries.forEachIndexed { i, item ->
                         Tab(
-                            modifier = Modifier.clip(MaterialTheme.shapes.large),
+                            modifier = Modifier.clip(CircleShape),
                             selected = i == pagerState.currentPage,
                             onClick = {
                                 scope.launch {
@@ -169,8 +168,6 @@ fun AiPane(mainViewModel: MainViewModel) {
                         )
                     }
                 }
-
-                HorizontalDivider()
 
                 HorizontalPager(
                     state = pagerState,

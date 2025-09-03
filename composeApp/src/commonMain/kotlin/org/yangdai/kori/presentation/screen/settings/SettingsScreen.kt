@@ -94,9 +94,7 @@ fun SettingsScreen(mainViewModel: MainViewModel, navigateUp: () -> Unit) {
     }
 
     var isVisible by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        isVisible = true
-    }
+    LaunchedEffect(Unit) { isVisible = true }
 
     val backProgress = remember { Animatable(0f) }
     val triggerExit = {
