@@ -325,6 +325,7 @@ fun AIAssist(
             else
                 FilledIconButton(
                     modifier = Modifier
+                        .pointerHoverIcon(PointerIcon.Hand)
                         .focusProperties { canFocus = false }
                         .padding(4.dp)
                         .size(

@@ -67,16 +67,21 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(compose.materialIconsExtended)
-            implementation(compose.material3)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation("org.jetbrains.compose.material3:material3:1.10.0-alpha01") {
+                exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-datetime")
+            }
+
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.androidx.navigation.compose)
+
             implementation(libs.compose.backhandler)
             implementation(libs.compose.adaptive)
             implementation(libs.compose.adaptive.navigation)
             implementation(libs.compose.adaptive.layout)
+
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.room.paging)
             implementation(libs.androidx.dataStore)
