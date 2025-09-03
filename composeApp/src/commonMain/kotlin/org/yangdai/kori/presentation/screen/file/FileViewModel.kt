@@ -30,9 +30,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -77,7 +75,7 @@ class FileViewModel(
     ) { initial, current -> initial != current.toString() }
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(5_000L),
+            SharingStarted.Lazily,
             false
         )
 
@@ -127,14 +125,13 @@ class FileViewModel(
             dateFormatter = dateFormatter,
             timeFormatter = timeFormatter
         )
-    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), TemplatePaneState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), TemplatePaneState())
 
-    val templates = noteRepository.getAllTemplates()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Companion.WhileSubscribed(5_000L),
-            initialValue = emptyList()
-        )
+    val templates = noteRepository.getAllTemplates().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000L),
+        initialValue = emptyList()
+    )
 
     val editorState = combine(
         dataStoreRepository.booleanFlow(Constants.Preferences.SHOW_LINE_NUMBER),
@@ -146,34 +143,34 @@ class FileViewModel(
             isMarkdownLintEnabled = isMarkdownLintEnabled,
             isDefaultReadingView = isDefaultReadingView
         )
-    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), EditorPaneState())
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, EditorPaneState())
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     val processedContent = _isInitialized.filter { it }
         .flatMapLatest {
-            snapshotFlow { _fileEditingState.value.fileType }
-                .flatMapLatest { noteType ->
-                    when (noteType) {
-                        NoteType.MARKDOWN -> contentSnapshotFlow.debounce(100)
-                            .map { content ->
-                                val processed = processMarkdown(content.toString())
-                                ProcessedContent.Markdown(processed)
-                            }
-
-                        NoteType.TODO -> contentSnapshotFlow.debounce(100)
-                            .map { content ->
-                                val (undone, done) = processTodo(content.lines())
-                                ProcessedContent.Todo(undone, done)
-                            }
-
-                        else -> flowOf(ProcessedContent.Empty)
+            combine(
+                snapshotFlow { _fileEditingState.value.fileType },
+                contentSnapshotFlow.debounce(100)
+            ) { noteType, content ->
+                when (noteType) {
+                    NoteType.MARKDOWN -> {
+                        val processed = processMarkdown(content.toString())
+                        ProcessedContent.Markdown(processed)
                     }
+
+                    NoteType.TODO -> {
+                        val (undone, done) = processTodo(content.lines())
+                        ProcessedContent.Todo(undone, done)
+                    }
+
+                    else -> ProcessedContent.Empty
                 }
+            }
         }
         .flowOn(Dispatchers.Default)
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
+            started = SharingStarted.Eagerly,
             initialValue = ProcessedContent.Empty
         )
 
@@ -227,7 +224,7 @@ class FileViewModel(
         snapshotFlow { _fileEditingState.value.fileType }
     ) { status, isAiEnabled, noteType ->
         status == ConnectivityObserver.Status.Connected && isAiEnabled && noteType != NoteType.Drawing
-    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), false)
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     private val _isGenerating = MutableStateFlow(false)
     val isGenerating = _isGenerating.asStateFlow()

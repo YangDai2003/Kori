@@ -20,8 +20,8 @@ class SequentialParserUtil {
             val result = ArrayList<IntRange>()
             var lastStart = textRange.first
 
-            val R = textRange.last
-            for (i in lastStart..R - 1) {
+            val rangeEnd = textRange.last
+            for (i in lastStart..rangeEnd - 1) {
                 if (tokensCache.Iterator(i).type == MarkdownTokenTypes.BLOCK_QUOTE) {
                     if (lastStart < i) {
                         result.add(lastStart..i - 1)
@@ -29,8 +29,8 @@ class SequentialParserUtil {
                     lastStart = i + 1
                 }
             }
-            if (lastStart < R) {
-                result.add(lastStart..R)
+            if (lastStart < rangeEnd) {
+                result.add(lastStart..rangeEnd)
             }
             return result
         }

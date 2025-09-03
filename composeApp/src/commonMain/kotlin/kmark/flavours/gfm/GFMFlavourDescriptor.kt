@@ -114,7 +114,11 @@ open class GFMFlavourDescriptor(
                         }
                     }
 
-                    val link = EntityConverter.replaceEntities(linkText, true, false)
+                    val link = EntityConverter.replaceEntities(
+                        text = linkText,
+                        processEntities = true,
+                        processEscapes = false
+                    )
                     val normalizedDestination =
                         LinkMap.normalizeDestination(absoluteLink, false).let {
                             if (useSafeLinks) makeXssSafeDestination(it) else it

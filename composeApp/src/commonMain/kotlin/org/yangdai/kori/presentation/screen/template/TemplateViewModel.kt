@@ -24,9 +24,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -113,34 +111,34 @@ class TemplateViewModel(
             showLineNumber = showLineNumber,
             isMarkdownLintEnabled = isMarkdownLintEnabled
         )
-    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), EditorPaneState())
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, EditorPaneState())
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     val processedContent = _isInitialized.filter { it }
         .flatMapLatest {
-            snapshotFlow { _templateEditingState.value.noteType }
-                .flatMapLatest { noteType ->
-                    when (noteType) {
-                        NoteType.MARKDOWN -> contentSnapshotFlow.debounce(100)
-                            .map { content ->
-                                val processed = processMarkdown(content.toString())
-                                ProcessedContent.Markdown(processed)
-                            }
-
-                        NoteType.TODO -> contentSnapshotFlow.debounce(100)
-                            .map { content ->
-                                val (undone, done) = processTodo(content.lines())
-                                ProcessedContent.Todo(undone, done)
-                            }
-
-                        else -> flowOf(ProcessedContent.Empty)
+            combine(
+                snapshotFlow { _templateEditingState.value.noteType },
+                contentSnapshotFlow.debounce(100)
+            ) { noteType, content ->
+                when (noteType) {
+                    NoteType.MARKDOWN -> {
+                        val processed = processMarkdown(content.toString())
+                        ProcessedContent.Markdown(processed)
                     }
+
+                    NoteType.TODO -> {
+                        val (undone, done) = processTodo(content.lines())
+                        ProcessedContent.Todo(undone, done)
+                    }
+
+                    else -> ProcessedContent.Empty
                 }
+            }
         }
         .flowOn(Dispatchers.Default)
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
+            started = SharingStarted.Eagerly,
             initialValue = ProcessedContent.Empty
         )
 
@@ -203,7 +201,7 @@ class TemplateViewModel(
         snapshotFlow { _templateEditingState.value.noteType }
     ) { status, isAiEnabled, noteType ->
         status == ConnectivityObserver.Status.Connected && isAiEnabled && noteType != NoteType.Drawing
-    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), false)
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     private val _isGenerating = MutableStateFlow(false)
     val isGenerating = _isGenerating.asStateFlow()

@@ -137,13 +137,19 @@ abstract class TokensCache {
             if (steps == 0) {
                 return getRawCharAt(start)
             }
-            if (steps == 1) {
-                return getRawCharAt(end)
-            } else if (steps == -1) {
-                return getRawCharAt(start - 1)
-            } else {
-                val pos = if (steps > 0) rawStart(steps) else rawStart(steps + 1) - 1
-                return getRawCharAt(pos)
+            when (steps) {
+                1 -> {
+                    return getRawCharAt(end)
+                }
+
+                -1 -> {
+                    return getRawCharAt(start - 1)
+                }
+
+                else -> {
+                    val pos = if (steps > 0) rawStart(steps) else rawStart(steps + 1) - 1
+                    return getRawCharAt(pos)
+                }
             }
         }
 

@@ -154,12 +154,18 @@ class LinkParserUtil {
             val startIndex = it.index
 
             val closingType: IElementType? =
-                if (it.type == MarkdownTokenTypes.SINGLE_QUOTE || it.type == MarkdownTokenTypes.DOUBLE_QUOTE) {
-                    it.type
-                } else if (it.type == MarkdownTokenTypes.LPAREN) {
-                    MarkdownTokenTypes.RPAREN
-                } else {
-                    return null
+                when (it.type) {
+                    MarkdownTokenTypes.SINGLE_QUOTE, MarkdownTokenTypes.DOUBLE_QUOTE -> {
+                        it.type
+                    }
+
+                    MarkdownTokenTypes.LPAREN -> {
+                        MarkdownTokenTypes.RPAREN
+                    }
+
+                    else -> {
+                        return null
+                    }
                 }
 
             it = it.advance()
