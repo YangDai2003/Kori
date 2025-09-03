@@ -32,6 +32,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -121,7 +123,7 @@ class EditorRowScopeImpl(val showElevation: Boolean) : EditorRowScope {
         enableUserInput = enabled
     ) {
         Box(
-            modifier = Modifier.fillMaxHeight().aspectRatio(1f)
+            modifier = Modifier.fillMaxHeight().aspectRatio(1f).pointerHoverIcon(PointerIcon.Hand)
                 .clickable(enabled = enabled, role = Role.Button) { onClick() },
             contentAlignment = Alignment.Center
         ) {
@@ -163,7 +165,7 @@ class EditorRowScopeImpl(val showElevation: Boolean) : EditorRowScope {
         enableUserInput = enabled
     ) {
         Box(
-            modifier = Modifier.fillMaxHeight().aspectRatio(1f)
+            modifier = Modifier.fillMaxHeight().aspectRatio(1f).pointerHoverIcon(PointerIcon.Hand)
                 .clickable(enabled = enabled, role = Role.Button) { onClick() },
             contentAlignment = Alignment.Center
         ) {

@@ -3,8 +3,10 @@ package org.yangdai.kori.presentation.component.note
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -15,6 +17,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -63,12 +67,15 @@ import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
@@ -104,20 +111,45 @@ private fun LoadingScrim() {
 private fun AIAssistChip(
     onClick: () -> Unit,
     label: String
-) = AssistChip(
-    modifier = Modifier.focusProperties { canFocus = false },
-    onClick = onClick,
-    label = { Text(label) },
-    border = BorderStroke(
-        width = 1.dp,
-        brush = Brush.verticalGradient(
-            colors = listOf(brandColor1, brandColor2, brandColor3)
-        )
-    ),
-    colors = AssistChipDefaults.assistChipColors(
-        containerColor = MaterialTheme.colorScheme.surfaceBright.copy(alpha = 0.8f)
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) .85f else 1f,
+        animationSpec = if (isPressed)
+            spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessMediumLow
+            )
+        else
+            spring(
+                stiffness = Spring.StiffnessLow,
+                dampingRatio = Spring.DampingRatioHighBouncy,
+            ),
+        visibilityThreshold = .000001f
     )
-)
+    AssistChip(
+        modifier = Modifier
+            .pointerHoverIcon(PointerIcon.Hand)
+            .graphicsLayer {
+                scaleY = scale
+                scaleX = (1f - scale) + 1f
+            }
+            .focusProperties { canFocus = false },
+        interactionSource = interactionSource,
+        onClick = onClick,
+        label = { Text(label) },
+        border = BorderStroke(
+            width = 1.dp,
+            brush = Brush.verticalGradient(
+                colors = listOf(brandColor1, brandColor2, brandColor3)
+            )
+        ),
+        colors = AssistChipDefaults.assistChipColors(
+            containerColor = MaterialTheme.colorScheme.surfaceBright.copy(alpha = 0.8f)
+        )
+    )
+}
 
 sealed interface AIAssistEvent {
     data object Rewrite : AIAssistEvent
