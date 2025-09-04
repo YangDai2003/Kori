@@ -112,7 +112,7 @@ class EditorRowScopeImpl(val showElevation: Boolean) : EditorRowScope {
                         withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
                             append(hint)
                         }
-                        if (hint.isNotEmpty() && actionText.isNotEmpty()) append("\n")
+                        if (hint.isNotEmpty() && actionText.isNotEmpty()) append("\n$platformKeyboardShortCut + ")
                         append(actionText)
                     }
                     Text(annotatedString, textAlign = TextAlign.Center)
@@ -154,7 +154,7 @@ class EditorRowScopeImpl(val showElevation: Boolean) : EditorRowScope {
                         withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
                             append(hint)
                         }
-                        if (hint.isNotEmpty() && actionText.isNotEmpty()) append("\n")
+                        if (hint.isNotEmpty() && actionText.isNotEmpty()) append("\n$platformKeyboardShortCut + ")
                         append(actionText)
                     }
                     Text(annotatedString, textAlign = TextAlign.Center)
@@ -244,6 +244,6 @@ sealed class EditorRowAction {
     object Templates : EditorRowAction()
 }
 
-val platformKeyboardShortCut =
+private val platformKeyboardShortCut =
     if (currentPlatformInfo.operatingSystem == OS.MACOS || currentPlatformInfo.operatingSystem == OS.IOS) "⌘"
     else "Ctrl"

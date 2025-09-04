@@ -153,7 +153,7 @@ fun TextEditor(
                     val lineStartOffset = layoutResult.getLineStart(lineIndex)
                     // An "actual" line starts at offset 0 or is preceded by a newline character.
                     // This distinguishes from soft-wrapped lines.
-                    if (lineIndex == 0 || layoutResult.layoutInput.text[lineStartOffset - 1] == '\n') {
+                    if (lineIndex == 0 || (lineStartOffset > 0 && layoutResult.layoutInput.text[lineStartOffset - 1] == '\n')) {
                         val lineTopY = layoutResult.getLineTop(lineIndex)
                         add(lineStartOffset to lineTopY)
                     }

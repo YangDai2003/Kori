@@ -178,11 +178,9 @@
     <string name="mermaid_diagram">Mermaid 图表</string>
     <string name="heading">标题</string>
     <string name="link">链接</string>
-    <string name="code">行内代码</string>
+    <string name="code">代码</string>
     <string name="quote">引用</string>
-    <string name="math">行内数学公式</string>
-    <string name="code_block">代码块</string>
-    <string name="math_block">数学公式块</string>
+    <string name="math">数学公式</string>
     <string name="indent_increase">增加缩进</string>
     <string name="indent_decrease">减少缩进</string>
     <string name="numbered_list">有序列表</string>

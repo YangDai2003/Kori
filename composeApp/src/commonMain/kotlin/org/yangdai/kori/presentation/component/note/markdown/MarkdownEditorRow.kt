@@ -22,7 +22,6 @@ import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.automirrored.outlined.Undo
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.AddChart
-import androidx.compose.material.icons.outlined.AttachMoney
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.Code
@@ -37,7 +36,6 @@ import androidx.compose.material.icons.outlined.FormatUnderlined
 import androidx.compose.material.icons.outlined.Functions
 import androidx.compose.material.icons.outlined.HorizontalRule
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.IntegrationInstructions
 import androidx.compose.material.icons.outlined.Lightbulb
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.ReportGmailerrorred
@@ -56,7 +54,6 @@ import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.bold
 import kori.composeapp.generated.resources.bulleted_list
 import kori.composeapp.generated.resources.code
-import kori.composeapp.generated.resources.code_block
 import kori.composeapp.generated.resources.format_h1
 import kori.composeapp.generated.resources.format_h2
 import kori.composeapp.generated.resources.format_h3
@@ -72,7 +69,6 @@ import kori.composeapp.generated.resources.italic
 import kori.composeapp.generated.resources.library_music_24px
 import kori.composeapp.generated.resources.link
 import kori.composeapp.generated.resources.math
-import kori.composeapp.generated.resources.math_block
 import kori.composeapp.generated.resources.mermaid_diagram
 import kori.composeapp.generated.resources.numbered_list
 import kori.composeapp.generated.resources.parentheses
@@ -95,19 +91,16 @@ import org.yangdai.kori.presentation.component.note.bold
 import org.yangdai.kori.presentation.component.note.braces
 import org.yangdai.kori.presentation.component.note.brackets
 import org.yangdai.kori.presentation.component.note.bulletList
-import org.yangdai.kori.presentation.component.note.codeBlock
+import org.yangdai.kori.presentation.component.note.code
 import org.yangdai.kori.presentation.component.note.header
 import org.yangdai.kori.presentation.component.note.highlight
 import org.yangdai.kori.presentation.component.note.horizontalRule
-import org.yangdai.kori.presentation.component.note.inlineCode
-import org.yangdai.kori.presentation.component.note.inlineMath
 import org.yangdai.kori.presentation.component.note.italic
 import org.yangdai.kori.presentation.component.note.link
-import org.yangdai.kori.presentation.component.note.mathBlock
+import org.yangdai.kori.presentation.component.note.math
 import org.yangdai.kori.presentation.component.note.mermaidDiagram
 import org.yangdai.kori.presentation.component.note.numberedList
 import org.yangdai.kori.presentation.component.note.parentheses
-import org.yangdai.kori.presentation.component.note.platformKeyboardShortCut
 import org.yangdai.kori.presentation.component.note.quote
 import org.yangdai.kori.presentation.component.note.strikeThrough
 import org.yangdai.kori.presentation.component.note.tab
@@ -132,14 +125,14 @@ fun EditorRowScope.MarkdownEditorRow(
     EditorRowSection {
         EditorRowButton(
             hint = stringResource(Res.string.undo),
-            actionText = "$platformKeyboardShortCut + Z",
+            actionText = "Z",
             icon = Icons.AutoMirrored.Outlined.Undo,
             enabled = textFieldState.undoState.canUndo,
             onClick = { textFieldState.undoState.undo() }
         )
         EditorRowButton(
             hint = stringResource(Res.string.redo),
-            actionText = "$platformKeyboardShortCut + Y",
+            actionText = "Y",
             icon = Icons.AutoMirrored.Outlined.Redo,
             enabled = textFieldState.undoState.canRedo,
             onClick = { textFieldState.undoState.redo() }
@@ -158,32 +151,32 @@ fun EditorRowScope.MarkdownEditorRow(
     AnimatedVisibility(visible = isHeadingSectionExpanded) {
         EditorRowSection {
             EditorRowButton(
-                actionText = "Ctrl + 1",
+                actionText = "1",
                 icon = painterResource(Res.drawable.format_h1),
                 onClick = { textFieldState.edit { header(1) } }
             )
             EditorRowButton(
-                actionText = "Ctrl + 2",
+                actionText = "2",
                 icon = painterResource(Res.drawable.format_h2),
                 onClick = { textFieldState.edit { header(2) } }
             )
             EditorRowButton(
-                actionText = "Ctrl + 3",
+                actionText = "3",
                 icon = painterResource(Res.drawable.format_h3),
                 onClick = { textFieldState.edit { header(3) } }
             )
             EditorRowButton(
-                actionText = "Ctrl + 4",
+                actionText = "4",
                 icon = painterResource(Res.drawable.format_h4),
                 onClick = { textFieldState.edit { header(4) } }
             )
             EditorRowButton(
-                actionText = "Ctrl + 5",
+                actionText = "5",
                 icon = painterResource(Res.drawable.format_h5),
                 onClick = { textFieldState.edit { header(5) } }
             )
             EditorRowButton(
-                actionText = "Ctrl + 6",
+                actionText = "6",
                 icon = painterResource(Res.drawable.format_h6),
                 onClick = { textFieldState.edit { header(6) } }
             )
@@ -193,31 +186,31 @@ fun EditorRowScope.MarkdownEditorRow(
     EditorRowSection {
         EditorRowButton(
             hint = stringResource(Res.string.bold),
-            actionText = "Ctrl + B",
+            actionText = "B",
             icon = Icons.Outlined.FormatBold,
             onClick = { textFieldState.edit { bold() } }
         )
         EditorRowButton(
             hint = stringResource(Res.string.italic),
-            actionText = "Ctrl + I",
+            actionText = "I",
             icon = Icons.Outlined.FormatItalic,
             onClick = { textFieldState.edit { italic() } }
         )
         EditorRowButton(
             hint = stringResource(Res.string.strikethrough),
-            actionText = "Ctrl + D",
+            actionText = "D",
             icon = Icons.Outlined.StrikethroughS,
             onClick = { textFieldState.edit { strikeThrough() } }
         )
         EditorRowButton(
             hint = stringResource(Res.string.underline),
-            actionText = "Ctrl + U",
+            actionText = "U",
             icon = Icons.Outlined.FormatUnderlined,
             onClick = { textFieldState.edit { underline() } }
         )
         EditorRowButton(
             hint = stringResource(Res.string.highlight),
-            actionText = "Ctrl + H",
+            actionText = "H",
             icon = Icons.Outlined.FormatPaint,
             onClick = { textFieldState.edit { highlight() } }
         )
@@ -239,37 +232,25 @@ fun EditorRowScope.MarkdownEditorRow(
     EditorRowSection {
         EditorRowButton(
             hint = stringResource(Res.string.code),
-            actionText = "Ctrl + E",
+            actionText = "E",
             icon = Icons.Outlined.Code,
-            onClick = { textFieldState.edit { inlineCode() } }
-        )
-        EditorRowButton(
-            hint = stringResource(Res.string.code_block),
-            actionText = "Ctrl + Shift + E",
-            icon = Icons.Outlined.IntegrationInstructions,
-            onClick = { textFieldState.edit { codeBlock() } }
+            onClick = { textFieldState.edit { code() } }
         )
         EditorRowButton(
             hint = stringResource(Res.string.math),
-            actionText = "Ctrl + M",
-            icon = Icons.Outlined.AttachMoney,
-            onClick = { textFieldState.edit { inlineMath() } }
-        )
-        EditorRowButton(
-            hint = stringResource(Res.string.math_block),
-            actionText = "Ctrl + Shift + M",
+            actionText = "M",
             icon = Icons.Outlined.Functions,
-            onClick = { textFieldState.edit { mathBlock() } }
+            onClick = { textFieldState.edit { math() } }
         )
         EditorRowButton(
             hint = stringResource(Res.string.link),
-            actionText = "Ctrl + L",
+            actionText = "L",
             icon = Icons.Outlined.Link,
             onClick = { textFieldState.edit { link() } }
         )
         EditorRowButton(
             hint = stringResource(Res.string.quote),
-            actionText = "Ctrl + Q",
+            actionText = "Q",
             icon = Icons.Outlined.FormatQuote,
             onClick = { textFieldState.edit { quote() } }
         )
@@ -317,19 +298,19 @@ fun EditorRowScope.MarkdownEditorRow(
     EditorRowSection {
         EditorRowButton(
             hint = stringResource(Res.string.bulleted_list),
-            actionText = "Ctrl + Shift + B",
+            actionText = "⇧ + B",
             icon = Icons.AutoMirrored.Outlined.FormatListBulleted,
             onClick = { textFieldState.edit { bulletList() } }
         )
         EditorRowButton(
             hint = stringResource(Res.string.numbered_list),
-            actionText = "Ctrl + Shift + N",
+            actionText = "⇧ + N",
             icon = Icons.Outlined.FormatListNumbered,
             onClick = { textFieldState.edit { numberedList() } }
         )
         EditorRowButton(
             hint = stringResource(Res.string.task_list),
-            actionText = "Ctrl + Shift + T",
+            actionText = "⇧ + T",
             icon = Icons.Outlined.Checklist,
             onClick = { textFieldState.edit { taskList() } }
         )
@@ -350,13 +331,13 @@ fun EditorRowScope.MarkdownEditorRow(
         )
         EditorRowButton(
             hint = stringResource(Res.string.horizontal_rule),
-            actionText = "Ctrl + R",
+            actionText = "R",
             icon = Icons.Outlined.HorizontalRule,
             onClick = { textFieldState.edit { horizontalRule() } }
         )
         EditorRowButton(
             hint = stringResource(Res.string.mermaid_diagram),
-            actionText = "Ctrl + Shift + D",
+            actionText = "⇧ + D",
             icon = Icons.Outlined.AddChart,
             onClick = { textFieldState.edit { mermaidDiagram() } }
         )

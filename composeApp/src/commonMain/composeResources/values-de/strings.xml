@@ -178,11 +178,9 @@
     <string name="mermaid_diagram">Mermaid Diagramm</string>
     <string name="heading">Überschrift</string>
     <string name="link">Link</string>
-    <string name="code">Inline Code</string>
+    <string name="code">Code</string>
     <string name="quote">Zitat</string>
-    <string name="math">Inline Mathe</string>
-    <string name="code_block">Code Block</string>
-    <string name="math_block">Mathe Block</string>
+    <string name="math">Mathe</string>
     <string name="indent_increase">Einzug vergrößern</string>
     <string name="indent_decrease">Einzug verkleinern</string>
     <string name="numbered_list">Nummerierte Liste</string>

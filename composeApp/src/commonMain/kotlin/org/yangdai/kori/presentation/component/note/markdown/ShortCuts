@@ -7,14 +7,12 @@ Ctrl + I Italic
 Ctrl + U Underline
 Ctrl + D StrikeThrough
 Ctrl + H Highlight
-Ctrl + E Inline Code
-Ctrl + Shift + E Code Block
+Ctrl + E Code
+Ctrl + M Math
 Ctrl + Q Quote
 Ctrl + R Horizontal Rule
 Ctrl + L Link
 Ctrl + Shift + B BulletList
 Ctrl + Shift + N NumberedList
 Ctrl + Shift + T TaskList
-Ctrl + M Inline Math
-Ctrl + Shift + M Block Math
 Ctrl + Shift + D Mermaid

@@ -32,7 +32,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.EditorRowScope
 import org.yangdai.kori.presentation.component.note.addAfter
-import org.yangdai.kori.presentation.component.note.platformKeyboardShortCut
 import org.yangdai.kori.presentation.component.note.tab
 import org.yangdai.kori.presentation.component.note.unTab
 
@@ -53,14 +52,14 @@ fun EditorRowScope.PlainTextEditorRow(
     EditorRowSection {
         EditorRowButton(
             hint = stringResource(Res.string.undo),
-            actionText = "$platformKeyboardShortCut + Z",
+            actionText = "Z",
             icon = Icons.AutoMirrored.Outlined.Undo,
             enabled = textFieldState.undoState.canUndo,
             onClick = { textFieldState.undoState.undo() }
         )
         EditorRowButton(
             hint = stringResource(Res.string.redo),
-            actionText = "$platformKeyboardShortCut + Y",
+            actionText = "Y",
             icon = Icons.AutoMirrored.Outlined.Redo,
             enabled = textFieldState.undoState.canRedo,
             onClick = { textFieldState.undoState.redo() }

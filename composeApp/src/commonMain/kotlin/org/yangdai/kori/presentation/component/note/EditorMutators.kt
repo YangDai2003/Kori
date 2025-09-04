@@ -54,10 +54,23 @@ fun TextFieldBuffer.parentheses() = inlineWrap("(", ")")
 fun TextFieldBuffer.brackets() = inlineWrap("[", "]")
 fun TextFieldBuffer.braces() = inlineWrap("{", "}")
 fun TextFieldBuffer.link() = inlineWrap("[", "]()")
-fun TextFieldBuffer.inlineCode() = inlineWrap("`")
-fun TextFieldBuffer.codeBlock() = inlineWrap("```\n", "\n```\n")
-fun TextFieldBuffer.inlineMath() = inlineWrap("$")
-fun TextFieldBuffer.mathBlock() = inlineWrap("$$\n", "\n$$\n")
+
+fun TextFieldBuffer.code() {
+    if (hasSelection && originalText.substring(selection.min, selection.max).contains('\n')) {
+        inlineWrap("```\n", "\n```\n")
+    } else {
+        inlineWrap("`")
+    }
+}
+
+fun TextFieldBuffer.math() {
+    if (hasSelection && originalText.substring(selection.min, selection.max).contains('\n')) {
+        inlineWrap("$$\n", "\n$$\n")
+    } else {
+        inlineWrap("$")
+    }
+}
+
 fun TextFieldBuffer.mermaidDiagram() = inlineWrap("<pre class=\"mermaid\">\n", "\n</pre>\n")
 
 
@@ -260,8 +273,8 @@ fun TextFieldBuffer.bulletList() {
         // 如果没有选中任何文本，则直接在新行插入 "- "
         addInNewLine("- ")
     } else {
-        val start = selection.start
-        val end = selection.end
+        val start = selection.min
+        val end = selection.max
         val allText = toString()
         val selectedText = allText.substring(start, end)
 
@@ -293,8 +306,8 @@ fun TextFieldBuffer.numberedList() {
         // 无选中区域时，直接插入 "1. "
         addInNewLine("1. ")
     } else {
-        val start = selection.start
-        val end = selection.end
+        val start = selection.min
+        val end = selection.max
         val allText = this.toString()
         val selectedText = allText.substring(start, end)
 
@@ -351,8 +364,8 @@ fun TextFieldBuffer.taskList() {
     if (selection.collapsed) {
         addInNewLine("- [ ] ")
     } else {
-        val start = selection.start
-        val end = selection.end
+        val start = selection.min
+        val end = selection.max
         val allText = toString()
         val selectedText = allText.substring(start, end)
 
