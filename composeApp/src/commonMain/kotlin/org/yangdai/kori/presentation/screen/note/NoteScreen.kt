@@ -317,9 +317,9 @@ fun NoteScreen(
                             noteType = editingState.noteType,
                             textFieldState = viewModel.contentState,
                             scrollState = scrollState,
-                            isReadOnly = isReadView,
-                            isLineNumberVisible = editorState.showLineNumber,
-                            isLintActive = editorState.isMarkdownLintEnabled,
+                            readOnly = isReadView,
+                            isLineNumberVisible = editorState.isLineNumberVisible,
+                            isMarkdownLintActive = editorState.isMarkdownLintEnabled,
                             headerRange = selectedHeader,
                             findAndReplaceState = findAndReplaceState
                         )

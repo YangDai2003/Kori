@@ -22,7 +22,7 @@ data class SecurityPaneState(
 
 @Immutable
 data class EditorPaneState(
-    val showLineNumber: Boolean = false,
+    val isLineNumberVisible: Boolean = false,
     val isMarkdownLintEnabled: Boolean = false,
     val isDefaultReadingView: Boolean = false
 )

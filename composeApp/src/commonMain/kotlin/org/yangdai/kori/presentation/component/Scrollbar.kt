@@ -9,6 +9,8 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.gestures.scrollBy
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.height
@@ -71,20 +73,19 @@ fun Scrollbar(
     if (state.maxValue == 0) return
 
     val scope = rememberCoroutineScope()
-    val density = LocalDensity.current
+    val interactionSource = remember { MutableInteractionSource() }
+    val isDragged by interactionSource.collectIsDraggedAsState()
 
     // 控制滚动条的可见性
     var isVisible by remember { mutableStateOf(false) }
-    // 标记是否正在拖动
-    var isDragging by remember { mutableStateOf(false) }
 
     // 动画化透明度和宽度以实现平滑的淡入淡出效果
     val alpha by animateFloatAsState(if (isVisible) 1f else 0f)
-    val width by animateDpAsState(if (isDragging) thumbWidth else thumbWidth / 2)
+    val width by animateDpAsState(if (isDragged) thumbWidth else thumbWidth / 2)
 
     // 使用 LaunchedEffect 监听滚动状态以控制可见性
-    LaunchedEffect(state.isScrollInProgress, isDragging) {
-        if (state.isScrollInProgress || isDragging) {
+    LaunchedEffect(state.isScrollInProgress, isDragged) {
+        if (state.isScrollInProgress || isDragged) {
             isVisible = true
         } else {
             delay(hideDelayMillis)
@@ -107,22 +108,21 @@ fun Scrollbar(
                 }
             }
     ) {
-        // --- 将 Dp 转换为 Px 进行精确计算 ---
+        val density = LocalDensity.current
         val containerHeightPx = with(density) { maxHeight.toPx() }
         val thumbMinHeightPx = with(density) { thumbMinHeight.toPx() }
 
-        // --- 计算 ---
-        // 1. 计算滑块高度
+        // 计算滑块高度
         val totalContentHeight = containerHeightPx + state.maxValue
         val thumbHeightPx = max(
             thumbMinHeightPx,
             (containerHeightPx / totalContentHeight) * containerHeightPx
         )
 
-        // 2. 计算滑块可以移动的总距离
+        // 计算滑块可以移动的总距离
         val thumbTravelDistancePx = containerHeightPx - thumbHeightPx
 
-        // 3. 根据当前的滚动位置计算滑块的Y轴偏移量
+        // 根据当前的滚动位置计算滑块的Y轴偏移量
         val thumbOffsetYPx = if (state.maxValue > 0) {
             (state.value.toFloat() / state.maxValue) * thumbTravelDistancePx
         } else {
@@ -150,9 +150,8 @@ fun Scrollbar(
                             state.scrollBy(delta * scrollRatio)
                         }
                     },
-                    orientation = Orientation.Vertical,
-                    onDragStarted = { isDragging = true },
-                    onDragStopped = { isDragging = false }
+                    interactionSource = interactionSource,
+                    orientation = Orientation.Vertical
                 )
         )
     }

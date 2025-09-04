@@ -17,6 +17,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontFamily
@@ -25,21 +26,42 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlin.math.max
 
+private class LineNumberLayoutCache(
+    private val textMeasurer: TextMeasurer,
+    private val style: TextStyle
+) {
+    private val cache = mutableMapOf<Int, TextLayoutResult>()
+
+    fun get(lineNumber: Int): TextLayoutResult {
+        return cache.getOrPut(lineNumber) {
+            textMeasurer.measure(
+                text = lineNumber.toString(),
+                style = style,
+                maxLines = 1
+            )
+        }
+    }
+}
+
 @Composable
 fun LineNumbersColumn(
-    currentLine: Int,
+    currentLinesProvider: () -> IntRange,
     actualLinePositions: List<Pair<Int, Float>>, // line start index to line top position
     scrollProvider: () -> Int,
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(fontFamily = FontFamily.Monospace),
-    textColor: Color = MaterialTheme.colorScheme.onSurfaceVariant
+    textColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    textMeasurer: TextMeasurer = rememberTextMeasurer()
 ) {
-    val textMeasurer = rememberTextMeasurer()
-    val density = LocalDensity.current
 
+    val layoutCache = remember(textMeasurer, textStyle) {
+        LineNumberLayoutCache(textMeasurer, textStyle)
+    }
+
+    val density = LocalDensity.current
     val requiredWidth by remember(actualLinePositions.size, textStyle, density) {
         derivedStateOf {
-            val maxLineNumberText = max(1, actualLinePositions.size).toString()
-            val maxDigitsText = "9".repeat(maxLineNumberText.length + 1)
+            val maxLineNumber = max(1, actualLinePositions.size)
+            val maxDigitsText = "8".repeat(maxLineNumber.toString().length + 1)
             with(density) { textMeasurer.measure(maxDigitsText, textStyle).size.width.toDp() }
         }
     }
@@ -54,10 +76,6 @@ fun LineNumbersColumn(
         }
     }
 
-    val lineLayoutsCache = remember(textMeasurer, textStyle) {
-        mutableMapOf<String, TextLayoutResult>()
-    }
-
     Box(
         Modifier
             .fillMaxHeight()
@@ -68,11 +86,13 @@ fun LineNumbersColumn(
                 if (actualLinePositions.isEmpty()) return@drawBehind
 
                 val scrollOffset = scrollProvider().toFloat()
+                val currentLines = currentLinesProvider()
 
                 // 使用二分查找定位视口中的第一行，避免全量遍历。
                 val firstVisibleLineIndex = actualLinePositions
                     .binarySearch { it.second.compareTo(scrollOffset) }
                     .let { if (it < 0) -(it + 1) else it }
+                    .coerceAtMost(actualLinePositions.lastIndex)
                     // 从找到的索引往前一个开始绘制，以确保部分可见的行也能被渲染。
                     .let { (it - 1).coerceAtLeast(0) }
 
@@ -84,22 +104,16 @@ fun LineNumbersColumn(
                     // 如果当前行已经完全在视口下方，后续所有行也都在下方，可以直接中断循环。
                     if (lineY > size.height) break
 
-                    // 只绘制在视口内（或非常接近视口）的行号
-                    // (lineY + 50f > 0) 检查行底部是否进入视口，提供一个缓冲区域
-                    if (lineY + 50f > 0) {
-                        val lineNumber = (index + 1).toString()
-                        val textLayoutResult = lineLayoutsCache.getOrPut(lineNumber) {
-                            textMeasurer.measure(
-                                text = lineNumber,
-                                style = textStyle,
-                                maxLines = 1
-                            )
-                        }
+                    // 获取行高来更精确地判断是否可见
+                    val textLayoutResult = layoutCache.get(index + 1)
+                    val lineHeight = textLayoutResult.size.height
 
+                    // 只绘制在视口内（或部分在视口内）的行号
+                    if (lineY + lineHeight > 0) {
                         drawText(
                             textLayoutResult = textLayoutResult,
                             color = textColor,
-                            alpha = if (currentLine == index) 1f else 0.5f,
+                            alpha = if (index in currentLines) 1.0f else 0.5f,
                             topLeft = Offset(
                                 x = size.width - textLayoutResult.size.width, // 右对齐
                                 y = lineY

@@ -96,7 +96,7 @@ fun EditorPane(mainViewModel: MainViewModel) {
             icon = Icons.Outlined.FormatListNumbered,
             trailingContent = {
                 Switch(
-                    checked = editorPaneState.showLineNumber,
+                    checked = editorPaneState.isLineNumberVisible,
                     onCheckedChange = { checked ->
                         if (checked)
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOn)

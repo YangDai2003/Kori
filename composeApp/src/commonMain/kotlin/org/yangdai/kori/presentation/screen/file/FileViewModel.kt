@@ -139,7 +139,7 @@ class FileViewModel(
         dataStoreRepository.booleanFlow(Constants.Preferences.IS_DEFAULT_READING_VIEW)
     ) { showLineNumber, isMarkdownLintEnabled, isDefaultReadingView ->
         EditorPaneState(
-            showLineNumber = showLineNumber,
+            isLineNumberVisible = showLineNumber,
             isMarkdownLintEnabled = isMarkdownLintEnabled,
             isDefaultReadingView = isDefaultReadingView
         )

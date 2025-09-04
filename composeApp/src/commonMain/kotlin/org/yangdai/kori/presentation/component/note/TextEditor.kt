@@ -1,7 +1,6 @@
 package org.yangdai.kori.presentation.component.note
 
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -58,115 +57,98 @@ import org.yangdai.kori.presentation.util.isScreenWidthExpanded
 import kotlin.math.PI
 import kotlin.math.sin
 
-data class EditorProperties(
-    val isReadOnly: Boolean,
-    val isLineNumberVisible: Boolean,
-    val isLintActive: Boolean = false
-)
-
 @Composable
 fun TextEditor(
     modifier: Modifier,
     textFieldModifier: Modifier,
-    textState: TextFieldState,
+    textFieldState: TextFieldState,
     scrollState: ScrollState,
     findAndReplaceState: FindAndReplaceState,
-    editorProperties: EditorProperties,
+    readOnly: Boolean,
+    isLineNumberVisible: Boolean,
+    isMarkdownLintActive: Boolean = false,
     headerRange: IntRange? = null,
     outputTransformation: OutputTransformation? = null
 ) {
     var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
+    var matchedWordsRanges by remember { mutableStateOf<List<Pair<Int, Int>>>(emptyList()) }
+    var currentRangeIndex by remember { mutableStateOf(0) }
 
-    val matchedWordsRanges by produceState(
-        initialValue = emptyList(),
-        key1 = textState.text,
-        key2 = findAndReplaceState.searchWord,
-        key3 = editorProperties.isReadOnly
-    ) {
-        value = if (!editorProperties.isReadOnly && findAndReplaceState.searchWord.isNotBlank())
-            findAllRanges(textState.text.toString(), findAndReplaceState.searchWord)
-        else emptyList()
+    LaunchedEffect(textFieldState.text, findAndReplaceState.searchWord, readOnly) {
+        val newRanges = if (readOnly) emptyList()
+        else findAllRanges(textFieldState.text.toString(), findAndReplaceState.searchWord)
+        if (newRanges != matchedWordsRanges) matchedWordsRanges = newRanges
     }
 
-    val currentRangeIndex by produceState(
-        initialValue = 0,
-        key1 = matchedWordsRanges,
-        key2 = findAndReplaceState.scrollDirection
-    ) {
-        value = if (matchedWordsRanges.isNotEmpty()) {
-            when (findAndReplaceState.scrollDirection) {
-                ScrollDirection.NEXT -> (value + 1).takeIf { it < matchedWordsRanges.size } ?: 0
-                ScrollDirection.PREVIOUS -> (value - 1).takeIf { it >= 0 }
-                    ?: (matchedWordsRanges.size - 1)
+    // 处理用户导航（上一个/下一个）和滚动逻辑
+    LaunchedEffect(findAndReplaceState.scrollDirection) {
+        if (findAndReplaceState.scrollDirection != ScrollDirection.NONE && matchedWordsRanges.isNotEmpty()) {
+            val newIndex = when (findAndReplaceState.scrollDirection) {
+                ScrollDirection.NEXT ->
+                    (currentRangeIndex + 1).takeIf { it < matchedWordsRanges.size } ?: 0
 
-                else -> value
+                ScrollDirection.PREVIOUS ->
+                    (currentRangeIndex - 1).takeIf { it >= 0 } ?: (matchedWordsRanges.size - 1)
+
+                else -> currentRangeIndex
             }
-        } else 0
-    }
-
-    // Handle search navigation
-    LaunchedEffect(matchedWordsRanges, currentRangeIndex) {
-        findAndReplaceState.position =
-            if (matchedWordsRanges.isNotEmpty()) "${currentRangeIndex + 1}/${matchedWordsRanges.size}" else ""
-        if (matchedWordsRanges.isNotEmpty() && textLayoutResult != null && findAndReplaceState.scrollDirection != null) {
-            // Get the target match position
-            val targetMatch = matchedWordsRanges[currentRangeIndex]
-            // Get the text bounds
-            val bounds = textLayoutResult!!.getBoundingBox(targetMatch.first)
-            // Calculate scroll position
-            val scrollPosition = (bounds.top - 50f).toInt().coerceAtLeast(0)
-            // Execute scroll
-            scrollState.animateScrollTo(scrollPosition)
-            // Notify scroll completion
-            findAndReplaceState.scrollDirection = null
+            if (newIndex != currentRangeIndex) currentRangeIndex = newIndex
+            findAndReplaceState.scrollDirection = ScrollDirection.NONE
         }
     }
 
-    // Handle header navigation
+    // 响应索引和列表的变化，来更新UI和执行滚动
+    LaunchedEffect(matchedWordsRanges, currentRangeIndex) {
+        findAndReplaceState.position =
+            if (matchedWordsRanges.isNotEmpty()) "${currentRangeIndex + 1}/${matchedWordsRanges.size}" else ""
+        val layoutResult = textLayoutResult ?: return@LaunchedEffect
+        if (matchedWordsRanges.isNotEmpty() && currentRangeIndex in matchedWordsRanges.indices) {
+            val targetMatch = matchedWordsRanges[currentRangeIndex]
+            val bounds = layoutResult.getBoundingBox(targetMatch.first)
+            val scrollPosition = (bounds.top - 50f).toInt().coerceAtLeast(0)
+            scrollState.animateScrollTo(scrollPosition)
+        }
+    }
+
+    // 处理标题导航
     LaunchedEffect(headerRange) {
-        headerRange?.let {
+        headerRange?.let { range ->
             textLayoutResult?.let { layout ->
-                // Get bounds of that position
-                val bounds = layout.getBoundingBox(headerRange.first)
-                // Calculate scroll position
+                val bounds = layout.getBoundingBox(range.first)
                 val scrollPosition = (bounds.top - 50f).toInt().coerceAtLeast(0)
-                // Execute scroll
                 scrollState.animateScrollTo(scrollPosition)
             }
         }
     }
 
-    // Handle replace functionality
+    // 处理替换
     LaunchedEffect(findAndReplaceState.replaceType) {
-        if (findAndReplaceState.replaceType != null && findAndReplaceState.searchWord.isNotBlank()) {
+        if (findAndReplaceState.replaceType != ReplaceType.NONE && findAndReplaceState.searchWord.isNotEmpty()) {
             if (findAndReplaceState.replaceType == ReplaceType.ALL) {
-                val currentText = textState.text.toString()
+                val currentText = textFieldState.text.toString()
                 val newText = currentText.replace(
                     findAndReplaceState.searchWord,
                     findAndReplaceState.replaceWord
                 )
-                textState.setTextAndPlaceCursorAtEnd(newText)
+                textFieldState.setTextAndPlaceCursorAtEnd(newText)
             } else if (findAndReplaceState.replaceType == ReplaceType.CURRENT) {
-                // Check if index is valid
-                if (matchedWordsRanges.isEmpty() || currentRangeIndex >= matchedWordsRanges.size) return@LaunchedEffect
-                // Get the position to be replaced
-                val (startIndex, endIndex) = matchedWordsRanges[currentRangeIndex]
-                // Execute replacement
-                textState.edit {
-                    replace(startIndex, endIndex, findAndReplaceState.replaceWord)
+                if (matchedWordsRanges.isNotEmpty() && currentRangeIndex in matchedWordsRanges.indices) {
+                    val (startIndex, endIndex) = matchedWordsRanges[currentRangeIndex]
+                    textFieldState.edit {
+                        replace(startIndex, endIndex, findAndReplaceState.replaceWord)
+                    }
                 }
             }
-            findAndReplaceState.replaceType = null // Reset after replacement
+            findAndReplaceState.replaceType = ReplaceType.NONE
         }
     }
 
-    val actualLinePositions by remember(editorProperties.isLineNumberVisible) {
+    val actualLinePositions by remember(isLineNumberVisible) {
         derivedStateOf {
             val layoutResult = textLayoutResult
-            if (!editorProperties.isLineNumberVisible || layoutResult == null) return@derivedStateOf emptyList()
-
+            if (!isLineNumberVisible || layoutResult == null) return@derivedStateOf emptyList()
             val lineCount = layoutResult.lineCount
-            buildList {
+            buildList(lineCount) {
                 for (lineIndex in 0 until lineCount) {
                     val lineStartOffset = layoutResult.getLineStart(lineIndex)
                     // An "actual" line starts at offset 0 or is preceded by a newline character.
@@ -180,13 +162,21 @@ fun TextEditor(
         }
     }
 
-    val currentLine by remember(actualLinePositions) {
+    val currentLines by remember(actualLinePositions) {
         derivedStateOf {
-            if (actualLinePositions.isEmpty()) 0
+            if (actualLinePositions.isEmpty()) IntRange.EMPTY
             else {
-                val selectionStart = textState.selection.start
-                val index = actualLinePositions.binarySearch { it.first.compareTo(selectionStart) }
-                if (index >= 0) index else -(index + 2)
+                val selection = textFieldState.selection
+                val startLine =
+                    actualLinePositions.binarySearch { it.first.compareTo(selection.min) }.let {
+                        if (it >= 0) it else -it - 2
+                    }
+                if (selection.collapsed) return@derivedStateOf IntRange(startLine, startLine)
+                val endLine =
+                    actualLinePositions.binarySearch { it.first.compareTo(selection.max) }.let {
+                        if (it >= 0) it else -it - 2
+                    }
+                IntRange(startLine, endLine)
             }
         }
     }
@@ -195,32 +185,45 @@ fun TextEditor(
     val phase by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 2f * PI.toFloat(),
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
+        animationSpec = infiniteRepeatable(tween(1000, easing = LinearEasing)),
         label = "wave-phase"
     )
 
-    val lintErrors by produceState(
-        emptyList(),
-        textState.text,
-        editorProperties.isLintActive
-    ) {
-        if (editorProperties.isLintActive) {
+    val lintErrors by produceState(emptyList(), textFieldState.text, isMarkdownLintActive) {
+        value = if (isMarkdownLintActive) {
             delay(300L) // 300ms 防抖
-            value = withContext(Dispatchers.Default) {
-                MarkdownLint().validate(textState.text.toString())
+            withContext(Dispatchers.Default) {
+                MarkdownLint().validate(textFieldState.text.toString())
             }
-        } else {
-            value = emptyList()
+        } else emptyList()
+    }
+
+    val searchPaths by remember {
+        derivedStateOf {
+            val layoutResult = textLayoutResult ?: return@derivedStateOf emptyList()
+            matchedWordsRanges.mapNotNull { (start, end) ->
+                if (start < end && end <= layoutResult.layoutInput.text.length) {
+                    layoutResult.getPathForRange(start, end)
+                } else null
+            }
+        }
+    }
+
+    val lintPaths by remember {
+        derivedStateOf {
+            val layoutResult = textLayoutResult ?: return@derivedStateOf emptyList()
+            lintErrors.mapNotNull { issue ->
+                if (issue.startIndex < issue.endIndex && issue.endIndex <= layoutResult.layoutInput.text.length) {
+                    layoutResult.getPathForRange(issue.startIndex, issue.endIndex)
+                } else null
+            }
         }
     }
 
     Row(modifier) {
-        if (editorProperties.isLineNumberVisible) {
+        if (isLineNumberVisible) {
             LineNumbersColumn(
-                currentLine = currentLine,
+                currentLinesProvider = { currentLines },
                 actualLinePositions = actualLinePositions,
                 scrollProvider = { scrollState.value }
             )
@@ -228,17 +231,13 @@ fun TextEditor(
         }
         Box(Modifier.fillMaxSize()) {
             BasicTextField(
-                modifier = textFieldModifier.then(
-                    Modifier
-                        .padding(
-                            start = if (editorProperties.isLineNumberVisible) 4.dp else 16.dp,
-                            end = 16.dp
-                        )
-                        .fillMaxSize()
-                ),
+                modifier = Modifier.padding(
+                    start = if (isLineNumberVisible) 4.dp else 16.dp,
+                    end = 16.dp
+                ).fillMaxSize().then(textFieldModifier),
                 scrollState = scrollState,
-                readOnly = editorProperties.isReadOnly,
-                state = textState,
+                readOnly = readOnly,
+                state = textFieldState,
                 textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
                 cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                 onTextLayout = { textLayoutResult = it() },
@@ -253,71 +252,32 @@ fun TextEditor(
                         modifier = Modifier
                             .clipToBounds()
                             .drawWithCache {
-                                val searchPaths = if (findAndReplaceState.searchWord.isNotBlank()) {
-                                    matchedWordsRanges.mapNotNull { (start, end) ->
-                                        // 安全检查
-                                        if (start < end && end <= textState.text.length && start >= 0) {
-                                            textLayoutResult?.getPathForRange(start, end)
-                                        } else {
-                                            null
-                                        }
-                                    }
-                                } else emptyList()
-
-                                val lintPaths = if (editorProperties.isLintActive) {
-                                    lintErrors.mapNotNull { issue ->
-                                        if (issue.startIndex < issue.endIndex && issue.endIndex <= textState.text.length) {
-                                            textLayoutResult?.getPathForRange(
-                                                issue.startIndex,
-                                                issue.endIndex
-                                            )
-                                        } else {
-                                            null
-                                        }
-                                    }
-                                } else emptyList()
-
                                 // 预先计算颜色，避免在绘制循环中重复创建
                                 val highlightBgColor = Color.Cyan.copy(alpha = 0.5f)
                                 val currentHighlightBorderColor = Color.Blue
                                 val otherHighlightBorderColor = Color.Cyan
 
                                 onDrawBehind {
-
-                                    val currentPhase = phase
-
-                                    textLayoutResult?.let {
-                                        val scrollOffset = Offset(0f, -scrollState.value.toFloat())
-                                        withTransform({
-                                            translate(scrollOffset.x, scrollOffset.y)
-                                        }) {
-                                            // 绘制搜索高亮
-                                            searchPaths.forEachIndexed { index, path ->
-                                                drawPath(
-                                                    path,
-                                                    color = highlightBgColor,
-                                                    alpha = 0.5f
-                                                )
-                                                val borderColor =
-                                                    if (index == currentRangeIndex) currentHighlightBorderColor
-                                                    else otherHighlightBorderColor
-                                                drawPath(
-                                                    path,
-                                                    color = borderColor,
-                                                    style = Stroke(width = 1.5f)
-                                                )
-                                            }
-
-                                            // 绘制波浪线
-                                            lintPaths.forEach {
-                                                drawWavyUnderlineOptimized(it, currentPhase)
-                                            }
+                                    val currentScroll = scrollState.value.toFloat()
+                                    withTransform({ translate(top = -currentScroll) }) {
+                                        // 绘制搜索高亮
+                                        searchPaths.forEachIndexed { index, path ->
+                                            drawPath(path, highlightBgColor, alpha = 0.5f)
+                                            val borderColor =
+                                                if (index == currentRangeIndex) currentHighlightBorderColor
+                                                else otherHighlightBorderColor
+                                            drawPath(path, borderColor, style = Stroke(1.5f))
+                                        }
+                                        val currentPhase = phase
+                                        // 绘制波浪线
+                                        lintPaths.forEach {
+                                            drawWavyUnderlineOptimized(it, currentPhase)
                                         }
                                     }
                                 }
                             }
                     ) {
-                        if (textState.text.isEmpty()) {
+                        if (textFieldState.text.isEmpty()) {
                             Text(
                                 text = stringResource(Res.string.content),
                                 style = MaterialTheme.typography.bodyLarge.copy(
@@ -342,7 +302,7 @@ fun TextEditor(
 }
 
 private suspend fun findAllRanges(text: String, word: String): List<Pair<Int, Int>> {
-    if (word.isBlank()) return emptyList()
+    if (word.isEmpty() || text.isEmpty()) return emptyList()
 
     return withContext(Dispatchers.Default) {
         buildList {
@@ -367,14 +327,14 @@ private fun DrawScope.drawWavyUnderlineOptimized(
     if (width <= 0f) return
 
     val pointCount = (width / sampleStep).toInt().coerceAtLeast(2)
-    val points = Array(pointCount) { i ->
+    val points = List(pointCount) { i ->
         val x = bounds.left + i * sampleStep
         val y = bounds.bottom + 2f + amplitude * sin((x * (2f * PI / wavelength)) + phase).toFloat()
         Offset(x, y)
     }
 
     drawPoints(
-        points = points.toList(),
+        points = points,
         pointMode = PointMode.Polygon,
         color = Color.Red,
         strokeWidth = 1.5f,

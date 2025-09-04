@@ -108,7 +108,7 @@ class TemplateViewModel(
         dataStoreRepository.booleanFlow(Constants.Preferences.IS_MARKDOWN_LINT_ENABLED)
     ) { showLineNumber, isMarkdownLintEnabled ->
         EditorPaneState(
-            showLineNumber = showLineNumber,
+            isLineNumberVisible = showLineNumber,
             isMarkdownLintEnabled = isMarkdownLintEnabled
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, EditorPaneState())

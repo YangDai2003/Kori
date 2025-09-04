@@ -56,8 +56,8 @@ class FindAndReplaceState {
     var searchWord by mutableStateOf("")
     var replaceWord by mutableStateOf("")
     var position by mutableStateOf("")
-    var scrollDirection by mutableStateOf<ScrollDirection?>(null)
-    var replaceType by mutableStateOf<ReplaceType?>(null)
+    var scrollDirection by mutableStateOf(ScrollDirection.NONE)
+    var replaceType by mutableStateOf(ReplaceType.NONE)
 
     companion object {
         val Saver: Saver<FindAndReplaceState, Triple<String, String, String>> = Saver(
@@ -68,8 +68,8 @@ class FindAndReplaceState {
                     this.searchWord = searchWord
                     this.replaceWord = replaceWord
                     this.position = position
-                    this.scrollDirection = null
-                    this.replaceType = null
+                    this.scrollDirection = ScrollDirection.NONE
+                    this.replaceType = ReplaceType.NONE
                 }
             }
         )
@@ -84,11 +84,11 @@ fun rememberFindAndReplaceState(): FindAndReplaceState {
 }
 
 enum class ScrollDirection {
-    NEXT, PREVIOUS
+    NEXT, PREVIOUS, NONE
 }
 
 enum class ReplaceType {
-    ALL, CURRENT
+    ALL, CURRENT, NONE
 }
 
 @Composable

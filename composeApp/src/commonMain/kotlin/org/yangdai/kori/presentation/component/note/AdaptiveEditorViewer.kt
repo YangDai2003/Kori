@@ -104,9 +104,9 @@ fun ColumnScope.AdaptiveEditorViewer(
  * @param noteType The type of note, which determines the editor to be displayed (Markdown, Plain Text...).
  * @param textFieldState The state of the text field used in the editor.
  * @param scrollState The scroll state for the editor.
- * @param isReadOnly Whether the editor is in read-only mode.
+ * @param readOnly Whether the editor is in read-only mode.
  * @param isLineNumberVisible Whether line numbers are visible in the editor.
- * @param isLintActive Whether linting is active in the editor.
+ * @param isMarkdownLintActive Whether linting is active in the editor.
  * @param headerRange The range of headers for Markdown editor, if applicable.
  * @param findAndReplaceState The state for find-and-replace functionality in the editor.
  */
@@ -116,9 +116,9 @@ fun AdaptiveEditor(
     noteType: NoteType,
     textFieldState: TextFieldState,
     scrollState: ScrollState,
-    isReadOnly: Boolean,
+    readOnly: Boolean,
     isLineNumberVisible: Boolean,
-    isLintActive: Boolean,
+    isMarkdownLintActive: Boolean,
     headerRange: IntRange?,
     findAndReplaceState: FindAndReplaceState
 ) = when (noteType) {
@@ -127,15 +127,13 @@ fun AdaptiveEditor(
             modifier = modifier,
             textFieldModifier = Modifier.markdownKeyEvents(textFieldState)
                 .dragAndDropText(textFieldState),
-            textState = textFieldState,
+            textFieldState = textFieldState,
             scrollState = scrollState,
             findAndReplaceState = findAndReplaceState,
             headerRange = headerRange,
-            editorProperties = EditorProperties(
-                isReadOnly = isReadOnly,
-                isLineNumberVisible = isLineNumberVisible,
-                isLintActive = isLintActive
-            ),
+            isLineNumberVisible = isLineNumberVisible,
+            isMarkdownLintActive = isMarkdownLintActive,
+            readOnly = readOnly,
             outputTransformation = remember { MarkdownTransformation() }
         )
     }
@@ -145,13 +143,11 @@ fun AdaptiveEditor(
             modifier = modifier,
             textFieldModifier = Modifier.todoTextKeyEvents(textFieldState)
                 .dragAndDropText(textFieldState),
-            textState = textFieldState,
+            textFieldState = textFieldState,
             scrollState = scrollState,
             findAndReplaceState = findAndReplaceState,
-            editorProperties = EditorProperties(
-                isReadOnly = isReadOnly,
-                isLineNumberVisible = isLineNumberVisible
-            ),
+            isLineNumberVisible = isLineNumberVisible,
+            readOnly = readOnly,
             outputTransformation = remember { TodoTransformation() }
         )
     }
@@ -161,13 +157,11 @@ fun AdaptiveEditor(
             modifier = modifier,
             textFieldModifier = Modifier.plainTextKeyEvents(textFieldState)
                 .dragAndDropText(textFieldState),
-            textState = textFieldState,
+            textFieldState = textFieldState,
             scrollState = scrollState,
             findAndReplaceState = findAndReplaceState,
-            editorProperties = EditorProperties(
-                isReadOnly = isReadOnly,
-                isLineNumberVisible = isLineNumberVisible
-            ),
+            isLineNumberVisible = isLineNumberVisible,
+            readOnly = readOnly,
             outputTransformation = remember { PlainTextTransformation() }
         )
     }
