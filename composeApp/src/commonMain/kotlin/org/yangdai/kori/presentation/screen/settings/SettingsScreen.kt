@@ -56,6 +56,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowSizeClass
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_info
 import kori.composeapp.generated.resources.card
@@ -136,15 +137,15 @@ fun SettingsScreen(mainViewModel: MainViewModel, navigateUp: () -> Unit) {
     ) {
         val size = IntSize(constraints.maxWidth, constraints.maxHeight)
         val fillMaxWidthFraction = when {
-            maxWidth >= 1600.dp -> 0.8f
-            maxWidth >= 1200.dp -> 0.85f
-            maxWidth >= 840.dp -> 0.9f
-            maxWidth >= 600.dp -> 0.95f
+            maxWidth >= WindowSizeClass.WIDTH_DP_EXTRA_LARGE_LOWER_BOUND.dp -> 0.8f
+            maxWidth >= WindowSizeClass.WIDTH_DP_LARGE_LOWER_BOUND.dp -> 0.85f
+            maxWidth >= WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND.dp -> 0.9f
+            maxWidth >= WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND.dp -> 0.95f
             else -> 1f
         }
         val fillMaxHeightFraction = when {
-            maxHeight >= 900.dp -> 0.9f
-            maxHeight >= 480.dp -> 0.95f
+            maxHeight >= WindowSizeClass.HEIGHT_DP_EXPANDED_LOWER_BOUND.dp -> 0.9f
+            maxHeight >= WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND.dp -> 0.95f
             else -> 1f
         }
         AnimatedVisibility(

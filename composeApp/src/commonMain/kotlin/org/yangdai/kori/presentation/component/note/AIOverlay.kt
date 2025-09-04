@@ -78,6 +78,7 @@ import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowSizeClass
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.describe_the_note_you_want_to_generate
 import kori.composeapp.generated.resources.elaborate
@@ -227,9 +228,12 @@ fun AIAssist(
     }
 
     val widthModifier =
-        if (maxWidth >= 1600.dp) Modifier.fillMaxWidth(0.25f)
-        else if (maxWidth >= 1200.dp) Modifier.fillMaxWidth(0.33f)
-        else if (maxWidth >= 800.dp) Modifier.fillMaxWidth(0.5f)
+        if (maxWidth >= WindowSizeClass.WIDTH_DP_EXTRA_LARGE_LOWER_BOUND.dp)
+            Modifier.fillMaxWidth(0.25f)
+        else if (maxWidth >= WindowSizeClass.WIDTH_DP_LARGE_LOWER_BOUND.dp)
+            Modifier.fillMaxWidth(0.33f)
+        else if (maxWidth >= WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND.dp)
+            Modifier.fillMaxWidth(0.5f)
         else Modifier.fillMaxWidth()
     val verticalPadding by animateDpAsState(if (inputMode) 16.dp else 4.dp)
     val horizontalPadding by animateDpAsState(if (inputMode) 16.dp else 8.dp)
