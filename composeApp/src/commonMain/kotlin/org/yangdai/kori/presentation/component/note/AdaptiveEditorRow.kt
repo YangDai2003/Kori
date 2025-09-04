@@ -42,6 +42,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import kori.composeapp.generated.resources.Res
+import kori.composeapp.generated.resources.control
+import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.OS
 import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.data.local.entity.NoteType
@@ -108,6 +111,9 @@ class EditorRowScopeImpl(val showElevation: Boolean) : EditorRowScope {
             if (actionText.isEmpty() && hint.isEmpty()) return@TooltipBox
             PlainTooltip(
                 content = {
+                    val platformKeyboardShortCut =
+                        if (currentPlatformInfo.operatingSystem == OS.MACOS || currentPlatformInfo.operatingSystem == OS.IOS) "⌘"
+                        else stringResource(Res.string.control)
                     val annotatedString = buildAnnotatedString {
                         withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
                             append(hint)
@@ -150,6 +156,9 @@ class EditorRowScopeImpl(val showElevation: Boolean) : EditorRowScope {
             if (actionText.isEmpty() && hint.isEmpty()) return@TooltipBox
             PlainTooltip(
                 content = {
+                    val platformKeyboardShortCut =
+                        if (currentPlatformInfo.operatingSystem == OS.MACOS || currentPlatformInfo.operatingSystem == OS.IOS) "⌘"
+                        else stringResource(Res.string.control)
                     val annotatedString = buildAnnotatedString {
                         withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
                             append(hint)
@@ -243,7 +252,3 @@ sealed class EditorRowAction {
     object Audio : EditorRowAction()
     object Templates : EditorRowAction()
 }
-
-private val platformKeyboardShortCut =
-    if (currentPlatformInfo.operatingSystem == OS.MACOS || currentPlatformInfo.operatingSystem == OS.IOS) "⌘"
-    else "Ctrl"
