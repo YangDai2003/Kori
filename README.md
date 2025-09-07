@@ -71,18 +71,19 @@ Kori is packed with features designed to enhance your productivity and creativit
 
 ### Phone
 
-<p align="center">
-  <img src="screenshots/phone_1.png" width="16%" alt=""/>
-  <img src="screenshots/phone_2.png" width="16%" alt=""/>
-  <img src="screenshots/phone_3.png" width="16%" alt=""/>
-  <img src="screenshots/widget_1.png" width="16%" alt=""/>
-  <img src="screenshots/widget_2.png" width="16%" alt=""/>
-  <img src="screenshots/widget_3.png" width="16%" alt=""/>
+<!--suppress ALL -->
+<p>
+  <img src="screenshots/phone_1.png" width="15%" alt=""/>
+  <img src="screenshots/phone_2.png" width="15%" alt=""/>
+  <img src="screenshots/phone_3.png" width="15%" alt=""/>
+  <img src="screenshots/widget_1.png" width="15%" alt=""/>
+  <img src="screenshots/widget_2.png" width="15%" alt=""/>
+  <img src="screenshots/widget_3.png" width="15%" alt=""/>
 </p>
 
 ### Tablet
 
-<p align="center">
+<p>
   <img src="screenshots/tablet_1.png" width="32%" alt=""/>
   <img src="screenshots/tablet_2.png" width="32%" alt=""/>
   <img src="screenshots/tablet_3.png" width="32%" alt=""/>
@@ -90,7 +91,7 @@ Kori is packed with features designed to enhance your productivity and creativit
 
 ### Desktop
 
-<p align="center">
+<p>
   <img src="screenshots/desktop_1.png" width="32%" alt=""/>
   <img src="screenshots/desktop_2.png" width="32%" alt=""/>
   <img src="screenshots/desktop_3.png" width="32%" alt=""/>
