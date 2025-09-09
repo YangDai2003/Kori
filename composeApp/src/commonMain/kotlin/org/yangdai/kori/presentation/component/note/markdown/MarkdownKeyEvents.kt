@@ -2,7 +2,6 @@ package org.yangdai.kori.presentation.component.note.markdown
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.delete
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
@@ -34,7 +33,6 @@ import org.yangdai.kori.presentation.component.note.strikeThrough
 import org.yangdai.kori.presentation.component.note.taskList
 import org.yangdai.kori.presentation.component.note.underline
 
-@Composable
 fun Modifier.markdownKeyEvents(textFieldState: TextFieldState): Modifier =
     onPreviewKeyEvent { keyEvent ->
         if (keyEvent.type == KeyEventType.KeyDown) {
@@ -256,4 +254,7 @@ fun Modifier.markdownKeyEvents(textFieldState: TextFieldState): Modifier =
     }
 
 private fun platformKeyboardShortCutKeyEvent(keyEvent: KeyEvent): Boolean =
-    if (currentPlatformInfo.operatingSystem == OS.MACOS || currentPlatformInfo.operatingSystem == OS.IOS) keyEvent.isMetaPressed else keyEvent.isCtrlPressed
+    when (currentPlatformInfo.operatingSystem) {
+        OS.MACOS, OS.IOS -> keyEvent.isMetaPressed
+        else -> keyEvent.isCtrlPressed
+    }

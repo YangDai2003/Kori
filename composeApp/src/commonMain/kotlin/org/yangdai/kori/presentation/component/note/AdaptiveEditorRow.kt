@@ -109,24 +109,22 @@ class EditorRowScopeImpl(val showElevation: Boolean) : EditorRowScope {
         positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
         tooltip = {
             if (actionText.isEmpty() && hint.isEmpty()) return@TooltipBox
-            PlainTooltip(
-                content = {
-                    val platformKeyboardShortCut =
-                        if (currentPlatformInfo.operatingSystem == OS.MACOS || currentPlatformInfo.operatingSystem == OS.IOS) "⌘"
-                        else stringResource(Res.string.control)
-                    val annotatedString = buildAnnotatedString {
-                        withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                            append(hint)
-                        }
-                        if (hint.isNotEmpty() && actionText.isNotEmpty()) append("\n$platformKeyboardShortCut + ")
-                        append(actionText)
-                    }
-                    Text(annotatedString, textAlign = TextAlign.Center)
+            PlainTooltip {
+                val platformKeyboardShortCut = when (currentPlatformInfo.operatingSystem) {
+                    OS.MACOS, OS.IOS -> "⌘"
+                    else -> stringResource(Res.string.control)
                 }
-            )
+                val annotatedString = buildAnnotatedString {
+                    withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                        append(hint)
+                    }
+                    if (hint.isNotEmpty() && actionText.isNotEmpty()) append("\n")
+                    if (actionText.isNotEmpty()) append("$platformKeyboardShortCut + $actionText")
+                }
+                Text(annotatedString, textAlign = TextAlign.Center)
+            }
         },
         state = rememberTooltipState(),
-        focusable = false,
         enableUserInput = enabled
     ) {
         Box(
@@ -154,24 +152,22 @@ class EditorRowScopeImpl(val showElevation: Boolean) : EditorRowScope {
         positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
         tooltip = {
             if (actionText.isEmpty() && hint.isEmpty()) return@TooltipBox
-            PlainTooltip(
-                content = {
-                    val platformKeyboardShortCut =
-                        if (currentPlatformInfo.operatingSystem == OS.MACOS || currentPlatformInfo.operatingSystem == OS.IOS) "⌘"
-                        else stringResource(Res.string.control)
-                    val annotatedString = buildAnnotatedString {
-                        withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                            append(hint)
-                        }
-                        if (hint.isNotEmpty() && actionText.isNotEmpty()) append("\n$platformKeyboardShortCut + ")
-                        append(actionText)
-                    }
-                    Text(annotatedString, textAlign = TextAlign.Center)
+            PlainTooltip {
+                val platformKeyboardShortCut = when (currentPlatformInfo.operatingSystem) {
+                    OS.MACOS, OS.IOS -> "⌘"
+                    else -> stringResource(Res.string.control)
                 }
-            )
+                val annotatedString = buildAnnotatedString {
+                    withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                        append(hint)
+                    }
+                    if (hint.isNotEmpty() && actionText.isNotEmpty()) append("\n")
+                    if (actionText.isNotEmpty()) append("$platformKeyboardShortCut + $actionText")
+                }
+                Text(annotatedString, textAlign = TextAlign.Center)
+            }
         },
         state = rememberTooltipState(),
-        focusable = false,
         enableUserInput = enabled
     ) {
         Box(

@@ -16,12 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TooltipIconButton(
-    buttonModifier: Modifier = Modifier,
-    iconModifier: Modifier = Modifier,
     colors: IconButtonColors = IconButtonDefaults.iconButtonColors(),
     shape: Shape = IconButtonDefaults.standardShape,
     enabled: Boolean = true,
@@ -30,35 +30,24 @@ fun TooltipIconButton(
     onClick: () -> Unit
 ) = TooltipBox(
     positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Below),
-    tooltip = {
-        PlainTooltip(
-            content = { Text(tipText) }
-        )
-    },
+    tooltip = { PlainTooltip { Text(tipText) } },
     state = rememberTooltipState(),
-    focusable = false,
     enableUserInput = enabled
 ) {
     IconButton(
-        modifier = buttonModifier,
+        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
         enabled = enabled,
         colors = colors,
         shape = shape,
         onClick = onClick
     ) {
-        Icon(
-            modifier = iconModifier,
-            imageVector = icon,
-            contentDescription = null
-        )
+        Icon(imageVector = icon, contentDescription = null)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TooltipIconButton(
-    buttonModifier: Modifier = Modifier,
-    iconModifier: Modifier = Modifier,
     colors: IconButtonColors = IconButtonDefaults.iconButtonColors(),
     shape: Shape = IconButtonDefaults.standardShape,
     enabled: Boolean = true,
@@ -67,26 +56,17 @@ fun TooltipIconButton(
     onClick: () -> Unit
 ) = TooltipBox(
     positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Below),
-    tooltip = {
-        PlainTooltip(
-            content = { Text(tipText) }
-        )
-    },
+    tooltip = { PlainTooltip { Text(tipText) } },
     state = rememberTooltipState(),
-    focusable = false,
     enableUserInput = enabled
 ) {
     IconButton(
-        modifier = buttonModifier,
+        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
         enabled = enabled,
         colors = colors,
         shape = shape,
         onClick = onClick
     ) {
-        Icon(
-            modifier = iconModifier,
-            painter = icon,
-            contentDescription = null
-        )
+        Icon(painter = icon, contentDescription = null)
     }
 }

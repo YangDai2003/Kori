@@ -231,10 +231,14 @@ fun TextEditor(
         }
         Box(Modifier.fillMaxSize()) {
             BasicTextField(
-                modifier = Modifier.padding(
-                    start = if (isLineNumberVisible) 4.dp else 16.dp,
-                    end = 16.dp
-                ).fillMaxSize().then(textFieldModifier),
+                modifier = Modifier
+                    .padding(
+                        start = if (isLineNumberVisible) 4.dp else 16.dp,
+                        end = 16.dp
+                    )
+                    .fillMaxSize()
+                    .dragAndDropText(textFieldState)
+                    .then(textFieldModifier),
                 scrollState = scrollState,
                 readOnly = readOnly,
                 state = textFieldState,

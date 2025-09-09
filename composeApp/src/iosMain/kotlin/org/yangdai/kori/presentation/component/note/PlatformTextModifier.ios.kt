@@ -16,14 +16,8 @@ actual fun Modifier.dragAndDropText(textFieldState: TextFieldState): Modifier {
     val target = remember {
         object : DragAndDropTarget {
             override fun onDrop(event: DragAndDropEvent): Boolean {
-                event.items.forEach { item ->
-                    item.loadString { s, _ ->
-                        s?.let {
-                            textFieldState.edit {
-                                addInNewLine(s)
-                            }
-                        }
-                    }
+                event.items[0].loadString { s, _ ->
+                    s?.let { textFieldState.edit { addInNewLine(s) } }
                 }
                 return true
             }

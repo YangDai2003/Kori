@@ -33,16 +33,34 @@ private fun TextFieldBuffer.inlineWrap(
         initialSelection.min + startWrappedString.length
     )
 } else {
-    replace(initialSelection.min, initialSelection.min, startWrappedString)
-    replace(
-        initialSelection.max + startWrappedString.length,
-        initialSelection.max + startWrappedString.length,
-        endWrappedString
-    )
-    selection = TextRange(
-        initialSelection.min,
-        initialSelection.max + startWrappedString.length + endWrappedString.length
-    )
+    val selectedText = asCharSequence().substring(initialSelection.min, initialSelection.max)
+    if (selectedText.startsWith(startWrappedString) && selectedText.endsWith(endWrappedString)) {
+        // The text is already wrapped, so unwrap it
+        replace(
+            initialSelection.min,
+            initialSelection.max,
+            selectedText.substring(
+                startWrappedString.length,
+                selectedText.length - endWrappedString.length
+            )
+        )
+        selection = TextRange(
+            initialSelection.min,
+            initialSelection.max - startWrappedString.length - endWrappedString.length
+        )
+    } else {
+        // The text is not wrapped, so wrap it
+        replace(initialSelection.min, initialSelection.min, startWrappedString)
+        replace(
+            initialSelection.max + startWrappedString.length,
+            initialSelection.max + startWrappedString.length,
+            endWrappedString
+        )
+        selection = TextRange(
+            initialSelection.min,
+            initialSelection.max + startWrappedString.length + endWrappedString.length
+        )
+    }
 }
 
 fun TextFieldBuffer.bold() = inlineWrap("**")
@@ -56,7 +74,7 @@ fun TextFieldBuffer.braces() = inlineWrap("{", "}")
 fun TextFieldBuffer.link() = inlineWrap("[", "]()")
 
 fun TextFieldBuffer.code() {
-    if (hasSelection && originalText.substring(selection.min, selection.max).contains('\n')) {
+    if (hasSelection && asCharSequence().substring(selection.min, selection.max).contains('\n')) {
         inlineWrap("```\n", "\n```\n")
     } else {
         inlineWrap("`")
@@ -64,7 +82,7 @@ fun TextFieldBuffer.code() {
 }
 
 fun TextFieldBuffer.math() {
-    if (hasSelection && originalText.substring(selection.min, selection.max).contains('\n')) {
+    if (hasSelection && asCharSequence().substring(selection.min, selection.max).contains('\n')) {
         inlineWrap("$$\n", "\n$$\n")
     } else {
         inlineWrap("$")
@@ -75,14 +93,10 @@ fun TextFieldBuffer.mermaidDiagram() = inlineWrap("<pre class=\"mermaid\">\n", "
 
 
 fun TextFieldBuffer.quote() {
-    val text = toString()
-    val lineStart = text.take(selection.min)
-        .lastIndexOf('\n')
-        .takeIf { it != -1 }
-        ?.let { it + 1 }
-        ?: 0
-
     val initialSelection = selection
+    val lineStart = asCharSequence().take(initialSelection.min)
+        .lastIndexOf('\n')
+        .let { if (it == -1) 0 else it + 1 }
 
     replace(lineStart, lineStart, "> ")
     selection = TextRange(
@@ -92,14 +106,10 @@ fun TextFieldBuffer.quote() {
 }
 
 fun TextFieldBuffer.tab() {
-    val text = toString()
-    val lineStart = text.take(selection.min)
-        .lastIndexOf('\n')
-        .takeIf { it != -1 }
-        ?.let { it + 1 }
-        ?: 0
-
     val initialSelection = selection
+    val lineStart = asCharSequence().take(initialSelection.min)
+        .lastIndexOf('\n')
+        .let { if (it == -1) 0 else it + 1 }
 
     replace(lineStart, lineStart, "    ") // 4 spaces
     selection = TextRange(
@@ -110,14 +120,12 @@ fun TextFieldBuffer.tab() {
 
 fun TextFieldBuffer.unTab() {
     val text = toString()
-    val lineStart = text.take(selection.min)
+    val initialSelection = selection
+    val lineStart = text.take(initialSelection.min)
         .lastIndexOf('\n')
-        .takeIf { it != -1 }
-        ?.let { it + 1 }
-        ?: 0
+        .let { if (it == -1) 0 else it + 1 }
 
     val tabIndex = text.indexOf("    ", lineStart)
-    val initialSelection = selection
 
     if (tabIndex != -1 && tabIndex < selection.min) {
         replace(tabIndex, tabIndex + 4, "")
@@ -129,14 +137,11 @@ fun TextFieldBuffer.unTab() {
 }
 
 fun TextFieldBuffer.alert(type: String) {
-    val text = toString()
-    val lineStart = text.take(selection.min)
-        .lastIndexOf('\n')
-        .takeIf { it != -1 }
-        ?.let { it + 1 }
-        ?: 0
-
     val initialSelection = selection
+    val lineStart = asCharSequence().take(initialSelection.min)
+        .lastIndexOf('\n')
+        .let { if (it == -1) 0 else it + 1 }
+
     val alertType = "> [!$type]"
     replace(lineStart, lineStart, alertType)
     replace(
@@ -231,8 +236,7 @@ fun TextFieldBuffer.addBeforeWithWhiteSpace(str: String) {
 }
 
 fun TextFieldBuffer.addAfter(str: String) {
-    val initialSelection = selection
-    replace(initialSelection.max, initialSelection.max, str)
+    replace(selection.max, selection.max, str)
 }
 
 fun TextFieldBuffer.addInNewLine(str: String) {
@@ -245,21 +249,39 @@ fun TextFieldBuffer.addInNewLine(str: String) {
 }
 
 fun TextFieldBuffer.header(level: Int) {
-    val heading = "#".repeat(level) + " "
+    val heading = "${"#".repeat(level)} "
     val text = toString()
-    val lineStart = text.take(selection.min)
-        .lastIndexOf('\n')
-        .takeIf { it != -1 }
-        ?.let { it + 1 }
-        ?: 0
-
     val initialSelection = selection
+    val lineStart = text.take(initialSelection.min)
+        .lastIndexOf('\n')
+        .let { if (it == -1) 0 else it + 1 }
 
-    replace(lineStart, lineStart, heading)
-    selection = TextRange(
-        initialSelection.min + heading.length,
-        initialSelection.max + heading.length
-    )
+    val line = text.substring(lineStart)
+    val currentHeadingMatch = Regex("^(#+ )").find(line)
+
+    if (currentHeadingMatch != null) {
+        val currentHeading = currentHeadingMatch.value
+        if (currentHeading == heading) {
+            // Same heading, remove it
+            replace(lineStart, lineStart + currentHeading.length, "")
+            selection = TextRange(
+                initialSelection.min - currentHeading.length,
+                initialSelection.max - currentHeading.length
+            )
+        } else {
+            // Different heading, replace it
+            replace(lineStart, lineStart + currentHeading.length, heading)
+            selection = TextRange(
+                initialSelection.min + heading.length - currentHeading.length,
+                initialSelection.max + heading.length - currentHeading.length
+            )
+        }
+    } else {
+        // No heading, add it
+        replace(lineStart, lineStart, heading)
+        selection =
+            TextRange(initialSelection.min + heading.length, initialSelection.max + heading.length)
+    }
 }
 
 fun TextFieldBuffer.horizontalRule() {
@@ -275,8 +297,7 @@ fun TextFieldBuffer.bulletList() {
     } else {
         val start = selection.min
         val end = selection.max
-        val allText = toString()
-        val selectedText = allText.substring(start, end)
+        val selectedText = asCharSequence().substring(start, end)
 
         // 逐行在第一个非空格字符之前插入 "- "
         val transformedText = selectedText
@@ -308,8 +329,7 @@ fun TextFieldBuffer.numberedList() {
     } else {
         val start = selection.min
         val end = selection.max
-        val allText = this.toString()
-        val selectedText = allText.substring(start, end)
+        val selectedText = asCharSequence().substring(start, end)
 
         // 计算行首缩进级别，这里简单假设 4 个空格相当于 1 级缩进，tab 视为 4 个空格
         fun getIndentLevel(line: String): Int {
@@ -366,8 +386,7 @@ fun TextFieldBuffer.taskList() {
     } else {
         val start = selection.min
         val end = selection.max
-        val allText = toString()
-        val selectedText = allText.substring(start, end)
+        val selectedText = asCharSequence().substring(start, end)
 
         val transformedText = selectedText
             .lineSequence()

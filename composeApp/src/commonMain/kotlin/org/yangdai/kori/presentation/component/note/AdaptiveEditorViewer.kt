@@ -121,52 +121,37 @@ fun AdaptiveEditor(
     isMarkdownLintActive: Boolean,
     headerRange: IntRange?,
     findAndReplaceState: FindAndReplaceState
-) = when (noteType) {
-    NoteType.MARKDOWN -> {
-        TextEditor(
-            modifier = modifier,
-            textFieldModifier = Modifier.markdownKeyEvents(textFieldState)
-                .dragAndDropText(textFieldState),
-            textFieldState = textFieldState,
-            scrollState = scrollState,
-            findAndReplaceState = findAndReplaceState,
-            headerRange = headerRange,
-            isLineNumberVisible = isLineNumberVisible,
-            isMarkdownLintActive = isMarkdownLintActive,
-            readOnly = readOnly,
-            outputTransformation = remember { MarkdownTransformation() }
-        )
+) {
+    val textFieldModifier = remember(noteType, textFieldState) {
+        when (noteType) {
+            NoteType.MARKDOWN -> Modifier.markdownKeyEvents(textFieldState)
+            NoteType.TODO -> Modifier.todoTextKeyEvents(textFieldState)
+            NoteType.PLAIN_TEXT -> Modifier.plainTextKeyEvents(textFieldState)
+            else -> Modifier
+        }
     }
 
-    NoteType.TODO -> {
-        TextEditor(
-            modifier = modifier,
-            textFieldModifier = Modifier.todoTextKeyEvents(textFieldState)
-                .dragAndDropText(textFieldState),
-            textFieldState = textFieldState,
-            scrollState = scrollState,
-            findAndReplaceState = findAndReplaceState,
-            isLineNumberVisible = isLineNumberVisible,
-            readOnly = readOnly,
-            outputTransformation = remember { TodoTransformation() }
-        )
+    val outputTransformation = remember(noteType) {
+        when (noteType) {
+            NoteType.MARKDOWN -> MarkdownTransformation()
+            NoteType.TODO -> TodoTransformation()
+            NoteType.PLAIN_TEXT -> PlainTextTransformation()
+            else -> null
+        }
     }
 
-    NoteType.PLAIN_TEXT -> {
-        TextEditor(
-            modifier = modifier,
-            textFieldModifier = Modifier.plainTextKeyEvents(textFieldState)
-                .dragAndDropText(textFieldState),
-            textFieldState = textFieldState,
-            scrollState = scrollState,
-            findAndReplaceState = findAndReplaceState,
-            isLineNumberVisible = isLineNumberVisible,
-            readOnly = readOnly,
-            outputTransformation = remember { PlainTextTransformation() }
-        )
-    }
-
-    else -> {}
+    TextEditor(
+        modifier = modifier,
+        textFieldModifier = textFieldModifier,
+        textFieldState = textFieldState,
+        scrollState = scrollState,
+        findAndReplaceState = findAndReplaceState,
+        readOnly = readOnly,
+        isLineNumberVisible = isLineNumberVisible,
+        isMarkdownLintActive = isMarkdownLintActive,
+        headerRange = headerRange,
+        outputTransformation = outputTransformation
+    )
 }
 
 @Composable
