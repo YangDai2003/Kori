@@ -26,7 +26,6 @@ import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.application
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
-import javafx.embed.swing.JFXPanel
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_name
 import kori.composeapp.generated.resources.drawing
@@ -56,9 +55,6 @@ import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.util.ExternalUriHandler
 import java.awt.Desktop
 import java.awt.Dimension
-
-@Suppress("unused")
-val fakeJFXPanel = JFXPanel()
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {

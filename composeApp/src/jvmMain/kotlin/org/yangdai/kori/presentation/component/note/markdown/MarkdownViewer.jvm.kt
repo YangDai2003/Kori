@@ -30,6 +30,9 @@ import java.awt.event.MouseWheelEvent
 import java.net.URI
 import kotlin.math.roundToInt
 
+@Suppress("unused")
+private val jfxPanel = InteropPanel()
+
 private object StaticUris {
     val MERMAID = Res.getUri("files/mermaid.min.js")
     val KATEX = Res.getUri("files/katex/katex.min.js")
@@ -74,14 +77,12 @@ actual fun MarkdownViewer(
     printTrigger: MutableState<Boolean>,
     styles: MarkdownStyles
 ) {
-    val jfxPanel = remember { InteropPanel() }
     var webView by remember { mutableStateOf<WebView?>(null) }
     // Store the latest processed HTML data for link interception reload
     var latestData by remember { mutableStateOf("") }
 
     // Effect to initialize JavaFX environment and WebView
     DisposableEffect(Unit) {
-        Platform.setImplicitExit(false)
         Platform.runLater { // Run on JavaFX Application Thread
             val wv = WebView()
             webView = wv
@@ -220,6 +221,10 @@ actual fun MarkdownViewer(
 private class InteropPanel : JFXPanel() {
 
     private var mouseEventEnabled = true
+
+    init {
+        Platform.setImplicitExit(false)
+    }
 
     override fun processMouseEvent(e: MouseEvent) {
         if (mouseEventEnabled) super.processMouseEvent(e)
