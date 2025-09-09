@@ -247,7 +247,7 @@ compose.desktop {
             }
             windows {
                 shortcut = true
-                upgradeUuid = "80612DFA-3040-4C8D-A96A-9CB32176D0DA"
+                upgradeUuid = "1532CBB1-4D76-47F9-9C96-71B06F9EE33B"
                 iconFile.set(project.file("icon.ico"))
             }
             linux {
