@@ -22,7 +22,10 @@
             padding: 0 16px;
             margin: 0;
             font-size: {{FONT_SCALE}};
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, "Segoe UI", "Ubuntu", Arial, "Microsoft YaHei", sans-serif;
+            -webkit-font-smoothing: antialiased; /* 针对 WebKit 内核（如 JavaFX WebView 使用的）*/
+            -moz-osx-font-smoothing: grayscale; /* 针对 Firefox，虽然 WebView 不直接用，但保持一致性 */
+            text-rendering: optimizeLegibility; /* 优化文本的可读性，尤其对中文等复杂脚本有益 */
         }
         img {
             max-width: 100%;
@@ -40,8 +43,6 @@
             padding: 4px 4px 2px 4px;
             margin: 4px;
             border-radius: 4px;
-            font-family: monospace;
-            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
         }
         pre {
             background-color: {{PRE_BACKGROUND}};

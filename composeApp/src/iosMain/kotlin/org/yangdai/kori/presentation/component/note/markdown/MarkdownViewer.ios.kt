@@ -100,7 +100,7 @@ actual fun MarkdownViewer(
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
             htmlTemplate = runCatching {
-                Res.readBytes("files/template.html").decodeToString()
+                Res.readBytes("files/template_for_ios.html").decodeToString()
             }.getOrDefault("")
         }
     }
