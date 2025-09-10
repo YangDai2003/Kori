@@ -17,7 +17,7 @@ provide a consistent note-taking experience across all platforms.
 
 [<img alt="Get it on Google Play" src="screenshots/google_play.png" width="200px">](https://play.google.com/store/apps/details?id=org.yangdai.kori&pcampaignid=web_share)
 [<img alt="Get it on GitHub" src="screenshots/github.png" width="200px">](https://github.com/YangDai2003/Kori/releases)
-[<img alt="Get it from Microsoft" src="https://get.microsoft.com/images/en-us%20dark.svg" width="200px"/>](https://apps.microsoft.com/detail/9PBLLN7S6L1H?referrer=appbadge&mode=full)
+[<img alt="Get it from Microsoft" src="screenshots/ms_store.png" width="200px"/>](https://apps.microsoft.com/detail/9PBLLN7S6L1H?referrer=appbadge&mode=full)
 
 To help cover developer account fees, this app is available for a small price on Google Play and Apple App Store(planned).
 You can download it for free from GitHub and the Microsoft Store.
