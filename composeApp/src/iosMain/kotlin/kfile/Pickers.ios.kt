@@ -3,8 +3,14 @@ package kfile
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.uikit.LocalUIViewController
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.presentation.component.dialog.ExportType
 import org.yangdai.kori.presentation.component.note.markdown.IOS_CUSTOM_SCHEME
@@ -17,10 +23,19 @@ import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.NSUserDomainMask
 import platform.Foundation.stringWithContentsOfURL
 import platform.Foundation.writeToURL
+import platform.PhotosUI.PHPickerConfiguration
+import platform.PhotosUI.PHPickerFilter
+import platform.PhotosUI.PHPickerResult
+import platform.PhotosUI.PHPickerViewController
+import platform.PhotosUI.PHPickerViewControllerDelegateProtocol
 import platform.UIKit.UIDocumentPickerDelegateProtocol
 import platform.UIKit.UIDocumentPickerMode
 import platform.UIKit.UIDocumentPickerViewController
+import platform.UniformTypeIdentifiers.UTTypeImage
+import platform.UniformTypeIdentifiers.UTTypeMovie
+import platform.UniformTypeIdentifiers.UTTypeVideo
 import platform.darwin.NSObject
+import kotlin.coroutines.resume
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -49,9 +64,7 @@ actual fun PlatformFilePicker(onFileSelected: (PlatformFile?) -> Unit) {
             documentTypes = listOf(
                 "public.text",
                 "public.plain-text",
-                "public.text-file",
-                "public.data",
-                "public.content"
+                "public.text-file"
             ),
             inMode = UIDocumentPickerMode.UIDocumentPickerModeOpen
         ).apply {
@@ -156,9 +169,7 @@ actual fun PlatformFilesPicker(launch: Boolean, onFilesSelected: (List<PlatformF
             documentTypes = listOf(
                 "public.text",
                 "public.plain-text",
-                "public.text-file",
-                "public.data",
-                "public.content"
+                "public.text-file"
             ),
             inMode = UIDocumentPickerMode.UIDocumentPickerModeImport
         ).apply {
@@ -285,42 +296,67 @@ actual fun ImagesPicker(
     noteId: String,
     onImagesSelected: (List<Pair<String, String>>) -> Unit
 ) {
+    val scope = rememberCoroutineScope()
     val currentUIViewController = LocalUIViewController.current
 
-    val delegate = remember {
-        object : NSObject(), UIDocumentPickerDelegateProtocol {
-            override fun documentPicker(
-                controller: UIDocumentPickerViewController,
-                didPickDocumentsAtURLs: List<*>
-            ) {
-                val newImagePairs = mutableListOf<Pair<String, String>>()
-                for (imageURLObject in didPickDocumentsAtURLs) {
-                    val sourceURL = imageURLObject as? NSURL ?: continue
-                    processAndCopyMediaFile(noteId, sourceURL, "image")?.let {
-                        newImagePairs.add(it)
+    val phpDelegate = remember {
+        object : NSObject(), PHPickerViewControllerDelegateProtocol {
+            @Suppress("UNCHECKED_CAST")
+            override fun picker(picker: PHPickerViewController, didFinishPicking: List<*>) {
+                picker.dismissViewControllerAnimated(true, null)
+                val results = didFinishPicking as? List<PHPickerResult> ?: run {
+                    onImagesSelected(emptyList())
+                    return
+                }
+                if (results.isEmpty()) {
+                    onImagesSelected(emptyList())
+                    return
+                }
+                scope.launch(Dispatchers.IO) {
+                    val imagePairs = mutableListOf<Pair<String, String>>()
+                    val imageTypeIdentifier = UTTypeImage.identifier
+                    for (result in results) {
+                        val itemProvider = result.itemProvider
+                        if (itemProvider.hasItemConformingToTypeIdentifier(imageTypeIdentifier)) {
+                            val pair = suspendCancellableCoroutine { continuation ->
+                                itemProvider.loadFileRepresentationForTypeIdentifier(
+                                    imageTypeIdentifier
+                                ) { url, error ->
+                                    if (error == null && url != null) {
+                                        val p = processAndCopyMediaFile(noteId, url, "image")
+                                        continuation.resume(p)
+                                    } else {
+                                        println("Error loading file representation for image: ${error?.localizedDescription}")
+                                        continuation.resume(null)
+                                    }
+                                }
+                            }
+                            pair?.let { imagePairs.add(it) }
+                        }
+                    }
+                    withContext(Dispatchers.Main) {
+                        onImagesSelected(imagePairs.toList())
                     }
                 }
-                onImagesSelected(newImagePairs)
-            }
-
-            override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
-                onImagesSelected(emptyList())
             }
         }
     }
 
-    val documentPicker = remember {
-        UIDocumentPickerViewController(
-            documentTypes = listOf("public.image"),
-            inMode = UIDocumentPickerMode.UIDocumentPickerModeImport
-        ).apply {
-            this.delegate = delegate
-            this.allowsMultipleSelection = true
+    val configuration = remember {
+        PHPickerConfiguration().apply {
+            filter = PHPickerFilter.imagesFilter()
+            selectionLimit = 0 // 0 means multiple selection
+        }
+    }
+
+    val pickerViewController = remember {
+        PHPickerViewController(configuration).apply {
+            delegate = phpDelegate
         }
     }
 
     currentUIViewController.presentViewController(
-        documentPicker,
+        pickerViewController,
         animated = true,
         completion = null
     )
@@ -332,36 +368,81 @@ actual fun VideoPicker(
     noteId: String,
     onVideoSelected: (Pair<String, String>?) -> Unit
 ) {
+    val scope = rememberCoroutineScope()
     val currentUIViewController = LocalUIViewController.current
 
-    val delegate = remember {
-        object : NSObject(), UIDocumentPickerDelegateProtocol {
-            override fun documentPicker(
-                controller: UIDocumentPickerViewController,
-                didPickDocumentAtURL: NSURL
-            ) {
-                val result = processAndCopyMediaFile(noteId, didPickDocumentAtURL, "video")
-                onVideoSelected(result)
-            }
+    val phpDelegate = remember {
+        object : NSObject(), PHPickerViewControllerDelegateProtocol {
+            @Suppress("UNCHECKED_CAST")
+            override fun picker(picker: PHPickerViewController, didFinishPicking: List<*>) {
+                picker.dismissViewControllerAnimated(true, null)
+                val result = (didFinishPicking as? List<PHPickerResult>)?.firstOrNull()
 
-            override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
-                onVideoSelected(null)
+                if (result == null) {
+                    onVideoSelected(null)
+                    return
+                }
+
+                val itemProvider = result.itemProvider
+                val videoTypeIdentifier = UTTypeVideo.identifier
+                val movieTypeIdentifier = UTTypeMovie.identifier
+
+                if (itemProvider.hasItemConformingToTypeIdentifier(videoTypeIdentifier)) {
+                    scope.launch(Dispatchers.IO) {
+                        val videoPair = suspendCancellableCoroutine { continuation ->
+                            itemProvider.loadFileRepresentationForTypeIdentifier(videoTypeIdentifier) { url, error ->
+                                if (error == null && url != null) {
+                                    val pair = processAndCopyMediaFile(noteId, url, "video")
+                                    continuation.resume(pair)
+                                } else {
+                                    println("Error loading file representation for video: ${error?.localizedDescription}")
+                                    continuation.resume(null)
+                                }
+                            }
+                        }
+                        withContext(Dispatchers.Main) {
+                            onVideoSelected(videoPair)
+                        }
+                    }
+                } else if (itemProvider.hasItemConformingToTypeIdentifier(movieTypeIdentifier)) {
+                    scope.launch(Dispatchers.IO) {
+                        val videoPair = suspendCancellableCoroutine { continuation ->
+                            itemProvider.loadFileRepresentationForTypeIdentifier(movieTypeIdentifier) { url, error ->
+                                if (error == null && url != null) {
+                                    val pair = processAndCopyMediaFile(noteId, url, "video")
+                                    continuation.resume(pair)
+                                } else {
+                                    println("Error loading file representation for video: ${error?.localizedDescription}")
+                                    continuation.resume(null)
+                                }
+                            }
+                        }
+                        withContext(Dispatchers.Main) {
+                            onVideoSelected(videoPair)
+                        }
+                    }
+                } else {
+                    onVideoSelected(null)
+                }
             }
         }
     }
 
-    val documentPicker = remember {
-        UIDocumentPickerViewController(
-            documentTypes = listOf("public.movie", "public.video"),
-            inMode = UIDocumentPickerMode.UIDocumentPickerModeImport
-        ).apply {
-            this.delegate = delegate
-            this.allowsMultipleSelection = false
+    val configuration = remember {
+        PHPickerConfiguration().apply {
+            filter = PHPickerFilter.videosFilter()
+            selectionLimit = 1 // Single selection
+        }
+    }
+
+    val pickerViewController = remember {
+        PHPickerViewController(configuration).apply {
+            delegate = phpDelegate
         }
     }
 
     currentUIViewController.presentViewController(
-        documentPicker,
+        pickerViewController,
         animated = true,
         completion = null
     )
