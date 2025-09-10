@@ -27,7 +27,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -62,6 +61,7 @@ import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.isDesktop
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
+import org.yangdai.kori.presentation.component.SingleRowTopAppBar
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.ExportDialog
 import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
@@ -159,7 +159,7 @@ fun TemplateScreen(
             } else false
         },
         topBar = {
-            TopAppBar(
+            SingleRowTopAppBar(
                 modifier = Modifier.pointerInput(Unit) {
                     detectTapGestures(
                         onDoubleTap = {
@@ -169,7 +169,6 @@ fun TemplateScreen(
                         }
                     )
                 },
-                expandedHeight = 56.dp,
                 title = {
                     TitleTextField(
                         state = viewModel.titleState,

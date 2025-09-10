@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -63,6 +64,8 @@ import kori.composeapp.generated.resources.templates
 import kori.composeapp.generated.resources.toolbox
 import kori.composeapp.generated.resources.trash
 import org.jetbrains.compose.resources.stringResource
+import org.yangdai.kori.OS
+import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.data.local.dao.FolderDao.FolderWithNoteCount
 import org.yangdai.kori.data.local.entity.FolderEntity
 import org.yangdai.kori.data.local.entity.defaultFolderColor
@@ -228,17 +231,20 @@ fun NavigationDrawerContent(
         modifier = Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = stringResource(Res.string.app_name),
-            style = MaterialTheme.typography.titleLarge.copy(
-                fontWeight = FontWeight.SemiBold,
-                fontSynthesis = FontSynthesis.Weight,
-                fontFamily = FontFamily.Serif
-            ),
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 1,
-            modifier = Modifier.weight(1f).padding(start = 12.dp)
-        )
+        if (currentPlatformInfo.operatingSystem == OS.MACOS)
+            Spacer(Modifier.weight(1f))
+        else
+            Text(
+                text = stringResource(Res.string.app_name),
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    fontSynthesis = FontSynthesis.Weight,
+                    fontFamily = FontFamily.Serif
+                ),
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                modifier = Modifier.weight(1f).padding(start = 12.dp)
+            )
         if (drawerState.isAppProtected)
             TooltipIconButton(
                 tipText = stringResource(Res.string.lock),

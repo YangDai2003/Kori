@@ -45,7 +45,6 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -91,6 +90,7 @@ import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.isDesktop
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarNavigationIcon
+import org.yangdai.kori.presentation.component.SingleRowTopAppBar
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.ExportDialog
 import org.yangdai.kori.presentation.component.dialog.FoldersDialog
@@ -218,7 +218,7 @@ fun NoteScreen(
             } else false
         },
         topBar = {
-            TopAppBar(
+            SingleRowTopAppBar(
                 modifier = Modifier.pointerInput(Unit) {
                     detectTapGestures(
                         onDoubleTap = {
@@ -228,7 +228,6 @@ fun NoteScreen(
                         }
                     )
                 },
-                expandedHeight = 56.dp,
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         FilledTonalButton(

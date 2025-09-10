@@ -40,6 +40,7 @@ import kori.composeapp.generated.resources.settings
 import kori.composeapp.generated.resources.todo_text
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.skiko.disableTitleBar
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.data.di.KoinInitializer
 import org.yangdai.kori.data.local.entity.NoteType
@@ -76,8 +77,17 @@ fun main() {
             visible = mainWindowVisible,
             title = stringResource(Res.string.app_name),
             icon = painterResource(Res.drawable.icon),
-            init = {}
+            init = { window ->
+                if (currentPlatformInfo.operatingSystem == OS.MACOS) {
+                    with(window.rootPane) {
+                        putClientProperty("apple.awt.fullWindowContent", true)
+                        putClientProperty("apple.awt.transparentTitleBar", true)
+                        putClientProperty("apple.awt.windowTitleVisible", false)
+                    }
+                }
+            }
         ) {
+            window.findSkiaLayer()?.disableTitleBar(56.dp.value)
             window.minimumSize = Dimension(400, 600)
             val mainViewModel: MainViewModel = koinViewModel<MainViewModel>()
             val stylePaneState by mainViewModel.stylePaneState.collectAsStateWithLifecycle()

@@ -1,5 +1,6 @@
 package org.yangdai.kori.presentation.component
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material.icons.Icons
@@ -58,6 +59,31 @@ fun rememberPlatformStyleTopAppBarState(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
+fun SingleRowTopAppBar(
+    modifier: Modifier = Modifier,
+    title: @Composable () -> Unit,
+    navigationIcon: @Composable () -> Unit,
+    actions: @Composable RowScope.() -> Unit,
+    subtitle: @Composable () -> Unit = {},
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
+    contentPadding: PaddingValues = if (currentPlatformInfo.operatingSystem == OS.MACOS)
+        PaddingValues(start = 80.dp)
+    else TopAppBarDefaults.ContentPadding
+) = TopAppBar(
+    modifier = modifier,
+    title = title,
+    subtitle = subtitle,
+    navigationIcon = navigationIcon,
+    actions = actions,
+    expandedHeight = 56.dp,
+    contentPadding = contentPadding,
+    windowInsets = windowInsets,
+    colors = colors
+)
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@Composable
 fun PlatformStyleTopAppBar(
     state: PlatformStyleTopAppBarState,
     title: @Composable () -> Unit,
@@ -65,7 +91,7 @@ fun PlatformStyleTopAppBar(
     navigationIcon: @Composable () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
-    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
+    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors()
 ) = when (state.type) {
     PlatformTopAppBarType.SmallPinned -> TopAppBar(
         title = title,
@@ -75,6 +101,8 @@ fun PlatformStyleTopAppBar(
         windowInsets = windowInsets,
         colors = colors,
         expandedHeight = 56.dp,
+        contentPadding = if (currentPlatformInfo.operatingSystem == OS.MACOS) PaddingValues(start = 80.dp)
+        else TopAppBarDefaults.ContentPadding,
         scrollBehavior = state.scrollBehavior
     )
 

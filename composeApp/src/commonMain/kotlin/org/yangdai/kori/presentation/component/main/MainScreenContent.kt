@@ -62,7 +62,6 @@ import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleFloatingActionButton
 import androidx.compose.material3.ToggleFloatingActionButtonDefaults.animateIcon
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.animateFloatingActionButton
 import androidx.compose.material3.minimumInteractiveComponentSize
@@ -125,8 +124,11 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import org.yangdai.kori.OS
+import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.domain.sort.NoteSortType
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
+import org.yangdai.kori.presentation.component.SingleRowTopAppBar
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.component.dialog.FoldersDialog
 import org.yangdai.kori.presentation.component.dialog.NoteSortOptionBottomSheet
@@ -247,7 +249,7 @@ fun MainScreenContent(
             AnimatedContent(targetState = isSelectionMode) { isSelecting ->
                 if (isSelecting) {
                     // 多选模式的顶部操作栏
-                    TopAppBar(
+                    SingleRowTopAppBar(
                         title = {
                             Row(
                                 modifier = Modifier.animateContentSize(),
@@ -369,7 +371,8 @@ fun MainScreenContent(
                                 }
                             )
                         },
-                        expandedHeight = 56.dp,
+                        contentPadding = if (currentPlatformInfo.operatingSystem == OS.MACOS && !isLargeScreen)
+                            PaddingValues(start = 80.dp) else TopAppBarDefaults.ContentPadding,
                         windowInsets = if (isLargeScreen)
                             TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Top + WindowInsetsSides.End)
                         else TopAppBarDefaults.windowInsets,
@@ -432,7 +435,7 @@ fun MainScreenContent(
                             }
                         }
                     } else
-                        TopAppBar(
+                        SingleRowTopAppBar(
                             title = {
                                 PlatformStyleTopAppBarTitle(
                                     when (currentDrawerItem) {
@@ -534,8 +537,9 @@ fun MainScreenContent(
                                     }
                                 }
                             },
-                            expandedHeight = 56.dp,
                             navigationIcon = navigationIcon,
+                            contentPadding = if (currentPlatformInfo.operatingSystem == OS.MACOS && !isLargeScreen)
+                                PaddingValues(start = 80.dp) else TopAppBarDefaults.ContentPadding,
                             windowInsets = if (isLargeScreen)
                                 TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Top + WindowInsetsSides.End)
                             else TopAppBarDefaults.windowInsets,

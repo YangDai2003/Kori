@@ -237,9 +237,6 @@ compose.desktop {
             macOS {
                 appCategory = "public.app-category.productivity"
                 bundleID = "org.yangdai.kori"
-                jvmArgs(
-                    "-Dapple.awt.application.appearance=system"
-                )
                 infoPlist {
                     extraKeysRawXml = macExtraPlistKeys
                 }

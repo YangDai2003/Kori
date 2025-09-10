@@ -111,6 +111,8 @@ import kori.composeapp.generated.resources.white
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.yangdai.kori.OS
+import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.presentation.component.dialog.DismissButton
 import org.yangdai.kori.presentation.component.dialog.dialogShape
 import kotlin.math.roundToInt
@@ -335,7 +337,11 @@ fun InkScreen(
         topBar = {
             Row(
                 modifier = Modifier.statusBarsPadding().fillMaxWidth().height(52.dp)
-                    .padding(horizontal = 8.dp, vertical = 2.dp),
+                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                    .then(
+                        if (currentPlatformInfo.operatingSystem == OS.MACOS) Modifier.padding(start = 80.dp)
+                        else Modifier
+                    ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 OutlinedIconButton(
