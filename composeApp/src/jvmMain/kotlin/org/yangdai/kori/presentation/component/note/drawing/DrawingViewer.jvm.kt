@@ -13,14 +13,14 @@ import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.addLastModifiedToFileCacheKey
+import org.yangdai.kori.koriDirPathString
 import java.io.File
 
 @Composable
 actual fun DrawingViewer(uuid: String, imageBitmap: ImageBitmap?, modifier: Modifier) =
     Column(modifier) {
         if (imageBitmap == null) {
-            val userHome = System.getProperty("user.home")
-            val imageFile = File("$userHome/.kori/$uuid/ink.png")
+            val imageFile = File("$koriDirPathString/$uuid/ink.png")
             AsyncImage(
                 modifier = Modifier.fillMaxWidth(),
                 model = ImageRequest.Builder(LocalPlatformContext.current)

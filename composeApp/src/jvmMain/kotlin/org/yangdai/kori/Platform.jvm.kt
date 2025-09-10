@@ -1,5 +1,8 @@
 package org.yangdai.kori
 
+import java.nio.file.Path
+import java.nio.file.Paths
+
 actual val currentPlatformInfo: PlatformInfo = PlatformInfo(
     version = System.getProperty("os.name").orEmpty(),
     deviceModel = System.getProperty("os.arch").orEmpty(),
@@ -16,3 +19,7 @@ private fun currentOperatingSystem(): OS {
         else -> OS.UNKNOWN
     }
 }
+
+private val userHome: String = System.getProperty("user.home")
+val koriDirPath: Path = Paths.get(userHome, ".kori")
+val koriDirPathString: String = "$userHome/.kori"

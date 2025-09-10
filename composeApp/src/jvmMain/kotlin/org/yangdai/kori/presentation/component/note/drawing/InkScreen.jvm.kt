@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.skiko.toBufferedImage
+import org.yangdai.kori.koriDirPath
 import java.awt.FileDialog
 import java.awt.Frame
 import java.nio.file.Files
@@ -56,9 +57,6 @@ actual fun SaveBitmapToFileOnDispose(imageBitmap: ImageBitmap?, uuid: String) {
         onDispose {
             if (uuid.isEmpty() || imageBitmap == null) return@onDispose
             CoroutineScope(Dispatchers.IO).launch {
-                val userHome: String = System.getProperty("user.home")
-                val koriDirPath = Paths.get(userHome, ".kori")
-                if (!Files.exists(koriDirPath)) Files.createDirectories(koriDirPath)
                 val noteDirectoryPath = koriDirPath.resolve(uuid)
                 if (!Files.exists(noteDirectoryPath)) Files.createDirectories(noteDirectoryPath)
                 val bitmapFilePath = noteDirectoryPath.resolve("ink.png")

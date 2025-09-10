@@ -5,6 +5,7 @@ import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_name
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.NoteEntity
+import org.yangdai.kori.koriDirPath
 import org.yangdai.kori.presentation.component.dialog.ExportType
 import java.awt.FileDialog
 import java.awt.Frame
@@ -151,9 +152,7 @@ actual fun ImagesPicker(
 
     val savedNames = mutableListOf<Pair<String, String>>()
     if (fileDialog.files != null && fileDialog.files.isNotEmpty()) {
-
-        val userHome: String = System.getProperty("user.home")
-        val imagesDir = File(File(userHome, ".kori"), noteId)
+        val imagesDir = File(koriDirPath.toFile(), noteId)
         if (!imagesDir.exists()) imagesDir.mkdirs()
 
         for (file in fileDialog.files) {
@@ -194,9 +193,9 @@ actual fun VideoPicker(
 
     var savedName: Pair<String, String>? = null
     if (fileDialog.file != null && fileDialog.directory != null) {
-        val userHome: String = System.getProperty("user.home")
-        val videoDir = File(File(userHome, ".kori"), noteId)
+        val videoDir = File(koriDirPath.toFile(), noteId)
         if (!videoDir.exists()) videoDir.mkdirs()
+
         val file = File(fileDialog.directory, fileDialog.file)
         if (
             file.extension.lowercase() in
@@ -235,9 +234,9 @@ actual fun AudioPicker(
 
     var savedName: Pair<String, String>? = null
     if (fileDialog.file != null && fileDialog.directory != null) {
-        val userHome: String = System.getProperty("user.home")
-        val audioDir = File(File(userHome, ".kori"), noteId)
+        val audioDir = File(koriDirPath.toFile(), noteId)
         if (!audioDir.exists()) audioDir.mkdirs()
+
         val file = File(fileDialog.directory, fileDialog.file)
         if (file.extension.lowercase() in listOf("mp3", "wav", "ogg", "aac", "flac", "m4a")) {
             val destFile = File(audioDir, file.name)
