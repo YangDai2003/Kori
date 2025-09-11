@@ -17,6 +17,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -28,6 +29,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.OS
 import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.isDesktop
+
+val LocalTopAppBarPadding = compositionLocalOf { TopAppBarDefaults.ContentPadding }
 
 enum class PlatformTopAppBarType {
     SmallPinned, CenteredPinned, Flexible
@@ -67,9 +70,7 @@ fun SingleRowTopAppBar(
     subtitle: @Composable () -> Unit = {},
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
-    contentPadding: PaddingValues = if (currentPlatformInfo.operatingSystem == OS.MACOS)
-        PaddingValues(start = 80.dp)
-    else TopAppBarDefaults.ContentPadding
+    contentPadding: PaddingValues = LocalTopAppBarPadding.current
 ) = TopAppBar(
     modifier = modifier,
     title = title,
@@ -101,8 +102,7 @@ fun PlatformStyleTopAppBar(
         windowInsets = windowInsets,
         colors = colors,
         expandedHeight = 56.dp,
-        contentPadding = if (currentPlatformInfo.operatingSystem == OS.MACOS) PaddingValues(start = 80.dp)
-        else TopAppBarDefaults.ContentPadding,
+        contentPadding = LocalTopAppBarPadding.current,
         scrollBehavior = state.scrollBehavior
     )
 

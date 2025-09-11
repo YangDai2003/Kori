@@ -29,12 +29,7 @@ import org.yangdai.kori.presentation.util.AppLockManager
 import org.yangdai.kori.presentation.util.Constants
 
 @OptIn(ExperimentalComposeUiApi::class)
-fun MainViewController() = ComposeUIViewController(
-    configure = {
-        parallelRendering = true
-        KoinInitializer.init()
-    }
-) {
+fun MainViewController() = ComposeUIViewController(configure = { KoinInitializer.init() }) {
     val mainViewModel: MainViewModel = koinViewModel<MainViewModel>()
     val stylePaneState by mainViewModel.stylePaneState.collectAsStateWithLifecycle()
     val securityPaneState by mainViewModel.securityPaneState.collectAsStateWithLifecycle()

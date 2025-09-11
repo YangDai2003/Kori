@@ -6,9 +6,13 @@ import androidx.compose.foundation.LightDefaultContextMenuRepresentation
 import androidx.compose.foundation.LocalContextMenuRepresentation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,9 +26,14 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.Tray
+import androidx.compose.ui.window.WindowPlacement
+import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_name
@@ -44,6 +53,7 @@ import org.jetbrains.skiko.disableTitleBar
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.data.di.KoinInitializer
 import org.yangdai.kori.data.local.entity.NoteType
+import org.yangdai.kori.presentation.component.LocalTopAppBarPadding
 import org.yangdai.kori.presentation.component.dialog.ProgressDialog
 import org.yangdai.kori.presentation.component.login.NumberLockScreen
 import org.yangdai.kori.presentation.navigation.AppNavHost
@@ -57,7 +67,6 @@ import org.yangdai.kori.presentation.util.ExternalUriHandler
 import java.awt.Desktop
 import java.awt.Dimension
 
-@OptIn(ExperimentalComposeUiApi::class)
 fun main() {
     System.setProperty("compose.interop.blending", "true")
     System.setProperty("compose.swing.render.on.graphics", "true")
@@ -71,164 +80,194 @@ fun main() {
     }
     application {
         val navHostController = rememberNavController()
-        var mainWindowVisible by rememberSaveable { mutableStateOf(true) }
-        SwingWindow(
-            onCloseRequest = { mainWindowVisible = false },
-            visible = mainWindowVisible,
-            title = stringResource(Res.string.app_name),
-            icon = painterResource(Res.drawable.icon),
-            init = { window ->
-                if (currentPlatformInfo.operatingSystem == OS.MACOS) {
-                    with(window.rootPane) {
-                        putClientProperty("apple.awt.fullWindowContent", true)
-                        putClientProperty("apple.awt.transparentTitleBar", true)
-                        putClientProperty("apple.awt.windowTitleVisible", false)
-                    }
-                }
-            }
-        ) {
+        var isWindowVisible by rememberSaveable { mutableStateOf(true) }
+
+        ApplicationWindow(
+            visible = isWindowVisible,
+            onCloseRequest = { isWindowVisible = false },
+            navHostController = navHostController
+        )
+
+        if (!isWindowVisible)
+            ApplicationTray(
+                navigateToScreen = { screen ->
+                    navHostController.navigate(screen)
+                    isWindowVisible = true
+                },
+                onAction = { isWindowVisible = true },
+                onExit = ::exitApplication
+            )
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun ApplicationWindow(
+    visible: Boolean,
+    onCloseRequest: () -> Unit,
+    navHostController: NavHostController,
+    state: WindowState = rememberWindowState()
+) = SwingWindow(
+    onCloseRequest = onCloseRequest,
+    state = state,
+    visible = visible,
+    title = stringResource(Res.string.app_name),
+    icon = painterResource(Res.drawable.icon),
+    init = { window ->
+        with(window.rootPane) {
+            putClientProperty("apple.awt.fullWindowContent", true)
+            putClientProperty("apple.awt.transparentTitleBar", true)
+            putClientProperty("apple.awt.windowTitleVisible", false)
+        }
+    }
+) {
+    LaunchedEffect(window) {
+        if (currentPlatformInfo.operatingSystem == OS.MACOS)
             window.findSkiaLayer()?.disableTitleBar(56.dp.value)
-            window.minimumSize = Dimension(400, 600)
-            val mainViewModel: MainViewModel = koinViewModel<MainViewModel>()
-            val stylePaneState by mainViewModel.stylePaneState.collectAsStateWithLifecycle()
-            val securityPaneState by mainViewModel.securityPaneState.collectAsStateWithLifecycle()
-            val dataActionState by mainViewModel.dataActionState.collectAsStateWithLifecycle()
-            val isUnlocked by AppLockManager.isUnlocked.collectAsStateWithLifecycle()
-            val isSystemInDarkTheme = isSystemInDarkTheme()
+        else if (currentPlatformInfo.operatingSystem == OS.WINDOWS)
+            window.findSkiaLayer()?.transparency = true
+        window.minimumSize = Dimension(400, 600)
+    }
+    val mainViewModel: MainViewModel = koinViewModel<MainViewModel>()
+    val stylePaneState by mainViewModel.stylePaneState.collectAsStateWithLifecycle()
+    val securityPaneState by mainViewModel.securityPaneState.collectAsStateWithLifecycle()
+    val dataActionState by mainViewModel.dataActionState.collectAsStateWithLifecycle()
+    val isUnlocked by AppLockManager.isUnlocked.collectAsStateWithLifecycle()
+    val isSystemInDarkTheme = isSystemInDarkTheme()
 
-            val darkMode by remember(isSystemInDarkTheme) {
-                derivedStateOf {
-                    when (stylePaneState.theme) {
-                        AppTheme.SYSTEM -> isSystemInDarkTheme
-                        AppTheme.DARK -> true
-                        AppTheme.LIGHT -> false
-                    }
-                }
-            }
-
-            val contextMenuRepresentation =
-                if (darkMode) DarkDefaultContextMenuRepresentation else LightDefaultContextMenuRepresentation
-
-            CompositionLocalProvider(LocalContextMenuRepresentation provides contextMenuRepresentation) {
-                KoriTheme(
-                    darkMode = darkMode,
-                    color = stylePaneState.color,
-                    amoledMode = stylePaneState.isAppInAmoledMode,
-                    fontScale = stylePaneState.fontSize
-                ) {
-                    Surface {
-                        val showPassScreen by remember {
-                            derivedStateOf {
-                                (securityPaneState.password.isNotEmpty() && !isUnlocked) ||
-                                        securityPaneState.isCreatingPass
-                            }
-                        }
-                        val blur by animateDpAsState(targetValue = if (showPassScreen) 16.dp else 0.dp)
-                        val semanticsModifier =
-                            if (showPassScreen) Modifier.semantics(mergeDescendants = true) { hideFromAccessibility() }
-                            else Modifier
-                        AppNavHost(
-                            modifier = Modifier
-                                .blur(blur)
-                                .then(semanticsModifier),
-                            mainViewModel = mainViewModel,
-                            navHostController = navHostController
-                        )
-                        ProgressDialog(dataActionState) {
-                            mainViewModel.cancelDataAction()
-                        }
-                        if (showPassScreen) {
-                            NumberLockScreen(
-                                modifier = Modifier.background(
-                                    MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.25f)
-                                ),
-                                storedPassword = securityPaneState.password,
-                                isCreatingPassword = securityPaneState.isCreatingPass,
-                                onCreatingCanceled = {
-                                    mainViewModel.putPreferenceValue(
-                                        Constants.Preferences.IS_CREATING_PASSWORD,
-                                        false
-                                    )
-                                },
-                                onPassCreated = {
-                                    mainViewModel.putPreferenceValue(
-                                        Constants.Preferences.PASSWORD,
-                                        it
-                                    )
-                                    mainViewModel.putPreferenceValue(
-                                        Constants.Preferences.IS_CREATING_PASSWORD,
-                                        false
-                                    )
-                                    AppLockManager.unlock()
-                                },
-                                onAuthenticated = { AppLockManager.unlock() }
-                            )
-                        }
-                    }
-                }
+    val darkMode by remember(isSystemInDarkTheme) {
+        derivedStateOf {
+            when (stylePaneState.theme) {
+                AppTheme.SYSTEM -> isSystemInDarkTheme
+                AppTheme.DARK -> true
+                AppTheme.LIGHT -> false
             }
         }
+    }
 
-        if (!mainWindowVisible) {
-            Tray(
-                icon = painterResource(Res.drawable.icon),
-                tooltip = stringResource(Res.string.app_name),
-                onAction = { mainWindowVisible = true },
-                menu = {
-                    Menu(stringResource(Res.string.new)) {
-                        Item(
-                            text = stringResource(Res.string.plain_text),
-                            onClick = {
-                                mainWindowVisible = true
-                                navHostController.navigate(Screen.Note(noteType = NoteType.PLAIN_TEXT.ordinal))
-                            }
-                        )
-                        Item(
-                            text = stringResource(Res.string.markdown),
-                            onClick = {
-                                mainWindowVisible = true
-                                navHostController.navigate(Screen.Note(noteType = NoteType.MARKDOWN.ordinal))
-                            }
-                        )
-                        Item(
-                            text = stringResource(Res.string.todo_text),
-                            onClick = {
-                                mainWindowVisible = true
-                                navHostController.navigate(Screen.Note(noteType = NoteType.TODO.ordinal))
-                            }
-                        )
-                        Item(
-                            text = stringResource(Res.string.drawing),
-                            onClick = {
-                                mainWindowVisible = true
-                                navHostController.navigate(Screen.Note(noteType = NoteType.Drawing.ordinal))
-                            }
-                        )
+    val contextMenuRepresentation =
+        if (darkMode) DarkDefaultContextMenuRepresentation else LightDefaultContextMenuRepresentation
+    val topAppBarPadding by remember(state) {
+        derivedStateOf {
+            if (currentPlatformInfo.operatingSystem == OS.MACOS && state.placement != WindowPlacement.Fullscreen)
+                PaddingValues(start = 80.dp) else TopAppBarDefaults.ContentPadding
+        }
+    }
+
+    CompositionLocalProvider(
+        LocalContextMenuRepresentation provides contextMenuRepresentation,
+        LocalTopAppBarPadding provides topAppBarPadding
+    ) {
+        KoriTheme(
+            darkMode = darkMode,
+            color = stylePaneState.color,
+            amoledMode = stylePaneState.isAppInAmoledMode,
+            fontScale = stylePaneState.fontSize
+        ) {
+            Surface {
+                val showPassScreen by remember {
+                    derivedStateOf {
+                        (securityPaneState.password.isNotEmpty() && !isUnlocked) ||
+                                securityPaneState.isCreatingPass
                     }
-                    Separator()
-                    Menu(stringResource(Res.string.open)) {
-                        Item(
-                            text = stringResource(Res.string.folders),
-                            onClick = {
-                                mainWindowVisible = true
-                                navHostController.navigate(Screen.Folders)
-                            }
-                        )
-                        Item(
-                            text = stringResource(Res.string.settings),
-                            onClick = {
-                                mainWindowVisible = true
-                                navHostController.navigate(Screen.Settings)
-                            }
-                        )
-                    }
-                    Separator()
-                    Item(
-                        text = stringResource(Res.string.exit) + " " + stringResource(Res.string.app_name),
-                        onClick = { exitApplication() }
+                }
+                val blur by animateDpAsState(targetValue = if (showPassScreen) 16.dp else 0.dp)
+                val semanticsModifier =
+                    if (showPassScreen) Modifier.semantics(mergeDescendants = true) { hideFromAccessibility() }
+                    else Modifier
+                AppNavHost(
+                    modifier = Modifier
+                        .blur(blur)
+                        .then(semanticsModifier),
+                    mainViewModel = mainViewModel,
+                    navHostController = navHostController
+                )
+                ProgressDialog(dataActionState) {
+                    mainViewModel.cancelDataAction()
+                }
+                if (showPassScreen) {
+                    NumberLockScreen(
+                        modifier = Modifier.background(
+                            MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.25f)
+                        ),
+                        storedPassword = securityPaneState.password,
+                        isCreatingPassword = securityPaneState.isCreatingPass,
+                        onCreatingCanceled = {
+                            mainViewModel.putPreferenceValue(
+                                Constants.Preferences.IS_CREATING_PASSWORD,
+                                false
+                            )
+                        },
+                        onPassCreated = {
+                            mainViewModel.putPreferenceValue(
+                                Constants.Preferences.PASSWORD,
+                                it
+                            )
+                            mainViewModel.putPreferenceValue(
+                                Constants.Preferences.IS_CREATING_PASSWORD,
+                                false
+                            )
+                            AppLockManager.unlock()
+                        },
+                        onAuthenticated = { AppLockManager.unlock() }
                     )
                 }
-            )
+            }
         }
     }
 }
+
+@Composable
+fun ApplicationScope.ApplicationTray(
+    navigateToScreen: (Screen) -> Unit,
+    onAction: () -> Unit,
+    onExit: () -> Unit
+) = Tray(
+    icon = painterResource(Res.drawable.icon),
+    tooltip = stringResource(Res.string.app_name),
+    onAction = onAction,
+    menu = {
+        Menu(stringResource(Res.string.new)) {
+            Item(
+                text = stringResource(Res.string.plain_text),
+                onClick = {
+                    navigateToScreen(Screen.Note(noteType = NoteType.PLAIN_TEXT.ordinal))
+                }
+            )
+            Item(
+                text = stringResource(Res.string.markdown),
+                onClick = {
+                    navigateToScreen(Screen.Note(noteType = NoteType.MARKDOWN.ordinal))
+                }
+            )
+            Item(
+                text = stringResource(Res.string.todo_text),
+                onClick = {
+                    navigateToScreen(Screen.Note(noteType = NoteType.TODO.ordinal))
+                }
+            )
+            Item(
+                text = stringResource(Res.string.drawing),
+                onClick = {
+                    navigateToScreen(Screen.Note(noteType = NoteType.Drawing.ordinal))
+                }
+            )
+        }
+        Separator()
+        Menu(stringResource(Res.string.open)) {
+            Item(
+                text = stringResource(Res.string.folders),
+                onClick = { navigateToScreen(Screen.Folders) }
+            )
+            Item(
+                text = stringResource(Res.string.settings),
+                onClick = { navigateToScreen(Screen.Settings) }
+            )
+        }
+        Separator()
+        Item(
+            text = stringResource(Res.string.exit) + " " + stringResource(Res.string.app_name),
+            onClick = onExit
+        )
+    }
+)

@@ -124,9 +124,8 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
-import org.yangdai.kori.OS
-import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.domain.sort.NoteSortType
+import org.yangdai.kori.presentation.component.LocalTopAppBarPadding
 import org.yangdai.kori.presentation.component.PlatformStyleTopAppBarTitle
 import org.yangdai.kori.presentation.component.SingleRowTopAppBar
 import org.yangdai.kori.presentation.component.TooltipIconButton
@@ -243,6 +242,7 @@ fun MainScreenContent(
         )
     }
     val cardPaneState by viewModel.cardPaneState.collectAsStateWithLifecycle()
+    val topBarPadding = LocalTopAppBarPadding.current
 
     Scaffold(
         topBar = {
@@ -371,8 +371,7 @@ fun MainScreenContent(
                                 }
                             )
                         },
-                        contentPadding = if (currentPlatformInfo.operatingSystem == OS.MACOS && !isLargeScreen)
-                            PaddingValues(start = 80.dp) else TopAppBarDefaults.ContentPadding,
+                        contentPadding = if (!isLargeScreen) topBarPadding else TopAppBarDefaults.ContentPadding,
                         windowInsets = if (isLargeScreen)
                             TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Top + WindowInsetsSides.End)
                         else TopAppBarDefaults.windowInsets,
@@ -538,8 +537,7 @@ fun MainScreenContent(
                                 }
                             },
                             navigationIcon = navigationIcon,
-                            contentPadding = if (currentPlatformInfo.operatingSystem == OS.MACOS && !isLargeScreen)
-                                PaddingValues(start = 80.dp) else TopAppBarDefaults.ContentPadding,
+                            contentPadding = if (!isLargeScreen) topBarPadding else TopAppBarDefaults.ContentPadding,
                             windowInsets = if (isLargeScreen)
                                 TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Top + WindowInsetsSides.End)
                             else TopAppBarDefaults.windowInsets,
