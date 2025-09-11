@@ -18,6 +18,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -122,7 +123,6 @@ fun LazyStaggeredGridItemScope.NoteItem(
             if (noteItemProperties.cardSize != CardSize.TITLE_ONLY) {
                 val content = note.content.lineSequence().take(10).joinToString("\n")
                 val type = note.noteType
-                val textColor = MaterialTheme.colorScheme.onSurface
                 if (type == NoteType.Drawing) DrawingImage(note, noteItemProperties)
                 else BasicText(
                     text = when (type) {
@@ -131,8 +131,7 @@ fun LazyStaggeredGridItemScope.NoteItem(
                         NoteType.TODO -> buildTodoAnnotatedString(content)
                         else -> AnnotatedString("")
                     },
-                    color = { textColor },
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyMedium.copy(color = LocalContentColor.current),
                     maxLines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 8 else 3,
                     overflow = if (noteItemProperties.clipOverflow) TextOverflow.Clip else TextOverflow.Ellipsis
                 )
