@@ -1,6 +1,22 @@
 package org.yangdai.kori.presentation.component.main.card
 
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.Bullet
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.em
 import org.yangdai.kori.presentation.component.note.todo.TodoFormat
 
 fun buildTodoAnnotatedString(text: String) =
@@ -60,3 +76,68 @@ fun buildTodoAnnotatedString(text: String) =
             lineStart = lineEnd + 1 // +1 for '\n'
         }
     }
+
+private fun taskBullet(isDone: Boolean, color: Color) =
+    if (isDone)
+        Bullet(
+            CheckedBoxShape(),
+            0.7.em,
+            0.7.em,
+            0.25.em,
+            SolidColor(color),
+            drawStyle = Stroke(width = 3f, join = StrokeJoin.Round, cap = StrokeCap.Round)
+        )
+    else
+        Bullet(
+            UncheckedBoxShape(),
+            0.7.em,
+            0.7.em,
+            0.25.em,
+            SolidColor(color),
+            drawStyle = Stroke(width = 3f, join = StrokeJoin.Round, cap = StrokeCap.Round)
+        )
+
+/**
+ * A shape representing a checked box with a checkmark.
+ */
+private class CheckedBoxShape : Shape {
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density
+    ): Outline {
+        val cornerRadius = size.width * 0.2f
+        val path = Path().apply {
+            // Draw the outer box
+            addRoundRect(
+                RoundRect(
+                    Rect(0f, 0f, size.width, size.height),
+                    CornerRadius(cornerRadius)
+                )
+            ) // Draw the checkmark
+            moveTo(size.width * 0.25f, size.height * 0.5f)
+            lineTo(size.width * 0.45f, size.height * 0.7f)
+            lineTo(size.width * 0.75f, size.height * 0.3f)
+        }
+        return Outline.Generic(path)
+    }
+}
+
+/**
+ * A shape representing an unchecked box.
+ */
+private class UncheckedBoxShape : Shape {
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density
+    ): Outline {
+        val cornerRadius = size.width * 0.2f
+        return Outline.Rounded(
+            RoundRect(
+                Rect(0f, 0f, size.width, size.height),
+                CornerRadius(cornerRadius)
+            )
+        )
+    }
+}

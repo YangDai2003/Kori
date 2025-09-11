@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -27,6 +28,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.OS
 import org.yangdai.kori.currentPlatformInfo
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TitleTextField(
     state: TextFieldState,
@@ -59,7 +61,7 @@ fun TitleTextField(
     },
     state = state,
     lineLimits = TextFieldLineLimits.SingleLine,
-    textStyle = MaterialTheme.typography.titleLarge.copy(
+    textStyle = MaterialTheme.typography.headlineSmallEmphasized.copy(
         color = MaterialTheme.colorScheme.onSurface
     ),
     readOnly = readOnly,
@@ -77,10 +79,8 @@ fun TitleTextField(
             placeholder = {
                 Text(
                     text = stringResource(Res.string.title),
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                            alpha = 0.6f
-                        )
+                    style = MaterialTheme.typography.headlineSmallEmphasized.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                     )
                 )
             },

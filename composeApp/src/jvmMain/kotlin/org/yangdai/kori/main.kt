@@ -124,8 +124,6 @@ fun ApplicationWindow(
     LaunchedEffect(window) {
         if (currentPlatformInfo.operatingSystem == OS.MACOS)
             window.findSkiaLayer()?.disableTitleBar(56.dp.value)
-        else if (currentPlatformInfo.operatingSystem == OS.WINDOWS)
-            window.findSkiaLayer()?.transparency = true
         window.minimumSize = Dimension(400, 600)
     }
     val mainViewModel: MainViewModel = koinViewModel<MainViewModel>()
