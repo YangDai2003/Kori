@@ -2,26 +2,28 @@
 agp = "8.13.0"
 androidx-activityCompose = "1.11.0"
 androidx-appcompat = "1.7.1"
+androidx-biometric = "1.4.0-alpha04"
+androidx-documentfile = "1.1.0"
+androidx-browser = "1.9.0"
+androidx-glance = "1.2.0-beta01"
+androidx-webkit = "1.14.0"
+
 androidx-lifecycle = "2.9.3"
 androidx-navigation = "2.9.0-rc01"
 coilCompose = "3.3.0"
 compose-multiplatform = "1.9.0-rc01"
 compose-adaptive = "1.2.0-alpha06"
 koogAgents = "0.4.1"
-kotlin = "2.2.10"
+koin = "4.1.1"
+composeHotReload = "1.0.0-beta06"
+
+kotlin = "2.2.20"
+ksp = "2.2.20-2.0.2"
 kotlinx-coroutines = "1.10.2"
+kotlinxSerializationJson = "1.9.0"
 room = "2.8.0"
 sqlite = "2.6.0"
 dataStore = "1.1.7"
-ksp = "2.2.10-2.0.2"
-kotlinxSerializationJson = "1.9.0"
-koin = "4.1.1"
-androidx-biometric = "1.4.0-alpha04"
-androidx-documentfile = "1.1.0"
-androidx-browser = "1.9.0"
-androidx-glance = "1.2.0-beta01"
-composeHotReload = "1.0.0-beta06"
-webkit = "1.14.0"
 
 [libraries]
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
@@ -56,7 +58,7 @@ androidx-activity-compose = { group = "androidx.activity", name = "activity-comp
 androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "androidx-biometric" }
 androidx-documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "androidx-documentfile" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "androidx-browser" }
-androidx-webkit = { module = "androidx.webkit:webkit", version.ref = "webkit" }
+androidx-webkit = { module = "androidx.webkit:webkit", version.ref = "androidx-webkit" }
 androidx-glance = { group = "androidx.glance", name = "glance", version.ref = "androidx-glance" }
 androidx-glance-appwidget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "androidx-glance" }
 
