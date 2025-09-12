@@ -31,15 +31,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
-import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
+import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldPaneScope
+import androidx.compose.material3.adaptive.navigation.ThreePaneScaffoldNavigator
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -48,7 +48,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.backhandler.PredictiveBackHandler
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -123,14 +122,6 @@ fun SettingsScreen(mainViewModel: MainViewModel, navigateUp: () -> Unit) {
         }
     }
 
-    key(navigator) {
-        BackHandler(enabled = navigator.canNavigateBack()) {
-            coroutineScope.launch {
-                navigator.navigateBack()
-            }
-        }
-    }
-
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -174,11 +165,10 @@ fun SettingsScreen(mainViewModel: MainViewModel, navigateUp: () -> Unit) {
                 )
             ) {
                 Box(contentAlignment = Alignment.TopCenter) {
-                    ListDetailPaneScaffold(
+                    SettingsListDetailScaffold(
                         modifier = Modifier.fillMaxSize()
                             .background(MaterialTheme.colorScheme.surfaceContainerLow),
-                        directive = navigator.scaffoldDirective,
-                        value = navigator.scaffoldValue,
+                        navigator = navigator,
                         listPane = {
                             AnimatedPane(Modifier.preferredWidth(320.dp)) {
                                 SettingsListPane(selectedItem) { itemId ->
@@ -287,3 +277,13 @@ fun SettingsScreen(mainViewModel: MainViewModel, navigateUp: () -> Unit) {
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@Composable
+expect fun SettingsListDetailScaffold(
+    modifier: Modifier = Modifier.fillMaxSize()
+        .background(MaterialTheme.colorScheme.surfaceContainerLow),
+    navigator: ThreePaneScaffoldNavigator<Int>,
+    listPane: @Composable ThreePaneScaffoldPaneScope.() -> Unit,
+    detailPane: @Composable ThreePaneScaffoldPaneScope.() -> Unit
+)
