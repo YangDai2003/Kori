@@ -16,26 +16,26 @@ class MarkdownTransformation : OutputTransformation {
     override fun TextFieldBuffer.transformOutput() {
         // 步骤 1: 优先处理代码块，因为代码块内的 Markdown 语法不应被高亮。
         val codeBlockRanges = findAndApplyCodeBlockStyles()
-        val isInCodeBlock = { position: Int -> codeBlockRanges.any { position in it } }
+        val mathBlockRanges = findAndApplyMathBlockStyles()
+        val isInBlock = { position: Int ->
+            codeBlockRanges.any { it.contains(position) }
+                    || mathBlockRanges.any { it.contains(position) }
+        }
 
         // 步骤 2: 应用其他样式，并传入 isInCodeBlock 检查。
-        applyLinkStyles(isInCodeBlock)
-        applyHeadingStyles(isInCodeBlock)
-        applyGithubAlertStyles(isInCodeBlock)
-        applyInlineCodeStyles(isInCodeBlock)
-        applyHtmlTagStyles(isInCodeBlock)
-        applyAllListStyles(isInCodeBlock)
-        applyTableStyles(isInCodeBlock)
-        applyInlineMathStyles(isInCodeBlock)
-        findAndApplyMathBlockStyles()
-        applyBoldStyles(isInCodeBlock)
-        applyItalicStyles(isInCodeBlock)
-        applyStrikethroughStyles(isInCodeBlock)
+        applyLinkStyles(isInBlock)
+        applyHeadingStyles(isInBlock)
+        applyGithubAlertStyles(isInBlock)
+        applyInlineCodeStyles(isInBlock)
+        applyHtmlTagStyles(isInBlock)
+        applyAllListStyles(isInBlock)
+        applyTableStyles(isInBlock)
+        applyInlineMathStyles(isInBlock)
+        applyBoldStyles(isInBlock)
+        applyItalicStyles(isInBlock)
+        applyStrikethroughStyles(isInBlock)
     }
 
-    /**
-     * 查找并高亮代码块，同时返回所有代码块的范围列表。
-     */
     private fun TextFieldBuffer.findAndApplyCodeBlockStyles(): List<IntRange> {
         val ranges = mutableListOf<IntRange>()
         MarkdownFormat.codeBlockRegex.findAll(originalText).forEach { match ->
@@ -67,9 +67,42 @@ class MarkdownTransformation : OutputTransformation {
         return ranges
     }
 
-    private fun TextFieldBuffer.applyLinkStyles(isInCodeBlock: (Int) -> Boolean) {
+    private fun TextFieldBuffer.findAndApplyMathBlockStyles(): List<IntRange> {
+        val ranges = mutableListOf<IntRange>()
+        MarkdownFormat.mathBlockRegex.findAll(originalText).forEach { match ->
+            ranges.add(match.range)
+            // 高亮首尾的 '$$' 标记
+            val openingMarkerEnd = match.range.first + 2
+            val closingMarkerStart = match.range.last - 1
+            addStyle(MarkdownFormat.marker, match.range.first, openingMarkerEnd)
+            addStyle(MarkdownFormat.marker, closingMarkerStart, match.range.last + 1)
+
+            // 提取公式内容
+            val contentGroup = match.groups[1] ?: return@forEach
+
+            // 内容的起始位置就是整个匹配的起始位置 + 开头标记"$$"的长度(2)
+            val contentOffset = match.range.first + 2
+            MarkdownFormat.latexRegex.findAll(contentGroup.value).forEach { latexMatch ->
+                val style = when {
+                    latexMatch.groups[1] != null -> MarkdownFormat.latexCommand
+                    latexMatch.groups[2] != null -> MarkdownFormat.latexNumber
+                    latexMatch.groups[3] != null -> MarkdownFormat.brackets
+                    latexMatch.groups[4] != null -> MarkdownFormat.latexOperator
+                    else -> return@forEach
+                }
+
+                // 计算高亮范围在原始文本中的绝对位置
+                val start = contentOffset + latexMatch.range.first
+                val end = contentOffset + latexMatch.range.last + 1
+                addStyle(style, start, end)
+            }
+        }
+        return ranges
+    }
+
+    private fun TextFieldBuffer.applyLinkStyles(isInBlock: (Int) -> Boolean) {
         MarkdownFormat.linkRegex.findAll(originalText).forEach { match ->
-            if (isInCodeBlock(match.range.first)) return@forEach
+            if (isInBlock(match.range.first)) return@forEach
 
             val text = match.groupValues[1]
             // 高亮 [text] 部分
@@ -87,9 +120,9 @@ class MarkdownTransformation : OutputTransformation {
         }
     }
 
-    private fun TextFieldBuffer.applyAllListStyles(isInCodeBlock: (Int) -> Boolean) {
+    private fun TextFieldBuffer.applyAllListStyles(isInBlock: (Int) -> Boolean) {
         MarkdownFormat.combinedListRegex.findAll(originalText).forEach { match ->
-            if (isInCodeBlock(match.range.first)) return@forEach
+            if (isInBlock(match.range.first)) return@forEach
 
             // groups[0] 是整个匹配项
             val leadingSpaceGroup = match.groups[1]!!  // 前导空格
@@ -111,9 +144,9 @@ class MarkdownTransformation : OutputTransformation {
         }
     }
 
-    private fun TextFieldBuffer.applyHeadingStyles(isInCodeBlock: (Int) -> Boolean) {
+    private fun TextFieldBuffer.applyHeadingStyles(isInBlock: (Int) -> Boolean) {
         MarkdownFormat.headingRegex.findAll(originalText).forEach { match ->
-            if (isInCodeBlock(match.range.first)) return@forEach
+            if (isInBlock(match.range.first)) return@forEach
 
             val hashes = match.groupValues[1]
             val level = hashes.length // 标题级别 (1-6)
@@ -131,9 +164,9 @@ class MarkdownTransformation : OutputTransformation {
         }
     }
 
-    private fun TextFieldBuffer.applyGithubAlertStyles(isInCodeBlock: (Int) -> Boolean) {
+    private fun TextFieldBuffer.applyGithubAlertStyles(isInBlock: (Int) -> Boolean) {
         MarkdownFormat.githubAlertRegex.findAll(originalText).forEach { match ->
-            if (isInCodeBlock(match.range.first)) return@forEach
+            if (isInBlock(match.range.first)) return@forEach
 
             val alertType = match.groupValues[2]
             val style = when (alertType) {
@@ -149,19 +182,19 @@ class MarkdownTransformation : OutputTransformation {
         }
     }
 
-    private fun TextFieldBuffer.applyInlineCodeStyles(isInCodeBlock: (Int) -> Boolean) {
+    private fun TextFieldBuffer.applyInlineCodeStyles(isInBlock: (Int) -> Boolean) {
         MarkdownFormat.inlineCodeRegex.findAll(originalText).forEach { match ->
-            if (isInCodeBlock(match.range.first)) return@forEach
+            if (isInBlock(match.range.first)) return@forEach
             addStyle(MarkdownFormat.inlineCodeStyle, match.range.first, match.range.last + 1)
         }
     }
 
-    private fun TextFieldBuffer.applyHtmlTagStyles(isInCodeBlock: (Int) -> Boolean) {
+    private fun TextFieldBuffer.applyHtmlTagStyles(isInBlock: (Int) -> Boolean) {
         // 正则表达式，用于在属性字符串中查找所有双引号包裹的内容
         val quotedContentRegex = Regex("\"[^\"]*\"")
 
         MarkdownFormat.htmlTagRegex.findAll(originalText).forEach { match ->
-            if (isInCodeBlock(match.range.first)) return@forEach
+            if (isInBlock(match.range.first)) return@forEach
 
             // 安全地提取捕获组
             val isClosingTag = match.groups[1] != null    // 组1: "/"
@@ -199,9 +232,9 @@ class MarkdownTransformation : OutputTransformation {
         }
     }
 
-    private fun TextFieldBuffer.applyTableStyles(isInCodeBlock: (Int) -> Boolean) {
+    private fun TextFieldBuffer.applyTableStyles(isInBlock: (Int) -> Boolean) {
         MarkdownFormat.tableRegex.findAll(originalText).forEach { tableMatch ->
-            if (isInCodeBlock(tableMatch.range.first)) return@forEach
+            if (isInBlock(tableMatch.range.first)) return@forEach
 
             addStyle(MarkdownFormat.monoContent, tableMatch.range.first, tableMatch.range.last + 1)
 
@@ -219,9 +252,9 @@ class MarkdownTransformation : OutputTransformation {
         }
     }
 
-    private fun TextFieldBuffer.applyInlineMathStyles(isInCodeBlock: (Int) -> Boolean) {
+    private fun TextFieldBuffer.applyInlineMathStyles(isInBlock: (Int) -> Boolean) {
         MarkdownFormat.inlineMathRegex.findAll(originalText).forEach { match ->
-            if (isInCodeBlock(match.range.first)) return@forEach
+            if (isInBlock(match.range.first)) return@forEach
             // 高亮开头的 '$', 高亮结尾的 '$'
             addStyle(MarkdownFormat.marker, match.range.first, match.range.first + 1)
             addStyle(MarkdownFormat.marker, match.range.last, match.range.last + 1)
@@ -249,42 +282,9 @@ class MarkdownTransformation : OutputTransformation {
         }
     }
 
-    private fun TextFieldBuffer.findAndApplyMathBlockStyles(): List<IntRange> {
-        val ranges = mutableListOf<IntRange>()
-        MarkdownFormat.mathBlockRegex.findAll(originalText).forEach { match ->
-            ranges.add(match.range)
-            // 高亮首尾的 '$$' 标记
-            val openingMarkerEnd = match.range.first + 2
-            val closingMarkerStart = match.range.last - 1
-            addStyle(MarkdownFormat.marker, match.range.first, openingMarkerEnd)
-            addStyle(MarkdownFormat.marker, closingMarkerStart, match.range.last + 1)
-
-            // 提取公式内容
-            val contentGroup = match.groups[1] ?: return@forEach
-
-            // 内容的起始位置就是整个匹配的起始位置 + 开头标记"$$"的长度(2)
-            val contentOffset = match.range.first + 2
-            MarkdownFormat.latexRegex.findAll(contentGroup.value).forEach { latexMatch ->
-                val style = when {
-                    latexMatch.groups[1] != null -> MarkdownFormat.latexCommand
-                    latexMatch.groups[2] != null -> MarkdownFormat.latexNumber
-                    latexMatch.groups[3] != null -> MarkdownFormat.brackets
-                    latexMatch.groups[4] != null -> MarkdownFormat.latexOperator
-                    else -> return@forEach
-                }
-
-                // 计算高亮范围在原始文本中的绝对位置
-                val start = contentOffset + latexMatch.range.first
-                val end = contentOffset + latexMatch.range.last + 1
-                addStyle(style, start, end)
-            }
-        }
-        return ranges
-    }
-
-    private fun TextFieldBuffer.applyBoldStyles(isInCodeBlock: (Int) -> Boolean) {
+    private fun TextFieldBuffer.applyBoldStyles(isInBlock: (Int) -> Boolean) {
         MarkdownFormat.boldRegex.findAll(originalText).forEach { match ->
-            if (isInCodeBlock(match.range.first)) return@forEach
+            if (isInBlock(match.range.first)) return@forEach
 
             val marker = match.groupValues[1]
             val markerSize = marker.length
@@ -302,10 +302,10 @@ class MarkdownTransformation : OutputTransformation {
         }
     }
 
-    private fun TextFieldBuffer.applyItalicStyles(isInCodeBlock: (Int) -> Boolean) {
+    private fun TextFieldBuffer.applyItalicStyles(isInBlock: (Int) -> Boolean) {
         // 注意：这个正则表达式会匹配 *...* 和 _..._ 但会避免匹配 **...** 和 __...__ 的一部分
         MarkdownFormat.italicRegex.findAll(originalText).forEach { match ->
-            if (isInCodeBlock(match.range.first)) return@forEach
+            if (isInBlock(match.range.first)) return@forEach
 
             val marker = match.groupValues[1]
             val markerSize = marker.length
@@ -323,9 +323,9 @@ class MarkdownTransformation : OutputTransformation {
         }
     }
 
-    private fun TextFieldBuffer.applyStrikethroughStyles(isInCodeBlock: (Int) -> Boolean) {
+    private fun TextFieldBuffer.applyStrikethroughStyles(isInBlock: (Int) -> Boolean) {
         MarkdownFormat.strikethroughRegex.findAll(originalText).forEach { match ->
-            if (isInCodeBlock(match.range.first)) return@forEach
+            if (isInBlock(match.range.first)) return@forEach
 
             val markerSize = 2 // "~~" 的长度
 
@@ -376,9 +376,9 @@ object MarkdownFormat {
     val brackets = SpanStyle(color = Color(0xFF808080))  // 括号样式
     val htmlQuotedValue = SpanStyle(color = Color(0xFF8ABB6C)) // (例如: "yyy")
 
-    val latexCommand = SpanStyle(color = Color(0xFF693382))  // LaTeX 命令样式 (例如: \frac, \alpha)
-    val latexNumber = SpanStyle(color = Color(0xFF336D82))   // LaTeX 数字样式 (例如: 2, 3.14)
-    val latexOperator = SpanStyle(color = Color(0xFF5F99AE))  // LaTeX 运算符样式 (例如: +, -, ^, _, =)
+    val latexCommand = SpanStyle(color = Color(0xFF512DA8))  // LaTeX 命令样式 (例如: \frac, \alpha)
+    val latexNumber = SpanStyle(color = Color(0xFF00796B))   // LaTeX 数字样式 (例如: 2, 3.14)
+    val latexOperator = SpanStyle(color = Color(0xFF039BE5))  // LaTeX 运算符样式 (例如: +, -, ^, _, =)
 
     // 支持语言名包含符号（如c#, c++, .net, C--等）
     val codeBlockRegex = Regex("""```([^\s\n`]*)?\n([\s\S]*?)\n```""")
