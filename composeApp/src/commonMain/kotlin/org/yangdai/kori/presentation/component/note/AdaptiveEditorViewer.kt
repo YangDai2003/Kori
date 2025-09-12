@@ -48,16 +48,16 @@ fun ColumnScope.AdaptiveEditorViewer(
 ) = if (viewer == null) {
     editor(Modifier.fillMaxWidth().weight(1f))
 } else {
-    if (isLargeScreen) {
+    if (isLargeScreen)
         Row(
             modifier = Modifier.fillMaxWidth().weight(1f),
             verticalAlignment = Alignment.CenterVertically
         ) {
             val interactionSource = remember { MutableInteractionSource() }
             var editorWeight by remember { mutableFloatStateOf(0.5f) }
-            val windowWidth = LocalWindowInfo.current.containerSize.width
+            val containerWidth = LocalWindowInfo.current.containerSize.width
 
-            editor(Modifier.fillMaxHeight().weight(editorWeight))
+            if (editorWeight > 0.1f) editor(Modifier.fillMaxHeight().weight(editorWeight))
 
             VerticalDragHandle(
                 modifier = Modifier
@@ -65,26 +65,21 @@ fun ColumnScope.AdaptiveEditorViewer(
                     .draggable(
                         interactionSource = interactionSource,
                         state = rememberDraggableState { delta ->
-                            editorWeight =
-                                (editorWeight + delta / windowWidth)
-                                    .coerceIn(0.15f, 0.85f)
+                            editorWeight = (editorWeight + delta / containerWidth)
                         },
                         orientation = Orientation.Horizontal,
                         onDragStopped = {
-                            val positions = listOf(0.2f, 1f / 3f, 0.5f, 2f / 3f, 0.8f)
-                            val closest =
-                                positions.minByOrNull { abs(it - editorWeight) }
-                            if (closest != null) {
-                                editorWeight = closest
-                            }
+                            val anchorPoints = listOf(0f, 0.2f, 1f / 3f, 0.5f, 2f / 3f, 0.8f, 1f)
+                            val closestAnchor = anchorPoints.minBy { abs(it - editorWeight) }
+                            editorWeight = closestAnchor
                         }
                     ),
                 interactionSource = interactionSource
             )
 
-            viewer(Modifier.fillMaxHeight().weight(1f - editorWeight))
+            if (editorWeight < 0.9f) viewer(Modifier.fillMaxHeight().weight(1f - editorWeight))
         }
-    } else {
+    else
         HorizontalPager(
             modifier = Modifier.fillMaxWidth().weight(1f),
             state = pagerState,
@@ -96,7 +91,6 @@ fun ColumnScope.AdaptiveEditorViewer(
                 1 -> viewer(Modifier.fillMaxSize())
             }
         }
-    }
 }
 
 /**
