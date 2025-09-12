@@ -23,7 +23,6 @@ import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
@@ -53,10 +52,7 @@ fun TooltipIconButton(
                     append(hint)
                 }
                 if (hint.isNotEmpty() && actionText.isNotEmpty()) append("\n")
-                if (actionText.isNotEmpty())
-                    withStyle(SpanStyle(fontFamily = FontFamily.Monospace)) {
-                        append("${stringResource(Res.string.control)} + $actionText")
-                    }
+                if (actionText.isNotEmpty()) append("${stringResource(Res.string.control)} + $actionText")
             }
             Text(annotatedString, textAlign = TextAlign.Center)
         }
@@ -95,10 +91,7 @@ fun TooltipIconButton(
                     append(hint)
                 }
                 if (hint.isNotEmpty() && actionText.isNotEmpty()) append("\n")
-                if (actionText.isNotEmpty())
-                    withStyle(SpanStyle(fontFamily = FontFamily.Monospace)) {
-                        append("${stringResource(Res.string.control)} + $actionText")
-                    }
+                if (actionText.isNotEmpty()) append("${stringResource(Res.string.control)} + $actionText")
             }
             Text(annotatedString, textAlign = TextAlign.Center)
         }

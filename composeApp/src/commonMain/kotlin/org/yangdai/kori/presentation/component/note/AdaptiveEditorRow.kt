@@ -38,7 +38,6 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
@@ -120,10 +119,7 @@ class EditorRowScopeImpl(val showElevation: Boolean) : EditorRowScope {
                         append(hint)
                     }
                     if (hint.isNotEmpty() && actionText.isNotEmpty()) append("\n")
-                    if (actionText.isNotEmpty())
-                        withStyle(SpanStyle(fontFamily = FontFamily.Monospace)) {
-                            append("$platformKeyboardShortCut + $actionText")
-                        }
+                    if (actionText.isNotEmpty()) append("$platformKeyboardShortCut + $actionText")
                 }
                 Text(annotatedString, textAlign = TextAlign.Center)
             }
@@ -166,10 +162,7 @@ class EditorRowScopeImpl(val showElevation: Boolean) : EditorRowScope {
                         append(hint)
                     }
                     if (hint.isNotEmpty() && actionText.isNotEmpty()) append("\n")
-                    if (actionText.isNotEmpty())
-                        withStyle(SpanStyle(fontFamily = FontFamily.Monospace)) {
-                            append("$platformKeyboardShortCut + $actionText")
-                        }
+                    if (actionText.isNotEmpty()) append("$platformKeyboardShortCut + $actionText")
                 }
                 Text(annotatedString, textAlign = TextAlign.Center)
             }
