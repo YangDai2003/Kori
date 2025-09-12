@@ -73,10 +73,10 @@ import org.yangdai.kori.presentation.component.dialog.ShareDialog
 import org.yangdai.kori.presentation.component.dialog.TemplatesBottomSheet
 import org.yangdai.kori.presentation.component.note.AIAssist
 import org.yangdai.kori.presentation.component.note.AdaptiveEditor
-import org.yangdai.kori.presentation.component.note.AdaptiveEditorRow
+import org.yangdai.kori.presentation.component.note.AdaptiveActionRow
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorViewer
 import org.yangdai.kori.presentation.component.note.AdaptiveViewer
-import org.yangdai.kori.presentation.component.note.EditorRowAction
+import org.yangdai.kori.presentation.component.note.Action
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
@@ -251,7 +251,7 @@ fun FileScreen(
                     } else null
                 )
             }
-            AdaptiveEditorRow(
+            AdaptiveActionRow(
                 visible = !isReadView && !isSearching,
                 type = editingState.fileType,
                 scrollState = scrollState,
@@ -262,10 +262,10 @@ fun FileScreen(
                 textFieldState = viewModel.contentState
             ) { action ->
                 when (action) {
-                    EditorRowAction.Templates -> showTemplatesBottomSheet = true
-                    EditorRowAction.Images -> showImagesPicker = true
-                    EditorRowAction.Videos -> showVideoPicker = true
-                    EditorRowAction.Audio -> showAudioPicker = true
+                    Action.Templates -> showTemplatesBottomSheet = true
+                    Action.Images -> showImagesPicker = true
+                    Action.Video -> showVideoPicker = true
+                    Action.Audio -> showAudioPicker = true
                 }
             }
         }

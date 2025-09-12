@@ -52,12 +52,12 @@ import org.yangdai.kori.presentation.component.note.markdown.MarkdownEditorRow
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditorRow
 import org.yangdai.kori.presentation.component.note.todo.TodoTextEditorRow
 
-interface EditorRowScope {
+interface ActionRowScope {
     @Composable
-    fun EditorRowSection(content: @Composable RowScope.() -> Unit)
+    fun ActionRowSection(content: @Composable RowScope.() -> Unit)
 
     @Composable
-    fun EditorRowButton(
+    fun ActionButton(
         icon: ImageVector,
         hint: String = "",
         actionText: String = "",
@@ -66,7 +66,7 @@ interface EditorRowScope {
     )
 
     @Composable
-    fun EditorRowButton(
+    fun ActionButton(
         icon: Painter,
         hint: String = "",
         actionText: String = "",
@@ -75,9 +75,9 @@ interface EditorRowScope {
     )
 }
 
-class EditorRowScopeImpl(val showElevation: Boolean) : EditorRowScope {
+class ActionRowScopeImpl(val showElevation: Boolean) : ActionRowScope {
     @Composable
-    override fun EditorRowSection(content: @Composable RowScope.() -> Unit) {
+    override fun ActionRowSection(content: @Composable RowScope.() -> Unit) {
         val color by animateColorAsState(
             targetValue = if (showElevation) MaterialTheme.colorScheme.surface
             else MaterialTheme.colorScheme.surfaceContainerLow,
@@ -99,7 +99,7 @@ class EditorRowScopeImpl(val showElevation: Boolean) : EditorRowScope {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    override fun EditorRowButton(
+    override fun ActionButton(
         icon: ImageVector,
         hint: String,
         actionText: String,
@@ -142,7 +142,7 @@ class EditorRowScopeImpl(val showElevation: Boolean) : EditorRowScope {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    override fun EditorRowButton(
+    override fun ActionButton(
         icon: Painter,
         hint: String,
         actionText: String,
@@ -196,14 +196,14 @@ class EditorRowScopeImpl(val showElevation: Boolean) : EditorRowScope {
  * @param onEditorRowAction A callback function triggered by editor row actions.
  */
 @Composable
-fun AdaptiveEditorRow(
+fun AdaptiveActionRow(
     visible: Boolean,
     type: NoteType,
     scrollState: ScrollState,
     textFieldState: TextFieldState,
     paddingValues: PaddingValues,
     isTemplate: Boolean = false,
-    onEditorRowAction: (EditorRowAction) -> Unit = { _ -> }
+    onEditorRowAction: (Action) -> Unit = { _ -> }
 ) {
     val showElevation by remember(visible) {
         derivedStateOf {
@@ -216,7 +216,7 @@ fun AdaptiveEditorRow(
         label = "EditorRowColorAnimation"
     )
 
-    val scope = remember(showElevation) { EditorRowScopeImpl(showElevation) }
+    val scope = remember(showElevation) { ActionRowScopeImpl(showElevation) }
 
     Surface(modifier = Modifier.fillMaxWidth(), color = color) {
         Column(Modifier.padding(paddingValues)) {
@@ -242,9 +242,9 @@ fun AdaptiveEditorRow(
     }
 }
 
-sealed class EditorRowAction {
-    object Images : EditorRowAction()
-    object Videos : EditorRowAction()
-    object Audio : EditorRowAction()
-    object Templates : EditorRowAction()
+sealed class Action {
+    object Images : Action()
+    object Video : Action()
+    object Audio : Action()
+    object Templates : Action()
 }

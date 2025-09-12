@@ -32,18 +32,18 @@ import kori.composeapp.generated.resources.templates
 import kori.composeapp.generated.resources.undo
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.yangdai.kori.presentation.component.note.EditorRowAction
-import org.yangdai.kori.presentation.component.note.EditorRowScope
+import org.yangdai.kori.presentation.component.note.Action
+import org.yangdai.kori.presentation.component.note.ActionRowScope
 import org.yangdai.kori.presentation.component.note.addBeforeWithWhiteSpace
 import org.yangdai.kori.presentation.component.note.parentheses
 import org.yangdai.kori.presentation.component.note.toggleLineStart
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun EditorRowScope.TodoTextEditorRow(
+fun ActionRowScope.TodoTextEditorRow(
     isTemplate: Boolean,
     textFieldState: TextFieldState,
-    onEditorRowAction: (EditorRowAction) -> Unit
+    onRowAction: (Action) -> Unit
 ) = Row(
     modifier = Modifier.fillMaxWidth().height(48.dp).horizontalScroll(rememberScrollState()),
     verticalAlignment = Alignment.CenterVertically,
@@ -52,15 +52,15 @@ fun EditorRowScope.TodoTextEditorRow(
 
     Spacer(Modifier.width(4.dp))
 
-    EditorRowSection {
-        EditorRowButton(
+    ActionRowSection {
+        ActionButton(
             hint = stringResource(Res.string.undo),
             actionText = "Z",
             icon = Icons.AutoMirrored.Outlined.Undo,
             enabled = textFieldState.undoState.canUndo,
             onClick = { textFieldState.undoState.undo() }
         )
-        EditorRowButton(
+        ActionButton(
             hint = stringResource(Res.string.redo),
             actionText = "Y",
             icon = Icons.AutoMirrored.Outlined.Redo,
@@ -69,23 +69,23 @@ fun EditorRowScope.TodoTextEditorRow(
         )
     }
 
-    EditorRowSection {
-        EditorRowButton(
+    ActionRowSection {
+        ActionButton(
             hint = stringResource(Res.string.priority_mark),
             icon = painterResource(Res.drawable.parentheses),
             onClick = { textFieldState.edit { parentheses() } }
         )
-        EditorRowButton(
+        ActionButton(
             hint = stringResource(Res.string.project_tag),
             icon = Icons.Outlined.Add,
             onClick = { textFieldState.edit { addBeforeWithWhiteSpace("+") } }
         )
-        EditorRowButton(
+        ActionButton(
             hint = stringResource(Res.string.context_tag),
             icon = Icons.Outlined.AlternateEmail,
             onClick = { textFieldState.edit { addBeforeWithWhiteSpace("@") } }
         )
-        EditorRowButton(
+        ActionButton(
             hint = stringResource(Res.string.completion_mark),
             icon = Icons.Outlined.CheckBox,
             onClick = { textFieldState.edit { toggleLineStart("x ") } }
@@ -93,11 +93,11 @@ fun EditorRowScope.TodoTextEditorRow(
     }
 
     if (!isTemplate)
-        EditorRowSection {
-            EditorRowButton(
+        ActionRowSection {
+            ActionButton(
                 hint = stringResource(Res.string.templates),
                 icon = Icons.AutoMirrored.Outlined.TextSnippet,
-                onClick = { onEditorRowAction(EditorRowAction.Templates) }
+                onClick = { onRowAction(Action.Templates) }
             )
         }
 

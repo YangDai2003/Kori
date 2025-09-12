@@ -83,8 +83,8 @@ import kori.composeapp.generated.resources.undo
 import kori.composeapp.generated.resources.video_library_24px
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.yangdai.kori.presentation.component.note.EditorRowAction
-import org.yangdai.kori.presentation.component.note.EditorRowScope
+import org.yangdai.kori.presentation.component.note.Action
+import org.yangdai.kori.presentation.component.note.ActionRowScope
 import org.yangdai.kori.presentation.component.note.addAfter
 import org.yangdai.kori.presentation.component.note.alert
 import org.yangdai.kori.presentation.component.note.bold
@@ -110,10 +110,10 @@ import org.yangdai.kori.presentation.component.note.underline
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun EditorRowScope.MarkdownEditorRow(
+fun ActionRowScope.MarkdownEditorRow(
     isTemplate: Boolean,
     textFieldState: TextFieldState,
-    onEditorRowAction: (EditorRowAction) -> Unit
+    onRowAction: (Action) -> Unit
 ) = Row(
     modifier = Modifier.fillMaxWidth().height(48.dp).horizontalScroll(rememberScrollState()),
     verticalAlignment = Alignment.CenterVertically,
@@ -122,15 +122,15 @@ fun EditorRowScope.MarkdownEditorRow(
 
     Spacer(Modifier.width(4.dp))
 
-    EditorRowSection {
-        EditorRowButton(
+    ActionRowSection {
+        ActionButton(
             hint = stringResource(Res.string.undo),
             actionText = "Z",
             icon = Icons.AutoMirrored.Outlined.Undo,
             enabled = textFieldState.undoState.canUndo,
             onClick = { textFieldState.undoState.undo() }
         )
-        EditorRowButton(
+        ActionButton(
             hint = stringResource(Res.string.redo),
             actionText = "Y",
             icon = Icons.AutoMirrored.Outlined.Redo,
@@ -140,8 +140,8 @@ fun EditorRowScope.MarkdownEditorRow(
     }
 
     var isHeadingSectionExpanded by rememberSaveable { mutableStateOf(false) }
-    EditorRowSection {
-        EditorRowButton(
+    ActionRowSection {
+        ActionButton(
             hint = stringResource(Res.string.heading),
             icon = Icons.Outlined.Title,
             onClick = { isHeadingSectionExpanded = !isHeadingSectionExpanded }
@@ -149,33 +149,33 @@ fun EditorRowScope.MarkdownEditorRow(
     }
 
     AnimatedVisibility(visible = isHeadingSectionExpanded) {
-        EditorRowSection {
-            EditorRowButton(
+        ActionRowSection {
+            ActionButton(
                 actionText = "1",
                 icon = painterResource(Res.drawable.format_h1),
                 onClick = { textFieldState.edit { header(1) } }
             )
-            EditorRowButton(
+            ActionButton(
                 actionText = "2",
                 icon = painterResource(Res.drawable.format_h2),
                 onClick = { textFieldState.edit { header(2) } }
             )
-            EditorRowButton(
+            ActionButton(
                 actionText = "3",
                 icon = painterResource(Res.drawable.format_h3),
                 onClick = { textFieldState.edit { header(3) } }
             )
-            EditorRowButton(
+            ActionButton(
                 actionText = "4",
                 icon = painterResource(Res.drawable.format_h4),
                 onClick = { textFieldState.edit { header(4) } }
             )
-            EditorRowButton(
+            ActionButton(
                 actionText = "5",
                 icon = painterResource(Res.drawable.format_h5),
                 onClick = { textFieldState.edit { header(5) } }
             )
-            EditorRowButton(
+            ActionButton(
                 actionText = "6",
                 icon = painterResource(Res.drawable.format_h6),
                 onClick = { textFieldState.edit { header(6) } }
@@ -183,32 +183,32 @@ fun EditorRowScope.MarkdownEditorRow(
         }
     }
 
-    EditorRowSection {
-        EditorRowButton(
+    ActionRowSection {
+        ActionButton(
             hint = stringResource(Res.string.bold),
             actionText = "B",
             icon = Icons.Outlined.FormatBold,
             onClick = { textFieldState.edit { bold() } }
         )
-        EditorRowButton(
+        ActionButton(
             hint = stringResource(Res.string.italic),
             actionText = "I",
             icon = Icons.Outlined.FormatItalic,
             onClick = { textFieldState.edit { italic() } }
         )
-        EditorRowButton(
+        ActionButton(
             hint = stringResource(Res.string.strikethrough),
             actionText = "D",
             icon = Icons.Outlined.StrikethroughS,
             onClick = { textFieldState.edit { strikeThrough() } }
         )
-        EditorRowButton(
+        ActionButton(
             hint = stringResource(Res.string.underline),
             actionText = "U",
             icon = Icons.Outlined.FormatUnderlined,
             onClick = { textFieldState.edit { underline() } }
         )
-        EditorRowButton(
+        ActionButton(
             hint = stringResource(Res.string.highlight),
             actionText = "H",
             icon = Icons.Outlined.FormatPaint,
@@ -216,39 +216,39 @@ fun EditorRowScope.MarkdownEditorRow(
         )
     }
 
-    EditorRowSection {
-        EditorRowButton(
+    ActionRowSection {
+        ActionButton(
             hint = stringResource(Res.string.indent_increase),
             icon = Icons.AutoMirrored.Outlined.FormatIndentIncrease,
             onClick = { textFieldState.edit { tab() } }
         )
-        EditorRowButton(
+        ActionButton(
             hint = stringResource(Res.string.indent_decrease),
             icon = Icons.AutoMirrored.Outlined.FormatIndentDecrease,
             onClick = { textFieldState.edit { unTab() } }
         )
     }
 
-    EditorRowSection {
-        EditorRowButton(
+    ActionRowSection {
+        ActionButton(
             hint = stringResource(Res.string.code),
             actionText = "E",
             icon = Icons.Outlined.Code,
             onClick = { textFieldState.edit { code() } }
         )
-        EditorRowButton(
+        ActionButton(
             hint = stringResource(Res.string.math),
             actionText = "M",
             icon = Icons.Outlined.Functions,
             onClick = { textFieldState.edit { math() } }
         )
-        EditorRowButton(
+        ActionButton(
             hint = stringResource(Res.string.link),
             actionText = "L",
             icon = Icons.Outlined.Link,
             onClick = { textFieldState.edit { link() } }
         )
-        EditorRowButton(
+        ActionButton(
             hint = stringResource(Res.string.quote),
             actionText = "Q",
             icon = Icons.Outlined.FormatQuote,
@@ -257,8 +257,8 @@ fun EditorRowScope.MarkdownEditorRow(
     }
 
     var isAlertSectionExpanded by rememberSaveable { mutableStateOf(false) }
-    EditorRowSection {
-        EditorRowButton(
+    ActionRowSection {
+        ActionButton(
             hint = "Github Alert",
             icon = Icons.AutoMirrored.Outlined.Label,
             onClick = { isAlertSectionExpanded = !isAlertSectionExpanded }
@@ -266,28 +266,28 @@ fun EditorRowScope.MarkdownEditorRow(
     }
 
     AnimatedVisibility(visible = isAlertSectionExpanded) {
-        EditorRowSection {
-            EditorRowButton(
+        ActionRowSection {
+            ActionButton(
                 hint = "NOTE",
                 icon = Icons.Outlined.Info,
                 onClick = { textFieldState.edit { alert("NOTE") } }
             )
-            EditorRowButton(
+            ActionButton(
                 hint = "TIP",
                 icon = Icons.Outlined.Lightbulb,
                 onClick = { textFieldState.edit { alert("TIP") } }
             )
-            EditorRowButton(
+            ActionButton(
                 hint = "IMPORTANT",
                 icon = Icons.AutoMirrored.Outlined.Announcement,
                 onClick = { textFieldState.edit { alert("IMPORTANT") } }
             )
-            EditorRowButton(
+            ActionButton(
                 hint = "WARNING",
                 icon = Icons.Outlined.WarningAmber,
                 onClick = { textFieldState.edit { alert("WARNING") } }
             )
-            EditorRowButton(
+            ActionButton(
                 hint = "CAUTION",
                 icon = Icons.Outlined.ReportGmailerrorred,
                 onClick = { textFieldState.edit { alert("CAUTION") } }
@@ -295,20 +295,20 @@ fun EditorRowScope.MarkdownEditorRow(
         }
     }
 
-    EditorRowSection {
-        EditorRowButton(
+    ActionRowSection {
+        ActionButton(
             hint = stringResource(Res.string.bulleted_list),
             actionText = "⇧ + B",
             icon = Icons.AutoMirrored.Outlined.FormatListBulleted,
             onClick = { textFieldState.edit { bulletList() } }
         )
-        EditorRowButton(
+        ActionButton(
             hint = stringResource(Res.string.numbered_list),
             actionText = "⇧ + N",
             icon = Icons.Outlined.FormatListNumbered,
             onClick = { textFieldState.edit { numberedList() } }
         )
-        EditorRowButton(
+        ActionButton(
             hint = stringResource(Res.string.task_list),
             actionText = "⇧ + T",
             icon = Icons.Outlined.Checklist,
@@ -316,26 +316,26 @@ fun EditorRowScope.MarkdownEditorRow(
         )
     }
 
-    EditorRowSection {
-        EditorRowButton(
+    ActionRowSection {
+        ActionButton(
             icon = painterResource(Res.drawable.parentheses),
             onClick = { textFieldState.edit { parentheses() } }
         )
-        EditorRowButton(
+        ActionButton(
             icon = Icons.Outlined.DataArray,
             onClick = { textFieldState.edit { brackets() } }
         )
-        EditorRowButton(
+        ActionButton(
             icon = Icons.Outlined.DataObject,
             onClick = { textFieldState.edit { braces() } }
         )
-        EditorRowButton(
+        ActionButton(
             hint = stringResource(Res.string.horizontal_rule),
             actionText = "R",
             icon = Icons.Outlined.HorizontalRule,
             onClick = { textFieldState.edit { horizontalRule() } }
         )
-        EditorRowButton(
+        ActionButton(
             hint = stringResource(Res.string.mermaid_diagram),
             actionText = "⇧ + D",
             icon = Icons.Outlined.AddChart,
@@ -344,32 +344,32 @@ fun EditorRowScope.MarkdownEditorRow(
     }
 
     if (!isTemplate)
-        EditorRowSection {
-            EditorRowButton(
+        ActionRowSection {
+            ActionButton(
                 icon = painterResource(Res.drawable.photo_library_24px),
-                onClick = { onEditorRowAction(EditorRowAction.Images) }
+                onClick = { onRowAction(Action.Images) }
             )
-            EditorRowButton(
+            ActionButton(
                 icon = painterResource(Res.drawable.video_library_24px),
-                onClick = { onEditorRowAction(EditorRowAction.Videos) }
+                onClick = { onRowAction(Action.Video) }
             )
-            EditorRowButton(
+            ActionButton(
                 icon = painterResource(Res.drawable.library_music_24px),
-                onClick = { onEditorRowAction(EditorRowAction.Audio) }
+                onClick = { onRowAction(Action.Audio) }
             )
-            EditorRowButton(
+            ActionButton(
                 hint = stringResource(Res.string.templates),
                 icon = Icons.AutoMirrored.Outlined.TextSnippet,
-                onClick = { onEditorRowAction(EditorRowAction.Templates) }
+                onClick = { onRowAction(Action.Templates) }
             )
         }
     else
-        EditorRowSection {
-            EditorRowButton(
+        ActionRowSection {
+            ActionButton(
                 icon = Icons.Outlined.CalendarToday,
                 onClick = { textFieldState.edit { addAfter("{{date}}") } }
             )
-            EditorRowButton(
+            ActionButton(
                 icon = Icons.Outlined.AccessTime,
                 onClick = { textFieldState.edit { addAfter("{{time}}") } }
             )

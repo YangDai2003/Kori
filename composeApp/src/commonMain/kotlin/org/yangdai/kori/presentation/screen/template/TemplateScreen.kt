@@ -72,7 +72,7 @@ import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
 import org.yangdai.kori.presentation.component.dialog.ShareDialog
 import org.yangdai.kori.presentation.component.note.AIAssist
 import org.yangdai.kori.presentation.component.note.AdaptiveEditor
-import org.yangdai.kori.presentation.component.note.AdaptiveEditorRow
+import org.yangdai.kori.presentation.component.note.AdaptiveActionRow
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorViewer
 import org.yangdai.kori.presentation.component.note.AdaptiveViewer
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
@@ -256,7 +256,7 @@ fun TemplateScreen(
                     } else null
                 )
             }
-            AdaptiveEditorRow(
+            AdaptiveActionRow(
                 visible = !isReadView && !isSearching,
                 type = editingState.noteType,
                 scrollState = scrollState,

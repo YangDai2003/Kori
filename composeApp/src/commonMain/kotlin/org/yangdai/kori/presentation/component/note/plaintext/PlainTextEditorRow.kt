@@ -29,18 +29,18 @@ import kori.composeapp.generated.resources.redo
 import kori.composeapp.generated.resources.templates
 import kori.composeapp.generated.resources.undo
 import org.jetbrains.compose.resources.stringResource
-import org.yangdai.kori.presentation.component.note.EditorRowAction
-import org.yangdai.kori.presentation.component.note.EditorRowScope
+import org.yangdai.kori.presentation.component.note.Action
+import org.yangdai.kori.presentation.component.note.ActionRowScope
 import org.yangdai.kori.presentation.component.note.addAfter
 import org.yangdai.kori.presentation.component.note.tab
 import org.yangdai.kori.presentation.component.note.unTab
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun EditorRowScope.PlainTextEditorRow(
+fun ActionRowScope.PlainTextEditorRow(
     isTemplate: Boolean,
     textFieldState: TextFieldState,
-    onEditorRowAction: (EditorRowAction) -> Unit
+    onRowAction: (Action) -> Unit
 ) = Row(
     modifier = Modifier.fillMaxWidth().height(48.dp).horizontalScroll(rememberScrollState()),
     verticalAlignment = Alignment.CenterVertically,
@@ -49,15 +49,15 @@ fun EditorRowScope.PlainTextEditorRow(
 
     Spacer(Modifier.width(4.dp))
 
-    EditorRowSection {
-        EditorRowButton(
+    ActionRowSection {
+        ActionButton(
             hint = stringResource(Res.string.undo),
             actionText = "Z",
             icon = Icons.AutoMirrored.Outlined.Undo,
             enabled = textFieldState.undoState.canUndo,
             onClick = { textFieldState.undoState.undo() }
         )
-        EditorRowButton(
+        ActionButton(
             hint = stringResource(Res.string.redo),
             actionText = "Y",
             icon = Icons.AutoMirrored.Outlined.Redo,
@@ -66,13 +66,13 @@ fun EditorRowScope.PlainTextEditorRow(
         )
     }
 
-    EditorRowSection {
-        EditorRowButton(
+    ActionRowSection {
+        ActionButton(
             hint = stringResource(Res.string.indent_increase),
             icon = Icons.AutoMirrored.Outlined.FormatIndentIncrease,
             onClick = { textFieldState.edit { tab() } }
         )
-        EditorRowButton(
+        ActionButton(
             hint = stringResource(Res.string.indent_decrease),
             icon = Icons.AutoMirrored.Outlined.FormatIndentDecrease,
             onClick = { textFieldState.edit { unTab() } }
@@ -80,20 +80,20 @@ fun EditorRowScope.PlainTextEditorRow(
     }
 
     if (!isTemplate)
-        EditorRowSection {
-            EditorRowButton(
+        ActionRowSection {
+            ActionButton(
                 hint = stringResource(Res.string.templates),
                 icon = Icons.AutoMirrored.Outlined.TextSnippet,
-                onClick = { onEditorRowAction(EditorRowAction.Templates) }
+                onClick = { onRowAction(Action.Templates) }
             )
         }
     else
-        EditorRowSection {
-            EditorRowButton(
+        ActionRowSection {
+            ActionButton(
                 icon = Icons.Outlined.CalendarToday,
                 onClick = { textFieldState.edit { addAfter("{{date}}") } }
             )
-            EditorRowButton(
+            ActionButton(
                 icon = Icons.Outlined.AccessTime,
                 onClick = { textFieldState.edit { addAfter("{{time}}") } }
             )
