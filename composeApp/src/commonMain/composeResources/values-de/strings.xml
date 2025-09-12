@@ -96,7 +96,7 @@
     <string name="reading_view">Lese-Ansicht</string>
     <string name="line_numbers">Zeilennummern</string>
     <string name="lint">Lint</string>
-    <string name="lint_description">Wenn aktiviert, werden das Markdown-Textformat und die Syntax auf die Einhaltung der Spezifikation überprüft und Fehler mit roten Wellenlinien markiert.</string>
+    <string name="lint_description">Wenn aktiviert, werden das Markdown und Todo.txt Format und die Syntax auf die Einhaltung der Spezifikation überprüft und Fehler mit roten Wellenlinien markiert.</string>
 
     <string name="date_format">Datumsformat</string>
     <string name="time_format">Zeitformat</string>

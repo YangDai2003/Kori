@@ -96,7 +96,7 @@
     <string name="reading_view">阅读视图</string>
     <string name="line_numbers">行号</string>
     <string name="lint">规范检查</string>
-    <string name="lint_description">开启后，将检测 Markdown 文本格式和语法是否符合规范，错误会被红色波浪线标记。</string>
+    <string name="lint_description">开启后，将检测 Markdown 和 Todo.txt 的文本格式和语法是否符合规范，错误会被红色波浪线标记。</string>
 
     <string name="date_format">日期格式</string>
     <string name="time_format">时间格式</string>
