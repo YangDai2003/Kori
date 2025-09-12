@@ -21,6 +21,7 @@
 #-renamesourcefileattribute SourceFile
 
 -keep class * extends androidx.room.RoomDatabase { <init>(); }
+-keepclasseswithmembers class androidx.sqlite.driver.bundled.** { native <methods>; }
 
 -dontwarn io.micrometer.context.ContextAccessor
 -dontwarn javax.enterprise.event.Observes
