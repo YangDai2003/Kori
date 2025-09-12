@@ -105,11 +105,11 @@ class TemplateViewModel(
 
     val editorState = combine(
         dataStoreRepository.booleanFlow(Constants.Preferences.SHOW_LINE_NUMBER),
-        dataStoreRepository.booleanFlow(Constants.Preferences.IS_MARKDOWN_LINT_ENABLED)
-    ) { showLineNumber, isMarkdownLintEnabled ->
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_LINTING_ENABLED)
+    ) { showLineNumber, isLintingEnabled ->
         EditorPaneState(
             isLineNumberVisible = showLineNumber,
-            isMarkdownLintEnabled = isMarkdownLintEnabled
+            isLintingEnabled = isLintingEnabled
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, EditorPaneState())
 

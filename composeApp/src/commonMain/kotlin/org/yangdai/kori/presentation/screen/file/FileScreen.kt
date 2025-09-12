@@ -239,7 +239,7 @@ fun FileScreen(
                             scrollState = scrollState,
                             readOnly = isReadView,
                             isLineNumberVisible = editorState.isLineNumberVisible,
-                            isMarkdownLintActive = editorState.isMarkdownLintEnabled,
+                            isLintingEnabled = editorState.isLintingEnabled,
                             headerRange = selectedHeader,
                             findAndReplaceState = findAndReplaceState
                         )

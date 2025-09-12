@@ -52,7 +52,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.VerticalScrollbar
-import org.yangdai.kori.presentation.component.note.markdown.MarkdownLint
 import org.yangdai.kori.presentation.util.isScreenWidthExpanded
 import kotlin.math.PI
 import kotlin.math.sin
@@ -66,7 +65,7 @@ fun TextEditor(
     findAndReplaceState: FindAndReplaceState,
     readOnly: Boolean,
     isLineNumberVisible: Boolean,
-    isMarkdownLintActive: Boolean = false,
+    lint: Lint? = null,
     headerRange: IntRange? = null,
     outputTransformation: OutputTransformation? = null
 ) {
@@ -189,11 +188,11 @@ fun TextEditor(
         label = "wave-phase"
     )
 
-    val lintErrors by produceState(emptyList(), textFieldState.text, isMarkdownLintActive) {
-        value = if (isMarkdownLintActive) {
+    val lintErrors by produceState(emptyList(), textFieldState.text, lint) {
+        value = if (lint != null) {
             delay(300L) // 300ms 防抖
             withContext(Dispatchers.Default) {
-                MarkdownLint().validate(textFieldState.text.toString())
+                lint.validate(textFieldState.text.toString())
             }
         } else emptyList()
     }

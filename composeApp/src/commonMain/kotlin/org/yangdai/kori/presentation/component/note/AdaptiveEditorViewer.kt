@@ -27,11 +27,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import org.yangdai.kori.data.local.entity.NoteType
+import org.yangdai.kori.presentation.component.note.markdown.MarkdownLint
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownTransformation
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownViewer
 import org.yangdai.kori.presentation.component.note.markdown.markdownKeyEvents
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextTransformation
 import org.yangdai.kori.presentation.component.note.plaintext.plainTextKeyEvents
+import org.yangdai.kori.presentation.component.note.todo.TodoLint
 import org.yangdai.kori.presentation.component.note.todo.TodoTransformation
 import org.yangdai.kori.presentation.component.note.todo.TodoViewer
 import org.yangdai.kori.presentation.component.note.todo.todoTextKeyEvents
@@ -106,7 +108,7 @@ fun ColumnScope.AdaptiveEditorViewer(
  * @param scrollState The scroll state for the editor.
  * @param readOnly Whether the editor is in read-only mode.
  * @param isLineNumberVisible Whether line numbers are visible in the editor.
- * @param isMarkdownLintActive Whether linting is active in the editor.
+ * @param isLintingEnabled Whether linting is active in the editor.
  * @param headerRange The range of headers for Markdown editor, if applicable.
  * @param findAndReplaceState The state for find-and-replace functionality in the editor.
  */
@@ -118,7 +120,7 @@ fun AdaptiveEditor(
     scrollState: ScrollState,
     readOnly: Boolean,
     isLineNumberVisible: Boolean,
-    isMarkdownLintActive: Boolean,
+    isLintingEnabled: Boolean,
     headerRange: IntRange?,
     findAndReplaceState: FindAndReplaceState
 ) {
@@ -140,6 +142,16 @@ fun AdaptiveEditor(
         }
     }
 
+    val lint = remember(noteType, isLintingEnabled) {
+        if (isLintingEnabled) {
+            when (noteType) {
+                NoteType.MARKDOWN -> MarkdownLint()
+                NoteType.TODO -> TodoLint()
+                else -> null
+            }
+        } else null
+    }
+
     TextEditor(
         modifier = modifier,
         textFieldModifier = textFieldModifier,
@@ -148,7 +160,7 @@ fun AdaptiveEditor(
         findAndReplaceState = findAndReplaceState,
         readOnly = readOnly,
         isLineNumberVisible = isLineNumberVisible,
-        isMarkdownLintActive = isMarkdownLintActive,
+        lint = lint,
         headerRange = headerRange,
         outputTransformation = outputTransformation
     )

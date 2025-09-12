@@ -117,14 +117,14 @@ fun EditorPane(mainViewModel: MainViewModel) {
             icon = Icons.Outlined.Spellcheck,
             trailingContent = {
                 Switch(
-                    checked = editorPaneState.isMarkdownLintEnabled,
+                    checked = editorPaneState.isLintingEnabled,
                     onCheckedChange = { checked ->
                         if (checked)
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOn)
                         else
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOff)
                         mainViewModel.putPreferenceValue(
-                            Constants.Preferences.IS_MARKDOWN_LINT_ENABLED,
+                            Constants.Preferences.IS_LINTING_ENABLED,
                             checked
                         )
                     }

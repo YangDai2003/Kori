@@ -363,12 +363,12 @@ class MainViewModel(
 
     val editorPaneState = combine(
         dataStoreRepository.booleanFlow(Constants.Preferences.SHOW_LINE_NUMBER),
-        dataStoreRepository.booleanFlow(Constants.Preferences.IS_MARKDOWN_LINT_ENABLED),
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_LINTING_ENABLED),
         dataStoreRepository.booleanFlow(Constants.Preferences.IS_DEFAULT_READING_VIEW)
-    ) { showLineNumber, isMarkdownLintEnabled, isDefaultReadingView ->
+    ) { showLineNumber, isLintingEnabled, isDefaultReadingView ->
         EditorPaneState(
             isLineNumberVisible = showLineNumber,
-            isMarkdownLintEnabled = isMarkdownLintEnabled,
+            isLintingEnabled = isLintingEnabled,
             isDefaultReadingView = isDefaultReadingView
         )
     }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), EditorPaneState())

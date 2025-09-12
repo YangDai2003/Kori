@@ -1,13 +1,9 @@
 package org.yangdai.kori.presentation.component.note.markdown
 
-// 增强的 Issue 类
-data class Issue(
-    val startIndex: Int,    // 问题起始索引 (包含)
-    val endIndex: Int,      // 问题结束索引 (不包含)
-    val ruleId: String     // 对应的规则 ID
-)
+import org.yangdai.kori.presentation.component.note.Issue
+import org.yangdai.kori.presentation.component.note.Lint
 
-class MarkdownLint {
+class MarkdownLint : Lint {
 
     // 规则标识符 (为了清晰度和未来可能的配置)
     companion object {
@@ -47,14 +43,14 @@ class MarkdownLint {
     }
 
     // 主验证函数
-    fun validate(markdown: String): List<Issue> {
+    override fun validate(text: String): List<Issue> {
         val issues = mutableListOf<Issue>() // 存储发现的问题
         var inFencedCodeBlock = false       // 当前是否处于围栏代码块内部
         var fencedCodeBlockMarker: String? = null // 存储围栏代码块的起始标记 (例如 "```")
         var currentOffset = 0               // 当前处理位置在整个 markdown 字符串中的偏移量
 
         // 逐行处理 Markdown 文本
-        markdown.lineSequence().forEach { line ->
+        text.lineSequence().forEach { line ->
             val lineStartOffset = currentOffset
             // val lineEndOffset = lineStartOffset + line.length // 不再直接需要 lineEndOffset
 
