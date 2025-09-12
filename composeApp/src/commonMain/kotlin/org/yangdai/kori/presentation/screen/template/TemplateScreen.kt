@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.rememberPagerState
@@ -78,6 +79,7 @@ import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.note.ProcessedContent
+import org.yangdai.kori.presentation.component.note.TitleText
 import org.yangdai.kori.presentation.component.note.TitleTextField
 import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
 import org.yangdai.kori.presentation.navigation.Screen
@@ -124,6 +126,7 @@ fun TemplateScreen(
     val scrollState = rememberScrollState()
     var isSideSheetOpen by rememberSaveable { mutableStateOf(false) }
     var isSearching by remember { mutableStateOf(false) }
+    var editingTitle by remember { mutableStateOf(false) }
     var selectedHeader by remember { mutableStateOf<IntRange?>(null) }
     val findAndReplaceState = rememberFindAndReplaceState()
     var showNoteTypeDialog by remember { mutableStateOf(false) }
@@ -168,9 +171,10 @@ fun TemplateScreen(
                     )
                 },
                 title = {
-                    TitleTextField(
+                    TitleText(
                         state = viewModel.titleState,
-                        readOnly = isReadView
+                        visible = !editingTitle,
+                        onClick = { editingTitle = true }
                     )
                 },
                 navigationIcon = { PlatformStyleTopAppBarNavigationIcon(navigateUp) },
@@ -208,6 +212,16 @@ fun TemplateScreen(
                 end = innerPadding.calculateEndPadding(layoutDirection)
             )
         ) {
+
+            AnimatedVisibility(editingTitle) {
+                TitleTextField(
+                    state = viewModel.titleState,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    initFocus = true,
+                    onDone = { editingTitle = false }
+                )
+            }
+
             AnimatedVisibility(isSearching) {
                 FindAndReplaceField(findAndReplaceState)
             }

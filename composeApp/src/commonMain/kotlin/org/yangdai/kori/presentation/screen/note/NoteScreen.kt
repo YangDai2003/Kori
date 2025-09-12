@@ -110,6 +110,7 @@ import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.note.ProcessedContent
+import org.yangdai.kori.presentation.component.note.TitleText
 import org.yangdai.kori.presentation.component.note.TitleTextField
 import org.yangdai.kori.presentation.component.note.addAudioLink
 import org.yangdai.kori.presentation.component.note.addImageLinks
@@ -177,6 +178,7 @@ fun NoteScreen(
     var isSideSheetOpen by rememberSaveable { mutableStateOf(false) }
     var showFolderDialog by remember { mutableStateOf(false) }
     var isSearching by remember { mutableStateOf(false) }
+    var editingTitle by remember { mutableStateOf(false) }
     val findAndReplaceState = rememberFindAndReplaceState()
     var selectedHeader by remember { mutableStateOf<IntRange?>(null) }
     var showNoteTypeDialog by remember { mutableStateOf(false) }
@@ -237,10 +239,11 @@ fun NoteScreen(
                             )
                         }
                         if (isLargeScreen)
-                            TitleTextField(
+                            TitleText(
                                 state = viewModel.titleState,
-                                readOnly = isReadView && editingState.noteType != NoteType.Drawing,
-                                modifier = Modifier.padding(horizontal = 16.dp)
+                                visible = !editingTitle,
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                onClick = { editingTitle = true }
                             )
                     }
                 },
@@ -279,21 +282,26 @@ fun NoteScreen(
                 end = innerPadding.calculateEndPadding(layoutDirection)
             )
         ) {
-            if (isLargeScreen)
+            if (isLargeScreen) {
+                AnimatedVisibility(editingTitle) {
+                    TitleTextField(
+                        state = viewModel.titleState,
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                        initFocus = true,
+                        onDone = { editingTitle = false }
+                    )
+                }
                 AnimatedVisibility(isSearching) {
                     FindAndReplaceField(findAndReplaceState)
                 }
-            else
+            } else
                 AnimatedContent(isSearching) { targetState ->
-                    if (targetState)
-                        FindAndReplaceField(findAndReplaceState)
-                    else {
+                    if (targetState) FindAndReplaceField(findAndReplaceState)
+                    else
                         TitleTextField(
                             state = viewModel.titleState,
-                            readOnly = isReadView && editingState.noteType != NoteType.Drawing,
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                         )
-                    }
                 }
 
             if (editingState.noteType == NoteType.Drawing) {

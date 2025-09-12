@@ -80,7 +80,7 @@ import org.yangdai.kori.presentation.component.note.EditorRowAction
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
-import org.yangdai.kori.presentation.component.note.TitleTextField
+import org.yangdai.kori.presentation.component.note.TitleText
 import org.yangdai.kori.presentation.component.note.addAudioLink
 import org.yangdai.kori.presentation.component.note.addImageLinks
 import org.yangdai.kori.presentation.component.note.addVideoLink
@@ -173,12 +173,7 @@ fun FileScreen(
                         }
                     )
                 },
-                title = {
-                    TitleTextField(
-                        state = viewModel.titleState,
-                        readOnly = true
-                    )
-                },
+                title = { TitleText(viewModel.titleState) },
                 navigationIcon = { PlatformStyleTopAppBarNavigationIcon(navigateUp) },
                 actions = {
                     TooltipIconButton(
