@@ -39,6 +39,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
@@ -146,14 +148,6 @@ private fun FindField(
             imageVector = Icons.Default.ArrowDownward, contentDescription = "Next"
         )
     }
-    IconButton(onClick = {
-        state.searchWord = ""
-        state.replaceWord = ""
-    }) {
-        Icon(
-            imageVector = Icons.Default.Close, contentDescription = "Clear"
-        )
-    }
 }
 
 @Composable
@@ -229,6 +223,18 @@ fun CustomTextField(
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                     )
                 )
+            },
+            trailingIcon = {
+                if (value.isNotBlank()) {
+                    IconButton(
+                        modifier = Modifier.pointerHoverIcon(PointerIcon.Default),
+                        onClick = { onValueChange("") }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close, contentDescription = "Clear"
+                        )
+                    }
+                }
             },
             suffix = suffix,
             contentPadding = PaddingValues(0.dp),

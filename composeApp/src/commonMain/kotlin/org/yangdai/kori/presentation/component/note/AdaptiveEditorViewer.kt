@@ -41,6 +41,10 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.control
@@ -108,7 +112,15 @@ fun ColumnScope.AdaptiveEditorViewer(
                 positionProvider = TooltipDefaults
                     .rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
                 tooltip = {
-                    PlainTooltip { Text("${stringResource(Res.string.control)} + ⇧ + ↔︎") }
+                    PlainTooltip {
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(SpanStyle(fontFamily = FontFamily.Monospace)) {
+                                    append("${stringResource(Res.string.control)} + ⇧ + ↔︎")
+                                }
+                            }
+                        )
+                    }
                 },
                 state = rememberTooltipState()
             ) {

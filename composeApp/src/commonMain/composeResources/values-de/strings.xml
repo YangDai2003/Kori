@@ -167,6 +167,7 @@
     <string name="pending_tasks">Ausstehende Aufgaben</string>
     <string name="progress">Fortschritt</string>
 
+    <string name="side_sheet">Seitenleiste</string>
     <string name="control">STRG</string>
     <string name="undo">Rückgängig</string>
     <string name="redo">Wiederholen</string>

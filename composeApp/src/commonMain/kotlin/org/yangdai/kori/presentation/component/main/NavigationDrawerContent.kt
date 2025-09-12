@@ -69,6 +69,7 @@ import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.data.local.dao.FolderDao.FolderWithNoteCount
 import org.yangdai.kori.data.local.entity.FolderEntity
 import org.yangdai.kori.data.local.entity.defaultFolderColor
+import org.yangdai.kori.isDesktop
 import org.yangdai.kori.presentation.component.TooltipIconButton
 import org.yangdai.kori.presentation.navigation.Screen
 
@@ -247,13 +248,14 @@ fun NavigationDrawerContent(
             )
         if (drawerState.isAppProtected)
             TooltipIconButton(
-                tipText = stringResource(Res.string.lock),
+                hint = stringResource(Res.string.lock),
+                actionText = if (currentPlatformInfo.isDesktop()) "⇧ + L" else "",
                 icon = Icons.Outlined.Lock,
                 shape = IconButtonDefaults.smallSquareShape,
                 onClick = onLockClick
             )
         TooltipIconButton(
-            tipText = stringResource(Res.string.settings),
+            hint = stringResource(Res.string.settings),
             icon = Icons.Outlined.Settings,
             shape = IconButtonDefaults.smallSquareShape,
             onClick = { navigateToScreen(Screen.Settings) }

@@ -126,7 +126,7 @@ fun FoldersScreen(
                     navigationIcon = { PlatformStyleTopAppBarNavigationIcon(navigateUp) },
                     actions = {
                         TooltipIconButton(
-                            tipText = stringResource(Res.string.sort_by),
+                            hint = stringResource(Res.string.sort_by),
                             icon = Icons.Default.SortByAlpha,
                             onClick = { showSortDialog = true },
                         )

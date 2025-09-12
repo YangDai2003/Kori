@@ -131,7 +131,7 @@ fun PlatformStyleTopAppBar(
 @Composable
 fun PlatformStyleTopAppBarNavigationIcon(onClick: () -> Unit) =
     TooltipIconButton(
-        tipText = stringResource(Res.string.back),
+        hint = stringResource(Res.string.back),
         icon = if (currentPlatformInfo.operatingSystem == OS.IOS || currentPlatformInfo.operatingSystem == OS.MACOS) Icons.Default.ArrowBackIosNew
         else Icons.AutoMirrored.Filled.ArrowBack,
         onClick = onClick

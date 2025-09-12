@@ -4,16 +4,14 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.delete
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.isCtrlPressed
-import androidx.compose.ui.input.key.isMetaPressed
 import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import org.yangdai.kori.OS
 import org.yangdai.kori.currentPlatformInfo
+import org.yangdai.kori.presentation.component.isPlatformActionKeyPressed
 import org.yangdai.kori.presentation.component.note.addAfter
 import org.yangdai.kori.presentation.component.note.bold
 import org.yangdai.kori.presentation.component.note.bulletList
@@ -36,7 +34,7 @@ import org.yangdai.kori.presentation.component.note.underline
 fun Modifier.markdownKeyEvents(textFieldState: TextFieldState): Modifier =
     onPreviewKeyEvent { keyEvent ->
         if (keyEvent.type == KeyEventType.KeyDown) {
-            if (platformKeyboardShortCutKeyEvent(keyEvent)) {
+            if (keyEvent.isPlatformActionKeyPressed) {
                 if (keyEvent.isShiftPressed) {
                     when (keyEvent.key) {
 
@@ -251,10 +249,4 @@ fun Modifier.markdownKeyEvents(textFieldState: TextFieldState): Modifier =
         } else {
             false
         }
-    }
-
-private fun platformKeyboardShortCutKeyEvent(keyEvent: KeyEvent): Boolean =
-    when (currentPlatformInfo.operatingSystem) {
-        OS.MACOS, OS.IOS -> keyEvent.isMetaPressed
-        else -> keyEvent.isCtrlPressed
     }

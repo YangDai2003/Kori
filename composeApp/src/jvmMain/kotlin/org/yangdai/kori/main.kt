@@ -23,6 +23,12 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingWindow
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.isShiftPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -113,6 +119,19 @@ fun ApplicationWindow(
     visible = visible,
     title = stringResource(Res.string.app_name),
     icon = painterResource(Res.drawable.icon),
+    onKeyEvent = {
+        if (it.isCtrlPressed && it.isShiftPressed && it.type == KeyEventType.KeyDown) {
+            when (it.key) {
+                Key.L -> {
+                    AppLockManager.lock()
+                    true
+                }
+
+                else -> false
+            }
+        }
+        false
+    },
     init = { window ->
         with(window.rootPane) {
             putClientProperty("apple.awt.fullWindowContent", true)

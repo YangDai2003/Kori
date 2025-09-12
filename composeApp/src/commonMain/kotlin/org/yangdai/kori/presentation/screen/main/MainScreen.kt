@@ -79,7 +79,7 @@ fun MainScreen(
             navigationIcon = {
                 if (!isLargeScreen) {
                     TooltipIconButton(
-                        tipText = stringResource(Res.string.open_navigation_drawer),
+                        hint = stringResource(Res.string.open_navigation_drawer),
                         colors = IconButtonDefaults.iconButtonVibrantColors(),
                         icon = Icons.Default.Menu,
                         onClick = {

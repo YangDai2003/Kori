@@ -13,6 +13,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingPanel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import javafx.application.Platform
 import javafx.concurrent.Worker
 import javafx.embed.swing.JFXPanel
@@ -23,6 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.yangdai.kori.presentation.theme.AppConfig
 import org.yangdai.kori.presentation.theme.LocalAppConfig
+import org.yangdai.kori.presentation.util.AppLockManager
 import org.yangdai.kori.presentation.util.toHexColor
 import java.awt.Desktop
 import java.awt.event.MouseEvent
@@ -190,8 +192,9 @@ actual fun MarkdownViewer(
         }
     }
 
-    LaunchedEffect(isSheetVisible) {
-        if (isSheetVisible) {
+    val isUnlocked by AppLockManager.isUnlocked.collectAsStateWithLifecycle()
+    LaunchedEffect(isSheetVisible, isUnlocked) {
+        if (isSheetVisible || !isUnlocked) {
             jfxPanel.disableMouseEvent()
         } else {
             jfxPanel.enableMouseEvent()

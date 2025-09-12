@@ -51,7 +51,11 @@ import kfile.ImagesPicker
 import kfile.PlatformFile
 import kfile.VideoPicker
 import kori.composeapp.generated.resources.Res
+import kori.composeapp.generated.resources.find
+import kori.composeapp.generated.resources.replace
 import kori.composeapp.generated.resources.right_panel_open
+import kori.composeapp.generated.resources.save
+import kori.composeapp.generated.resources.side_sheet
 import kori.composeapp.generated.resources.updated
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -142,11 +146,6 @@ fun FileScreen(
                         true
                     }
 
-                    Key.P -> {
-                        isReadView = !isReadView
-                        true
-                    }
-
                     Key.S -> {
                         if (needSave) {
                             viewModel.saveFile(file)
@@ -184,28 +183,30 @@ fun FileScreen(
                 actions = {
                     TooltipIconButton(
                         enabled = needSave,
-                        tipText = "Ctrl + S",
+                        hint = stringResource(Res.string.save),
+                        actionText = "S",
                         icon = Icons.Outlined.Save,
                         onClick = { viewModel.saveFile(file) }
                     )
 
                     if (!isReadView)
                         TooltipIconButton(
-                            tipText = "Ctrl + F",
+                            hint = "${stringResource(Res.string.find)} & ${stringResource(Res.string.replace)}",
+                            actionText = "F",
                             icon = if (isSearching) Icons.Default.SearchOff
                             else Icons.Default.Search,
                             onClick = { isSearching = !isSearching }
                         )
 
                     TooltipIconButton(
-                        tipText = "Ctrl + P",
                         icon = if (isReadView) Icons.Default.EditNote
                         else Icons.AutoMirrored.Filled.MenuBook,
                         onClick = { isReadView = !isReadView }
                     )
 
                     TooltipIconButton(
-                        tipText = "Ctrl + Tab",
+                        hint = stringResource(Res.string.side_sheet),
+                        actionText = "↹",
                         icon = painterResource(Res.drawable.right_panel_open),
                         onClick = { isSideSheetOpen = true }
                     )

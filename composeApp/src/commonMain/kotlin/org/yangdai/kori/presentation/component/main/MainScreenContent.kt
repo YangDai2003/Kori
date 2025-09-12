@@ -233,7 +233,7 @@ fun MainScreenContent(
                         }
                     else
                         TooltipIconButton(
-                            tipText = stringResource(Res.string.sort_by),
+                            hint = stringResource(Res.string.sort_by),
                             icon = Icons.Default.SortByAlpha,
                             onClick = { showSortDialog = true }
                         )
@@ -296,7 +296,7 @@ fun MainScreenContent(
                                         selectedNotes.size
                                     )
                                 TooltipIconButton(
-                                    tipText = stringResource(Res.string.pin),
+                                    hint = stringResource(Res.string.pin),
                                     icon = painterResource(Res.drawable.pinboard),
                                     onClick = {
                                         viewModel.pinNotes(selectedNotes.toSet())
@@ -305,12 +305,12 @@ fun MainScreenContent(
                                     }
                                 )
                                 TooltipIconButton(
-                                    tipText = stringResource(Res.string.move),
+                                    hint = stringResource(Res.string.move),
                                     icon = Icons.AutoMirrored.Outlined.DriveFileMove,
                                     onClick = { showFoldersDialog = true }
                                 )
                                 TooltipIconButton(
-                                    tipText = stringResource(Res.string.duplicate),
+                                    hint = stringResource(Res.string.duplicate),
                                     icon = painterResource(Res.drawable.duplicate_24px),
                                     onClick = {
                                         viewModel.duplicateNotes(selectedNotes.toSet())
@@ -327,7 +327,7 @@ fun MainScreenContent(
                                         selectedNotes.size
                                     )
                                 TooltipIconButton(
-                                    tipText = stringResource(Res.string.restore),
+                                    hint = stringResource(Res.string.restore),
                                     icon = Icons.Default.RestoreFromTrash,
                                     onClick = {
                                         viewModel.restoreNotesFromTrash(selectedNotes.toSet())
@@ -350,7 +350,7 @@ fun MainScreenContent(
                                 selectedNotes.size
                             )
                             TooltipIconButton(
-                                tipText = stringResource(Res.string.delete),
+                                hint = stringResource(Res.string.delete),
                                 icon = if (deleteForever) Icons.Default.DeleteForever
                                 else Icons.Outlined.Delete,
                                 colors = IconButtonDefaults.iconButtonColors()
@@ -460,7 +460,7 @@ fun MainScreenContent(
                             actions = {
                                 if (currentDrawerItem !is DrawerItem.Toolbox)
                                     TooltipIconButton(
-                                        tipText = stringResource(Res.string.sort_by),
+                                        hint = stringResource(Res.string.sort_by),
                                         icon = Icons.Default.SortByAlpha,
                                         onClick = { showSortDialog = true }
                                     )

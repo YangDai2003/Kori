@@ -318,12 +318,11 @@ fun NoteSideSheet(
 
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         TooltipIconButton(
-                                            tipText = stringResource(Res.string.settings),
+                                            hint = stringResource(Res.string.settings),
                                             icon = Icons.Outlined.Settings,
                                             onClick = { navigateTo(Screen.Settings) }
                                         )
                                         TooltipIconButton(
-                                            tipText = "Ctrl + Tab",
                                             icon = painterResource(Res.drawable.right_panel_close),
                                             onClick = { if (!isExiting) isExiting = true }
                                         )

@@ -50,7 +50,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.created
+import kori.composeapp.generated.resources.find
+import kori.composeapp.generated.resources.replace
 import kori.composeapp.generated.resources.right_panel_open
+import kori.composeapp.generated.resources.side_sheet
 import kori.composeapp.generated.resources.updated
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -144,11 +147,6 @@ fun TemplateScreen(
                         true
                     }
 
-                    Key.P -> {
-                        isReadView = !isReadView
-                        true
-                    }
-
                     Key.Tab -> {
                         isSideSheetOpen = !isSideSheetOpen
                         true
@@ -179,21 +177,22 @@ fun TemplateScreen(
                 actions = {
                     if (!isReadView)
                         TooltipIconButton(
-                            tipText = "Ctrl + F",
+                            hint = "${stringResource(Res.string.find)} & ${stringResource(Res.string.replace)}",
+                            actionText = "F",
                             icon = if (isSearching) Icons.Default.SearchOff
                             else Icons.Default.Search,
                             onClick = { isSearching = !isSearching }
                         )
 
                     TooltipIconButton(
-                        tipText = "Ctrl + P",
                         icon = if (isReadView) Icons.Default.EditNote
                         else Icons.AutoMirrored.Filled.MenuBook,
                         onClick = { isReadView = !isReadView }
                     )
 
                     TooltipIconButton(
-                        tipText = "Ctrl + Tab",
+                        hint = stringResource(Res.string.side_sheet),
+                        actionText = "↹",
                         icon = painterResource(Res.drawable.right_panel_open),
                         onClick = { isSideSheetOpen = true }
                     )
