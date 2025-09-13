@@ -1,6 +1,8 @@
 package org.yangdai.kori.presentation.component.note
 
 import androidx.compose.foundation.text.input.TextFieldBuffer
+import androidx.compose.foundation.text.input.delete
+import androidx.compose.foundation.text.input.insert
 import androidx.compose.ui.text.TextRange
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
@@ -98,7 +100,7 @@ fun TextFieldBuffer.quote() {
         .lastIndexOf('\n')
         .let { if (it == -1) 0 else it + 1 }
 
-    replace(lineStart, lineStart, "> ")
+    insert(lineStart, "> ")
     selection = TextRange(
         initialSelection.min + 2,
         initialSelection.max + 2
@@ -111,7 +113,7 @@ fun TextFieldBuffer.tab() {
         .lastIndexOf('\n')
         .let { if (it == -1) 0 else it + 1 }
 
-    replace(lineStart, lineStart, "    ") // 4 spaces
+    insert(lineStart, "    ") // 4 spaces
     selection = TextRange(
         initialSelection.min + 4,
         initialSelection.max + 4
@@ -125,13 +127,19 @@ fun TextFieldBuffer.unTab() {
         .lastIndexOf('\n')
         .let { if (it == -1) 0 else it + 1 }
 
-    val tabIndex = text.indexOf("    ", lineStart)
+    if (text.substring(lineStart).startsWith("    ")) {
+        // Remove the four leading spaces
+        delete(lineStart, lineStart + 4)
 
-    if (tabIndex != -1 && tabIndex < selection.min) {
-        replace(tabIndex, tabIndex + 4, "")
+        // If the cursor was within the removed spaces, move it to the beginning of the line.
+        // Otherwise, shift it left by 4 positions.
+        val newSelectionStart =
+            if (initialSelection.min < lineStart + 4) lineStart else initialSelection.min - 4
+        val newSelectionEnd =
+            if (initialSelection.max < lineStart + 4) lineStart else initialSelection.max - 4
         selection = TextRange(
-            initialSelection.min - 4,
-            initialSelection.max - 4
+            newSelectionStart.coerceAtLeast(lineStart), // Ensure selection doesn't go before lineStart
+            newSelectionEnd.coerceAtLeast(lineStart)
         )
     }
 }
@@ -142,16 +150,11 @@ fun TextFieldBuffer.alert(type: String) {
         .lastIndexOf('\n')
         .let { if (it == -1) 0 else it + 1 }
 
-    val alertType = "> [!$type]"
-    replace(lineStart, lineStart, alertType)
-    replace(
-        lineStart + alertType.length,
-        lineStart + alertType.length,
-        "\n> "
-    )
+    val alertType = "> [!$type]\n> "
+    insert(lineStart, alertType)
     selection = TextRange(
-        initialSelection.min + type.length + 8,
-        initialSelection.max + type.length + 8
+        initialSelection.min + alertType.length,
+        initialSelection.max + alertType.length
     )
 }
 
@@ -231,12 +234,12 @@ fun TextFieldBuffer.addBeforeWithWhiteSpace(str: String) {
     val initialSelection = selection
     val text = toString()
     val needSpace = initialSelection.min > 0 && !text[initialSelection.min - 1].isWhitespace()
-    if (needSpace) replace(initialSelection.min, initialSelection.min, " $str")
-    else replace(initialSelection.min, initialSelection.min, str)
+    if (needSpace) insert(initialSelection.min, " $str")
+    else insert(initialSelection.min, str)
 }
 
 fun TextFieldBuffer.addAfter(str: String) {
-    replace(selection.max, selection.max, str)
+    insert(selection.max, str)
 }
 
 fun TextFieldBuffer.addInNewLine(str: String) {
@@ -278,7 +281,7 @@ fun TextFieldBuffer.header(level: Int) {
         }
     } else {
         // No heading, add it
-        replace(lineStart, lineStart, heading)
+        insert(lineStart, heading)
         selection =
             TextRange(initialSelection.min + heading.length, initialSelection.max + heading.length)
     }
