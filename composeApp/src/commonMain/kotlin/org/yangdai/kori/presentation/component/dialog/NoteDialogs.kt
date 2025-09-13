@@ -56,7 +56,6 @@ import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import kfile.NoteExporter
-import kmark.html.HtmlGenerator
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.drawing
 import kori.composeapp.generated.resources.export_as
@@ -73,7 +72,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
-import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults
+import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.processMarkdown
 import org.yangdai.kori.presentation.util.clickToShareFile
 import org.yangdai.kori.presentation.util.clickToShareText
 import org.yangdai.kori.presentation.util.clipEntryOf
@@ -187,14 +186,7 @@ fun ExportDialog(
                     }
 
                     LaunchedEffect(noteEntity.content) {
-                        val content = noteEntity.content
-                        val tree = MarkdownDefaults.parser.buildMarkdownTreeFromString(content)
-                        html = HtmlGenerator(
-                            content,
-                            tree,
-                            MarkdownDefaults.flavor,
-                            true
-                        ).generateHtml()
+                        html = processMarkdown(noteEntity.content)
                     }
                 } else {
                     TextOptionButton(buttonText = "TXT") {

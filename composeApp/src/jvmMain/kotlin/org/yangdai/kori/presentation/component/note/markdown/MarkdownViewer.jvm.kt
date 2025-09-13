@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
+import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.processMarkdown
 import org.yangdai.kori.presentation.theme.AppConfig
 import org.yangdai.kori.presentation.theme.LocalAppConfig
 import org.yangdai.kori.presentation.util.AppLockManager

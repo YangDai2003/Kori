@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 import org.yangdai.kori.presentation.component.dialog.ImageViewerDialog
+import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.processMarkdown
 import org.yangdai.kori.presentation.theme.LocalAppConfig
 import org.yangdai.kori.presentation.util.toHexColor
 import java.io.File

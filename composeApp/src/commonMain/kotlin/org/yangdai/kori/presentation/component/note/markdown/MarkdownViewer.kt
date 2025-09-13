@@ -48,13 +48,13 @@ data class MarkdownStyles(
 }
 
 object MarkdownDefaults {
-    val flavor = GFMFlavourDescriptor()
+    private val flavor = GFMFlavourDescriptor()
     val parser = MarkdownParser(flavor)
-}
 
-suspend fun processMarkdown(content: String): String = withContext(Dispatchers.Default) {
-    val tree = MarkdownDefaults.parser.buildMarkdownTreeFromString(content)
-    HtmlGenerator(content, tree, MarkdownDefaults.flavor, true).generateHtml()
+    suspend fun processMarkdown(content: String): String = withContext(Dispatchers.Default) {
+        val tree = parser.buildMarkdownTreeFromString(content)
+        HtmlGenerator(content, tree, flavor, true).generateHtml()
+    }
 }
 
 @Composable

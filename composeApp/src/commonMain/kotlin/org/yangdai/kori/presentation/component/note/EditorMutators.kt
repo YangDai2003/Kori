@@ -170,12 +170,12 @@ fun TextFieldBuffer.alert(type: String) {
  * @param str 通常是 "x "，代表完成状态的字符串。
  */
 @OptIn(FormatStringsInDatetimeFormats::class)
-fun TextFieldBuffer.toggleLineStart(str: String) {
+fun TextFieldBuffer.toggleLineStart(str: String, cursorPosition: Int = selection.min) {
     val text = toString()
-    if (selection.min > text.length) return
+    if (cursorPosition > text.length) return
 
     // 1. 确定当前光标所在行的起始和结束位置
-    val lineStart = text.take(selection.min).lastIndexOf('\n').let { if (it != -1) it + 1 else 0 }
+    val lineStart = text.take(cursorPosition).lastIndexOf('\n').let { if (it != -1) it + 1 else 0 }
     val lineEnd = text.indexOf('\n', lineStart).let { if (it != -1) it else text.length }
     val lineContent = text.substring(lineStart, lineEnd)
 

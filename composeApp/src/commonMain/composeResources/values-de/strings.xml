@@ -156,8 +156,8 @@
     <string name="fetch_file_from_url">Datei von URL abrufen</string>
     <string name="language">Sprache</string>
     <string name="language_description">Wählen Sie die App-Sprache</string>
-    <string name="todo_completed_at">Erledigt am %1$s</string>
-    <string name="todo_scheduled_at">Geplant %1$s</string>
+    <string name="todo_completed_at">Abgeschlossen: %1$s</string>
+    <string name="todo_created_at">Erstellt: %1$s</string>
     <string name="project_tag">Projekt Tag</string>
     <string name="context_tag">Kontext Tag</string>
     <string name="completion_mark">Abschlussmarkierung</string>

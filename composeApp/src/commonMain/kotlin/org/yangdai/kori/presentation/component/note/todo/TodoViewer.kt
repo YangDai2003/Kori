@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,7 +17,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.delete
-import androidx.compose.foundation.text.input.insert
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Circle
@@ -43,7 +41,9 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -51,7 +51,7 @@ import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.done
 import kori.composeapp.generated.resources.todo
 import kori.composeapp.generated.resources.todo_completed_at
-import kori.composeapp.generated.resources.todo_scheduled_at
+import kori.composeapp.generated.resources.todo_created_at
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -61,69 +61,101 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
+import org.yangdai.kori.presentation.component.note.todo.TodoDefaults.processTodo
+import org.yangdai.kori.presentation.component.note.todo.TodoFormat.contextRegex
+import org.yangdai.kori.presentation.component.note.todo.TodoFormat.contextStyle
+import org.yangdai.kori.presentation.component.note.todo.TodoFormat.doneRegex
+import org.yangdai.kori.presentation.component.note.todo.TodoFormat.metaRegex
+import org.yangdai.kori.presentation.component.note.todo.TodoFormat.metaStyle
 import org.yangdai.kori.presentation.component.note.todo.TodoFormat.priorityColors
+import org.yangdai.kori.presentation.component.note.todo.TodoFormat.projectRegex
+import org.yangdai.kori.presentation.component.note.todo.TodoFormat.projectStyle
+import org.yangdai.kori.presentation.component.note.toggleLineStart
 
 data class TodoItem(
-    val raw: String,
+    val content: String,
     val isDone: Boolean,
     val priority: Char?, // A~Z
-    val date: String?,   // yyyy-MM-dd
-    val sortDate: String?, // 用于排序的日期
+    val creationDate: String?,   // yyyy-MM-dd
+    val completionDate: String?, // 用于排序的日期
     val range: IntRange // 原文本中的范围
 )
 
-private val PRIORITY_REGEX = Regex("""^\(([A-Z])\) """)
-private val DATE_REGEX = Regex("""(?<=^|\s)(\d{4}-\d{2}-\d{2})(?=\s|$)""")
-private val DONE_REGEX = Regex("""^x\s""")
-private val DONE_DATE_REGEX =
-    Regex("""^x\s(?:\(([A-Z])\)\s)?(\d{4}-\d{2}-\d{2})(?:\s(\d{4}-\d{2}-\d{2}))?""")
+object TodoDefaults {
+    private val PRIORITY_REGEX = Regex("""^\((?<priority>[A-Z])\) """)
+    private val DATE_REGEX = Regex("""(?<=^|\s)(?<date>\d{4}-\d{2}-\d{2})(?=\s|$)""")
+    private val DONE_LINE_REGEX =
+        Regex("""^x\s(?:\((?<priorityChar>[A-Z])\)\s)?(?<completionDate>\d{4}-\d{2}-\d{2})(?:\s(?<creationDate>\d{4}-\d{2}-\d{2}))?""")
 
-suspend fun processTodo(content: CharSequence): Pair<List<TodoItem>, List<TodoItem>> =
-    withContext(Dispatchers.Default) {
-        val undone = mutableListOf<TodoItem>()
-        val done = mutableListOf<TodoItem>()
+    suspend fun processTodo(content: CharSequence): Pair<List<TodoItem>, List<TodoItem>> =
+        withContext(Dispatchers.Default) {
+            val undone = mutableListOf<TodoItem>()
+            val done = mutableListOf<TodoItem>()
 
-        content.lines().forEachIndexed { _, line ->
-            val trimmed = line.trim()
-            if (trimmed.isEmpty()) return@forEachIndexed
+            var currentOffset = 0
+            content.lines().forEach { line ->
+                val trimmed = line.trim()
+                if (trimmed.isEmpty()) return@forEach
 
-            val startIndex = content.indexOf(line)
-            if (startIndex == -1) return@forEachIndexed
-            val range = startIndex until (startIndex + line.length)
+                val range = currentOffset until (currentOffset + line.length)
+                val isDone = doneRegex.containsMatchIn(trimmed)
+                var content = trimmed
 
-            if (DONE_REGEX.containsMatchIn(trimmed)) {
-                val match = DONE_DATE_REGEX.find(trimmed)
-                val priority = match?.groups?.get(1)?.value?.firstOrNull()
-                val completionDate = match?.groups?.get(2)?.value
-                val creationDate = match?.groups?.get(3)?.value
-                done.add(TodoItem(trimmed, true, priority, creationDate, completionDate, range))
-            } else {
-                val priorityMatch = PRIORITY_REGEX.find(trimmed)
-                val priority = priorityMatch?.groups?.get(1)?.value?.firstOrNull()
-                val textToSearchDate =
-                    priorityMatch?.let { trimmed.substring(it.range.last + 1) } ?: trimmed
-                val dateMatch = DATE_REGEX.find(textToSearchDate)
-                val date = dateMatch?.groups?.get(1)?.value
-                undone.add(TodoItem(trimmed, false, priority, date, date, range))
+                // Common parsing logic
+                var priority: Char? = null
+                var creationDateStr: String? = null
+                var completionDateStr: String? = null
+
+                if (isDone) {
+                    val doneMatch = DONE_LINE_REGEX.find(content)
+                    if (doneMatch != null) {
+                        priority = doneMatch.groups["priorityChar"]?.value?.firstOrNull()
+                        completionDateStr = doneMatch.groups["completionDate"]?.value
+                        creationDateStr = doneMatch.groups["creationDate"]?.value
+                        // Remove prefix based on what was matched by DONE_LINE_REGEX
+                        content = content.substring(doneMatch.range.last + 1).trimStart()
+                    } else {
+                        // Handle case where it starts with "x " but doesn't match full DONE_LINE_REGEX
+                        content = content.removePrefix("x ").trimStart()
+                    }
+                } else {
+                    val priorityMatch = PRIORITY_REGEX.find(content)
+                    if (priorityMatch != null) {
+                        priority = priorityMatch.groups["priority"]?.value?.firstOrNull()
+                        content = content.substring(priorityMatch.range.last + 1).trimStart()
+                    }
+
+                    val dateMatch = DATE_REGEX.find(content)
+                    if (dateMatch != null) {
+                        val dateValue = dateMatch.groups["date"]?.value
+                        creationDateStr = dateValue
+                        completionDateStr = dateValue
+                        content = content.replaceFirst(dateMatch.value, "").trim()
+                    }
+                }
+
+                val todo =
+                    TodoItem(content, isDone, priority, creationDateStr, completionDateStr, range)
+                if (isDone) done.add(todo) else undone.add(todo)
+                currentOffset += line.length + 1
             }
+
+            // 排序逻辑
+            val priorityOrder: (Char?) -> Int = { it?.let { c -> c - 'A' } ?: 26 }
+            val dateOrder: (String?) -> String = { it ?: "9999-99-99" }
+
+            val undoneSorted = undone.sortedWith(
+                compareBy<TodoItem> { priorityOrder(it.priority) }
+                    .thenBy { dateOrder(it.completionDate) }
+            )
+            val doneSorted = done.sortedWith(
+                compareBy<TodoItem> { dateOrder(it.completionDate) }
+                    .thenBy { priorityOrder(it.priority) }
+            )
+
+            undoneSorted to doneSorted
         }
-
-        // 排序逻辑
-        val priorityOrder: (Char?) -> Int = { it?.let { c -> c - 'A' } ?: 26 }
-        val dateOrder: (String?) -> String = { it ?: "9999-99-99" }
-
-        val undoneSorted = undone.sortedWith(
-            compareBy<TodoItem> { priorityOrder(it.priority) }
-                .thenBy { dateOrder(it.sortDate) }
-        )
-        val doneSorted = done.sortedWith(
-            // 已完成任务通常按完成日期倒序排列，但这里按正序，与您原逻辑保持一致
-            compareBy<TodoItem> { dateOrder(it.sortDate) }
-                .thenBy { priorityOrder(it.priority) }
-        )
-
-        Pair(undoneSorted, doneSorted)
-    }
+}
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @Composable
@@ -141,19 +173,21 @@ fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
             }
     }
 
-    LazyColumn(modifier) {
+    LazyColumn(modifier.clipToBounds()) {
         // 待办
         if (undoneItems.isNotEmpty()) {
             stickyHeader {
                 Surface {
                     Text(
                         stringResource(Res.string.todo),
+                        color = MaterialTheme.colorScheme.secondary,
                         style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.fillParentMaxWidth().padding(8.dp)
+                        modifier = Modifier.fillParentMaxWidth()
+                            .padding(bottom = 8.dp, start = 16.dp, top = 4.dp)
                     )
                 }
             }
-            items(undoneItems, key = { it.raw + it.range.first }) { item ->
+            items(undoneItems, key = { it.content + it.range.first }) { item ->
                 SwipeableCard(
                     modifier = Modifier.animateItem().fillParentMaxWidth()
                         .padding(horizontal = 16.dp).padding(bottom = 8.dp),
@@ -165,7 +199,7 @@ fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
                         textFieldState.edit { delete(it.range.first, deleteUntil) }
                     },
                     toggleDoneState = {
-                        textFieldState.edit { insert(it.range.first, "x ") }
+                        textFieldState.edit { toggleLineStart("x ", it.range.first) }
                     }
                 )
             }
@@ -176,12 +210,14 @@ fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
                 Surface {
                     Text(
                         stringResource(Res.string.done),
+                        color = MaterialTheme.colorScheme.secondary,
                         style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.fillParentMaxWidth().padding(8.dp)
+                        modifier = Modifier.fillParentMaxWidth()
+                            .padding(bottom = 8.dp, start = 16.dp)
                     )
                 }
             }
-            items(doneItems, key = { it.raw + it.range.first }) { item ->
+            items(doneItems, key = { it.content + it.range.first }) { item ->
                 SwipeableCard(
                     modifier = Modifier.animateItem().fillParentMaxWidth()
                         .padding(horizontal = 16.dp).padding(bottom = 8.dp),
@@ -193,11 +229,7 @@ fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
                         textFieldState.edit { delete(it.range.first, deleteUntil) }
                     },
                     toggleDoneState = {
-                        val originalLine = textFieldState.text.substring(item.range)
-                        val newLine = originalLine.removePrefix("x ").trimStart()
-                        textFieldState.edit {
-                            replace(item.range.first, item.range.last + 1, newLine)
-                        }
+                        textFieldState.edit { toggleLineStart("x ", it.range.first) }
                     }
                 )
             }
@@ -239,8 +271,8 @@ private fun SwipeableCard(
         enableDismissFromEndToStart = true,
         onDismiss = {
             scope.launch {
-                state.reset()
                 onDelete(todoItem)
+                state.snapTo(SwipeToDismissBoxValue.Settled)
             }
         },
         content = { TodoCard(todoItem, toggleDoneState) }
@@ -261,26 +293,14 @@ private fun TodoCard(todoItem: TodoItem, toggleDoneState: (TodoItem) -> Unit) {
     }
     val textDecoration = if (todoItem.isDone) TextDecoration.LineThrough else null
 
-    // 提取内容
-    val content = remember(todoItem.raw) {
-        var s = todoItem.raw
-        if (todoItem.isDone) {
-            s = s.removePrefix("x ").trimStart()
-            s = s.replace(Regex("""^\d{4}-\d{2}-\d{2}( \d{4}-\d{2}-\d{2})? """), "")
-        }
-        s = s.replace(Regex("""^\([A-Z]\) """), "")
-        s = s.replace(Regex("""^\d{4}-\d{2}-\d{2} """), "")
-        s.trim()
-    }
-
     // 时间显示（本地化）
     val dateLabel = if (todoItem.isDone) {
-        todoItem.sortDate?.let { date ->
+        todoItem.completionDate?.let { date ->
             stringResource(Res.string.todo_completed_at, date)
         }
     } else {
-        todoItem.date?.let { date ->
-            stringResource(Res.string.todo_scheduled_at, date)
+        todoItem.creationDate?.let { date ->
+            stringResource(Res.string.todo_created_at, date)
         }
     }
 
@@ -315,16 +335,42 @@ private fun TodoCard(todoItem: TodoItem, toggleDoneState: (TodoItem) -> Unit) {
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = content,
+                    text = buildAnnotatedString {
+                        val text = todoItem.content
+                        append(text)
+                        // 高亮 context
+                        contextRegex.findAll(text).forEach { matchResult ->
+                            addStyle(
+                                style = contextStyle,
+                                start = matchResult.range.first,
+                                end = matchResult.range.last + 1
+                            )
+                        }
+
+                        // 高亮 project
+                        projectRegex.findAll(text).forEach { matchResult ->
+                            addStyle(
+                                style = projectStyle,
+                                start = matchResult.range.first,
+                                end = matchResult.range.last + 1
+                            )
+                        }
+
+                        metaRegex.findAll(text).forEach { matchResult ->
+                            addStyle(
+                                style = metaStyle,
+                                start = matchResult.range.first,
+                                end = matchResult.range.last + 1
+                            )
+                        }
+                    },
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontWeight = FontWeight.Medium,
                         textDecoration = textDecoration
                     ),
                     color = contentColor,
-                    maxLines = 3
                 )
                 if (!dateLabel.isNullOrBlank()) {
-                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = dateLabel,
                         style = MaterialTheme.typography.bodySmall,
