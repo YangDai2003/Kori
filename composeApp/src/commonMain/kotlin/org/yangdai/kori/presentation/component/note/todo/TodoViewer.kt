@@ -153,7 +153,7 @@ fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
                     )
                 }
             }
-            items(undoneItems, key = { it.raw }) { item ->
+            items(undoneItems, key = { it.raw + it.range.first }) { item ->
                 SwipeableCard(
                     modifier = Modifier.animateItem().fillParentMaxWidth()
                         .padding(horizontal = 16.dp).padding(bottom = 8.dp),
@@ -181,7 +181,7 @@ fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
                     )
                 }
             }
-            items(doneItems, key = { it.raw }) { item ->
+            items(doneItems, key = { it.raw + it.range.first }) { item ->
                 SwipeableCard(
                     modifier = Modifier.animateItem().fillParentMaxWidth()
                         .padding(horizontal = 16.dp).padding(bottom = 8.dp),
