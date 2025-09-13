@@ -1,32 +1,48 @@
 package org.yangdai.kori.presentation.component.note.todo
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.delete
+import androidx.compose.foundation.text.input.insert
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Circle
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -42,8 +58,10 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
+import org.yangdai.kori.presentation.component.note.todo.TodoFormat.priorityColors
 
 data class TodoItem(
     val raw: String,
@@ -51,62 +69,49 @@ data class TodoItem(
     val priority: Char?, // A~Z
     val date: String?,   // yyyy-MM-dd
     val sortDate: String?, // 用于排序的日期
+    val range: IntRange // 原文本中的范围
 )
+
+private val PRIORITY_REGEX = Regex("""^\(([A-Z])\) """)
+private val DATE_REGEX = Regex("""(?<=^|\s)(\d{4}-\d{2}-\d{2})(?=\s|$)""")
+private val DONE_REGEX = Regex("""^x\s""")
+private val DONE_DATE_REGEX =
+    Regex("""^x\s(?:\(([A-Z])\)\s)?(\d{4}-\d{2}-\d{2})(?:\s(\d{4}-\d{2}-\d{2}))?""")
 
 suspend fun processTodo(content: CharSequence): Pair<List<TodoItem>, List<TodoItem>> =
     withContext(Dispatchers.Default) {
-        val priorityRegex = Regex("""^\(([A-Z])\) """)
-        val dateRegex = Regex("""(?<=^|\s)(\d{4}-\d{2}-\d{2})(?=\s|$)""")
-        val doneRegex = Regex("""^x\s""")
-        val doneDateRegex =
-            Regex("""^x\s(?:\(([A-Z])\)\s)?(\d{4}-\d{2}-\d{2})(?:\s(\d{4}-\d{2}-\d{2}))?""")
-
         val undone = mutableListOf<TodoItem>()
         val done = mutableListOf<TodoItem>()
 
-        for (line in content.lines()) {
+        content.lines().forEachIndexed { _, line ->
             val trimmed = line.trim()
-            if (trimmed.isEmpty()) continue
+            if (trimmed.isEmpty()) return@forEachIndexed
 
-            if (doneRegex.containsMatchIn(trimmed)) {
-                var priority: Char? = null
-                var date: String? = null // 创建日期
-                var sortDate: String? = null // 完成日期
+            val startIndex = content.indexOf(line)
+            if (startIndex == -1) return@forEachIndexed
+            val range = startIndex until (startIndex + line.length)
 
-                val m = doneDateRegex.find(trimmed)
-                if (m != null) {
-                    // groupValues 索引: [0]是完整匹配, [1]是优先级, [2]是完成日期, [3]是创建日期
-                    val priorityStr = m.groupValues.getOrNull(1)
-                    if (!priorityStr.isNullOrEmpty()) {
-                        priority = priorityStr[0]
-                    }
-                    sortDate = m.groupValues.getOrNull(2) // 完成日期，用于排序
-                    date = m.groupValues.getOrNull(3)     // 创建日期 (可选)
-                }
-                done.add(TodoItem(trimmed, true, priority, date, sortDate))
+            if (DONE_REGEX.containsMatchIn(trimmed)) {
+                val match = DONE_DATE_REGEX.find(trimmed)
+                val priority = match?.groups?.get(1)?.value?.firstOrNull()
+                val completionDate = match?.groups?.get(2)?.value
+                val creationDate = match?.groups?.get(3)?.value
+                done.add(TodoItem(trimmed, true, priority, creationDate, completionDate, range))
             } else {
-                var priority: Char? = null
-                var date: String? = null
-
-                val priMatch = priorityRegex.find(trimmed)
-                if (priMatch != null) {
-                    priority = priMatch.groupValues[1][0]
-                }
-
-                // 从优先级之后开始查找
+                val priorityMatch = PRIORITY_REGEX.find(trimmed)
+                val priority = priorityMatch?.groups?.get(1)?.value?.firstOrNull()
                 val textToSearchDate =
-                    if (priMatch != null) trimmed.substring(priMatch.range.last + 1) else trimmed
-                val dateMatch = dateRegex.find(textToSearchDate)
-                if (dateMatch != null) {
-                    date = dateMatch.groupValues[1]
-                }
-                undone.add(TodoItem(trimmed, false, priority, date, date))
+                    priorityMatch?.let { trimmed.substring(it.range.last + 1) } ?: trimmed
+                val dateMatch = DATE_REGEX.find(textToSearchDate)
+                val date = dateMatch?.groups?.get(1)?.value
+                undone.add(TodoItem(trimmed, false, priority, date, date, range))
             }
         }
 
-        // 排序逻辑 (保持不变)
-        val priorityOrder: (Char?) -> Int = { c -> if (c == null) 26 else (c - 'A') }
+        // 排序逻辑
+        val priorityOrder: (Char?) -> Int = { it?.let { c -> c - 'A' } ?: 26 }
         val dateOrder: (String?) -> String = { it ?: "9999-99-99" }
+
         val undoneSorted = undone.sortedWith(
             compareBy<TodoItem> { priorityOrder(it.priority) }
                 .thenBy { dateOrder(it.sortDate) }
@@ -116,15 +121,13 @@ suspend fun processTodo(content: CharSequence): Pair<List<TodoItem>, List<TodoIt
             compareBy<TodoItem> { dateOrder(it.sortDate) }
                 .thenBy { priorityOrder(it.priority) }
         )
+
         Pair(undoneSorted, doneSorted)
     }
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @Composable
-fun TodoViewer(
-    textFieldState: TextFieldState,
-    modifier: Modifier,
-) {
+fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
     var undoneItems by remember { mutableStateOf(listOf<TodoItem>()) }
     var doneItems by remember { mutableStateOf(listOf<TodoItem>()) }
 
@@ -138,55 +141,116 @@ fun TodoViewer(
             }
     }
 
-    LazyColumn(modifier = modifier) {
+    LazyColumn(modifier) {
         // 待办
         if (undoneItems.isNotEmpty()) {
             stickyHeader {
-                Text(
-                    stringResource(Res.string.todo),
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                )
+                Surface {
+                    Text(
+                        stringResource(Res.string.todo),
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.fillParentMaxWidth().padding(8.dp)
+                    )
+                }
             }
-            items(undoneItems) { item ->
-                TodoCard(item)
+            items(undoneItems, key = { it.raw }) { item ->
+                SwipeableCard(
+                    modifier = Modifier.animateItem().fillParentMaxWidth()
+                        .padding(horizontal = 16.dp).padding(bottom = 8.dp),
+                    todoItem = item,
+                    onDelete = {
+                        val end = (it.range.last + 1).coerceAtMost(textFieldState.text.length)
+                        val nextCharIsNewline = textFieldState.text.getOrNull(end) == '\n'
+                        val deleteUntil = if (nextCharIsNewline) end + 1 else end
+                        textFieldState.edit { delete(it.range.first, deleteUntil) }
+                    },
+                    toggleDoneState = {
+                        textFieldState.edit { insert(it.range.first, "x ") }
+                    }
+                )
             }
         }
         // 已完成
         if (doneItems.isNotEmpty()) {
             stickyHeader {
-                Text(
-                    stringResource(Res.string.done),
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                )
+                Surface {
+                    Text(
+                        stringResource(Res.string.done),
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.fillParentMaxWidth().padding(8.dp)
+                    )
+                }
             }
-            items(doneItems) { item ->
-                TodoCard(item)
+            items(doneItems, key = { it.raw }) { item ->
+                SwipeableCard(
+                    modifier = Modifier.animateItem().fillParentMaxWidth()
+                        .padding(horizontal = 16.dp).padding(bottom = 8.dp),
+                    todoItem = item,
+                    onDelete = {
+                        val end = (it.range.last + 1).coerceAtMost(textFieldState.text.length)
+                        val nextCharIsNewline = textFieldState.text.getOrNull(end) == '\n'
+                        val deleteUntil = if (nextCharIsNewline) end + 1 else end
+                        textFieldState.edit { delete(it.range.first, deleteUntil) }
+                    },
+                    toggleDoneState = {
+                        val originalLine = textFieldState.text.substring(item.range)
+                        val newLine = originalLine.removePrefix("x ").trimStart()
+                        textFieldState.edit {
+                            replace(item.range.first, item.range.last + 1, newLine)
+                        }
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-private fun TodoCard(todoItem: TodoItem) {
-    // 优先级颜色表保持不变
-    val priorityColors = listOf(
-        Color(0xFFD32F2F), Color(0xFFF57C00), Color(0xFFFBC02D), Color(0xFF388E3C),
-        Color(0xFF1976D2), Color(0xFF7B1FA2), Color(0xFF0097A7), Color(0xFF5D4037),
-        Color(0xFF0288D1), Color(0xFF388E3C), Color(0xFF8D6E63), Color(0xFF455A64),
-        Color(0xFFAFB42B), Color(0xFFEC407A), Color(0xFF00ACC1), Color(0xFF43A047),
-        Color(0xFF6D4C41), Color(0xFF7E57C2), Color(0xFF26A69A), Color(0xFF9E9D24),
-        Color(0xFF8E24AA), Color(0xFF3949AB), Color(0xFFD84315), Color(0xFF00897B),
-        Color(0xFF6D4C41), Color(0xFFBDBDBD)
+private fun SwipeableCard(
+    modifier: Modifier,
+    todoItem: TodoItem,
+    onDelete: (TodoItem) -> Unit,
+    toggleDoneState: (TodoItem) -> Unit
+) {
+    val scope = rememberCoroutineScope()
+    val state = rememberSwipeToDismissBoxState()
+    SwipeToDismissBox(
+        state = state,
+        backgroundContent = {
+            when (state.dismissDirection) {
+                SwipeToDismissBoxValue.EndToStart -> {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Remove item",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Red, CardDefaults.shape)
+                            .wrapContentSize(Alignment.CenterEnd)
+                            .padding(12.dp),
+                        tint = Color.White
+                    )
+                }
+
+                else -> {}
+            }
+        },
+        modifier = modifier,
+        enableDismissFromStartToEnd = false,
+        enableDismissFromEndToStart = true,
+        onDismiss = {
+            scope.launch {
+                state.reset()
+                onDelete(todoItem)
+            }
+        },
+        content = { TodoCard(todoItem, toggleDoneState) }
     )
+}
+
+@Composable
+private fun TodoCard(todoItem: TodoItem, toggleDoneState: (TodoItem) -> Unit) {
     val priorityColor = todoItem.priority?.let { c ->
-        val idx = (c - 'A').coerceIn(0, 25)
-        priorityColors[idx]
+        priorityColors[(c - 'A').coerceIn(priorityColors.indices)]
     } ?: MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f) // 无优先级时给一个中性色
 
     // 根据是否完成来确定UI样式
@@ -195,7 +259,6 @@ private fun TodoCard(todoItem: TodoItem) {
     } else {
         MaterialTheme.colorScheme.onSurface
     }
-    val dateColor = MaterialTheme.colorScheme.onSurfaceVariant
     val textDecoration = if (todoItem.isDone) TextDecoration.LineThrough else null
 
     // 提取内容
@@ -221,32 +284,33 @@ private fun TodoCard(todoItem: TodoItem) {
         }
     }
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
-    ) {
+    Card(Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 优先级圆点或已完成图标
-            if (todoItem.isDone) {
-                Icon(
-                    imageVector = Icons.Filled.CheckCircle,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-                    modifier = Modifier.size(20.dp)
-                )
-            } else {
-                Icon(
-                    imageVector = Icons.Filled.Circle,
-                    contentDescription = null,
-                    tint = priorityColor,
-                    modifier = Modifier.size(20.dp)
-                )
+            Box(
+                modifier = Modifier.clip(CircleShape).clickable { toggleDoneState(todoItem) },
+                contentAlignment = Alignment.Center
+            ) {
+                // 优先级圆点或已完成图标
+                if (todoItem.isDone) {
+                    Icon(
+                        imageVector = Icons.Filled.CheckCircle,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                        modifier = Modifier.size(20.dp)
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Filled.Circle,
+                        contentDescription = null,
+                        tint = priorityColor,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
@@ -264,7 +328,7 @@ private fun TodoCard(todoItem: TodoItem) {
                     Text(
                         text = dateLabel,
                         style = MaterialTheme.typography.bodySmall,
-                        color = dateColor
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
