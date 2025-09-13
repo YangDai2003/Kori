@@ -27,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -48,7 +49,11 @@ import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.content
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.VerticalScrollbar
@@ -56,6 +61,7 @@ import org.yangdai.kori.presentation.util.isScreenWidthExpanded
 import kotlin.math.PI
 import kotlin.math.sin
 
+@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @Composable
 fun TextEditor(
     modifier: Modifier,
@@ -188,13 +194,16 @@ fun TextEditor(
         label = "wave-phase"
     )
 
-    val lintErrors by produceState(emptyList(), textFieldState.text, lint) {
-        value = if (lint != null) {
-            delay(300L) // 300ms 防抖
-            withContext(Dispatchers.Default) {
-                lint.validate(textFieldState.text.toString())
-            }
-        } else emptyList()
+    val lintErrors by produceState(emptyList(), lint) {
+        if (lint != null) {
+            snapshotFlow { textFieldState.text.toString() }
+                .debounce(300L)
+                .mapLatest { lint.validate(it) }
+                .flowOn(Dispatchers.Default)
+                .collect { value = it }
+        } else {
+            value = emptyList()
+        }
     }
 
     val searchPaths by remember {

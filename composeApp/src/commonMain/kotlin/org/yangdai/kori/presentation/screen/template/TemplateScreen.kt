@@ -71,14 +71,13 @@ import org.yangdai.kori.presentation.component.dialog.ExportDialog
 import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
 import org.yangdai.kori.presentation.component.dialog.ShareDialog
 import org.yangdai.kori.presentation.component.note.AIAssist
-import org.yangdai.kori.presentation.component.note.AdaptiveEditor
 import org.yangdai.kori.presentation.component.note.AdaptiveActionRow
+import org.yangdai.kori.presentation.component.note.AdaptiveEditor
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorViewer
 import org.yangdai.kori.presentation.component.note.AdaptiveViewer
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
-import org.yangdai.kori.presentation.component.note.ProcessedContent
 import org.yangdai.kori.presentation.component.note.TitleText
 import org.yangdai.kori.presentation.component.note.TitleTextField
 import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
@@ -98,7 +97,6 @@ fun TemplateScreen(
 ) {
     val editingState by viewModel.editingState.collectAsStateWithLifecycle()
     val editorState by viewModel.editorState.collectAsStateWithLifecycle()
-    val processedContent by viewModel.processedContent.collectAsStateWithLifecycle()
     val showAI by viewModel.showAI.collectAsStateWithLifecycle()
     val isGenerating by viewModel.isGenerating.collectAsStateWithLifecycle()
 
@@ -248,7 +246,8 @@ fun TemplateScreen(
                     viewer = if (editingState.noteType == NoteType.MARKDOWN || editingState.noteType == NoteType.TODO) { modifier ->
                         AdaptiveViewer(
                             modifier = modifier,
-                            processedContent = processedContent,
+                            noteType = editingState.noteType,
+                            textFieldState = viewModel.contentState,
                             scrollState = scrollState,
                             isSheetVisible = isSideSheetOpen,
                             printTrigger = printTrigger
@@ -381,10 +380,6 @@ fun TemplateScreen(
                 createdAt = editingState.createdAt,
                 updatedAt = editingState.updatedAt
             ),
-            html = when (val processedContent = processedContent) {
-                is ProcessedContent.Markdown -> processedContent.html
-                else -> ""
-            },
             onDismissRequest = { showExportDialog = false }
         )
     }

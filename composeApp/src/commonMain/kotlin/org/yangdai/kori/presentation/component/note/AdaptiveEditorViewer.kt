@@ -214,27 +214,28 @@ fun AdaptiveEditor(
 @Composable
 fun AdaptiveViewer(
     modifier: Modifier,
-    processedContent: ProcessedContent,
+    noteType: NoteType,
+    textFieldState: TextFieldState,
     scrollState: ScrollState,
     isSheetVisible: Boolean,
     printTrigger: MutableState<Boolean>
-) = when (processedContent) {
-    ProcessedContent.Empty -> Spacer(modifier)
-    is ProcessedContent.Markdown -> {
+) = when (noteType) {
+    NoteType.MARKDOWN -> {
         MarkdownViewer(
             modifier = modifier,
-            html = processedContent.html,
+            textFieldState = textFieldState,
             scrollState = scrollState,
             isSheetVisible = isSheetVisible,
             printTrigger = printTrigger
         )
     }
 
-    is ProcessedContent.Todo -> {
+    NoteType.TODO -> {
         TodoViewer(
             modifier = modifier,
-            undoneItems = processedContent.undoneItems,
-            doneItems = processedContent.doneItems
+            textFieldState = textFieldState
         )
     }
+
+    else -> Spacer(modifier)
 }

@@ -44,6 +44,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -55,6 +56,7 @@ import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import kfile.NoteExporter
+import kmark.html.HtmlGenerator
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.drawing
 import kori.composeapp.generated.resources.export_as
@@ -71,6 +73,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
+import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults
 import org.yangdai.kori.presentation.util.clickToShareFile
 import org.yangdai.kori.presentation.util.clickToShareText
 import org.yangdai.kori.presentation.util.clipEntryOf
@@ -80,7 +83,6 @@ import org.yangdai.kori.presentation.util.clipEntryOf
 fun ExportDialogPreview() {
     ExportDialog(
         noteEntity = NoteEntity(),
-        html = "",
         onDismissRequest = {}
     )
 }
@@ -162,11 +164,12 @@ enum class ExportType {
 @Composable
 fun ExportDialog(
     noteEntity: NoteEntity,
-    html: String,
     onDismissRequest: () -> Unit
 ) {
     var showSaveFileDialog by remember { mutableStateOf(false) }
     var exportType by remember { mutableStateOf(ExportType.TXT) }
+    var html by rememberSaveable { mutableStateOf("") }
+
     DialogWithoutButtons(
         onDismissRequest = onDismissRequest,
         title = { Text(stringResource(Res.string.export_as)) },
@@ -181,6 +184,17 @@ fun ExportDialog(
                     TextOptionButton(buttonText = "HTML") {
                         exportType = ExportType.HTML
                         showSaveFileDialog = true
+                    }
+
+                    LaunchedEffect(noteEntity.content) {
+                        val content = noteEntity.content
+                        val tree = MarkdownDefaults.parser.buildMarkdownTreeFromString(content)
+                        html = HtmlGenerator(
+                            content,
+                            tree,
+                            MarkdownDefaults.flavor,
+                            true
+                        ).generateHtml()
                     }
                 } else {
                     TextOptionButton(buttonText = "TXT") {

@@ -1,6 +1,7 @@
 package org.yangdai.kori.presentation.component.note.markdown
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -8,9 +9,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingPanel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -21,6 +24,11 @@ import javafx.scene.Scene
 import javafx.scene.web.WebView
 import kori.composeapp.generated.resources.Res
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 import org.yangdai.kori.presentation.theme.AppConfig
 import org.yangdai.kori.presentation.theme.LocalAppConfig
@@ -69,16 +77,25 @@ private fun processHtml(
     .replace("{{FONT_SCALE}}", "${(appConfig.fontScale * 100).roundToInt()}%")
     .replace("{{CONTENT}}", htmlContent)
 
+@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @Suppress("SetJavaScriptEnabled")
 @Composable
 actual fun MarkdownViewer(
     modifier: Modifier,
-    html: String,
+    textFieldState: TextFieldState,
     scrollState: ScrollState,
     isSheetVisible: Boolean,
     printTrigger: MutableState<Boolean>,
     styles: MarkdownStyles
 ) {
+    val html by produceState(initialValue = "") {
+        snapshotFlow { textFieldState.text }
+            .debounce(100L)
+            .mapLatest { processMarkdown(it.toString()) }
+            .flowOn(Dispatchers.Default)
+            .collect { value = it }
+    }
+
     var webView by remember { mutableStateOf<WebView?>(null) }
     // Store the latest processed HTML data for link interception reload
     var latestData by remember { mutableStateOf("") }

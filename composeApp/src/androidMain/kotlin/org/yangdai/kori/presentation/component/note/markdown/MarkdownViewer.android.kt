@@ -15,14 +15,17 @@ import android.webkit.WebViewClient
 import androidx.activity.compose.LocalActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
@@ -31,6 +34,11 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.webkit.WebViewAssetLoader
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 import org.yangdai.kori.presentation.component.dialog.ImageViewerDialog
 import org.yangdai.kori.presentation.theme.LocalAppConfig
@@ -39,11 +47,12 @@ import java.io.File
 import java.io.InputStreamReader
 import kotlin.math.roundToInt
 
+@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 actual fun MarkdownViewer(
     modifier: Modifier,
-    html: String,
+    textFieldState: TextFieldState,
     scrollState: ScrollState,
     isSheetVisible: Boolean,
     printTrigger: MutableState<Boolean>,
@@ -52,6 +61,14 @@ actual fun MarkdownViewer(
     val activity = LocalActivity.current
     val appConfig = LocalAppConfig.current
     val assets = LocalResources.current.assets
+
+    val html by produceState(initialValue = "") {
+        snapshotFlow { textFieldState.text }
+            .debounce(100L)
+            .mapLatest { processMarkdown(it.toString()) }
+            .flowOn(Dispatchers.Default)
+            .collect { value = it }
+    }
 
     var webView by remember { mutableStateOf<WebView?>(null) }
     var showDialog by remember { mutableStateOf(false) }

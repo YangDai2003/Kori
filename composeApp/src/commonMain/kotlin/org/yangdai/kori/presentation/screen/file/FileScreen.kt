@@ -102,7 +102,6 @@ fun FileScreen(
 ) {
     val editingState by viewModel.editingState.collectAsStateWithLifecycle()
     val editorState by viewModel.editorState.collectAsStateWithLifecycle()
-    val processedContent by viewModel.processedContent.collectAsStateWithLifecycle()
     val needSave by viewModel.needSave.collectAsStateWithLifecycle()
     val showAI by viewModel.showAI.collectAsStateWithLifecycle()
     val isGenerating by viewModel.isGenerating.collectAsStateWithLifecycle()
@@ -243,7 +242,8 @@ fun FileScreen(
                     viewer = if (editingState.fileType == NoteType.MARKDOWN || editingState.fileType == NoteType.TODO) { modifier ->
                         AdaptiveViewer(
                             modifier = modifier,
-                            processedContent = processedContent,
+                            noteType = editingState.fileType,
+                            textFieldState = viewModel.contentState,
                             scrollState = scrollState,
                             isSheetVisible = isSideSheetOpen || showTemplatesBottomSheet,
                             printTrigger = printTrigger

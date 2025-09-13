@@ -1,6 +1,7 @@
 package org.yangdai.kori.presentation.component.note.markdown
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.surfaceColorAtElevation
@@ -11,7 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import kmark.flavours.gfm.GFMFlavourDescriptor
+import kmark.html.HtmlGenerator
 import kmark.parser.MarkdownParser
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownStyles.Companion.rememberMarkdownStyles
 import org.yangdai.kori.presentation.theme.linkColor
 import org.yangdai.kori.presentation.util.toHexColor
@@ -48,10 +52,15 @@ object MarkdownDefaults {
     val parser = MarkdownParser(flavor)
 }
 
+suspend fun processMarkdown(content: String): String = withContext(Dispatchers.Default) {
+    val tree = MarkdownDefaults.parser.buildMarkdownTreeFromString(content)
+    HtmlGenerator(content, tree, MarkdownDefaults.flavor, true).generateHtml()
+}
+
 @Composable
 expect fun MarkdownViewer(
     modifier: Modifier,
-    html: String,
+    textFieldState: TextFieldState,
     scrollState: ScrollState,
     isSheetVisible: Boolean,
     printTrigger: MutableState<Boolean>,

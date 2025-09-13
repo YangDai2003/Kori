@@ -15,18 +15,14 @@ import knet.ai.AI
 import knet.ai.GenerationResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -40,9 +36,6 @@ import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.domain.sort.FolderSortType
 import org.yangdai.kori.presentation.component.note.AIAssistEvent
-import org.yangdai.kori.presentation.component.note.ProcessedContent
-import org.yangdai.kori.presentation.component.note.processMarkdown
-import org.yangdai.kori.presentation.component.note.processTodo
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.screen.settings.EditorPaneState
@@ -67,7 +60,6 @@ class NoteViewModel(
     // 笔记状态
     val titleState = TextFieldState()
     val contentState = TextFieldState()
-    private val contentSnapshotFlow = snapshotFlow { contentState.text }
 
     private val _uiEventChannel = Channel<UiEvent>()
     val uiEventFlow = _uiEventChannel.receiveAsFlow()
@@ -158,35 +150,6 @@ class NoteViewModel(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
             initialValue = emptyList()
-        )
-
-    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    val processedContent = _isInitialized.filter { it }
-        .flatMapLatest {
-            combine(
-                snapshotFlow { _noteEditingState.value.noteType },
-                contentSnapshotFlow.debounce(100)
-            ) { noteType, content ->
-                when (noteType) {
-                    NoteType.MARKDOWN -> {
-                        val processed = processMarkdown(content.toString())
-                        ProcessedContent.Markdown(processed)
-                    }
-
-                    NoteType.TODO -> {
-                        val (undone, done) = processTodo(content.lines())
-                        ProcessedContent.Todo(undone, done)
-                    }
-
-                    else -> ProcessedContent.Empty
-                }
-            }
-        }
-        .flowOn(Dispatchers.Default)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = ProcessedContent.Empty
         )
 
     fun saveOrUpdateNote() {

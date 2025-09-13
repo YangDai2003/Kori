@@ -19,18 +19,12 @@ import knet.ConnectivityObserver
 import knet.ai.AI
 import knet.ai.GenerationResult
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -40,9 +34,6 @@ import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.NoteRepository
 import org.yangdai.kori.presentation.component.note.AIAssistEvent
-import org.yangdai.kori.presentation.component.note.ProcessedContent
-import org.yangdai.kori.presentation.component.note.processMarkdown
-import org.yangdai.kori.presentation.component.note.processTodo
 import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.screen.settings.EditorPaneState
 import org.yangdai.kori.presentation.screen.settings.TemplatePaneState
@@ -144,35 +135,6 @@ class FileViewModel(
             isDefaultReadingView = isDefaultReadingView
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, EditorPaneState())
-
-    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    val processedContent = _isInitialized.filter { it }
-        .flatMapLatest {
-            combine(
-                snapshotFlow { _fileEditingState.value.fileType },
-                contentSnapshotFlow.debounce(100)
-            ) { noteType, content ->
-                when (noteType) {
-                    NoteType.MARKDOWN -> {
-                        val processed = processMarkdown(content.toString())
-                        ProcessedContent.Markdown(processed)
-                    }
-
-                    NoteType.TODO -> {
-                        val (undone, done) = processTodo(content.lines())
-                        ProcessedContent.Todo(undone, done)
-                    }
-
-                    else -> ProcessedContent.Empty
-                }
-            }
-        }
-        .flowOn(Dispatchers.Default)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = ProcessedContent.Empty
-        )
 
     fun saveFile(file: PlatformFile) {
         viewModelScope.launch(Dispatchers.IO) {
