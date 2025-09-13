@@ -44,7 +44,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
@@ -364,10 +363,7 @@ private fun TodoCard(todoItem: TodoItem, toggleDoneState: (TodoItem) -> Unit) {
                             )
                         }
                     },
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        fontWeight = FontWeight.Medium,
-                        textDecoration = textDecoration
-                    ),
+                    style = MaterialTheme.typography.bodyLarge.copy(textDecoration = textDecoration),
                     color = contentColor,
                 )
                 if (!dateLabel.isNullOrBlank()) {
