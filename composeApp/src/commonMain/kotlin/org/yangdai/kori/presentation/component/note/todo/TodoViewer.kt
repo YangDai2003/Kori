@@ -18,6 +18,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.delete
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckBox
+import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.Delete
@@ -252,7 +254,7 @@ private fun SwipeableCard(
                 SwipeToDismissBoxValue.EndToStart -> {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "Remove item",
+                        contentDescription = "Remove task",
                         modifier = Modifier
                             .fillMaxSize()
                             .background(Color.Red, CardDefaults.shape)
@@ -262,17 +264,36 @@ private fun SwipeableCard(
                     )
                 }
 
+                SwipeToDismissBoxValue.StartToEnd -> {
+                    Icon(
+                        if (todoItem.isDone) Icons.Default.CheckBox else Icons.Default.CheckBoxOutlineBlank,
+                        contentDescription = if (todoItem.isDone) "Done" else "Not done",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Blue, CardDefaults.shape)
+                            .wrapContentSize(Alignment.CenterStart)
+                            .padding(12.dp),
+                        tint = Color.White
+                    )
+                }
+
                 else -> {}
             }
         },
         modifier = modifier,
-        enableDismissFromStartToEnd = false,
-        enableDismissFromEndToStart = true,
-        onDismiss = {
-            scope.launch {
-                onDelete(todoItem)
-                state.snapTo(SwipeToDismissBoxValue.Settled)
+        onDismiss = { swipeToDismissBoxValue ->
+            when (swipeToDismissBoxValue) {
+                SwipeToDismissBoxValue.EndToStart -> {
+                    onDelete(todoItem)
+                }
+
+                SwipeToDismissBoxValue.StartToEnd -> {
+                    toggleDoneState(todoItem)
+                }
+
+                else -> {}
             }
+            scope.launch { state.snapTo(SwipeToDismissBoxValue.Settled) }
         },
         content = { TodoCard(todoItem, toggleDoneState) }
     )
