@@ -79,7 +79,7 @@ class TodoTransformation : OutputTransformation {
 
 object TodoFormat {
     // A-Z颜色表
-    private val priorityColors = listOf(
+    val priorityColors = listOf(
         0xFFD32F2F, // A 红
         0xFFF57C00, // B 橙
         0xFFFBC02D, // C 黄
