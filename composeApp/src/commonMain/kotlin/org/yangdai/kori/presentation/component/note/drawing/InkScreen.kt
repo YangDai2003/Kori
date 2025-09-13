@@ -358,6 +358,7 @@ fun InkScreen(
                     Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
                 }
                 Surface(
+                    modifier = Modifier.padding(start = 4.dp),
                     shape = CircleShape,
                     color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
                     border = IconButtonDefaults.outlinedIconButtonBorder(true)
