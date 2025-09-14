@@ -25,9 +25,9 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
+import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.Placeholders
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.processMarkdown
 import org.yangdai.kori.presentation.theme.AppConfig
-import org.yangdai.kori.presentation.theme.LocalAppConfig
 import org.yangdai.kori.presentation.util.toHexColor
 import org.yangdai.kori.presentation.util.toUIColor
 import platform.CoreGraphics.CGRectMake
@@ -67,20 +67,20 @@ private object StaticUris {
     val PRISM_DARK_CSS = Res.getUri("files/prism/prism-theme-dark.css")
 }
 
-private fun processHtml(
-    htmlTemplate: String,
+private fun String.processHtml(
     htmlContent: String,
-    markdownStyles: MarkdownStyles,
+    styles: MarkdownStyles,
     appConfig: AppConfig
-) = htmlTemplate
-    .replace("{{TEXT_COLOR}}", markdownStyles.hexTextColor)
-    .replace("{{BACKGROUND_COLOR}}", markdownStyles.backgroundColor.toHexColor())
-    .replace("{{CODE_BACKGROUND}}", markdownStyles.hexCodeBackgroundColor)
-    .replace("{{PRE_BACKGROUND}}", markdownStyles.hexPreBackgroundColor)
-    .replace("{{QUOTE_BACKGROUND}}", markdownStyles.hexQuoteBackgroundColor)
-    .replace("{{LINK_COLOR}}", markdownStyles.hexLinkColor)
-    .replace("{{BORDER_COLOR}}", markdownStyles.hexBorderColor)
-    .replace("{{COLOR_SCHEME}}", if (appConfig.darkMode) "dark" else "light")
+) = this
+    .replace(Placeholders.TEXT_COLOR, styles.hexTextColor)
+    .replace(Placeholders.BACKGROUND_COLOR, styles.backgroundColor.toHexColor())
+    .replace(Placeholders.CODE_BACKGROUND, styles.hexCodeBackgroundColor)
+    .replace(Placeholders.PRE_BACKGROUND, styles.hexPreBackgroundColor)
+    .replace(Placeholders.QUOTE_BACKGROUND, styles.hexQuoteBackgroundColor)
+    .replace(Placeholders.LINK_COLOR, styles.hexLinkColor)
+    .replace(Placeholders.BORDER_COLOR, styles.hexBorderColor)
+    .replace(Placeholders.COLOR_SCHEME, if (appConfig.darkMode) "dark" else "light")
+    .replace(Placeholders.FONT_SCALE, "${(appConfig.fontScale * 100).roundToInt()}%")
     .replace("{{MERMAID}}", StaticUris.MERMAID)
     .replace("{{KATEX}}", StaticUris.KATEX)
     .replace("{{KATEX-CSS}}", StaticUris.KATEX_CSS)
@@ -88,8 +88,7 @@ private fun processHtml(
     .replace("{{PRISM}}", StaticUris.PRISM)
     .replace("{{PRISM-LIGHT-CSS}}", StaticUris.PRISM_LIGHT_CSS)
     .replace("{{PRISM-DARK-CSS}}", StaticUris.PRISM_DARK_CSS)
-    .replace("{{FONT_SCALE}}", "${(appConfig.fontScale * 100).roundToInt()}%")
-    .replace("{{CONTENT}}", htmlContent)
+    .replace(Placeholders.CONTENT, htmlContent)
 
 @OptIn(ExperimentalForeignApi::class, FlowPreview::class, ExperimentalCoroutinesApi::class)
 @Composable
@@ -99,7 +98,8 @@ actual fun MarkdownViewer(
     scrollState: ScrollState,
     isSheetVisible: Boolean,
     printTrigger: MutableState<Boolean>,
-    styles: MarkdownStyles
+    styles: MarkdownStyles,
+    appConfig: AppConfig
 ) {
     val html by produceState(initialValue = "") {
         snapshotFlow { textFieldState.text }
@@ -112,7 +112,6 @@ actual fun MarkdownViewer(
     var webView by remember { mutableStateOf<WKWebView?>(null) }
     val navigationDelegate = remember { NavigationDelegate() }
     val schemeHandler = remember { LocalFileSchemeHandler() }
-    val appConfig = LocalAppConfig.current
     var htmlTemplate by rememberSaveable { mutableStateOf("") }
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
@@ -122,7 +121,7 @@ actual fun MarkdownViewer(
         }
     }
     val data = remember(html, styles, appConfig, htmlTemplate) {
-        processHtml(htmlTemplate, html, styles, appConfig)
+        htmlTemplate.processHtml(html, styles, appConfig)
     }
 
     UIKitView(

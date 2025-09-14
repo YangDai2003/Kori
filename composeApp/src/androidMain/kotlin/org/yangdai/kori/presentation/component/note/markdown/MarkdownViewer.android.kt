@@ -42,7 +42,8 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 import org.yangdai.kori.presentation.component.dialog.ImageViewerDialog
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.processMarkdown
-import org.yangdai.kori.presentation.theme.LocalAppConfig
+import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.Placeholders
+import org.yangdai.kori.presentation.theme.AppConfig
 import org.yangdai.kori.presentation.util.toHexColor
 import java.io.File
 import java.io.InputStreamReader
@@ -57,10 +58,10 @@ actual fun MarkdownViewer(
     scrollState: ScrollState,
     isSheetVisible: Boolean,
     printTrigger: MutableState<Boolean>,
-    styles: MarkdownStyles
+    styles: MarkdownStyles,
+    appConfig: AppConfig
 ) {
     val activity = LocalActivity.current
-    val appConfig = LocalAppConfig.current
     val assets = LocalResources.current.assets
 
     val html by produceState(initialValue = "") {
@@ -85,16 +86,16 @@ actual fun MarkdownViewer(
     val data = remember(html, styles, appConfig, htmlTemplate) {
         if (htmlTemplate.isEmpty()) ""
         else htmlTemplate
-            .replace("{{TEXT_COLOR}}", styles.hexTextColor)
-            .replace("{{BACKGROUND_COLOR}}", styles.backgroundColor.toHexColor())
-            .replace("{{CODE_BACKGROUND}}", styles.hexCodeBackgroundColor)
-            .replace("{{PRE_BACKGROUND}}", styles.hexPreBackgroundColor)
-            .replace("{{QUOTE_BACKGROUND}}", styles.hexQuoteBackgroundColor)
-            .replace("{{LINK_COLOR}}", styles.hexLinkColor)
-            .replace("{{BORDER_COLOR}}", styles.hexBorderColor)
-            .replace("{{COLOR_SCHEME}}", if (appConfig.darkMode) "dark" else "light")
-            .replace("{{FONT_SCALE}}", "${(appConfig.fontScale * 100).roundToInt()}%")
-            .replace("{{CONTENT}}", html)
+            .replace(Placeholders.TEXT_COLOR, styles.hexTextColor)
+            .replace(Placeholders.BACKGROUND_COLOR, styles.backgroundColor.toHexColor())
+            .replace(Placeholders.CODE_BACKGROUND, styles.hexCodeBackgroundColor)
+            .replace(Placeholders.PRE_BACKGROUND, styles.hexPreBackgroundColor)
+            .replace(Placeholders.QUOTE_BACKGROUND, styles.hexQuoteBackgroundColor)
+            .replace(Placeholders.LINK_COLOR, styles.hexLinkColor)
+            .replace(Placeholders.BORDER_COLOR, styles.hexBorderColor)
+            .replace(Placeholders.COLOR_SCHEME, if (appConfig.darkMode) "dark" else "light")
+            .replace(Placeholders.FONT_SCALE, "${(appConfig.fontScale * 100).roundToInt()}%")
+            .replace(Placeholders.CONTENT, html)
     }
 
     AndroidView(

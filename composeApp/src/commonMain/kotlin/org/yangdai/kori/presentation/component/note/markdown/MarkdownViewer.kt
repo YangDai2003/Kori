@@ -17,6 +17,8 @@ import kmark.parser.MarkdownParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownStyles.Companion.rememberMarkdownStyles
+import org.yangdai.kori.presentation.theme.AppConfig
+import org.yangdai.kori.presentation.theme.LocalAppConfig
 import org.yangdai.kori.presentation.theme.linkColor
 import org.yangdai.kori.presentation.util.toHexColor
 
@@ -48,6 +50,20 @@ data class MarkdownStyles(
 }
 
 object MarkdownDefaults {
+
+    object Placeholders {
+        const val TEXT_COLOR = "{{TEXT_COLOR}}"
+        const val BACKGROUND_COLOR = "{{BACKGROUND_COLOR}}"
+        const val CODE_BACKGROUND = "{{CODE_BACKGROUND}}"
+        const val PRE_BACKGROUND = "{{PRE_BACKGROUND}}"
+        const val QUOTE_BACKGROUND = "{{QUOTE_BACKGROUND}}"
+        const val LINK_COLOR = "{{LINK_COLOR}}"
+        const val BORDER_COLOR = "{{BORDER_COLOR}}"
+        const val COLOR_SCHEME = "{{COLOR_SCHEME}}"
+        const val FONT_SCALE = "{{FONT_SCALE}}"
+        const val CONTENT = "{{CONTENT}}"
+    }
+
     private val flavor = GFMFlavourDescriptor()
     val parser = MarkdownParser(flavor)
 
@@ -64,5 +80,6 @@ expect fun MarkdownViewer(
     scrollState: ScrollState,
     isSheetVisible: Boolean,
     printTrigger: MutableState<Boolean>,
-    styles: MarkdownStyles = rememberMarkdownStyles(MaterialTheme.colorScheme)
+    styles: MarkdownStyles = rememberMarkdownStyles(MaterialTheme.colorScheme),
+    appConfig: AppConfig = LocalAppConfig.current
 )
