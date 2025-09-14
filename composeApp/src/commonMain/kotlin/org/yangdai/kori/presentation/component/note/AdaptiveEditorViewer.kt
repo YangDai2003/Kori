@@ -61,14 +61,14 @@ import kotlin.math.abs
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ColumnScope.AdaptiveEditorViewer(
-    isLargeScreen: Boolean,
+    showDualPane: Boolean,
     pagerState: PagerState,
     editor: @Composable (Modifier) -> Unit,
     viewer: (@Composable (Modifier) -> Unit)?
 ) = if (viewer == null) {
     editor(Modifier.fillMaxWidth().weight(1f))
 } else {
-    if (isLargeScreen)
+    if (showDualPane)
         Row(
             modifier = Modifier.fillMaxWidth().weight(1f),
             verticalAlignment = Alignment.CenterVertically,

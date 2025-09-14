@@ -24,7 +24,7 @@ import org.yangdai.kori.presentation.component.main.MainScreenContent
 import org.yangdai.kori.presentation.component.main.NavigationDrawerContent
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.util.AppLockManager
-import org.yangdai.kori.presentation.util.isScreenWidthExpanded
+import org.yangdai.kori.presentation.util.rememberIsScreenWidthExpanded
 
 @Composable
 fun MainScreen(
@@ -32,7 +32,7 @@ fun MainScreen(
     navigateToScreen: (Screen) -> Unit
 ) {
     val scope = rememberCoroutineScope()
-    val isLargeScreen = isScreenWidthExpanded()
+    val isWideScreen = rememberIsScreenWidthExpanded()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     var currentDrawerItem by rememberSaveable(stateSaver = DrawerItem.Saver) {
         mutableStateOf(DrawerItem.AllNotes)
@@ -46,7 +46,7 @@ fun MainScreen(
     val isAppProtected by viewModel.isAppProtected.collectAsStateWithLifecycle()
 
     AdaptiveNavigationDrawerLayout(
-        isLargeScreen = isLargeScreen,
+        showPermanentDrawer = isWideScreen,
         drawerState = drawerState,
         drawerContent = {
             NavigationDrawerContent(
@@ -77,7 +77,7 @@ fun MainScreen(
             viewModel = viewModel,
             currentDrawerItem = currentDrawerItem,
             navigationIcon = {
-                if (!isLargeScreen) {
+                if (!isWideScreen) {
                     TooltipIconButton(
                         hint = stringResource(Res.string.open_navigation_drawer),
                         colors = IconButtonDefaults.iconButtonVibrantColors(),

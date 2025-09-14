@@ -84,7 +84,7 @@ import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.util.formatInstant
-import org.yangdai.kori.presentation.util.isScreenWidthExpanded
+import org.yangdai.kori.presentation.util.rememberIsScreenWidthExpanded
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -228,7 +228,7 @@ fun TemplateScreen(
                 // 绘画不能创建模版
             } else {
                 AdaptiveEditorViewer(
-                    isLargeScreen = isScreenWidthExpanded(),
+                    showDualPane = rememberIsScreenWidthExpanded(),
                     pagerState = pagerState,
                     editor = { modifier ->
                         AdaptiveEditor(

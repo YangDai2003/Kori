@@ -53,7 +53,7 @@ import kori.composeapp.generated.resources.replace
 import kori.composeapp.generated.resources.replace_all
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.yangdai.kori.presentation.util.isScreenWidthExpanded
+import org.yangdai.kori.presentation.util.rememberIsScreenWidthExpanded
 
 @Stable
 class FindAndReplaceState {
@@ -99,7 +99,7 @@ enum class ReplaceType {
 fun FindAndReplaceField(
     state: FindAndReplaceState,
     modifier: Modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp, bottom = 4.dp)
-) = if (isScreenWidthExpanded())
+) = if (rememberIsScreenWidthExpanded())
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically

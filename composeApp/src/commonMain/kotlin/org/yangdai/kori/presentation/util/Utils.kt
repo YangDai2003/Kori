@@ -10,9 +10,9 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @Composable
-fun isScreenWidthExpanded(): Boolean {
-    val windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    return windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
+fun rememberIsScreenWidthExpanded(): Boolean {
+    return currentWindowAdaptiveInfo().windowSizeClass
+        .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
 }
 
 fun Int.toHexColor(): String =

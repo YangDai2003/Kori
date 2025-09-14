@@ -134,7 +134,7 @@ import org.yangdai.kori.presentation.component.dialog.NoteSortOptionBottomSheet
 import org.yangdai.kori.presentation.component.main.card.NoteItemProperties
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.screen.main.MainViewModel
-import org.yangdai.kori.presentation.util.isScreenWidthExpanded
+import org.yangdai.kori.presentation.util.rememberIsScreenWidthExpanded
 
 data class Digit(val digitChar: Char, val fullNumber: Int, val place: Int) {
     override fun equals(other: Any?): Boolean {
@@ -171,7 +171,7 @@ fun MainScreenContent(
     var showFoldersDialog by remember { mutableStateOf(false) }
     val selectedNotes = remember { mutableStateSetOf<String>() }
     val isSelectionMode by remember { derivedStateOf { selectedNotes.isNotEmpty() } }
-    val isLargeScreen = isScreenWidthExpanded()
+    val isWideScreen = rememberIsScreenWidthExpanded()
     BackHandler(enabled = isSelectionMode) { selectedNotes.clear() }
     var fabMenuExpanded by remember { mutableStateOf(false) }
     LaunchedEffect(isSelectionMode) { if (isSelectionMode) fabMenuExpanded = false }
@@ -196,7 +196,7 @@ fun MainScreenContent(
             },
             placeholder = { Text(stringResource(Res.string.search)) },
             leadingIcon = {
-                Crossfade(isLargeScreen || searchBarState.currentValue == SearchBarValue.Expanded) { showSearchIcon ->
+                Crossfade(isWideScreen || searchBarState.currentValue == SearchBarValue.Expanded) { showSearchIcon ->
                     if (showSearchIcon)
                         IconButton(
                             colors = IconButtonDefaults.iconButtonVibrantColors(),
@@ -371,8 +371,8 @@ fun MainScreenContent(
                                 }
                             )
                         },
-                        contentPadding = if (!isLargeScreen) topBarPadding else TopAppBarDefaults.ContentPadding,
-                        windowInsets = if (isLargeScreen)
+                        contentPadding = if (!isWideScreen) topBarPadding else TopAppBarDefaults.ContentPadding,
+                        windowInsets = if (isWideScreen)
                             TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Top + WindowInsetsSides.End)
                         else TopAppBarDefaults.windowInsets,
                         colors = TopAppBarDefaults.topAppBarColors()
@@ -383,7 +383,7 @@ fun MainScreenContent(
                     if (currentDrawerItem is DrawerItem.AllNotes) {
                         val searchHistorySet by viewModel.searchHistorySet.collectAsStateWithLifecycle()
                         AdaptiveSearchBar(
-                            isLargeScreen = isLargeScreen,
+                            isLargeScreen = isWideScreen,
                             searchBarState = searchBarState,
                             inputField = inputField
                         ) {
@@ -537,8 +537,8 @@ fun MainScreenContent(
                                 }
                             },
                             navigationIcon = navigationIcon,
-                            contentPadding = if (!isLargeScreen) topBarPadding else TopAppBarDefaults.ContentPadding,
-                            windowInsets = if (isLargeScreen)
+                            contentPadding = if (!isWideScreen) topBarPadding else TopAppBarDefaults.ContentPadding,
+                            windowInsets = if (isWideScreen)
                                 TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Top + WindowInsetsSides.End)
                             else TopAppBarDefaults.windowInsets,
                             colors = TopAppBarDefaults.topAppBarColors()
@@ -588,7 +588,7 @@ fun MainScreenContent(
                     .fillMaxSize()
                     .background(
                         color = MaterialTheme.colorScheme.surface,
-                        shape = if (isLargeScreen) RoundedCornerShape(topStart = 12.dp)
+                        shape = if (isWideScreen) RoundedCornerShape(topStart = 12.dp)
                         else RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
                     ),
                 state = pagerState,

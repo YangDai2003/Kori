@@ -15,18 +15,18 @@ import androidx.compose.ui.unit.dp
 /**
  * A composable function that adapts the navigation drawer based on the screen size.
  *
- * @param isLargeScreen A boolean indicating whether the screen is large or not.
+ * @param showPermanentDrawer A boolean indicating whether the screen is large or not.
  * @param drawerState The state of the drawer.
  * @param drawerContent The content of the drawer.
  * @param content The main content.
  */
 @Composable
 fun AdaptiveNavigationDrawerLayout(
-    isLargeScreen: Boolean,
+    showPermanentDrawer: Boolean,
     drawerState: DrawerState,
     drawerContent: @Composable ColumnScope.() -> Unit,
     content: @Composable () -> Unit
-) = if (isLargeScreen) {
+) = if (showPermanentDrawer) {
     PermanentNavigationDrawer(
         drawerContent = {
             PermanentDrawerSheet(

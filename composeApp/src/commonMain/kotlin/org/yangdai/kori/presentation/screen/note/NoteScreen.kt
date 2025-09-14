@@ -122,7 +122,7 @@ import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.util.formatInstant
-import org.yangdai.kori.presentation.util.isScreenWidthExpanded
+import org.yangdai.kori.presentation.util.rememberIsScreenWidthExpanded
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -188,7 +188,7 @@ fun NoteScreen(
     var showAudioPicker by remember { mutableStateOf(false) }
     val printTrigger = remember { mutableStateOf(false) }
     val cachedImageBitmap = remember { mutableStateOf<ImageBitmap?>(null) }
-    val isLargeScreen = isScreenWidthExpanded()
+    val isWideScreen = rememberIsScreenWidthExpanded()
 
     val focusManager = LocalFocusManager.current
     LaunchedEffect(isReadView) {
@@ -236,7 +236,7 @@ fun NoteScreen(
                                 text = folderName, maxLines = 1, modifier = Modifier.basicMarquee()
                             )
                         }
-                        if (isLargeScreen)
+                        if (isWideScreen)
                             TitleText(
                                 state = viewModel.titleState,
                                 visible = !editingTitle,
@@ -280,7 +280,7 @@ fun NoteScreen(
                 end = innerPadding.calculateEndPadding(layoutDirection)
             )
         ) {
-            if (isLargeScreen) {
+            if (isWideScreen) {
                 AnimatedVisibility(editingTitle) {
                     TitleTextField(
                         state = viewModel.titleState,
@@ -313,7 +313,7 @@ fun NoteScreen(
                 )
             } else {
                 AdaptiveEditorViewer(
-                    isLargeScreen = isLargeScreen,
+                    showDualPane = isWideScreen,
                     pagerState = pagerState,
                     editor = { modifier ->
                         AdaptiveEditor(
