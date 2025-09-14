@@ -46,6 +46,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.content
 import kotlinx.coroutines.Dispatchers
@@ -274,11 +275,11 @@ fun TextEditor(
                                     withTransform({ translate(top = -currentScroll) }) {
                                         // 绘制搜索高亮
                                         searchPaths.forEachIndexed { index, path ->
-                                            drawPath(path, highlightBgColor, alpha = 0.5f)
+                                            drawPath(path, highlightBgColor, 0.5f)
                                             val borderColor =
                                                 if (index == currentRangeIndex) currentHighlightBorderColor
                                                 else otherHighlightBorderColor
-                                            drawPath(path, borderColor, style = Stroke(1.5f))
+                                            drawPath(path, borderColor, style = Stroke(1.sp.toPx()))
                                         }
                                         val currentPhase = phase
                                         // 绘制波浪线
