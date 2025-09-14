@@ -8,10 +8,10 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.composeHotReload)
     alias(libs.plugins.serialization)
     alias(libs.plugins.room)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.composeHotReload)
 }
 
 val os: OperatingSystem = OperatingSystem.current()
@@ -96,6 +96,10 @@ kotlin {
 
             implementation(libs.coil.compose)
             implementation(libs.koog.agents)
+        }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlin.testJunit)
         }
         iosMain.dependencies {}
         jvmMain.dependencies {
