@@ -1,4 +1,7 @@
+@file:OptIn(ExperimentalComposeLibrary::class)
+
 import org.gradle.internal.os.OperatingSystem
+import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -98,8 +101,8 @@ kotlin {
             implementation(libs.koog.agents)
         }
         commonTest.dependencies {
-            implementation(libs.kotlin.test)
-            implementation(libs.kotlin.testJunit)
+            implementation(kotlin("test"))
+            implementation(compose.uiTest)
         }
         iosMain.dependencies {}
         jvmMain.dependencies {
