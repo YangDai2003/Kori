@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -44,7 +43,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -188,7 +186,7 @@ fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
                     )
                 }
             }
-            items(undoneItems, key = { it.content + it.range.first }) { item ->
+            items(undoneItems, key = { it.range.toString() }) { item ->
                 SwipeableCard(
                     modifier = Modifier.animateItem().fillParentMaxWidth()
                         .padding(horizontal = 16.dp).padding(bottom = 8.dp),
@@ -218,7 +216,7 @@ fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
                     )
                 }
             }
-            items(doneItems, key = { it.content + it.range.first }) { item ->
+            items(doneItems, key = { it.range.toString() }) { item ->
                 SwipeableCard(
                     modifier = Modifier.animateItem().fillParentMaxWidth()
                         .padding(horizontal = 16.dp).padding(bottom = 8.dp),
@@ -252,29 +250,37 @@ private fun SwipeableCard(
         backgroundContent = {
             when (state.dismissDirection) {
                 SwipeToDismissBoxValue.EndToStart -> {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Remove task",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Red, CardDefaults.shape)
-                            .wrapContentSize(Alignment.CenterEnd)
-                            .padding(12.dp),
-                        tint = Color.White
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxSize().background(
+                            MaterialTheme.colorScheme.errorContainer,
+                            CardDefaults.shape
+                        ),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Remove task",
+                            modifier = Modifier.padding(end = 12.dp).size(20.dp),
+                            tint = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    }
                 }
 
                 SwipeToDismissBoxValue.StartToEnd -> {
-                    Icon(
-                        if (todoItem.isDone) Icons.Default.CheckBox else Icons.Default.CheckBoxOutlineBlank,
-                        contentDescription = if (todoItem.isDone) "Done" else "Not done",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Blue, CardDefaults.shape)
-                            .wrapContentSize(Alignment.CenterStart)
-                            .padding(12.dp),
-                        tint = Color.White
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxSize().background(
+                            MaterialTheme.colorScheme.surfaceContainer,
+                            CardDefaults.shape
+                        ),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        Icon(
+                            if (todoItem.isDone) Icons.Default.CheckBox else Icons.Default.CheckBoxOutlineBlank,
+                            contentDescription = if (todoItem.isDone) "Done" else "Not done",
+                            modifier = Modifier.padding(start = 12.dp).size(20.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
 
                 else -> {}
@@ -283,14 +289,8 @@ private fun SwipeableCard(
         modifier = modifier,
         onDismiss = { swipeToDismissBoxValue ->
             when (swipeToDismissBoxValue) {
-                SwipeToDismissBoxValue.EndToStart -> {
-                    onDelete(todoItem)
-                }
-
-                SwipeToDismissBoxValue.StartToEnd -> {
-                    toggleDoneState(todoItem)
-                }
-
+                SwipeToDismissBoxValue.EndToStart -> onDelete(todoItem)
+                SwipeToDismissBoxValue.StartToEnd -> toggleDoneState(todoItem)
                 else -> {}
             }
             scope.launch { state.snapTo(SwipeToDismissBoxValue.Settled) }
