@@ -7,7 +7,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
@@ -16,7 +15,7 @@ import kmark.html.HtmlGenerator
 import kmark.parser.MarkdownParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.yangdai.kori.presentation.component.note.markdown.MarkdownStyles.Companion.rememberMarkdownStyles
+import org.yangdai.kori.presentation.component.note.markdown.MarkdownStyles.Companion.toMarkdownStyles
 import org.yangdai.kori.presentation.theme.AppConfig
 import org.yangdai.kori.presentation.theme.LocalAppConfig
 import org.yangdai.kori.presentation.theme.linkColor
@@ -32,20 +31,15 @@ data class MarkdownStyles(
     val backgroundColor: Int
 ) {
     companion object {
-        private fun fromColorScheme(colorScheme: ColorScheme) = MarkdownStyles(
-            hexTextColor = colorScheme.onSurface.toArgb().toHexColor(),
-            hexCodeBackgroundColor = colorScheme.surfaceVariant.toArgb().toHexColor(),
-            hexPreBackgroundColor = colorScheme.surfaceColorAtElevation(1.dp).toArgb().toHexColor(),
-            hexQuoteBackgroundColor = colorScheme.secondaryContainer.toArgb().toHexColor(),
+        fun ColorScheme.toMarkdownStyles() = MarkdownStyles(
+            hexTextColor = this.onSurface.toArgb().toHexColor(),
+            hexCodeBackgroundColor = this.surfaceVariant.toArgb().toHexColor(),
+            hexPreBackgroundColor = this.surfaceColorAtElevation(1.dp).toArgb().toHexColor(),
+            hexQuoteBackgroundColor = this.secondaryContainer.toArgb().toHexColor(),
             hexLinkColor = linkColor.toArgb().toHexColor(),
-            hexBorderColor = colorScheme.outline.toArgb().toHexColor(),
-            backgroundColor = colorScheme.surface.toArgb()
+            hexBorderColor = this.outline.toArgb().toHexColor(),
+            backgroundColor = this.surface.toArgb()
         )
-
-        @Composable
-        fun rememberMarkdownStyles(colorScheme: ColorScheme): MarkdownStyles {
-            return remember(colorScheme) { fromColorScheme(colorScheme) }
-        }
     }
 }
 
@@ -80,6 +74,6 @@ expect fun MarkdownViewer(
     scrollState: ScrollState,
     isSheetVisible: Boolean,
     printTrigger: MutableState<Boolean>,
-    styles: MarkdownStyles = rememberMarkdownStyles(MaterialTheme.colorScheme),
+    styles: MarkdownStyles = MaterialTheme.colorScheme.toMarkdownStyles(),
     appConfig: AppConfig = LocalAppConfig.current
 )
