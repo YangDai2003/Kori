@@ -21,16 +21,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.webkit.WebViewAssetLoader
 import kotlinx.coroutines.Dispatchers
@@ -39,14 +36,13 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.withContext
 import org.yangdai.kori.presentation.component.dialog.ImageViewerDialog
-import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.processMarkdown
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.Placeholders
+import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.escaped
+import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.processMarkdown
 import org.yangdai.kori.presentation.theme.AppConfig
 import org.yangdai.kori.presentation.util.toHexColor
 import java.io.File
-import java.io.InputStreamReader
 import kotlin.math.roundToInt
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
@@ -61,31 +57,8 @@ actual fun MarkdownViewer(
     styles: MarkdownStyles,
     appConfig: AppConfig
 ) {
-    val activity = LocalActivity.current
-    val assets = LocalResources.current.assets
-
-    val html by produceState(initialValue = "") {
-        snapshotFlow { textFieldState.text }
-            .debounce(100L)
-            .mapLatest { processMarkdown(it.toString()) }
-            .flowOn(Dispatchers.Default)
-            .collect { value = it }
-    }
-
-    var webView by remember { mutableStateOf<WebView?>(null) }
-    var showDialog by remember { mutableStateOf(false) }
-    var clickedImageUrl by remember { mutableStateOf("") }
-    var htmlTemplate by rememberSaveable { mutableStateOf("") }
-    LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) {
-            htmlTemplate = runCatching {
-                InputStreamReader(assets.open("template_for_android.html")).use { it.readText() }
-            }.getOrDefault("")
-        }
-    }
-    val data = remember(html, styles, appConfig, htmlTemplate) {
-        if (htmlTemplate.isEmpty()) ""
-        else htmlTemplate
+    val template = remember(styles, appConfig) {
+        HTMLTemplate
             .replace(Placeholders.TEXT_COLOR, styles.hexTextColor)
             .replace(Placeholders.BACKGROUND_COLOR, styles.backgroundColor.toHexColor())
             .replace(Placeholders.CODE_BACKGROUND, styles.hexCodeBackgroundColor)
@@ -95,8 +68,10 @@ actual fun MarkdownViewer(
             .replace(Placeholders.BORDER_COLOR, styles.hexBorderColor)
             .replace(Placeholders.COLOR_SCHEME, if (appConfig.darkMode) "dark" else "light")
             .replace(Placeholders.FONT_SCALE, "${(appConfig.fontScale * 100).roundToInt()}%")
-            .replace(Placeholders.CONTENT, html)
     }
+
+    var webView by remember { mutableStateOf<WebView?>(null) }
+    var clickedImageUrl by remember { mutableStateOf<String?>(null) }
 
     AndroidView(
         modifier = modifier.clipToBounds(),
@@ -113,7 +88,6 @@ actual fun MarkdownViewer(
                         @JavascriptInterface
                         fun onImageClick(urlStr: String) {
                             clickedImageUrl = urlStr
-                            showDialog = true
                         }
                     },
                     "imageInterface"
@@ -145,14 +119,32 @@ actual fun MarkdownViewer(
         }
     )
 
-    LaunchedEffect(data, webView) {
-        webView?.loadDataWithBaseURL(
+    LaunchedEffect(webView, template) {
+        val currentWebView = webView ?: return@LaunchedEffect
+        currentWebView.loadDataWithBaseURL(
             "https://${WebViewAssetLoader.DEFAULT_DOMAIN}/",
-            data,
+            template,
             "text/html",
             "UTF-8",
             null
         )
+        snapshotFlow { textFieldState.text }
+            .debounce(200L)
+            .mapLatest { markdownText ->
+                // Escape HTML content for safe injection into a JavaScript template literal
+                processMarkdown(markdownText.toString()).escaped()
+            }
+            .flowOn(Dispatchers.Default)
+            .collect { escapedHtml ->
+                val script = """
+                    if (typeof updateMarkdownContent === 'function') {
+                        updateMarkdownContent(`$escapedHtml`);
+                    } else {
+                        console.error('updateMarkdownContent function not found');
+                    }
+                """.trimIndent()
+                currentWebView.evaluateJavascript(script, null)
+            }
     }
 
     LaunchedEffect(scrollState.value, scrollState.maxValue) {
@@ -166,7 +158,7 @@ actual fun MarkdownViewer(
         val script = """
         (function() {
             // Only scroll if not currently loading to avoid conflicts
-             if (document.readyState === 'complete' || document.readyState === 'interactive') { // Basic check
+             if (document.readyState === 'complete' || document.readyState === 'interactive') {
                 const d = document.documentElement;
                 const b = document.body;
                 const maxHeight = Math.max(
@@ -175,7 +167,7 @@ actual fun MarkdownViewer(
                 );
                 window.scrollTo({
                     top: maxHeight * $currentScrollPercent,
-                    behavior: 'auto' // Use 'auto' for immediate jump syncing with ScrollState
+                    behavior: 'auto'
                 });
              }
         })();
@@ -184,17 +176,19 @@ actual fun MarkdownViewer(
         webViewInstance.evaluateJavascript(script, null)
     }
 
+    val activity = LocalActivity.current
     LaunchedEffect(printTrigger.value) {
         if (!printTrigger.value) return@LaunchedEffect
         webView?.let { createWebPrintJob(it, activity) }
         printTrigger.value = false
     }
 
-    if (showDialog)
+    clickedImageUrl?.let {
         ImageViewerDialog(
-            onDismissRequest = { showDialog = false },
-            imageUrl = clickedImageUrl,
+            onDismissRequest = { clickedImageUrl = null },
+            imageUrl = it,
         )
+    }
 }
 
 private class WVClient(context: Context) : WebViewClient() {

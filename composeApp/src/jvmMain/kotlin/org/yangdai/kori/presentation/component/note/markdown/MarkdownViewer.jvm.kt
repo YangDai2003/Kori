@@ -9,9 +9,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
@@ -29,8 +28,9 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.Placeholders
+import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.escaped
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.processMarkdown
 import org.yangdai.kori.presentation.theme.AppConfig
 import org.yangdai.kori.presentation.util.AppLockManager
@@ -41,8 +41,7 @@ import java.awt.event.MouseWheelEvent
 import java.net.URI
 import kotlin.math.roundToInt
 
-@Suppress("unused")
-private val jfxPanel = InteropPanel()
+val jfxPanel = InteropPanel()
 
 private object StaticUris {
     val MERMAID = Res.getUri("files/mermaid.min.js")
@@ -54,11 +53,7 @@ private object StaticUris {
     val PRISM_DARK_CSS = Res.getUri("files/prism/prism-theme-dark.css")
 }
 
-private fun String.processHtml(
-    htmlContent: String,
-    styles: MarkdownStyles,
-    appConfig: AppConfig
-) = this
+private fun String.processHtml(styles: MarkdownStyles, appConfig: AppConfig) = this
     .replace(Placeholders.TEXT_COLOR, styles.hexTextColor)
     .replace(Placeholders.BACKGROUND_COLOR, styles.backgroundColor.toHexColor())
     .replace(Placeholders.CODE_BACKGROUND, styles.hexCodeBackgroundColor)
@@ -75,7 +70,6 @@ private fun String.processHtml(
     .replace("{{PRISM}}", StaticUris.PRISM)
     .replace("{{PRISM-LIGHT-CSS}}", StaticUris.PRISM_LIGHT_CSS)
     .replace("{{PRISM-DARK-CSS}}", StaticUris.PRISM_DARK_CSS)
-    .replace(Placeholders.CONTENT, htmlContent)
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @Suppress("SetJavaScriptEnabled")
@@ -89,25 +83,18 @@ actual fun MarkdownViewer(
     styles: MarkdownStyles,
     appConfig: AppConfig
 ) {
-    val html by produceState(initialValue = "") {
-        snapshotFlow { textFieldState.text }
-            .debounce(100L)
-            .mapLatest { processMarkdown(it.toString()) }
-            .flowOn(Dispatchers.Default)
-            .collect { value = it }
+    val scope = rememberCoroutineScope()
+    val template = remember(styles, appConfig) {
+        HTMLTemplate.processHtml(styles, appConfig)
     }
 
     var webView by remember { mutableStateOf<WebView?>(null) }
-    // Store the latest processed HTML data for link interception reload
-    var latestData by remember { mutableStateOf("") }
 
     // Effect to initialize JavaFX environment and WebView
     DisposableEffect(Unit) {
         Platform.runLater { // Run on JavaFX Application Thread
-            val wv = WebView()
-            webView = wv
-            val engine = wv.engine
-            engine.isJavaScriptEnabled = true
+            val wv = WebView().also { webView = it }
+            val engine = wv.engine.apply { isJavaScriptEnabled = true }
 
             // --- Link Click Handling ---
             engine.locationProperty().addListener { _, oldLocation, newLocation ->
@@ -128,9 +115,38 @@ actual fun MarkdownViewer(
                         Platform.runLater {
                             // IMPORTANT: Prevent the WebView from navigating by reloading the original content
                             // The loadWorker listener above will handle restoring the scroll position.
-                            engine.loadContent(latestData, "text/html")
+                            engine.loadContent(template, "text/html")
                         }
                     }
+                }
+            }
+
+            // --- Loading State Handling ---
+            engine.loadWorker.stateProperty().addListener { _, _, newState ->
+                if (newState === Worker.State.SUCCEEDED) {
+                    scope.launch {
+                        snapshotFlow { textFieldState.text }
+                            .debounce(200L)
+                            .mapLatest { markdownText ->
+                                // Escape HTML content for safe injection into a JavaScript template literal
+                                processMarkdown(markdownText.toString()).escaped()
+                            }
+                            .flowOn(Dispatchers.Default)
+                            .collect { escapedHtml ->
+                                val script = """
+                                    if (typeof updateMarkdownContent === 'function') {
+                                        updateMarkdownContent(`$escapedHtml`);
+                                    } else {
+                                        console.error('updateMarkdownContent function not found');
+                                    }
+                                """.trimIndent()
+                                Platform.runLater {
+                                    wv.engine.executeScript(script)
+                                }
+                            }
+                    }
+                } else if (newState === Worker.State.FAILED) {
+                    println("WebView failed to load content.")
                 }
             }
 
@@ -140,23 +156,10 @@ actual fun MarkdownViewer(
 
         onDispose {
             Platform.runLater {
-                webView?.engine?.load(null) // Stop loading
-                webView = null
+                webView?.engine?.load(null)
                 jfxPanel.scene = null // Clean up scene
             }
         }
-    }
-
-    var htmlTemplate by rememberSaveable { mutableStateOf("") }
-    LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) {
-            htmlTemplate = runCatching {
-                Res.readBytes("files/template.html").decodeToString()
-            }.getOrDefault("")
-        }
-    }
-    val data = remember(html, styles, appConfig, htmlTemplate) {
-        htmlTemplate.processHtml(html, styles, appConfig)
     }
 
     // Embed the JFXPanel using SwingPanel
@@ -166,12 +169,10 @@ actual fun MarkdownViewer(
         background = MaterialTheme.colorScheme.background
     )
 
-    LaunchedEffect(data, webView) {
-        webView?.let {
-            latestData = data
-            Platform.runLater {
-                it.engine.loadContent(latestData, "text/html")
-            }
+    LaunchedEffect(template, webView) {
+        val currentWebView = webView ?: return@LaunchedEffect
+        Platform.runLater {
+            currentWebView.engine.loadContent(template, "text/html")
         }
     }
 
@@ -238,7 +239,7 @@ actual fun MarkdownViewer(
     }
 }
 
-private class InteropPanel : JFXPanel() {
+class InteropPanel : JFXPanel() {
 
     private var mouseEventEnabled = true
 

@@ -7,9 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
@@ -20,12 +18,11 @@ import kotlinx.cinterop.ObjCSignatureOverride
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.withContext
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.Placeholders
+import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.escaped
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.processMarkdown
 import org.yangdai.kori.presentation.theme.AppConfig
 import org.yangdai.kori.presentation.util.toHexColor
@@ -67,11 +64,7 @@ private object StaticUris {
     val PRISM_DARK_CSS = Res.getUri("files/prism/prism-theme-dark.css")
 }
 
-private fun String.processHtml(
-    htmlContent: String,
-    styles: MarkdownStyles,
-    appConfig: AppConfig
-) = this
+private fun String.processHtml(styles: MarkdownStyles, appConfig: AppConfig) = this
     .replace(Placeholders.TEXT_COLOR, styles.hexTextColor)
     .replace(Placeholders.BACKGROUND_COLOR, styles.backgroundColor.toHexColor())
     .replace(Placeholders.CODE_BACKGROUND, styles.hexCodeBackgroundColor)
@@ -88,7 +81,6 @@ private fun String.processHtml(
     .replace("{{PRISM}}", StaticUris.PRISM)
     .replace("{{PRISM-LIGHT-CSS}}", StaticUris.PRISM_LIGHT_CSS)
     .replace("{{PRISM-DARK-CSS}}", StaticUris.PRISM_DARK_CSS)
-    .replace(Placeholders.CONTENT, htmlContent)
 
 @OptIn(ExperimentalForeignApi::class, FlowPreview::class, ExperimentalCoroutinesApi::class)
 @Composable
@@ -101,34 +93,20 @@ actual fun MarkdownViewer(
     styles: MarkdownStyles,
     appConfig: AppConfig
 ) {
-    val html by produceState(initialValue = "") {
-        snapshotFlow { textFieldState.text }
-            .debounce(100L)
-            .mapLatest { processMarkdown(it.toString()) }
-            .flowOn(Dispatchers.Default)
-            .collect { value = it }
+    val template = remember(styles, appConfig) {
+        HTMLTemplate.processHtml(styles, appConfig)
     }
 
     var webView by remember { mutableStateOf<WKWebView?>(null) }
     val navigationDelegate = remember { NavigationDelegate() }
     val schemeHandler = remember { LocalFileSchemeHandler() }
-    var htmlTemplate by rememberSaveable { mutableStateOf("") }
-    LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) {
-            htmlTemplate = runCatching {
-                Res.readBytes("files/template_for_ios.html").decodeToString()
-            }.getOrDefault("")
-        }
-    }
-    val data = remember(html, styles, appConfig, htmlTemplate) {
-        htmlTemplate.processHtml(html, styles, appConfig)
-    }
 
     UIKitView(
         factory = {
-            val config = WKWebViewConfiguration()
-            config.preferences().javaScriptEnabled = true
-            config.setURLSchemeHandler(schemeHandler, IOS_CUSTOM_SCHEME)
+            val config = WKWebViewConfiguration().apply {
+                preferences.javaScriptEnabled = true
+                setURLSchemeHandler(schemeHandler, IOS_CUSTOM_SCHEME)
+            }
 
             WKWebView(frame = CGRectMake(0.0, 0.0, 0.0, 0.0), configuration = config).apply {
                 this.opaque = false // To stop 'white flash'
@@ -146,8 +124,26 @@ actual fun MarkdownViewer(
         }
     )
 
-    LaunchedEffect(data, webView) {
-        webView?.loadHTMLString(data, baseURL = NSBundle.mainBundle.resourceURL)
+    LaunchedEffect(template, webView) {
+        val currentWebView = webView ?: return@LaunchedEffect
+        currentWebView.loadHTMLString(template, baseURL = NSBundle.mainBundle.resourceURL)
+        snapshotFlow { textFieldState.text }
+            .debounce(200L)
+            .mapLatest { markdownText ->
+                // Escape HTML content for safe injection into a JavaScript template literal
+                processMarkdown(markdownText.toString()).escaped()
+            }
+            .flowOn(Dispatchers.Default)
+            .collect { escapedHtml ->
+                val script = """
+                    if (typeof updateMarkdownContent === 'function') {
+                        updateMarkdownContent(`$escapedHtml`);
+                    } else {
+                        console.error('updateMarkdownContent function not found');
+                    }
+                """.trimIndent()
+                currentWebView.evaluateJavaScript(script, null)
+            }
     }
 
     LaunchedEffect(scrollState.value, scrollState.maxValue) {

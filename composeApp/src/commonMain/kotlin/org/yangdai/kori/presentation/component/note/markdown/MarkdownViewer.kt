@@ -65,6 +65,13 @@ object MarkdownDefaults {
         val tree = parser.buildMarkdownTreeFromString(content)
         HtmlGenerator(content, tree, flavor, true).generateHtml()
     }
+
+    fun String.escaped(): String =
+        this.replace("\\", "\\\\") // Escape backslashes
+            .replace("`", "\\`")   // Escape backticks
+            .replace("'", "\\'")   // Escape single quotes
+            .replace("\n", "\\n")  // Escape newlines
+            .replace("\r", "")     // Remove carriage returns
 }
 
 @Composable
