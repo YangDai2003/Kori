@@ -387,7 +387,6 @@ val HTMLTemplate = """
             if (typeof mermaid !== 'undefined') {
                 mermaid.initialize({
                     startOnLoad: false,
-                    theme: isDarkMode ? 'dark' : 'default',
                     suppressErrorRendering: true
                 });
             }
