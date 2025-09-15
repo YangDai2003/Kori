@@ -6,7 +6,7 @@ val HTMLTemplate = """
     <head>
         <meta charset="UTF-8">
         <meta name="viewport"
-              content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+              content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=3.0, user-scalable=yes">
         <meta name="color-scheme" content="{{COLOR_SCHEME}}">
         <meta name="theme-color" content="{{BACKGROUND_COLOR}}">
         <title>Markdown</title>
