@@ -24,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.viewinterop.AndroidView
@@ -74,25 +73,18 @@ actual fun MarkdownViewer(
     var clickedImageUrl by remember { mutableStateOf<String?>(null) }
 
     AndroidView(
-        modifier = modifier.clipToBounds(),
+        modifier = modifier,
         factory = {
             WebView(it).apply {
-                webView = this
+                setBackgroundColor(Color.Transparent.toArgb())
+                setLayerType(View.LAYER_TYPE_HARDWARE, null)
+                clipToOutline = true
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
-                addJavascriptInterface(
-                    object {
-                        @Suppress("unused")
-                        @JavascriptInterface
-                        fun onImageClick(urlStr: String) {
-                            clickedImageUrl = urlStr
-                        }
-                    },
-                    "imageInterface"
-                )
-                setLayerType(View.LAYER_TYPE_HARDWARE, null)
+                webView = this
+                webViewClient = WVClient(it)
                 isVerticalScrollBarEnabled = true
                 isHorizontalScrollBarEnabled = false
                 settings.apply {
@@ -107,14 +99,22 @@ actual fun MarkdownViewer(
                     useWideViewPort = true
                     loadWithOverviewMode = false
                 }
-                this.webViewClient = WVClient(it)
-                setBackgroundColor(Color.Transparent.toArgb())
+                addJavascriptInterface(
+                    object {
+                        @Suppress("unused")
+                        @JavascriptInterface
+                        fun onImageClick(urlStr: String) {
+                            clickedImageUrl = urlStr
+                        }
+                    },
+                    "imageInterface"
+                )
             }
         },
         onReset = {
-            it.clearHistory()
             it.stopLoading()
-            it.destroy()
+            it.loadUrl("about:blank")
+            it.clearHistory()
             webView = null
         }
     )

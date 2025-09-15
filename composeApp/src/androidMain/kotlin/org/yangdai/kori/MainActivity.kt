@@ -1,6 +1,7 @@
 package org.yangdai.kori
 
 import android.os.Bundle
+import android.webkit.WebView
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -28,10 +29,14 @@ import org.yangdai.kori.presentation.util.AppLockManager
 import org.yangdai.kori.presentation.util.Constants
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var webView: WebView   // 预热 webview
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         window.isNavigationBarContrastEnforced = false
         super.onCreate(savedInstanceState)
+        webView = WebView(this)
+        webView.loadUrl("about:blank")
         setContent {
             val mainViewModel: MainViewModel = koinViewModel<MainViewModel>()
             val stylePaneState by mainViewModel.stylePaneState.collectAsStateWithLifecycle()
@@ -132,5 +137,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        webView.destroy()
     }
 }
