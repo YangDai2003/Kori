@@ -1,6 +1,5 @@
 package org.yangdai.kori.presentation.component.note.markdown
 
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,6 +21,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.Placeholders
+import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.createScrollToOffsetScript
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.escaped
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.processMarkdown
 import org.yangdai.kori.presentation.theme.AppConfig
@@ -87,7 +87,7 @@ private fun String.processHtml(styles: MarkdownStyles, appConfig: AppConfig) = t
 actual fun MarkdownViewer(
     modifier: Modifier,
     textFieldState: TextFieldState,
-    scrollState: ScrollState,
+    firstVisibleCharPositon: Int,
     isSheetVisible: Boolean,
     printTrigger: MutableState<Boolean>,
     styles: MarkdownStyles,
@@ -146,32 +146,11 @@ actual fun MarkdownViewer(
             }
     }
 
-    LaunchedEffect(scrollState.value, scrollState.maxValue) {
-        val webViewInstance = webView ?: return@LaunchedEffect
-        val totalHeight = scrollState.maxValue
-        val currentScroll = scrollState.value
-        if (totalHeight <= 0) return@LaunchedEffect
-
-        // Calculate scroll percentage (0.0 to 1.0)
-        val currentScrollPercent = (currentScroll.toFloat() / totalHeight).coerceIn(0f, 1f)
-        val script = """
-        (function() {
-            // Only scroll if not currently loading to avoid conflicts
-             if (document.readyState === 'complete' || document.readyState === 'interactive') { // Basic check
-                const d = document.documentElement;
-                const b = document.body;
-                const maxHeight = Math.max(
-                    d.scrollHeight, d.offsetHeight, d.clientHeight,
-                    b.scrollHeight, b.offsetHeight
-                );
-                window.scrollTo({
-                    top: maxHeight * $currentScrollPercent,
-                    behavior: 'auto' // Use 'auto' for immediate jump syncing with ScrollState
-                });
-             }
-        })();
-        """.trimIndent()
-        webViewInstance.evaluateJavaScript(script, null)
+    LaunchedEffect(firstVisibleCharPositon, webView) {
+        webView?.let {
+            val script = firstVisibleCharPositon.createScrollToOffsetScript()
+            it.evaluateJavaScript(script, null)
+        }
     }
 
     LaunchedEffect(printTrigger.value) {
@@ -183,13 +162,9 @@ actual fun MarkdownViewer(
             printInfo.setJobName("Markdown PDF")
             printController.setPrintInfo(printInfo)
             printController.setPrintFormatter(it.viewPrintFormatter())
-            printController.presentAnimated(
-                true,
-                completionHandler = { _, completed, error: NSError? ->
-                    // Reset the trigger regardless of the outcome
-                    printTrigger.value = false
-                })
+            printController.presentAnimated(true, null)
         }
+        printTrigger.value = false
     }
 }
 

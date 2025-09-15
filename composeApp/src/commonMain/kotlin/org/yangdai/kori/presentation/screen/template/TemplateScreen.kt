@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -227,6 +228,7 @@ fun TemplateScreen(
             if (editingState.noteType == NoteType.Drawing) {
                 // 绘画不能创建模版
             } else {
+                var firstVisibleCharPosition by remember { mutableIntStateOf(0) }
                 AdaptiveEditorViewer(
                     showDualPane = rememberIsScreenWidthExpanded(),
                     pagerState = pagerState,
@@ -240,7 +242,8 @@ fun TemplateScreen(
                             isLineNumberVisible = editorState.isLineNumberVisible,
                             isLintingEnabled = editorState.isLintingEnabled,
                             headerRange = selectedHeader,
-                            findAndReplaceState = findAndReplaceState
+                            findAndReplaceState = findAndReplaceState,
+                            onScroll = { firstVisibleCharPosition = it }
                         )
                     },
                     viewer = if (editingState.noteType == NoteType.MARKDOWN || editingState.noteType == NoteType.TODO) { modifier ->
@@ -248,7 +251,7 @@ fun TemplateScreen(
                             modifier = modifier,
                             noteType = editingState.noteType,
                             textFieldState = viewModel.contentState,
-                            scrollState = scrollState,
+                            firstVisibleCharPosition = firstVisibleCharPosition,
                             isSheetVisible = isSideSheetOpen,
                             printTrigger = printTrigger
                         )

@@ -49,6 +49,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -312,6 +313,7 @@ fun NoteScreen(
                     uuid = editingState.id
                 )
             } else {
+                var firstVisibleCharPosition by remember { mutableIntStateOf(0) }
                 AdaptiveEditorViewer(
                     showDualPane = isWideScreen,
                     pagerState = pagerState,
@@ -325,7 +327,8 @@ fun NoteScreen(
                             isLineNumberVisible = editorState.isLineNumberVisible,
                             isLintingEnabled = editorState.isLintingEnabled,
                             headerRange = selectedHeader,
-                            findAndReplaceState = findAndReplaceState
+                            findAndReplaceState = findAndReplaceState,
+                            onScroll = { firstVisibleCharPosition = it }
                         )
                     },
                     viewer = if (editingState.noteType == NoteType.MARKDOWN || editingState.noteType == NoteType.TODO) { modifier ->
@@ -333,9 +336,9 @@ fun NoteScreen(
                             modifier = modifier,
                             noteType = editingState.noteType,
                             textFieldState = viewModel.contentState,
-                            scrollState = scrollState,
                             isSheetVisible = isSideSheetOpen || showFolderDialog || showTemplatesBottomSheet,
-                            printTrigger = printTrigger
+                            printTrigger = printTrigger,
+                            firstVisibleCharPosition = firstVisibleCharPosition
                         )
                     } else null
                 )

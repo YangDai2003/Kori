@@ -29,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -223,6 +224,7 @@ fun FileScreen(
             if (editingState.fileType == NoteType.Drawing) {
                 // 不存在绘画类型文件
             } else {
+                var firstVisibleCharPosition by remember { mutableIntStateOf(0) }
                 AdaptiveEditorViewer(
                     showDualPane = rememberIsScreenWidthExpanded(),
                     pagerState = pagerState,
@@ -236,7 +238,8 @@ fun FileScreen(
                             isLineNumberVisible = editorState.isLineNumberVisible,
                             isLintingEnabled = editorState.isLintingEnabled,
                             headerRange = selectedHeader,
-                            findAndReplaceState = findAndReplaceState
+                            findAndReplaceState = findAndReplaceState,
+                            onScroll = { firstVisibleCharPosition = it }
                         )
                     },
                     viewer = if (editingState.fileType == NoteType.MARKDOWN || editingState.fileType == NoteType.TODO) { modifier ->
@@ -244,7 +247,7 @@ fun FileScreen(
                             modifier = modifier,
                             noteType = editingState.fileType,
                             textFieldState = viewModel.contentState,
-                            scrollState = scrollState,
+                            firstVisibleCharPosition = firstVisibleCharPosition,
                             isSheetVisible = isSideSheetOpen || showTemplatesBottomSheet,
                             printTrigger = printTrigger
                         )

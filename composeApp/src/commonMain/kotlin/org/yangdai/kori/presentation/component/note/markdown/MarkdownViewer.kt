@@ -1,6 +1,5 @@
 package org.yangdai.kori.presentation.component.note.markdown
 
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -72,13 +71,76 @@ object MarkdownDefaults {
             .replace("'", "\\'")   // Escape single quotes
             .replace("\n", "\\n")  // Escape newlines
             .replace("\r", "")     // Remove carriage returns
+
+    // 构建 JavaScript 脚本，并将 TARGET_OFFSET 替换为实际的偏移量
+    fun Int.createScrollToOffsetScript(): String = """
+        (function(targetOffset) {
+            // Only scroll if not currently loading to avoid conflicts
+            if (document.readyState === 'complete' || document.readyState === 'interactive') { // Basic check
+                let bestMatch = null;
+                let minDiff = Infinity;
+
+                document.querySelectorAll('[md-src-pos]').forEach(element => {
+                    const rangeString = element.getAttribute('md-src-pos');
+                    if (!rangeString) return; // Skip if attribute is missing
+
+                    const range = rangeString.split('..').map(Number);
+                    if (range.length < 2 || isNaN(range[0]) || isNaN(range[1])) return; // Skip if format is incorrect
+
+                    const startOffset = range[0];
+                    const endOffset = range[1];
+
+                    if (targetOffset >= startOffset && targetOffset <= endOffset) {
+                        const diff = targetOffset - startOffset;
+                        if (diff < minDiff) {
+                            minDiff = diff;
+                            bestMatch = element;}
+                        if (targetOffset === startOffset) {
+                            bestMatch = element;
+                            // For a direct hit on start, we can sometimes break early if we are sure this is the best strategy
+                            // For now, continue searching to find the tightest containing block.
+                        }
+                    }
+                });
+
+                if (bestMatch) {
+                    bestMatch.scrollIntoView({ behavior: 'auto', block: 'start' });
+                } else {
+                    let closestPrecedingElement = null;
+                    let smallestNegativeDiff = -Infinity;
+
+                    document.querySelectorAll('[md-src-pos]').forEach(element => {
+                        const rangeString = element.getAttribute('md-src-pos');
+                        if (!rangeString) return;
+
+                        const range = rangeString.split('..').map(Number);
+                         if (range.length < 2 || isNaN(range[0]) || isNaN(range[1])) return;
+
+                        const startOffset = range[0];
+
+                        if (startOffset <= targetOffset) {
+                            const diff = startOffset - targetOffset;
+                            if (diff > smallestNegativeDiff) {
+                                smallestNegativeDiff = diff;
+                                closestPrecedingElement = element;
+                            }
+                        }
+                    });
+
+                    if (closestPrecedingElement) {
+                        closestPrecedingElement.scrollIntoView({ behavior: 'auto', block: 'start' });
+                    }
+                }
+            }
+        })(${this}); // 将 targetOffset 注入脚本
+    """.trimIndent()
 }
 
 @Composable
 expect fun MarkdownViewer(
     modifier: Modifier,
     textFieldState: TextFieldState,
-    scrollState: ScrollState,
+    firstVisibleCharPositon: Int,
     isSheetVisible: Boolean,
     printTrigger: MutableState<Boolean>,
     styles: MarkdownStyles = MaterialTheme.colorScheme.toMarkdownStyles(),

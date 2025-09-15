@@ -167,7 +167,8 @@ fun AdaptiveEditor(
     isLineNumberVisible: Boolean,
     isLintingEnabled: Boolean,
     headerRange: IntRange?,
-    findAndReplaceState: FindAndReplaceState
+    findAndReplaceState: FindAndReplaceState,
+    onScroll: (firstVisibleCharPositon: Int) -> Unit
 ) {
     val textFieldModifier = remember(noteType, textFieldState) {
         when (noteType) {
@@ -207,7 +208,8 @@ fun AdaptiveEditor(
         isLineNumberVisible = isLineNumberVisible,
         lint = lint,
         headerRange = headerRange,
-        outputTransformation = outputTransformation
+        outputTransformation = outputTransformation,
+        onScroll = onScroll
     )
 }
 
@@ -216,7 +218,7 @@ fun AdaptiveViewer(
     modifier: Modifier,
     noteType: NoteType,
     textFieldState: TextFieldState,
-    scrollState: ScrollState,
+    firstVisibleCharPosition: Int,
     isSheetVisible: Boolean,
     printTrigger: MutableState<Boolean>
 ) = when (noteType) {
@@ -224,7 +226,7 @@ fun AdaptiveViewer(
         MarkdownViewer(
             modifier = modifier,
             textFieldState = textFieldState,
-            scrollState = scrollState,
+            firstVisibleCharPositon = firstVisibleCharPosition,
             isSheetVisible = isSheetVisible,
             printTrigger = printTrigger
         )
