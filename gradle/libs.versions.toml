@@ -13,7 +13,6 @@ androidx-navigation = "2.9.0-rc02"
 coilCompose = "3.3.0"
 composeMultiplatform = "1.9.0-rc02"
 composeAdaptive = "1.2.0-alpha06"
-koogAgents = "0.4.2"
 koin = "4.1.1"
 composeHotReload = "1.0.0-beta06"
 
@@ -27,7 +26,6 @@ dataStore = "1.1.7"
 
 [libraries]
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
-koog-agents = { module = "ai.koog:koog-agents", version.ref = "koogAgents" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 

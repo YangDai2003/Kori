@@ -98,7 +98,9 @@ kotlin {
             implementation(libs.koin.compose.viewmodel.navigation)
 
             implementation(libs.coil.compose)
-            implementation(libs.koog.agents)
+            implementation("ai.koog:koog-agents:0.4.2") {
+                exclude(group = "io.modelcontextprotocol", module = "kotlin-sdk-client-jvm")
+            }
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
@@ -133,8 +135,8 @@ android {
         applicationId = "org.yangdai.kori"
         minSdk = 29
         targetSdk = 36
-        versionCode = 112
-        versionName = "1.1.2"
+        versionCode = 113
+        versionName = "1.1.3"
     }
     splits {
         abi {
@@ -263,12 +265,11 @@ compose.desktop {
                 TargetFormat.Dmg,
                 TargetFormat.Pkg,
                 TargetFormat.Msi,
-                TargetFormat.Exe,
                 TargetFormat.Deb,
                 TargetFormat.Rpm
             )
             packageName = "Kori"
-            packageVersion = "1.1.2"
+            packageVersion = "1.1.3"
             description = "Compose Multiplatform App"
             licenseFile.set(rootProject.file("LICENSE.txt"))
         }
