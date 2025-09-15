@@ -13,7 +13,7 @@ androidx-navigation = "2.9.0-rc02"
 coilCompose = "3.3.0"
 composeMultiplatform = "1.9.0-rc02"
 composeAdaptive = "1.2.0-alpha06"
-koogAgents = "0.4.1"
+koogAgents = "0.4.2"
 koin = "4.1.1"
 composeHotReload = "1.0.0-beta06"
 
