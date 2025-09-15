@@ -151,16 +151,16 @@ fun TextEditor(
         }
     }
 
-    LaunchedEffect(textLayoutResult) {
+    LaunchedEffect(textLayoutResult, scrollState.isScrollInProgress) {
         val layoutResult = textLayoutResult ?: return@LaunchedEffect
-        snapshotFlow { scrollState.value }
-            .debounce(100L)
-            .mapLatest { scroll ->
-                val firstVisibleLine = layoutResult.getLineForVerticalPosition(scroll.toFloat())
-                layoutResult.getLineStart(firstVisibleLine)
+        if (!scrollState.isScrollInProgress) {
+            withContext(Dispatchers.Default) {
+                val firstVisibleLine =
+                    layoutResult.getLineForVerticalPosition(scrollState.value.toFloat())
+                val firstVisibleCharPosition = layoutResult.getLineStart(firstVisibleLine)
+                withContext(Dispatchers.Main) { onScroll(firstVisibleCharPosition) }
             }
-            .flowOn(Dispatchers.Default)
-            .collect { onScroll(it) }
+        }
     }
 
     val actualLinePositions by remember(isLineNumberVisible) {

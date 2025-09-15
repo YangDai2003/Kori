@@ -104,7 +104,7 @@ object MarkdownDefaults {
                 });
 
                 if (bestMatch) {
-                    bestMatch.scrollIntoView({ behavior: 'auto', block: 'start' });
+                    bestMatch.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 } else {
                     let closestPrecedingElement = null;
                     let smallestNegativeDiff = -Infinity;
@@ -128,7 +128,7 @@ object MarkdownDefaults {
                     });
 
                     if (closestPrecedingElement) {
-                        closestPrecedingElement.scrollIntoView({ behavior: 'auto', block: 'start' });
+                        closestPrecedingElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
                 }
             }
