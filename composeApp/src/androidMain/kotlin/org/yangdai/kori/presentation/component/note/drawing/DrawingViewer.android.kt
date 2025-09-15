@@ -3,8 +3,10 @@ package org.yangdai.kori.presentation.component.note.drawing
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
@@ -41,5 +43,5 @@ actual fun DrawingViewer(uuid: String, imageBitmap: ImageBitmap?, modifier: Modi
             )
         }
 
-        Spacer(Modifier.navigationBarsPadding())
+        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
     }
