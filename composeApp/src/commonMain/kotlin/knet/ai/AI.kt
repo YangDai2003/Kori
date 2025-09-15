@@ -23,7 +23,7 @@ import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.json
 import knet.ai.providers.Anthropic
 import knet.ai.providers.DeepSeek
-import knet.ai.providers.Gemini
+import knet.ai.providers.Google
 import knet.ai.providers.LMStudio
 import knet.ai.providers.Ollama
 import knet.ai.providers.OpenAI
@@ -234,7 +234,7 @@ object AI {
         LLMProvider.Google -> {
             val settings =
                 if (baseUrl.isNotBlank()) GoogleClientSettings(baseUrl = baseUrl) else GoogleClientSettings()
-            GoogleLLMClient(apiKey, settings) to Gemini.getModel(model)
+            GoogleLLMClient(apiKey, settings) to Google.getModel(model)
         }
 
         LLMProvider.OpenAI -> {

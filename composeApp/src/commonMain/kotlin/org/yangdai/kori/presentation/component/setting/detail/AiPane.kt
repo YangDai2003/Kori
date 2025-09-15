@@ -73,7 +73,7 @@ import knet.ai.AI
 import knet.ai.GenerationResult
 import knet.ai.providers.Anthropic
 import knet.ai.providers.DeepSeek
-import knet.ai.providers.Gemini
+import knet.ai.providers.Google
 import knet.ai.providers.LMStudio
 import knet.ai.providers.Ollama
 import knet.ai.providers.OpenAI
@@ -447,7 +447,7 @@ private fun GeminiSettings(mainViewModel: MainViewModel, defaultProvider: LLMPro
             defaultValue = GoogleClientSettings().baseUrl
         )
         ModelTextField(
-            modelOptions = Gemini.modelOptions.keys,
+            modelOptions = Google.googleModelMap.keys,
             value = model,
             onValueChange = {
                 model = it
@@ -503,7 +503,7 @@ private fun OpenAISettings(mainViewModel: MainViewModel, defaultProvider: LLMPro
             defaultValue = OpenAIClientSettings().baseUrl
         )
         ModelTextField(
-            modelOptions = OpenAI.modelOptions.keys,
+            modelOptions = OpenAI.openAIModelMap.keys,
             value = model,
             onValueChange = {
                 model = it
@@ -558,7 +558,7 @@ private fun AnthropicSettings(mainViewModel: MainViewModel, defaultProvider: LLM
             defaultValue = AnthropicClientSettings().baseUrl
         )
         ModelTextField(
-            modelOptions = Anthropic.modelOptions.keys,
+            modelOptions = Anthropic.anthropicModelMap.keys,
             value = model,
             onValueChange = {
                 model = it
@@ -613,7 +613,7 @@ private fun DeepSeekSettings(mainViewModel: MainViewModel, defaultProvider: LLMP
             defaultValue = DeepSeekClientSettings().baseUrl
         )
         ModelTextField(
-            modelOptions = DeepSeek.modelOptions.keys,
+            modelOptions = DeepSeek.deepSeekModelMap.keys,
             value = model,
             onValueChange = {
                 model = it
@@ -661,7 +661,7 @@ private fun OllamaSettings(mainViewModel: MainViewModel, defaultProvider: LLMPro
             defaultValue = "http://localhost:11434"
         )
         ModelTextField(
-            modelOptions = Ollama.modelOptions.keys,
+            modelOptions = Ollama.ollamaModelMap.keys,
             value = model,
             onValueChange = {
                 model = it

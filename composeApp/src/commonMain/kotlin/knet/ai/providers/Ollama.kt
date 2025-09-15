@@ -3,7 +3,7 @@ package knet.ai.providers
 import ai.koog.prompt.llm.OllamaModels
 
 object Ollama {
-    val modelOptions = mapOf(
+    val ollamaModelMap = mapOf(
         OllamaModels.Meta.LLAMA_3_2_3B.id to OllamaModels.Meta.LLAMA_3_2_3B,
         OllamaModels.Meta.LLAMA_3_2.id to OllamaModels.Meta.LLAMA_3_2,
         OllamaModels.Meta.LLAMA_4_SCOUT.id to OllamaModels.Meta.LLAMA_4_SCOUT,
@@ -15,5 +15,5 @@ object Ollama {
         OllamaModels.Granite.GRANITE_3_2_VISION.id to OllamaModels.Granite.GRANITE_3_2_VISION
     )
 
-    fun getModel(id: String) = modelOptions[id] ?: modelOptions.values.first()
+    fun getModel(id: String) = ollamaModelMap[id] ?: ollamaModelMap.values.first()
 }
