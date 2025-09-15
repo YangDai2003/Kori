@@ -93,8 +93,7 @@ actual fun MarkdownViewer(
                     domStorageEnabled = true
                     javaScriptEnabled = true
                     loadsImagesAutomatically = true
-                    setSupportZoom(false)
-                    builtInZoomControls = false
+                    builtInZoomControls = true
                     displayZoomControls = false
                     useWideViewPort = true
                     loadWithOverviewMode = false
