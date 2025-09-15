@@ -246,16 +246,12 @@ val SampleMarkdownNote = """
 
     Inline `code` with backticks
 
-    ```kotlin
-    fun createConfetti() {
-        val colors = listOf("🔴", "🟠", "🟡", "🟢", "🔵", "🟣")
-        repeat(20) {
-            val color = colors.random()
-            val position = (1..80).random()
-            println(" ".repeat(position) + color)
-            Thread.sleep(50)
-        }
-        println("🎉 Surprise! 🎉")
+    ```c
+    #include <stdio.h>
+
+    int main() {
+        printf("Hello, world!\n");
+        return 0;
     }
     ```
 
@@ -282,28 +278,35 @@ val SampleMarkdownNote = """
 
     Here is one mermaid diagram:
     <pre class="mermaid">
-        graph TD
-        A[Client] --> B[Load Balancer]
-        B --> C[Server1]
-        B --> D[Server2]
+    treemap-beta
+    "Section 1"
+        "Leaf 1.1": 12
+        "Section 1.2"
+          "Leaf 1.2.1": 12
+    "Section 2"
+        "Leaf 2.1": 20
+        "Leaf 2.2": 25
     </pre>
 
     And here is another:
     <pre class="mermaid">
-        quadrantChart
-            title Reach and engagement of campaigns
-            x-axis Low Reach --> High Reach
-            y-axis Low Engagement --> High Engagement
-            quadrant-1 We should expand
-            quadrant-2 Need to promote
-            quadrant-3 Re-evaluate
-            quadrant-4 May be improved
-            Campaign A: [0.3, 0.6]
-            Campaign B: [0.45, 0.23]
-            Campaign C: [0.57, 0.69]
-            Campaign D: [0.78, 0.34]
-            Campaign E: [0.40, 0.34]
-            Campaign F: [0.35, 0.78]
+    mindmap
+      root((mindmap))
+        Origins
+          Long history
+          ::icon(fa fa-book)
+          Popularisation
+            British popular psychology author Tony Buzan
+        Research
+          On effectiveness<br/>and features
+          On Automatic creation
+            Uses
+                Creative techniques
+                Strategic planning
+                Argument mapping
+        Tools
+          Pen and paper
+          Mermaid
     </pre>
 
     ## Tables
