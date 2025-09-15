@@ -6,12 +6,16 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,12 +39,14 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.control
@@ -185,15 +191,17 @@ class ActionRowScopeImpl(val showElevation: Boolean) : ActionRowScope {
 }
 
 /**
- * A composable function that renders an adaptive editor row based on the provided `NoteType`.
+ * A composable function that displays a row of actions, adapting its content based on the note type.
+ * This row typically appears at the bottom of a note editor, providing context-sensitive controls
+ * like text formatting for Markdown, or task-related actions for a to-do list.
+ * The row's appearance, such as its elevation, changes based on the scroll state.
  *
- * @param visible Whether the editor row is visible.
- * @param type The type of note, which determines the editor row to be displayed (Markdown, Plain Text...).
- * @param scrollState The scroll state for the editor.
- * @param textFieldState The state of the text field used in the editor.
- * @param paddingValues The paddings at the bottom and start of the editor row.
- * @param isTemplate Whether the editor row is displayed in a template.
- * @param onEditorRowAction A callback function triggered by editor row actions.
+ * @param visible Controls the visibility of the action row.
+ * @param type The [NoteType] of the note being edited, which determines which set of actions to display.
+ * @param scrollState The [ScrollState] of the associated editor content. Used to determine if elevation should be shown.
+ * @param textFieldState The [TextFieldState] of the editor, passed to the specific action row implementations.
+ * @param isTemplate A flag indicating if the note is a template, which might alter the available actions.
+ * @param onEditorRowAction A callback lambda that is invoked when an action within the row is triggered.
  */
 @Composable
 fun AdaptiveActionRow(
@@ -201,7 +209,7 @@ fun AdaptiveActionRow(
     type: NoteType,
     scrollState: ScrollState,
     textFieldState: TextFieldState,
-    paddingValues: PaddingValues,
+    startPadding: Dp,
     isTemplate: Boolean = false,
     onEditorRowAction: (Action) -> Unit = { _ -> }
 ) {
@@ -218,8 +226,13 @@ fun AdaptiveActionRow(
 
     val scope = remember(showElevation) { ActionRowScopeImpl(showElevation) }
 
+    val layoutDirection = LocalLayoutDirection.current
+    val displayCutoutPadding =
+        WindowInsets.displayCutout.asPaddingValues().calculateStartPadding(layoutDirection)
     Surface(modifier = Modifier.fillMaxWidth(), color = color) {
-        Column(Modifier.padding(paddingValues)) {
+        Column(
+            Modifier.navigationBarsPadding().padding(start = startPadding + displayCutoutPadding)
+        ) {
             AnimatedVisibility(visible) {
                 with(scope) {
                     when (type) {

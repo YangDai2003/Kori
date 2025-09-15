@@ -5,9 +5,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.rememberPagerState
@@ -44,7 +41,6 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kfile.AudioPicker
@@ -73,11 +69,11 @@ import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
 import org.yangdai.kori.presentation.component.dialog.ShareDialog
 import org.yangdai.kori.presentation.component.dialog.TemplatesBottomSheet
 import org.yangdai.kori.presentation.component.note.AIAssist
-import org.yangdai.kori.presentation.component.note.AdaptiveEditor
+import org.yangdai.kori.presentation.component.note.Action
 import org.yangdai.kori.presentation.component.note.AdaptiveActionRow
+import org.yangdai.kori.presentation.component.note.AdaptiveEditor
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorViewer
 import org.yangdai.kori.presentation.component.note.AdaptiveViewer
-import org.yangdai.kori.presentation.component.note.Action
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
@@ -207,23 +203,30 @@ fun FileScreen(
                     )
                 }
             )
+        },
+        bottomBar = {
+            AdaptiveActionRow(
+                visible = !isReadView && !isSearching,
+                type = editingState.fileType,
+                scrollState = scrollState,
+                startPadding = if (showAI && editingState.fileType != NoteType.PLAIN_TEXT) 52.dp else 0.dp,
+                textFieldState = viewModel.contentState
+            ) { action ->
+                when (action) {
+                    Action.Templates -> showTemplatesBottomSheet = true
+                    Action.Images -> showImagesPicker = true
+                    Action.Video -> showVideoPicker = true
+                    Action.Audio -> showAudioPicker = true
+                }
+            }
         }
     ) { innerPadding ->
-        val layoutDirection = LocalLayoutDirection.current
-        Column(
-            Modifier.padding(
-                top = innerPadding.calculateTopPadding(),
-                start = innerPadding.calculateStartPadding(layoutDirection),
-                end = innerPadding.calculateEndPadding(layoutDirection)
-            )
-        ) {
+        Column(Modifier.padding(innerPadding)) {
             AnimatedVisibility(isSearching) {
                 FindAndReplaceField(findAndReplaceState)
             }
 
-            if (editingState.fileType == NoteType.Drawing) {
-                // 不存在绘画类型文件
-            } else {
+            if (editingState.fileType != NoteType.Drawing) {
                 var firstVisibleCharPosition by remember { mutableIntStateOf(0) }
                 AdaptiveEditorViewer(
                     showDualPane = rememberIsScreenWidthExpanded(),
@@ -253,23 +256,6 @@ fun FileScreen(
                         )
                     } else null
                 )
-            }
-            AdaptiveActionRow(
-                visible = !isReadView && !isSearching,
-                type = editingState.fileType,
-                scrollState = scrollState,
-                paddingValues = PaddingValues(
-                    bottom = innerPadding.calculateBottomPadding(),
-                    start = if (showAI && editingState.fileType != NoteType.PLAIN_TEXT) 52.dp else 0.dp,
-                ),
-                textFieldState = viewModel.contentState
-            ) { action ->
-                when (action) {
-                    Action.Templates -> showTemplatesBottomSheet = true
-                    Action.Images -> showImagesPicker = true
-                    Action.Video -> showVideoPicker = true
-                    Action.Audio -> showAudioPicker = true
-                }
             }
         }
     }

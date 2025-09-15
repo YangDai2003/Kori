@@ -12,10 +12,7 @@ import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -68,7 +65,6 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kfile.AudioPicker
@@ -271,16 +267,25 @@ fun NoteScreen(
                     )
                 }
             )
+        },
+        bottomBar = {
+            AdaptiveActionRow(
+                visible = !isReadView && !isSearching,
+                type = editingState.noteType,
+                scrollState = scrollState,
+                startPadding = if (showAI && editingState.noteType != NoteType.PLAIN_TEXT) 52.dp else 0.dp,
+                textFieldState = viewModel.contentState
+            ) { action ->
+                when (action) {
+                    Action.Templates -> showTemplatesBottomSheet = true
+                    Action.Images -> showImagesPicker = true
+                    Action.Video -> showVideoPicker = true
+                    Action.Audio -> showAudioPicker = true
+                }
+            }
         }
     ) { innerPadding ->
-        val layoutDirection = LocalLayoutDirection.current
-        Column(
-            Modifier.padding(
-                top = innerPadding.calculateTopPadding(),
-                start = innerPadding.calculateStartPadding(layoutDirection),
-                end = innerPadding.calculateEndPadding(layoutDirection)
-            )
-        ) {
+        Column(Modifier.padding(innerPadding)) {
             if (isWideScreen) {
                 AnimatedVisibility(editingTitle) {
                     TitleTextField(
@@ -342,23 +347,6 @@ fun NoteScreen(
                         )
                     } else null
                 )
-            }
-            AdaptiveActionRow(
-                visible = !isReadView && !isSearching,
-                type = editingState.noteType,
-                scrollState = scrollState,
-                paddingValues = PaddingValues(
-                    bottom = innerPadding.calculateBottomPadding(),
-                    start = if (showAI && editingState.noteType != NoteType.PLAIN_TEXT) 52.dp else 0.dp,
-                ),
-                textFieldState = viewModel.contentState
-            ) { action ->
-                when (action) {
-                    Action.Templates -> showTemplatesBottomSheet = true
-                    Action.Images -> showImagesPicker = true
-                    Action.Video -> showVideoPicker = true
-                    Action.Audio -> showAudioPicker = true
-                }
             }
         }
     }

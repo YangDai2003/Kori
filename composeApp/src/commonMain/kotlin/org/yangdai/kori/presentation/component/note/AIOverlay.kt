@@ -28,9 +28,9 @@ import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
@@ -177,7 +177,7 @@ fun AIAssist(
     if (!isTextSelectionCollapsed && showChips) {
         Row(
             modifier = Modifier.imePadding()
-                .systemBarsPadding()
+                .navigationBarsPadding()
                 .displayCutoutPadding()
                 .padding(bottom = 48.dp)
                 .horizontalScroll(rememberScrollState()),
@@ -240,7 +240,7 @@ fun AIAssist(
     val shadowRadius by animateFloatAsState(if (inputMode) 60f else 0f)
     Box(
         modifier = Modifier.imePadding()
-            .systemBarsPadding()
+            .navigationBarsPadding()
             .displayCutoutPadding()
             .padding(vertical = verticalPadding, horizontal = horizontalPadding)
             .dropShadow(MaterialTheme.shapes.extraLargeIncreased) {

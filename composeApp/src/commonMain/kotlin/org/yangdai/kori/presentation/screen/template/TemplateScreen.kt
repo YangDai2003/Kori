@@ -5,9 +5,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -47,7 +44,6 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kori.composeapp.generated.resources.Res
@@ -201,17 +197,19 @@ fun TemplateScreen(
                     )
                 }
             )
+        },
+        bottomBar = {
+            AdaptiveActionRow(
+                visible = !isReadView && !isSearching,
+                type = editingState.noteType,
+                scrollState = scrollState,
+                startPadding = if (showAI && editingState.noteType != NoteType.PLAIN_TEXT) 52.dp else 0.dp,
+                textFieldState = viewModel.contentState,
+                isTemplate = true
+            )
         }
     ) { innerPadding ->
-        val layoutDirection = LocalLayoutDirection.current
-        Column(
-            Modifier.padding(
-                top = innerPadding.calculateTopPadding(),
-                start = innerPadding.calculateStartPadding(layoutDirection),
-                end = innerPadding.calculateEndPadding(layoutDirection)
-            )
-        ) {
-
+        Column(Modifier.padding(innerPadding)) {
             AnimatedVisibility(editingTitle) {
                 TitleTextField(
                     state = viewModel.titleState,
@@ -225,9 +223,7 @@ fun TemplateScreen(
                 FindAndReplaceField(findAndReplaceState)
             }
 
-            if (editingState.noteType == NoteType.Drawing) {
-                // 绘画不能创建模版
-            } else {
+            if (editingState.noteType != NoteType.Drawing) {
                 var firstVisibleCharPosition by remember { mutableIntStateOf(0) }
                 AdaptiveEditorViewer(
                     showDualPane = rememberIsScreenWidthExpanded(),
@@ -258,17 +254,6 @@ fun TemplateScreen(
                     } else null
                 )
             }
-            AdaptiveActionRow(
-                visible = !isReadView && !isSearching,
-                type = editingState.noteType,
-                scrollState = scrollState,
-                paddingValues = PaddingValues(
-                    bottom = innerPadding.calculateBottomPadding(),
-                    start = if (showAI && editingState.noteType != NoteType.PLAIN_TEXT) 52.dp else 0.dp,
-                ),
-                textFieldState = viewModel.contentState,
-                isTemplate = true
-            )
         }
     }
 
