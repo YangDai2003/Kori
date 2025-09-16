@@ -149,7 +149,8 @@ val SampleTodoNote = """
 """.trimIndent()
 
 val SampleMarkdownNote = """
-    # Markdown Syntax Guide
+    Markdown Syntax Guide
+    ===
     
     - [Headings](#headings)  
     - [Text Formatting](#text-formatting)  
@@ -177,9 +178,13 @@ val SampleMarkdownNote = """
 
     ## Basic Text Formatting
 
-    **Bold** & _italic_ & ~~strikethrough~~
-
-    <ins>Underline</ins> and <mark>Highlight</mark>
+    **Bold** or __bold__
+    
+    _Italic_ or *italic*
+    
+    ***Bold and Italic*** or ___Bold and Italic___
+    
+    ~~Strikethrough~~ & <ins>Underline</ins> & <mark>Highlight</mark>
 
     ## Lists
 
@@ -212,6 +217,8 @@ val SampleMarkdownNote = """
     ## Links
     
     [Kori](https://github.com/YangDai2003/Kori)
+    
+    <https://play.google.com/store/apps/details?id=org.yangdai.kori>
     
     ## Images
 
@@ -278,35 +285,26 @@ val SampleMarkdownNote = """
 
     Here is one mermaid diagram:
     <pre class="mermaid">
-    treemap-beta
-    "Section 1"
-        "Leaf 1.1": 12
-        "Section 1.2"
-          "Leaf 1.2.1": 12
-    "Section 2"
-        "Leaf 2.1": 20
-        "Leaf 2.2": 25
+    graph LR
+        A[Square Rect] -- Link text --> B((Circle))
+        A --> C(Round Rect)
+        B --> D{Rhombus}
+        C --> D
     </pre>
 
     And here is another:
     <pre class="mermaid">
-    mindmap
-      root((mindmap))
-        Origins
-          Long history
-          ::icon(fa fa-book)
-          Popularisation
-            British popular psychology author Tony Buzan
-        Research
-          On effectiveness<br/>and features
-          On Automatic creation
-            Uses
-                Creative techniques
-                Strategic planning
-                Argument mapping
-        Tools
-          Pen and paper
-          Mermaid
+    sequenceDiagram
+        participant Alice
+        participant Bob
+        Alice->>John: Hello John, how are you?
+        loop HealthCheck
+            John->>John: Fight against hypochondria
+        end
+        Note right of John: Rational thoughts&lt;br/>prevail...
+        John-->>Alice: Great!
+        John->>Bob: How about you?
+        Bob-->>John: Jolly good!
     </pre>
 
     ## Tables
