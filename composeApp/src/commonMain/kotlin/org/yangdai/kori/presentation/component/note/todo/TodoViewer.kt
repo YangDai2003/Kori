@@ -175,7 +175,7 @@ fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
     LazyColumn(modifier.clipToBounds()) {
         // 待办
         if (undoneItems.isNotEmpty()) {
-            stickyHeader {
+            stickyHeader(key = "Header Todo") {
                 Surface {
                     Text(
                         stringResource(Res.string.todo),
@@ -186,7 +186,7 @@ fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
                     )
                 }
             }
-            items(undoneItems, key = { it.range.toString() }) { item ->
+            items(undoneItems, key = { it.toString() }) { item ->
                 SwipeableCard(
                     modifier = Modifier.animateItem().fillParentMaxWidth()
                         .padding(horizontal = 16.dp).padding(bottom = 8.dp),
@@ -205,7 +205,7 @@ fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
         }
         // 已完成
         if (doneItems.isNotEmpty()) {
-            stickyHeader {
+            stickyHeader(key = "Header Done") {
                 Surface {
                     Text(
                         stringResource(Res.string.done),
@@ -216,7 +216,7 @@ fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
                     )
                 }
             }
-            items(doneItems, key = { it.range.toString() }) { item ->
+            items(doneItems, key = { it.toString() }) { item ->
                 SwipeableCard(
                     modifier = Modifier.animateItem().fillParentMaxWidth()
                         .padding(horizontal = 16.dp).padding(bottom = 8.dp),
