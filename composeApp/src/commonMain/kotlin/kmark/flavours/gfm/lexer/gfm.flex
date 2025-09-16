@@ -319,14 +319,6 @@ GFM_AUTOLINK = (("http" "s"? | "ftp" | "file")"://" | "www.") {HOST_PART} ("." {
           return getReturnGeneralized(GFMTokenTypes.TILDE);
       }
 
-  "+" {
-          return getReturnGeneralized(GFMTokenTypes.PlUS);
-      }
-
-  "=" {
-          return getReturnGeneralized(GFMTokenTypes.EQUAL);
-      }
-
   {AUTOLINK} { return parseDelimited(MarkdownTokenTypes.AUTOLINK, false); }
   {EMAIL_AUTOLINK} { return parseDelimited(MarkdownTokenTypes.EMAIL_AUTOLINK, false); }
 

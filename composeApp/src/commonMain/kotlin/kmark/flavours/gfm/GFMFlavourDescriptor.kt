@@ -62,9 +62,7 @@ open class GFMFlavourDescriptor(
                 ReferenceLinkParser(),
                 EmphasisLikeParser(
                     EmphStrongDelimiterParser(),
-                    StrikeThroughDelimiterParser(),
-                    UnderlineDelimiterParser(),
-                    HighlightDelimiterParser()
+                    StrikeThroughDelimiterParser()
                 )
             )
         }
@@ -76,13 +74,7 @@ open class GFMFlavourDescriptor(
     ): Map<IElementType, GeneratingProvider> {
         return super.createHtmlGeneratingProviders(linkMap, baseURI) + hashMapOf(
             GFMElementTypes.STRIKETHROUGH to SimpleInlineTagProvider("del", 2, -2),
-
-            GFMElementTypes.UNDERLINE to SimpleInlineTagProvider("ins", 2, -2),
-
-            GFMElementTypes.HIGHLIGHT to SimpleInlineTagProvider("mark", 2, -2),
-
             GFMElementTypes.TABLE to TablesGeneratingProvider(),
-
             GFMTokenTypes.CELL to TrimmingInlineHolderProvider(),
             MarkdownElementTypes.CODE_SPAN to TableAwareCodeSpanGeneratingProvider(),
 

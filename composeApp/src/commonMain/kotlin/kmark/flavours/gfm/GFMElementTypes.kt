@@ -9,12 +9,6 @@ object GFMTokenTypes {
     val TILDE: IElementType = MarkdownElementType("~", true)
 
     @JvmField
-    val EQUAL: IElementType = MarkdownElementType("=", true)
-
-    @JvmField
-    val PlUS: IElementType = MarkdownElementType("+", true)
-
-    @JvmField
     val TABLE_SEPARATOR: IElementType = MarkdownElementType("TABLE_SEPARATOR", true)
 
     @JvmField
@@ -33,12 +27,6 @@ object GFMTokenTypes {
 object GFMElementTypes {
     @JvmField
     val STRIKETHROUGH: IElementType = MarkdownElementType("STRIKETHROUGH")
-
-    @JvmField
-    val UNDERLINE: IElementType = MarkdownElementType("UNDERLINE")
-
-    @JvmField
-    val HIGHLIGHT: IElementType = MarkdownElementType("HIGHLIGHT")
 
     @JvmField
     val TABLE: IElementType = MarkdownElementType("TABLE")
