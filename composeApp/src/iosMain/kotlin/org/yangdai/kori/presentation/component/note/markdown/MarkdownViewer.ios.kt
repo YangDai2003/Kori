@@ -126,6 +126,7 @@ actual fun MarkdownViewer(
 
     LaunchedEffect(template, webView) {
         val currentWebView = webView ?: return@LaunchedEffect
+        currentWebView.backgroundColor = styles.backgroundColor.toUIColor()
         currentWebView.loadHTMLString(template, baseURL = NSBundle.mainBundle.resourceURL)
         snapshotFlow { textFieldState.text }
             .debounce(200L)

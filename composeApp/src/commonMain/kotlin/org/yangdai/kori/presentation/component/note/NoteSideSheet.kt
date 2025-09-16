@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +24,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -212,8 +214,13 @@ fun NoteSideSheet(
                     }
                 }
 
+                val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()
                 Row(
-                    modifier = Modifier.systemBarsPadding()
+                    modifier = Modifier
+                        .padding(
+                            top = systemBarsPadding.calculateTopPadding(),
+                            bottom = systemBarsPadding.calculateBottomPadding()
+                        )
                         .align(Alignment.CenterEnd)
                         .offset { IntOffset(x = offsetX.value.roundToInt(), y = 0) },
                     horizontalArrangement = Arrangement.End,
@@ -595,8 +602,8 @@ private fun findHeadersRecursive(
 ) {
     // --- Check if the current node IS a header ---
     val headerLevel = when (node.type) {
-        MarkdownElementTypes.ATX_1 -> 1
-        MarkdownElementTypes.ATX_2 -> 2
+        MarkdownElementTypes.ATX_1, MarkdownElementTypes.SETEXT_1 -> 1
+        MarkdownElementTypes.ATX_2, MarkdownElementTypes.SETEXT_2 -> 2
         MarkdownElementTypes.ATX_3 -> 3
         MarkdownElementTypes.ATX_4 -> 4
         MarkdownElementTypes.ATX_5 -> 5
@@ -608,7 +615,8 @@ private fun findHeadersRecursive(
         // --- Skip if inside properties range ---
         if (propertiesRange == null || !propertiesRange.contains(range.first)) {
             val title =
-                node.getTextInNode(fullText).trim().dropWhile { it == '#' }.trim().toString()
+                node.getTextInNode(fullText).trim().trimStart('#')
+                    .dropLastWhile { it == '=' || it == '-' }.trimEnd().toString()
             val headerNode = HeaderNode(title, headerLevel, range)
             // --- Manage Hierarchy ---
             // Pop stack until parent level is less than current level
