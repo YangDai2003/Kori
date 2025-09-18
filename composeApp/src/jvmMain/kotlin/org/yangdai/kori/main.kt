@@ -5,7 +5,6 @@ import androidx.compose.foundation.DarkDefaultContextMenuRepresentation
 import androidx.compose.foundation.LightDefaultContextMenuRepresentation
 import androidx.compose.foundation.LocalContextMenuRepresentation
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -16,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -53,8 +53,10 @@ import kori.composeapp.generated.resources.open
 import kori.composeapp.generated.resources.plain_text
 import kori.composeapp.generated.resources.settings
 import kori.composeapp.generated.resources.todo_text
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.skiko.currentSystemTheme
 import org.jetbrains.skiko.disableTitleBar
 import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.data.di.KoinInitializer
@@ -150,7 +152,12 @@ fun ApplicationWindow(
     val securityPaneState by mainViewModel.securityPaneState.collectAsStateWithLifecycle()
     val dataActionState by mainViewModel.dataActionState.collectAsStateWithLifecycle()
     val isUnlocked by AppLockManager.isUnlocked.collectAsStateWithLifecycle()
-    val isSystemInDarkTheme = isSystemInDarkTheme()
+    val isSystemInDarkTheme by produceState(initialValue = currentSystemTheme == org.jetbrains.skiko.SystemTheme.DARK) {
+        while (true) {
+            delay(1000L)
+            value = currentSystemTheme == org.jetbrains.skiko.SystemTheme.DARK
+        }
+    }
 
     val darkMode by remember(isSystemInDarkTheme) {
         derivedStateOf {
