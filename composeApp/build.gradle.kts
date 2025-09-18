@@ -265,7 +265,8 @@ compose.desktop {
                 TargetFormat.Dmg,
                 TargetFormat.Pkg,
                 TargetFormat.Msi,
-                TargetFormat.AppImage
+                TargetFormat.Deb,
+                TargetFormat.Rpm
             )
             packageName = "Kori"
             packageVersion = "1.1.3"
