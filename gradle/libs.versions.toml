@@ -14,7 +14,7 @@ coilCompose = "3.3.0"
 composeMultiplatform = "1.9.0"
 composeAdaptive = "1.2.0-alpha06"
 koin = "4.1.1"
-composeHotReload = "1.0.0-beta07"
+composeHotReload = "1.0.0-beta08"
 
 kotlin = "2.2.20"
 ksp = "2.2.20-2.0.2"
