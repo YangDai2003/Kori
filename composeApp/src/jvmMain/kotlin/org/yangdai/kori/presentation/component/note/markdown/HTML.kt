@@ -21,8 +21,7 @@ val HTMLTemplate = """
             body {
                 color: {{TEXT_COLOR}};
                 background-color: {{BACKGROUND_COLOR}};
-                padding: 0 16px;
-                margin: 0;
+                margin: 0 16px;
                 font-size: {{FONT_SCALE}};
                 font-family: -apple-system, "Segoe UI", "Ubuntu", Arial, "Microsoft YaHei", sans-serif;
                 -webkit-font-smoothing: antialiased; /* 针对 WebKit 内核（如 JavaFX WebView 使用的）*/

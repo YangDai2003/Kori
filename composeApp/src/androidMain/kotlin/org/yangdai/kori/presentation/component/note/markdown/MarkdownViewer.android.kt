@@ -202,8 +202,8 @@ private fun createWebPrintJob(webView: WebView, activity: Activity?) {
     (activity?.getSystemService(Context.PRINT_SERVICE) as? PrintManager)?.let { printManager ->
         val printAdapter = webView.createPrintDocumentAdapter("markdown_export")
         val builder = PrintAttributes.Builder()
-            // 一般为 0.5-1 英寸（12.7-25.4 毫米）的边距
-            .setMinMargins(PrintAttributes.Margins(36, 36, 36, 36))
+            // 一般为 1 英寸的边距
+            .setMinMargins(PrintAttributes.Margins(1000, 1000, 1000, 1000))
             .setColorMode(PrintAttributes.COLOR_MODE_COLOR)
             .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
         printManager.print("Markdown PDF", printAdapter, builder.build())

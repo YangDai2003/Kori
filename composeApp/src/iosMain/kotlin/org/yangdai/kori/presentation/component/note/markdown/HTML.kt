@@ -21,8 +21,7 @@ val HTMLTemplate = """
             body {
                 color: {{TEXT_COLOR}};
                 background-color: {{BACKGROUND_COLOR}};
-                padding: 0 16px;
-                margin: 0;
+                margin: 0 16px;
                 font-size: {{FONT_SCALE}};
             }
             img {
