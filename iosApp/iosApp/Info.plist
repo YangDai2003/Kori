@@ -75,8 +75,9 @@
 	<string>6.0</string>
 	<key>CFBundleLocalizations</key>
 	<array>
-		<string>en</string>
-		<string>zh</string>
+        <string>en</string>
+        <string>zh_CN</string>
+		<string>zh_TW</string>
 		<string>de</string>
 	</array>
 	<key>CFBundleName</key>
