@@ -98,9 +98,7 @@ kotlin {
             implementation(libs.koin.compose.viewmodel.navigation)
 
             implementation(libs.coil.compose)
-            implementation("ai.koog:koog-agents:0.4.2") {
-                exclude(group = "io.modelcontextprotocol", module = "kotlin-sdk-client-jvm")
-            }
+            implementation(libs.koog.agents)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
