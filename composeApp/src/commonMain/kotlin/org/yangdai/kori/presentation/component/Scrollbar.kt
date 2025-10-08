@@ -70,7 +70,7 @@ fun Scrollbar(
     hideDelayMillis: Long = 800L
 ) {
     // 如果没有可滚动的内容，则不显示滚动条
-    if (state.maxValue == 0) return
+    if (state.maxValue == 0 || state.maxValue == Int.MAX_VALUE) return
 
     val scope = rememberCoroutineScope()
     val interactionSource = remember { MutableInteractionSource() }
