@@ -21,7 +21,7 @@ kotlin = "2.2.20"
 ksp = "2.2.20-2.0.4"
 kotlinx-coroutines = "1.10.2"
 kotlinxSerializationJson = "1.9.0"
-room = "2.8.1"
+room = "2.8.2"
 sqlite = "2.6.1"
 dataStore = "1.1.7"
 
