@@ -114,7 +114,7 @@ fun DataPane(mainViewModel: MainViewModel) {
             onClick = { launchOpenNoteJsonPicker = true }
         )
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(16.dp))
     }
 
     if (showFolderDialog)

@@ -172,7 +172,7 @@ fun AboutPane() {
 
         ListItem(
             modifier = Modifier
-                .padding(bottom = 8.dp)
+                .padding(bottom = 16.dp)
                 .clip(CircleShape)
                 .clickToShareText(stringResource(Res.string.shareContent)),
             leadingContent = {

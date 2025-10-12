@@ -97,6 +97,6 @@ actual fun SecurityPane(mainViewModel: MainViewModel) {
             }
         )
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(16.dp))
     }
 }
