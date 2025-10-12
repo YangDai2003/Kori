@@ -15,7 +15,7 @@ composeMultiplatform = "1.9.0"
 composeAdaptive = "1.2.0-alpha07"
 koin = "4.1.1"
 koogAgents = "0.5.0"
-composeHotReload = "1.0.0-rc01"
+composeHotReload = "1.0.0-rc02"
 
 kotlin = "2.2.20"
 ksp = "2.2.20-2.0.4"
