@@ -110,7 +110,7 @@ fun main() {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ApplicationWindow(
+private fun ApplicationWindow(
     visible: Boolean,
     onCloseRequest: () -> Unit,
     navHostController: NavHostController,
@@ -242,7 +242,7 @@ fun ApplicationWindow(
 }
 
 @Composable
-fun ApplicationScope.ApplicationTray(
+private fun ApplicationScope.ApplicationTray(
     navigateToScreen: (Screen) -> Unit,
     onAction: () -> Unit,
     onExit: () -> Unit
