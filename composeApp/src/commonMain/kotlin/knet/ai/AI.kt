@@ -4,6 +4,8 @@ import ai.koog.agents.core.agent.AIAgent
 import ai.koog.prompt.executor.clients.LLMClient
 import ai.koog.prompt.executor.clients.anthropic.AnthropicClientSettings
 import ai.koog.prompt.executor.clients.anthropic.AnthropicLLMClient
+import ai.koog.prompt.executor.clients.dashscope.DashscopeClientSettings
+import ai.koog.prompt.executor.clients.dashscope.DashscopeLLMClient
 import ai.koog.prompt.executor.clients.deepseek.DeepSeekClientSettings
 import ai.koog.prompt.executor.clients.deepseek.DeepSeekLLMClient
 import ai.koog.prompt.executor.clients.google.GoogleClientSettings
@@ -17,10 +19,10 @@ import ai.koog.prompt.llm.LLMProvider
 import ai.koog.prompt.llm.LLModel
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.json
+import knet.ai.providers.Alibaba
 import knet.ai.providers.Anthropic
 import knet.ai.providers.DeepSeek
 import knet.ai.providers.Google
@@ -221,6 +223,7 @@ object AI {
         LLMProvider.OpenAI.id to LLMProvider.OpenAI,
         LLMProvider.Anthropic.id to LLMProvider.Anthropic,
         LLMProvider.DeepSeek.id to LLMProvider.DeepSeek,
+        LLMProvider.Alibaba.id to LLMProvider.Alibaba,
         LLMProvider.Ollama.id to LLMProvider.Ollama,
         LMStudio.id to LMStudio
     )
@@ -253,6 +256,12 @@ object AI {
             val settings =
                 if (baseUrl.isNotBlank()) DeepSeekClientSettings(baseUrl = baseUrl) else DeepSeekClientSettings()
             DeepSeekLLMClient(apiKey, settings) to DeepSeek.getModel(model)
+        }
+
+        LLMProvider.Alibaba -> {
+            val settings =
+                if (baseUrl.isNotBlank()) DashscopeClientSettings(baseUrl = baseUrl) else DashscopeClientSettings()
+            DashscopeLLMClient(apiKey, settings) to Alibaba.getModel(model)
         }
 
         LLMProvider.Ollama -> {
@@ -322,7 +331,7 @@ object AI {
     }
 
     suspend fun getAvailableModels(baseUrl: String): List<String> {
-        val client = HttpClient(CIO) {
+        val client = HttpClient {
             install(ContentNegotiation) {
                 json(Json { ignoreUnknownKeys = true })
             }

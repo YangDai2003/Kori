@@ -9,6 +9,7 @@ object OpenAI {
         OpenAIModels.Chat.GPT5.id to OpenAIModels.Chat.GPT5,
         OpenAIModels.Chat.GPT5Mini.id to OpenAIModels.Chat.GPT5Mini,
         OpenAIModels.Chat.GPT5Nano.id to OpenAIModels.Chat.GPT5Nano,
+        OpenAIModels.Chat.GPT5Codex.id to OpenAIModels.Chat.GPT5Codex,
         OpenAIModels.CostOptimized.GPT4_1Nano.id to OpenAIModels.CostOptimized.GPT4_1Nano,
         OpenAIModels.CostOptimized.GPT4_1Mini.id to OpenAIModels.CostOptimized.GPT4_1Mini,
         OpenAIModels.CostOptimized.GPT4oMini.id to OpenAIModels.CostOptimized.GPT4oMini

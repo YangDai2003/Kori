@@ -80,6 +80,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.androidx.navigation.compose)
 
+//            implementation("org.jetbrains.androidx.navigationevent:navigationevent-compose:1.0.0-alpha01")
             implementation(libs.compose.backhandler)
             implementation(libs.compose.adaptive)
             implementation(libs.compose.adaptive.navigation)
@@ -189,6 +190,18 @@ for more information
 Adding a packaging block may help, please refer to
 https://developer.android.com/reference/tools/gradle-api/com/android/build/api/dsl/Packaging
 for more information
+             */
+            excludes += "META-INF/DEPENDENCIES"
+            /*
+            Execution failed for task ':composeApp:mergeDebugJavaResource'.
+> A failure occurred while executing com.android.build.gradle.internal.tasks.MergeJavaResWorkAction
+   > 3 files found with path 'META-INF/DEPENDENCIES' from inputs:
+      - org.apache.httpcomponents.client5:httpclient5:5.5/httpclient5-5.5.jar
+      - org.apache.httpcomponents.core5:httpcore5-h2:5.3.4/httpcore5-h2-5.3.4.jar
+      - org.apache.httpcomponents.core5:httpcore5:5.3.4/httpcore5-5.3.4.jar
+     Adding a packaging block may help, please refer to
+     https://developer.android.com/reference/tools/gradle-api/com/android/build/api/dsl/Packaging
+     for more information
              */
         }
     }

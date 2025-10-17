@@ -63,6 +63,10 @@ object Constants {
         const val LM_STUDIO_BASE_URL = "lm_studio_base_url"
         const val LM_STUDIO_MODEL = "lm_studio_model"
 
+        const val ALIBABA_API_KEY = "alibaba_api_key"
+        const val ALIBABA_BASE_URL = "alibaba_base_url"
+        const val ALIBABA_MODEL = "alibaba_model"
+
         // LLM Config: Base URL, Model, API Key
         suspend fun getLLMConfig(
             llmProvider: LLMProvider,

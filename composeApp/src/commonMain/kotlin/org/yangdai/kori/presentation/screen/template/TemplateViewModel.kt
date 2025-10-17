@@ -1,6 +1,6 @@
 package org.yangdai.kori.presentation.screen.template
 
-import ai.koog.agents.utils.SuitableForIO
+import ai.koog.utils.io.SuitableForIO
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
