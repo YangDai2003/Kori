@@ -74,7 +74,7 @@ kotlin {
             implementation("org.jetbrains.compose.material3:material3:1.10.0-alpha03") {
                 exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-datetime")
             }
-
+            implementation("org.jetbrains.androidx.window:window-core:1.5.0-beta01")
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.androidx.navigation.compose)
