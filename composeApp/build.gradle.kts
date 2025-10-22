@@ -58,7 +58,6 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
-            implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.appcompat)
             implementation(libs.androidx.biometric)
@@ -71,7 +70,7 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.materialIconsExtended)
             implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
+            implementation(compose.preview)
             implementation("org.jetbrains.compose.material3:material3:1.10.0-alpha03") {
                 exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-datetime")
             }
