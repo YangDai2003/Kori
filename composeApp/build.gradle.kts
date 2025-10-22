@@ -72,7 +72,7 @@ kotlin {
             implementation(compose.materialIconsExtended)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            implementation("org.jetbrains.compose.material3:material3:1.10.0-alpha02") {
+            implementation("org.jetbrains.compose.material3:material3:1.10.0-alpha03") {
                 exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-datetime")
             }
 
