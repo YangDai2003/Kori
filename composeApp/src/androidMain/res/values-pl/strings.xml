@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name" translatable="false">Kori</string>
+    <string name="unlock_to_use">Wymagane odblokowanie</string>
+    <string name="dynamic_only_android_12">Kolory dynamiczne</string>
+    <string name="screen_protection">Blokada zrzutów ekranu</string>
+    <string name="screen_protection_detail">Blokada zrzutów i nagrań ekranu oraz podglądu podczas minimalizowania aplikacji.</string>
+    <string name="biometric">Odblokowanie biometryczne</string>
+    <string name="no_password_set">Proszę, pierw ustaw hasło blokady ekranu</string>
+    <string name="view_all_notes">Wyświetl wszystkie notatki</string>
+    <string name="home_widget">Dodaj widżet do ekranu głównego</string>
+    <string name="new_plain_text">Nowy plik tekstowy</string>
+    <string name="new_markdown">Nowy plik z formatowaniem Markdown</string>
+    <string name="new_todo">Nowa lista zadań Todo.txt</string>
+    <string name="new_drawing">Nowy rysunek</string>
+</resources>
