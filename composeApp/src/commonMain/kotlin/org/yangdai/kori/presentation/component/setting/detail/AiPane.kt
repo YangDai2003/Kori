@@ -4,6 +4,7 @@ import ai.koog.prompt.executor.clients.anthropic.AnthropicClientSettings
 import ai.koog.prompt.executor.clients.dashscope.DashscopeClientSettings
 import ai.koog.prompt.executor.clients.deepseek.DeepSeekClientSettings
 import ai.koog.prompt.executor.clients.google.GoogleClientSettings
+import ai.koog.prompt.executor.clients.mistralai.MistralAIClientSettings
 import ai.koog.prompt.executor.clients.openai.OpenAIClientSettings
 import ai.koog.prompt.llm.LLMProvider
 import androidx.compose.animation.AnimatedContent
@@ -76,6 +77,7 @@ import knet.ai.providers.Anthropic
 import knet.ai.providers.DeepSeek
 import knet.ai.providers.Google
 import knet.ai.providers.LMStudio
+import knet.ai.providers.Mistral
 import knet.ai.providers.Ollama
 import knet.ai.providers.OpenAI
 import kori.composeapp.generated.resources.Res
@@ -203,6 +205,10 @@ fun AiPane(mainViewModel: MainViewModel) {
 
                             AI.providers.keys.indexOf(LLMProvider.Alibaba.id) -> {
                                 AlibabaSettings(mainViewModel)
+                            }
+
+                            AI.providers.keys.indexOf(LLMProvider.MistralAI.id) -> {
+                                MistralSettings(mainViewModel)
                             }
                         }
                     }
@@ -707,10 +713,52 @@ private fun AlibabaSettings(mainViewModel: MainViewModel) {
     )
     LinkText(
         text = "Alibaba Cloud",
-        url = ""
+        url = "https://qwen.ai/apiplatform"
     )
     TestConnectionColumn(
         llmProvider = LLMProvider.Alibaba,
+        apiKey = apiKey,
+        baseUrl = baseUrl,
+        model = model
+    )
+}
+
+@Composable
+private fun MistralSettings(mainViewModel: MainViewModel) {
+
+    var apiKey by remember { mutableStateOf(mainViewModel.getStringValue(Constants.LLMConfig.MISTRAL_API_KEY)) }
+    var baseUrl by remember { mutableStateOf(mainViewModel.getStringValue(Constants.LLMConfig.MISTRAL_BASE_URL)) }
+    var model by remember { mutableStateOf(mainViewModel.getStringValue(Constants.LLMConfig.MISTRAL_MODEL)) }
+
+    KeyTextField(
+        value = apiKey,
+        onValueChange = {
+            apiKey = it
+            mainViewModel.putPreferenceValue(Constants.LLMConfig.MISTRAL_API_KEY, it)
+        }
+    )
+    UrlTextField(
+        value = baseUrl,
+        onValueChange = {
+            baseUrl = it
+            mainViewModel.putPreferenceValue(Constants.LLMConfig.MISTRAL_BASE_URL, it)
+        },
+        defaultValue = MistralAIClientSettings().baseUrl
+    )
+    ModelTextField(
+        modelOptions = Mistral.mistralModelMap.keys,
+        value = model,
+        onValueChange = {
+            model = it
+            mainViewModel.putPreferenceValue(Constants.LLMConfig.MISTRAL_MODEL, it)
+        }
+    )
+    LinkText(
+        text = "Mistral AI Documentation",
+        url = "https://docs.mistral.ai/"
+    )
+    TestConnectionColumn(
+        llmProvider = LLMProvider.MistralAI,
         apiKey = apiKey,
         baseUrl = baseUrl,
         model = model

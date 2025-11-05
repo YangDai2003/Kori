@@ -67,6 +67,10 @@ object Constants {
         const val ALIBABA_BASE_URL = "alibaba_base_url"
         const val ALIBABA_MODEL = "alibaba_model"
 
+        const val MISTRAL_API_KEY = "mistral_api_key"
+        const val MISTRAL_BASE_URL = "mistral_base_url"
+        const val MISTRAL_MODEL = "mistral_model"
+
         // LLM Config: Base URL, Model, API Key
         suspend fun getLLMConfig(
             llmProvider: LLMProvider,

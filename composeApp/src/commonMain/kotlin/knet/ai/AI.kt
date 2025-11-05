@@ -10,6 +10,8 @@ import ai.koog.prompt.executor.clients.deepseek.DeepSeekClientSettings
 import ai.koog.prompt.executor.clients.deepseek.DeepSeekLLMClient
 import ai.koog.prompt.executor.clients.google.GoogleClientSettings
 import ai.koog.prompt.executor.clients.google.GoogleLLMClient
+import ai.koog.prompt.executor.clients.mistralai.MistralAIClientSettings
+import ai.koog.prompt.executor.clients.mistralai.MistralAILLMClient
 import ai.koog.prompt.executor.clients.openai.OpenAIClientSettings
 import ai.koog.prompt.executor.clients.openai.OpenAILLMClient
 import ai.koog.prompt.executor.llms.SingleLLMPromptExecutor
@@ -27,6 +29,7 @@ import knet.ai.providers.Anthropic
 import knet.ai.providers.DeepSeek
 import knet.ai.providers.Google
 import knet.ai.providers.LMStudio
+import knet.ai.providers.Mistral
 import knet.ai.providers.Ollama
 import knet.ai.providers.OpenAI
 import kotlinx.serialization.Serializable
@@ -224,6 +227,7 @@ object AI {
         LLMProvider.Anthropic.id to LLMProvider.Anthropic,
         LLMProvider.DeepSeek.id to LLMProvider.DeepSeek,
         LLMProvider.Alibaba.id to LLMProvider.Alibaba,
+        LLMProvider.MistralAI.id to LLMProvider.MistralAI,
         LLMProvider.Ollama.id to LLMProvider.Ollama,
         LMStudio.id to LMStudio
     )
@@ -262,6 +266,12 @@ object AI {
             val settings =
                 if (baseUrl.isNotBlank()) DashscopeClientSettings(baseUrl = baseUrl) else DashscopeClientSettings()
             DashscopeLLMClient(apiKey, settings) to Alibaba.getModel(model)
+        }
+
+        LLMProvider.MistralAI -> {
+            val settings =
+                if (baseUrl.isNotBlank()) MistralAIClientSettings(baseUrl = baseUrl) else MistralAIClientSettings()
+            MistralAILLMClient(apiKey, settings) to Mistral.getModel(model)
         }
 
         LLMProvider.Ollama -> {
