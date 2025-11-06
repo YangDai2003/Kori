@@ -1,7 +1,4 @@
-@file:OptIn(ExperimentalComposeLibrary::class)
-
 import org.gradle.internal.os.OperatingSystem
-import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -11,7 +8,6 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.composeHotReload)
     alias(libs.plugins.serialization)
     alias(libs.plugins.room)
     alias(libs.plugins.ksp)
@@ -68,10 +64,10 @@ kotlin {
             implementation(libs.androidx.webkit)
         }
         commonMain.dependencies {
-            implementation(compose.materialIconsExtended)
-            implementation(compose.components.resources)
-            implementation(compose.preview)
-            implementation("org.jetbrains.compose.material3:material3:1.10.0-alpha03") {
+            implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
+            implementation(libs.components.resources)
+            implementation(libs.ui.tooling.preview)
+            implementation("org.jetbrains.compose.material3:material3:1.10.0-alpha04") {
                 exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-datetime")
             }
             implementation("org.jetbrains.androidx.window:window-core:1.5.0-rc01")
@@ -102,7 +98,7 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
-            implementation(compose.uiTest)
+            implementation(libs.ui.test)
         }
         iosMain.dependencies {}
         jvmMain.dependencies {
@@ -232,7 +228,7 @@ for more information
 }
 
 dependencies {
-    debugImplementation(compose.uiTooling)
+    debugImplementation(libs.ui.tooling)
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspJvm", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)

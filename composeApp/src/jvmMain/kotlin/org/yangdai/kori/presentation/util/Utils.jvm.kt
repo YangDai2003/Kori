@@ -2,6 +2,7 @@ package org.yangdai.kori.presentation.util
 
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipEntry
 import org.yangdai.kori.data.local.entity.NoteEntity
@@ -47,6 +48,7 @@ actual fun formatNumber(int: Int): String {
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 actual fun clipEntryOf(string: String): ClipEntry {
     return ClipEntry(string)
 }
