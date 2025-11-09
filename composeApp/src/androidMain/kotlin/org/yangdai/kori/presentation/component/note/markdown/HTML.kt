@@ -2,7 +2,7 @@
 
 package org.yangdai.kori.presentation.component.note.markdown
 
-val HTMLTemplate = """
+val HTMLTemplate = $$"""
     <!DOCTYPE html>
     <html lang="">
     <head>
@@ -310,7 +310,7 @@ val HTMLTemplate = """
                     const alertTitle = alertType.charAt(0).toUpperCase() + alertType.slice(1);
 
                     const alertDiv = document.createElement('div');
-                    alertDiv.className = `markdown-alert ${'$'}{alertType}`;
+                    alertDiv.className = `markdown-alert ${alertType}`;
 
                     const titleDiv = document.createElement('div');
                     titleDiv.className = 'markdown-alert-title';

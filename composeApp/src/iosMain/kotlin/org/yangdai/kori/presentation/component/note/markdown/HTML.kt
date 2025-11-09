@@ -1,6 +1,6 @@
 package org.yangdai.kori.presentation.component.note.markdown
 
-val HTMLTemplate = """
+val HTMLTemplate = $$"""
     <!DOCTYPE html>
     <html lang="">
     <head>
@@ -273,7 +273,7 @@ val HTMLTemplate = """
 
                     // Create alert container
                     const alertDiv = document.createElement('div');
-                    alertDiv.className = `markdown-alert ${'$'}{alertType}`;
+                    alertDiv.className = `markdown-alert ${alertType}`;
 
                     // Create title element
                     const titleDiv = document.createElement('div');

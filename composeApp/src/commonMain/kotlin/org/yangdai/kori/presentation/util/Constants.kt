@@ -156,7 +156,7 @@ val SampleTodoNote = """
     x 2025-03-02 2025-03-01 Review Tim's pull request +TodoTxtTouch @github
 """.trimIndent()
 
-val SampleMarkdownNote = """
+val SampleMarkdownNote = $$"""
     Markdown Syntax Guide
     ===
     
@@ -274,9 +274,9 @@ val SampleMarkdownNote = """
 
     ### Inline Math
 
-    Einstein's equation: ${'$'}E = mc^2$
+    Einstein's equation: $E = mc^2$
 
-    The quadratic formula: ${'$'}x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$
+    The quadratic formula: $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$
 
     ### Math Blocks
 
