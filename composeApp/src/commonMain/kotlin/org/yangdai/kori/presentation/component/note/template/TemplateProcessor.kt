@@ -28,7 +28,7 @@ class TemplateProcessor(
         if (content.isBlank()) return content
 
         val localeDateTime =
-            Clock.System.now().toLocalDateTime(TimeZone.Companion.currentSystemDefault())
+            Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         val localDate = localeDateTime.date
         val localTime = localeDateTime.time
 
@@ -37,17 +37,17 @@ class TemplateProcessor(
         // 先处理简单格式
         result = result.replace(simpleDatePattern.toRegex()) {
             try {
-                localDate.format(LocalDate.Companion.Format { byUnicodePattern(defaultDateFormat) })
+                localDate.format(LocalDate.Format { byUnicodePattern(defaultDateFormat) })
             } catch (_: Exception) {
-                localDate.format(LocalDate.Companion.Format { byUnicodePattern("yyyy-MM-dd") })
+                localDate.format(LocalDate.Format { byUnicodePattern("yyyy-MM-dd") })
             }
         }
 
         result = result.replace(simpleTimePattern.toRegex()) {
             try {
-                localTime.format(LocalTime.Companion.Format { byUnicodePattern(defaultTimeFormat) })
+                localTime.format(LocalTime.Format { byUnicodePattern(defaultTimeFormat) })
             } catch (_: Exception) {
-                localTime.format(LocalTime.Companion.Format { byUnicodePattern("HH:mm") })
+                localTime.format(LocalTime.Format { byUnicodePattern("HH:mm") })
             }
         }
 
@@ -55,18 +55,18 @@ class TemplateProcessor(
         result = result.replace(dateWithFormatPattern.toRegex()) { matchResult ->
             val format = matchResult.groupValues[1]
             try {
-                localDate.format(LocalDate.Companion.Format { byUnicodePattern(format) })
+                localDate.format(LocalDate.Format { byUnicodePattern(format) })
             } catch (_: Exception) {
-                localDate.format(LocalDate.Companion.Format { byUnicodePattern("yyyy-MM-dd") })
+                localDate.format(LocalDate.Format { byUnicodePattern("yyyy-MM-dd") })
             }
         }
 
         result = result.replace(timeWithFormatPattern.toRegex()) { matchResult ->
             val format = matchResult.groupValues[1]
             try {
-                localTime.format(LocalTime.Companion.Format { byUnicodePattern(format) })
+                localTime.format(LocalTime.Format { byUnicodePattern(format) })
             } catch (_: Exception) {
-                localTime.format(LocalTime.Companion.Format { byUnicodePattern("HH:mm") })
+                localTime.format(LocalTime.Format { byUnicodePattern("HH:mm") })
             }
         }
 

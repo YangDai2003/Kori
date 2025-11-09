@@ -309,7 +309,7 @@ fun TextFieldBuffer.bulletList() {
                 // 找到当前行第一个非空格字符下标
                 val index = line.indexOfFirst { !it.isWhitespace() }
                 if (index >= 0) {
-                    val prefix = line.substring(0, index)
+                    val prefix = line.take(index)
                     val content = line.substring(index)
                     "$prefix- $content"
                 } else {
@@ -369,7 +369,7 @@ fun TextFieldBuffer.numberedList() {
                 // 将标号插入行首缩进的后面
                 val firstNonSpaceIndex = line.indexOfFirst { !it.isWhitespace() }
                 if (firstNonSpaceIndex >= 0) {
-                    val prefix = line.substring(0, firstNonSpaceIndex)
+                    val prefix = line.take(firstNonSpaceIndex)
                     val content = line.substring(firstNonSpaceIndex)
                     "$prefix${counters[indentLevel]}. $content"
                 } else {
@@ -396,7 +396,7 @@ fun TextFieldBuffer.taskList() {
             .map { line ->
                 val index = line.indexOfFirst { !it.isWhitespace() }
                 if (index >= 0) {
-                    val prefix = line.substring(0, index)
+                    val prefix = line.take(index)
                     val content = line.substring(index)
                     "$prefix- [ ] $content"
                 } else {

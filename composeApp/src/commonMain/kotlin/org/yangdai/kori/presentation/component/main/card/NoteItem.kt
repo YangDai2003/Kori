@@ -97,7 +97,7 @@ fun LazyStaggeredGridItemScope.NoteItem(
                     }
                     val index = title.indexOf(keyword, ignoreCase = true)
                     if (index != -1) {
-                        append(title.substring(0, index))
+                        append(title.take(index))
                         withStyle(
                             style = SpanStyle(
                                 background = Color.Cyan.copy(alpha = 0.5f),

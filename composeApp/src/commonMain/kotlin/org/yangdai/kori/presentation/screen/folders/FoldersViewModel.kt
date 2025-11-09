@@ -35,7 +35,7 @@ class FoldersViewModel(
         dataStoreRepository
             .intFlow(Constants.Preferences.FOLDER_SORT_TYPE)
             .map {
-                FolderSortType.Companion.fromValue(it)
+                FolderSortType.fromValue(it)
                     .also { sortType -> folderSortType = sortType }
             }
             .distinctUntilChanged()
@@ -46,7 +46,7 @@ class FoldersViewModel(
             }
             .stateIn(
                 scope = viewModelScope,
-                started = SharingStarted.Companion.WhileSubscribed(5_000L),
+                started = SharingStarted.WhileSubscribed(5_000L),
                 initialValue = emptyMap()
             )
 

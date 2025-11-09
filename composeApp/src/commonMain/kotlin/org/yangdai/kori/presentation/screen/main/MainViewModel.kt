@@ -75,7 +75,7 @@ class MainViewModel(
     val isAppProtected: StateFlow<Boolean> = dataStoreRepository
         .stringFlow(Constants.Preferences.PASSWORD)
         .map { password -> password.isNotEmpty() }
-        .stateIn(viewModelScope, SharingStarted.Companion.Eagerly, false)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     private var _currentFolderId by mutableStateOf("")
     private val _currentFolderNotes = MutableStateFlow<List<NoteEntity>>(emptyList())
@@ -86,17 +86,17 @@ class MainViewModel(
 
     val searchHistorySet: StateFlow<Set<String>> = dataStoreRepository
         .stringSetFlow(Constants.Preferences.SEARCH_HISTORY)
-        .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), emptySet())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptySet())
 
     // 计数
     val activeNotesCount = noteRepository.getActiveNotesCount()
-        .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), 0)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), 0)
 
     val trashNotesCount = noteRepository.getTrashNotesCount()
-        .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), 0)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), 0)
 
     val templateNotesCount = noteRepository.getTemplatesCount()
-        .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), 0)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), 0)
 
     // 排序相关
     var noteSortType by mutableStateOf(NoteSortType.UPDATE_TIME_DESC)
@@ -104,7 +104,7 @@ class MainViewModel(
 
     private val _noteSortTypeFlow = dataStoreRepository
         .intFlow(Constants.Preferences.NOTE_SORT_TYPE)
-        .map { NoteSortType.Companion.fromValue(it).also { sortType -> noteSortType = sortType } }
+        .map { NoteSortType.fromValue(it).also { sortType -> noteSortType = sortType } }
         .distinctUntilChanged()
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -114,7 +114,7 @@ class MainViewModel(
         }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.Companion.WhileSubscribed(5_000L),
+            started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = emptyList()
         )
 
@@ -125,7 +125,7 @@ class MainViewModel(
         }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.Companion.WhileSubscribed(5_000L),
+            started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = emptyList()
         )
 
@@ -153,7 +153,7 @@ class MainViewModel(
         }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.Companion.WhileSubscribed(5_000L),
+            started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = Pair(emptyList(), "")
         )
 
@@ -164,7 +164,7 @@ class MainViewModel(
     val foldersWithNoteCounts: StateFlow<List<FolderDao.FolderWithNoteCount>> = dataStoreRepository
         .intFlow(Constants.Preferences.FOLDER_SORT_TYPE)
         .map {
-            FolderSortType.Companion.fromValue(it).also { sortType -> folderSortType = sortType }
+            FolderSortType.fromValue(it).also { sortType -> folderSortType = sortType }
         }
         .distinctUntilChanged()
         .flatMapLatest { sortType ->
@@ -172,7 +172,7 @@ class MainViewModel(
         }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.Companion.WhileSubscribed(5_000L),
+            started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = emptyList()
         )
 
@@ -343,7 +343,7 @@ class MainViewModel(
             isAppInAmoledMode = isAppInAmoledMode,
             fontSize = fontSize
         )
-    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), StylePaneState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), StylePaneState())
 
     val securityPaneState = combine(
         dataStoreRepository.booleanFlow(Constants.Preferences.IS_SCREEN_PROTECTED),
@@ -359,7 +359,7 @@ class MainViewModel(
             isBiometricEnabled = isBiometricEnabled,
             keepScreenOn = keepScreenOn
         )
-    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), SecurityPaneState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), SecurityPaneState())
 
     val editorPaneState = combine(
         dataStoreRepository.booleanFlow(Constants.Preferences.SHOW_LINE_NUMBER),
@@ -371,7 +371,7 @@ class MainViewModel(
             isLintingEnabled = isLintingEnabled,
             isDefaultReadingView = isDefaultReadingView
         )
-    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), EditorPaneState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), EditorPaneState())
 
     val templatePaneState = combine(
         dataStoreRepository.stringFlow(Constants.Preferences.DATE_FORMATTER),
@@ -381,7 +381,7 @@ class MainViewModel(
             dateFormatter = dateFormatter,
             timeFormatter = timeFormatter
         )
-    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), TemplatePaneState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), TemplatePaneState())
 
     val cardPaneState = combine(
         dataStoreRepository.intFlow(Constants.Preferences.CARD_SIZE),
@@ -391,7 +391,7 @@ class MainViewModel(
             cardSize = CardSize.fromInt(cardSize),
             clipOverflow = clipOverflow
         )
-    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), CardPaneState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), CardPaneState())
 
     val aiPaneState = combine(
         dataStoreRepository.booleanFlow(Constants.Preferences.IS_AI_ENABLED),
@@ -401,7 +401,7 @@ class MainViewModel(
             isAiEnabled = isAiEnabled,
             llmProvider = AI.providers[aiProvider] ?: AI.providers.values.first()
         )
-    }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000L), AiPaneState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), AiPaneState())
 
     fun getStringValue(key: String): String =
         dataStoreRepository.getString(key, "")
@@ -511,8 +511,8 @@ class MainViewModel(
             runCatching {
                 val notes = (noteRepository.getAllNotes().firstOrNull() ?: emptyList()).map {
                     it.copy(
-                        title = Base64.Default.encode(it.title.encodeToByteArray()),
-                        content = Base64.Default.encode(it.content.encodeToByteArray())
+                        title = Base64.encode(it.title.encodeToByteArray()),
+                        content = Base64.encode(it.content.encodeToByteArray())
                     )
                 }
                 val folders = folderRepository.getFoldersWithNoteCounts()
@@ -545,8 +545,8 @@ class MainViewModel(
                 folderRepository.insertFolders(backupData.folders)
                 val decodedNotes = backupData.notes.map {
                     it.copy(
-                        title = Base64.Default.decode(it.title).decodeToString(),
-                        content = Base64.Default.decode(it.content).decodeToString()
+                        title = Base64.decode(it.title).decodeToString(),
+                        content = Base64.decode(it.content).decodeToString()
                     )
                 }
                 noteRepository.insertNotes(decodedNotes)

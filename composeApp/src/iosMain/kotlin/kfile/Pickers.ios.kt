@@ -498,21 +498,14 @@ private fun processAndCopyMediaFile(
     val fileManager = NSFileManager.defaultManager
     val documentsDirectoryURL =
         fileManager.URLsForDirectory(NSDocumentDirectory, NSUserDomainMask).firstOrNull() as? NSURL
-    val noteDir = documentsDirectoryURL?.URLByAppendingPathComponent(noteId)
+    val noteDir = documentsDirectoryURL?.URLByAppendingPathComponent(noteId) ?: return null
 
-    if (noteDir == null) {
-        return null
-    }
     fileManager.createDirectoryAtURL(noteDir, true, null, null)
 
     val originalFileName = sourceURL.lastPathComponent ?: "${fileTypePrefix}_${
         Clock.System.now().toEpochMilliseconds()
     }.${sourceURL.pathExtension}"
-    val destinationURL = noteDir.URLByAppendingPathComponent(originalFileName)
-
-    if (destinationURL == null) {
-        return null
-    }
+    val destinationURL = noteDir.URLByAppendingPathComponent(originalFileName) ?: return null
 
     if (fileManager.fileExistsAtPath(destinationURL.path!!)) {
         fileManager.removeItemAtURL(destinationURL, null)

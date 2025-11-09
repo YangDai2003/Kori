@@ -141,7 +141,7 @@ class NoteViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val foldersWithNoteCounts: StateFlow<List<FolderDao.FolderWithNoteCount>> = dataStoreRepository
         .intFlow(Constants.Preferences.FOLDER_SORT_TYPE)
-        .map { FolderSortType.Companion.fromValue(it) }
+        .map { FolderSortType.fromValue(it) }
         .distinctUntilChanged()
         .flatMapLatest { sortType ->
             folderRepository.getFoldersWithNoteCounts(sortType)

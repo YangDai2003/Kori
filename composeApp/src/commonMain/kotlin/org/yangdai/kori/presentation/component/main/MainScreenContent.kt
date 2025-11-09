@@ -418,7 +418,7 @@ fun MainScreenContent(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 maxLines = 3
                             ) {
-                                searchHistorySet.forEach { it ->
+                                searchHistorySet.forEach {
                                     SuggestionChip(
                                         modifier = Modifier.defaultMinSize(48.dp),
                                         onClick = { textFieldState.setTextAndPlaceCursorAtEnd(it) },
