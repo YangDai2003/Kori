@@ -14,7 +14,7 @@ coilCompose = "3.3.0"
 composeMultiplatform = "1.10.0-beta01"
 composeAdaptive = "1.2.0"
 koin = "4.1.1"
-koogAgents = "0.5.2"
+koogAgents = "0.5.3"
 
 kotlin = "2.2.21"
 ksp = "2.3.2"
