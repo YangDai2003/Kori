@@ -23,14 +23,9 @@
 -keep class * extends androidx.room.RoomDatabase { <init>(); }
 
 -dontwarn io.micrometer.context.ContextAccessor
--dontwarn javax.enterprise.event.Observes
--dontwarn javax.enterprise.inject.Default
--dontwarn javax.enterprise.inject.spi.AfterBeanDiscovery
--dontwarn javax.enterprise.inject.spi.Bean
--dontwarn javax.enterprise.inject.spi.BeanManager
+-dontwarn java.lang.management.ManagementFactory
+-dontwarn java.lang.management.RuntimeMXBean
 -dontwarn javax.enterprise.inject.spi.Extension
--dontwarn javax.enterprise.inject.spi.ProcessBean
--dontwarn reactor.blockhound.integration.BlockHoundIntegration
 -dontwarn org.apache.log4j.Level
 -dontwarn org.apache.log4j.Logger
 -dontwarn org.apache.log4j.Priority
@@ -39,3 +34,4 @@
 -dontwarn org.apache.logging.log4j.message.MessageFactory
 -dontwarn org.apache.logging.log4j.spi.ExtendedLogger
 -dontwarn org.apache.logging.log4j.spi.ExtendedLoggerWrapper
+-dontwarn reactor.blockhound.integration.BlockHoundIntegration
