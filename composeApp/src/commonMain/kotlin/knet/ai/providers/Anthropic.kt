@@ -12,7 +12,9 @@ object Anthropic {
         AnthropicModels.Sonnet_4.id to AnthropicModels.Sonnet_4,
         AnthropicModels.Opus_4.id to AnthropicModels.Opus_4,
         AnthropicModels.Opus_4_1.id to AnthropicModels.Opus_4_1,
+        AnthropicModels.Opus_4_5.id to AnthropicModels.Opus_4_5,
         AnthropicModels.Sonnet_4_5.id to AnthropicModels.Sonnet_4_5,
+        AnthropicModels.Haiku_4_5.id to AnthropicModels.Haiku_4_5
     )
 
     fun getModel(id: String) = anthropicModelMap[id] ?: anthropicModelMap.values.first()
