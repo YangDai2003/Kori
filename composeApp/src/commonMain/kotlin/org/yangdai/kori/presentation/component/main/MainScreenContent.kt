@@ -53,8 +53,6 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBarDefaults
-import androidx.compose.material3.SearchBarDefaults.inputFieldColors
 import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -182,12 +180,7 @@ fun MainScreenContent(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val inputField = @Composable {
-        SearchBarDefaults.InputField(
-            colors = inputFieldColors(
-                focusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
-                disabledContainerColor = MaterialTheme.colorScheme.surfaceBright,
-            ),
+        SearchBarInputField(
             searchBarState = searchBarState,
             textFieldState = textFieldState,
             onSearch = {
@@ -382,12 +375,8 @@ fun MainScreenContent(
                     // 常规模式的顶部应用栏
                     if (currentDrawerItem is DrawerItem.AllNotes) {
                         val searchHistorySet by viewModel.searchHistorySet.collectAsStateWithLifecycle()
-                        AdaptiveSearchBar(
-                            isLargeScreen = isWideScreen,
-                            searchBarState = searchBarState,
-                            inputField = inputField
-                        ) {
-                            if (searchHistorySet.isEmpty()) return@AdaptiveSearchBar
+                        TopSearchBar(searchBarState = searchBarState, inputField = inputField) {
+                            if (searchHistorySet.isEmpty()) return@TopSearchBar
                             ListItem(
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                                 leadingContent = {
