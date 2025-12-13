@@ -59,7 +59,6 @@ class FileViewModel(
     private val _fileEditingState = MutableStateFlow(FileEditingState())
     val editingState = _fileEditingState.asStateFlow()
     private val _initialContent = MutableStateFlow("")
-    private val _isInitialized = MutableStateFlow(false)
     val needSave = combine(
         _initialContent,
         contentSnapshotFlow
@@ -104,7 +103,6 @@ class FileViewModel(
                     fileType = noteType
                 )
             }
-            _isInitialized.update { true }
         }
     }
 

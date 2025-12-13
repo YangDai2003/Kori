@@ -58,7 +58,6 @@ class TemplateViewModel(
     val contentState = TextFieldState()
 
     private var oNote = NoteEntity(isTemplate = true)
-    private val _isInitialized = MutableStateFlow(false)
 
     init {
         viewModelScope.launch {
@@ -90,7 +89,6 @@ class TemplateViewModel(
             }
             titleState.undoState.clearHistory()
             contentState.undoState.clearHistory()
-            _isInitialized.update { true }
         }
     }
 

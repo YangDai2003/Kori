@@ -67,7 +67,6 @@ class NoteViewModel(
     private val _noteEditingState = MutableStateFlow(NoteEditingState())
     val editingState = _noteEditingState.asStateFlow()
     private var oNote = NoteEntity()
-    private val _isInitialized = MutableStateFlow(false)
 
     init {
         viewModelScope.launch {
@@ -106,7 +105,6 @@ class NoteViewModel(
             }
             titleState.undoState.clearHistory()
             contentState.undoState.clearHistory()
-            _isInitialized.update { true }
         }
     }
 
