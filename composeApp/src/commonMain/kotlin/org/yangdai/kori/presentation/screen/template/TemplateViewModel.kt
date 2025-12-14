@@ -40,7 +40,7 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalTime::class, ExperimentalFoundationApi::class, ExperimentalUuidApi::class)
 class TemplateViewModel(
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     private val dataStoreRepository: DataStoreRepository,
     private val noteRepository: NoteRepository,
     connectivityObserver: ConnectivityObserver
@@ -61,11 +61,14 @@ class TemplateViewModel(
 
     init {
         viewModelScope.launch {
-            if (route.id.isEmpty()) {
+            val savedId = savedStateHandle.get<String>("newId") ?: ""
+            if (route.id.isEmpty() && savedId.isEmpty()) {
                 val currentTime = Clock.System.now().toString()
+                val newId = Uuid.random().toString()
+                savedStateHandle["newId"] = newId
                 _templateEditingState.update {
                     it.copy(
-                        id = Uuid.random().toString(),
+                        id = newId,
                         createdAt = currentTime,
                         updatedAt = currentTime,
                         noteType = NoteType.entries[route.noteType]
@@ -73,7 +76,8 @@ class TemplateViewModel(
                 }
                 oNote = NoteEntity(isTemplate = true)
             } else {
-                noteRepository.getNoteById(route.id)?.let { note ->
+                val id = route.id.ifEmpty { savedId }
+                noteRepository.getNoteById(id)?.let { note ->
                     titleState.setTextAndPlaceCursorAtEnd(note.title)
                     contentState.setTextAndPlaceCursorAtEnd(note.content)
                     _templateEditingState.update {
