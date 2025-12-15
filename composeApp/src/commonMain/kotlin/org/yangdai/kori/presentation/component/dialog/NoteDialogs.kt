@@ -51,8 +51,10 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -93,6 +95,15 @@ fun NoteTypeDialogPreview() {
         oNoteType = NoteType.PLAIN_TEXT,
         onDismissRequest = {},
         onNoteTypeSelected = {}
+    )
+}
+
+@Preview
+@Composable
+fun ShareDialogPreview() {
+    ShareDialog(
+        noteEntity = NoteEntity(),
+        onDismissRequest = {}
     )
 }
 
@@ -272,6 +283,7 @@ fun ShareDialog(
     onDismissRequest = onDismissRequest,
     title = {
         val clipboard = LocalClipboard.current
+        val hapticFeedback = LocalHapticFeedback.current
         val scope = rememberCoroutineScope()
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -288,6 +300,7 @@ fun ShareDialog(
                 shape = IconButtonDefaults.extraSmallSquareShape,
                 colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
                 onClick = {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.VirtualKey)
                     scope.launch {
                         clipboard.setClipEntry(clipEntryOf(noteEntity.content))
                     }
