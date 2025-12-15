@@ -50,24 +50,24 @@ class DataStoreRepositoryImpl(private val dataStore: DataStore<Preferences>) : D
         }
     }
 
-    override fun intFlow(key: String): Flow<Int> {
+    override fun intFlow(key: String, defaultValue: Int): Flow<Int> {
         val preferencesKey = intPreferencesKey(key)
         return dataStore.data.map { preferences ->
-            preferences[preferencesKey] ?: 0
+            preferences[preferencesKey] ?: defaultValue
         }
     }
 
-    override fun stringFlow(key: String): Flow<String> {
+    override fun stringFlow(key: String, defaultValue: String): Flow<String> {
         val preferencesKey = stringPreferencesKey(key)
         return dataStore.data.map { preferences ->
-            preferences[preferencesKey] ?: ""
+            preferences[preferencesKey] ?: defaultValue
         }
     }
 
-    override fun floatFlow(key: String): Flow<Float> {
+    override fun floatFlow(key: String, defaultValue: Float): Flow<Float> {
         val preferencesKey = floatPreferencesKey(key)
         return dataStore.data.map { preferences ->
-            preferences[preferencesKey] ?: 1f
+            preferences[preferencesKey] ?: defaultValue
         }
     }
 
@@ -78,10 +78,10 @@ class DataStoreRepositoryImpl(private val dataStore: DataStore<Preferences>) : D
         }
     }
 
-    override fun stringSetFlow(key: String): Flow<Set<String>> {
+    override fun stringSetFlow(key: String, defaultValue: Set<String>): Flow<Set<String>> {
         val preferencesKey = stringSetPreferencesKey(key)
         return dataStore.data.map { preferences ->
-            preferences[preferencesKey] ?: emptySet()
+            preferences[preferencesKey] ?: defaultValue
         }
     }
 

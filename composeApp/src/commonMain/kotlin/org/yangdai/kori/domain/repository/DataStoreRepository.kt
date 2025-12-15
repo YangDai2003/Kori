@@ -9,13 +9,13 @@ interface DataStoreRepository {
     suspend fun putBoolean(key: String, value: Boolean)
     suspend fun putStringSet(key: String, value: Set<String>)
 
-    fun intFlow(key: String): Flow<Int>
-    fun stringFlow(key: String): Flow<String>
-    fun floatFlow(key: String): Flow<Float>
+    fun intFlow(key: String, defaultValue: Int = 0): Flow<Int>
+    fun stringFlow(key: String, defaultValue: String = ""): Flow<String>
+    fun floatFlow(key: String, defaultValue: Float = 1f): Flow<Float>
     fun booleanFlow(key: String): Flow<Boolean>
-    fun stringSetFlow(key: String): Flow<Set<String>>
+    fun stringSetFlow(key: String, defaultValue: Set<String> = emptySet()): Flow<Set<String>>
 
-    fun getString(key: String, defaultValue: String): String
+    fun getString(key: String, defaultValue: String = ""): String
     fun getBoolean(key: String, defaultValue: Boolean): Boolean
     fun getInt(key: String, defaultValue: Int): Int
     fun getFloat(key: String, defaultValue: Float): Float

@@ -403,11 +403,9 @@ class MainViewModel(
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), AiPaneState())
 
-    fun getStringValue(key: String): String =
-        dataStoreRepository.getString(key, "")
+    fun getStringValue(key: String): String = dataStoreRepository.getString(key)
 
-    fun getFloatValue(key: String): Float =
-        dataStoreRepository.getFloat(key, 1f)
+    fun getFloatValue(key: String): Float = dataStoreRepository.getFloat(key, 1f)
 
     fun <T> putPreferenceValue(key: String, value: T) {
         viewModelScope.launch {

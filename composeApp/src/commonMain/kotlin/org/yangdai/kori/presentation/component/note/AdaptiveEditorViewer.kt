@@ -63,6 +63,8 @@ import kotlin.math.abs
 fun ColumnScope.AdaptiveEditorViewer(
     showDualPane: Boolean,
     pagerState: PagerState,
+    defaultEditorWeight: Float,
+    onEditorWeightChanged: (Float) -> Unit,
     editor: @Composable (Modifier) -> Unit,
     viewer: (@Composable (Modifier) -> Unit)?
 ) = if (viewer == null) {
@@ -74,7 +76,7 @@ fun ColumnScope.AdaptiveEditorViewer(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             val interactionSource = remember { MutableInteractionSource() }
-            var editorWeight by remember { mutableFloatStateOf(0.5f) }
+            var editorWeight by remember { mutableFloatStateOf(defaultEditorWeight) }
             val containerWidth = LocalWindowInfo.current.containerSize.width
 
             val anchorPoints =
@@ -122,6 +124,7 @@ fun ColumnScope.AdaptiveEditorViewer(
                             onDragStopped = {
                                 val closestAnchor = anchorPoints.minBy { abs(it - editorWeight) }
                                 editorWeight = closestAnchor
+                                onEditorWeightChanged(closestAnchor)
                             }
                         ),
                     interactionSource = interactionSource

@@ -322,6 +322,8 @@ fun NoteScreen(
                 AdaptiveEditorViewer(
                     showDualPane = isWideScreen,
                     pagerState = pagerState,
+                    defaultEditorWeight = editorState.editorWeight,
+                    onEditorWeightChanged = { viewModel.changeDefaultEditorWeight(it) },
                     editor = { modifier ->
                         AdaptiveEditor(
                             modifier = modifier,

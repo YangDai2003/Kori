@@ -29,6 +29,7 @@ object Constants {
         const val SHOW_LINE_NUMBER = "show_line_number"
         const val IS_LINTING_ENABLED = "is_markdown_lint_enabled"
         const val IS_DEFAULT_READING_VIEW = "is_default_reading_view"
+        const val EDITOR_WEIGHT = "default_editor_weight"
 
         const val DATE_FORMATTER = "date_formatter"
         const val TIME_FORMATTER = "time_formatter"
@@ -79,58 +80,42 @@ object Constants {
             return withContext(Dispatchers.IO) {
                 when (llmProvider) {
                     LLMProvider.Google -> {
-                        val baseUrl =
-                            dataStoreRepository.getString(GEMINI_BASE_URL, "")
-                        val model =
-                            dataStoreRepository.getString(GEMINI_MODEL, "")
-                        val apiKey =
-                            dataStoreRepository.getString(GEMINI_API_KEY, "")
+                        val baseUrl = dataStoreRepository.getString(GEMINI_BASE_URL)
+                        val model = dataStoreRepository.getString(GEMINI_MODEL)
+                        val apiKey = dataStoreRepository.getString(GEMINI_API_KEY)
                         Triple(baseUrl, model, apiKey)
                     }
 
                     LLMProvider.OpenAI -> {
-                        val baseUrl =
-                            dataStoreRepository.getString(OPENAI_BASE_URL, "")
-                        val model =
-                            dataStoreRepository.getString(OPENAI_MODEL, "")
-                        val apiKey =
-                            dataStoreRepository.getString(OPENAI_API_KEY, "")
+                        val baseUrl = dataStoreRepository.getString(OPENAI_BASE_URL)
+                        val model = dataStoreRepository.getString(OPENAI_MODEL)
+                        val apiKey = dataStoreRepository.getString(OPENAI_API_KEY)
                         Triple(baseUrl, model, apiKey)
                     }
 
                     LLMProvider.Anthropic -> {
-                        val baseUrl =
-                            dataStoreRepository.getString(ANTHROPIC_BASE_URL, "")
-                        val model =
-                            dataStoreRepository.getString(ANTHROPIC_MODEL, "")
-                        val apiKey =
-                            dataStoreRepository.getString(ANTHROPIC_API_KEY, "")
+                        val baseUrl = dataStoreRepository.getString(ANTHROPIC_BASE_URL)
+                        val model = dataStoreRepository.getString(ANTHROPIC_MODEL)
+                        val apiKey = dataStoreRepository.getString(ANTHROPIC_API_KEY)
                         Triple(baseUrl, model, apiKey)
                     }
 
                     LLMProvider.DeepSeek -> {
-                        val baseUrl =
-                            dataStoreRepository.getString(DEEPSEEK_BASE_URL, "")
-                        val model =
-                            dataStoreRepository.getString(DEEPSEEK_MODEL, "")
-                        val apiKey =
-                            dataStoreRepository.getString(DEEPSEEK_API_KEY, "")
+                        val baseUrl = dataStoreRepository.getString(DEEPSEEK_BASE_URL)
+                        val model = dataStoreRepository.getString(DEEPSEEK_MODEL)
+                        val apiKey = dataStoreRepository.getString(DEEPSEEK_API_KEY)
                         Triple(baseUrl, model, apiKey)
                     }
 
                     LLMProvider.Ollama -> {
-                        val baseUrl =
-                            dataStoreRepository.getString(OLLAMA_BASE_URL, "")
-                        val model =
-                            dataStoreRepository.getString(OLLAMA_MODEL, "")
+                        val baseUrl = dataStoreRepository.getString(OLLAMA_BASE_URL)
+                        val model = dataStoreRepository.getString(OLLAMA_MODEL)
                         Triple(baseUrl, model, "")
                     }
 
                     LMStudio -> {
-                        val baseUrl =
-                            dataStoreRepository.getString(LM_STUDIO_BASE_URL, "")
-                        val model =
-                            dataStoreRepository.getString(LM_STUDIO_MODEL, "")
+                        val baseUrl = dataStoreRepository.getString(LM_STUDIO_BASE_URL)
+                        val model = dataStoreRepository.getString(LM_STUDIO_MODEL)
                         Triple(baseUrl, model, "")
                     }
 

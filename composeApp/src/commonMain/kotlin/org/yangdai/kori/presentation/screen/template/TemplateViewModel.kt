@@ -98,13 +98,23 @@ class TemplateViewModel(
 
     val editorState = combine(
         dataStoreRepository.booleanFlow(Constants.Preferences.SHOW_LINE_NUMBER),
-        dataStoreRepository.booleanFlow(Constants.Preferences.IS_LINTING_ENABLED)
-    ) { showLineNumber, isLintingEnabled ->
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_LINTING_ENABLED),
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_DEFAULT_READING_VIEW),
+        dataStoreRepository.floatFlow(Constants.Preferences.EDITOR_WEIGHT, 0.5f)
+    ) { showLineNumber, isLintingEnabled, isDefaultReadingView, editorWeight ->
         EditorPaneState(
             isLineNumberVisible = showLineNumber,
-            isLintingEnabled = isLintingEnabled
+            isLintingEnabled = isLintingEnabled,
+            isDefaultReadingView = isDefaultReadingView,
+            editorWeight = editorWeight
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, EditorPaneState())
+
+    fun changeDefaultEditorWeight(weight: Float) {
+        viewModelScope.launch {
+            dataStoreRepository.putFloat(Constants.Preferences.EDITOR_WEIGHT, weight)
+        }
+    }
 
     fun updateNoteType(noteType: NoteType) {
         _templateEditingState.update {
