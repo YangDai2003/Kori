@@ -13,14 +13,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -53,6 +55,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -538,7 +541,8 @@ fun MainScreenContent(
             }
         },
         snackbarHost = { SnackbarHost(hostState) },
-        containerColor = MaterialTheme.colorScheme.surfaceContainer
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Top)
     ) { innerPadding ->
         val pagerState = rememberPagerState { 5 }
         LaunchedEffect(currentDrawerItem) {
@@ -553,14 +557,6 @@ fun MainScreenContent(
             }
             pagerState.scrollToPage(page)
         }
-        val contentPadding = remember(innerPadding) {
-            PaddingValues(
-                top = 16.dp,
-                start = 16.dp,
-                end = 16.dp,
-                bottom = innerPadding.calculateBottomPadding() + 16.dp
-            )
-        }
         val noteItemProperties = remember(cardPaneState, viewModel.noteSortType) {
             NoteItemProperties(
                 showCreatedTime = when (viewModel.noteSortType) {
@@ -571,11 +567,9 @@ fun MainScreenContent(
                 clipOverflow = cardPaneState.clipOverflow
             )
         }
-        Box(Modifier.fillMaxSize()) {
+        Box(Modifier.fillMaxSize().padding(innerPadding)) {
             VerticalPager(
-                modifier = Modifier
-                    .padding(top = innerPadding.calculateTopPadding())
-                    .fillMaxSize()
+                modifier = Modifier.fillMaxSize()
                     .background(
                         color = MaterialTheme.colorScheme.surface,
                         shape = if (isWideScreen) RoundedCornerShape(topStart = 12.dp)
@@ -596,7 +590,6 @@ fun MainScreenContent(
                                     Page(
                                         keyword = textFieldState.text.toString(),
                                         notes = searchResults,
-                                        contentPadding = contentPadding,
                                         navigateToNote = { navigateToScreen(Screen.Note(it)) },
                                         selectedNotes = selectedNotes,
                                         noteItemProperties = noteItemProperties,
@@ -605,7 +598,6 @@ fun MainScreenContent(
                                 else
                                     Page(
                                         notes = allNotes,
-                                        contentPadding = contentPadding,
                                         navigateToNote = { navigateToScreen(Screen.Note(it)) },
                                         selectedNotes = selectedNotes,
                                         noteItemProperties = noteItemProperties,
@@ -619,7 +611,6 @@ fun MainScreenContent(
                         val templateNotes by viewModel.templateNotes.collectAsStateWithLifecycle()
                         Page(
                             notes = templateNotes,
-                            contentPadding = contentPadding,
                             navigateToNote = { navigateToScreen(Screen.Template(it)) },
                             selectedNotes = selectedNotes,
                             noteItemProperties = noteItemProperties,
@@ -631,7 +622,6 @@ fun MainScreenContent(
                         val trashNotes by viewModel.trashNotes.collectAsStateWithLifecycle()
                         Page(
                             notes = trashNotes.first,
-                            contentPadding = contentPadding,
                             selectedNotes = selectedNotes,
                             noteItemProperties = noteItemProperties,
                             isSelectionMode = isSelectionMode
@@ -647,7 +637,6 @@ fun MainScreenContent(
                             }
                             Page(
                                 notes = folderNotes,
-                                contentPadding = contentPadding,
                                 navigateToNote = { navigateToScreen(Screen.Note(it)) },
                                 selectedNotes = selectedNotes,
                                 noteItemProperties = noteItemProperties,
@@ -682,7 +671,7 @@ fun MainScreenContent(
 
             FloatingActionButtonMenu(
                 modifier = Modifier.align(Alignment.BottomEnd)
-                    .padding(bottom = innerPadding.calculateBottomPadding()),
+                    .windowInsetsPadding(WindowInsets.navigationBars),
                 expanded = fabMenuExpanded,
                 button = {
                     ToggleFloatingActionButton(

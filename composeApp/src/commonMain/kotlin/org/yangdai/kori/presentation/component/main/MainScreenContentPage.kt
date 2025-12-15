@@ -8,7 +8,10 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -40,7 +43,6 @@ import org.yangdai.kori.presentation.component.main.card.NoteItemProperties
 @Composable
 fun Page(
     notes: List<NoteEntity>,
-    contentPadding: PaddingValues,
     noteItemProperties: NoteItemProperties,
     isSelectionMode: Boolean,
     selectedNotes: MutableSet<String>,
@@ -55,12 +57,17 @@ fun Page(
             state.firstVisibleItemIndex > 0 && state.lastScrolledBackward
         }
     }
-
+    val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Adaptive(minSize = 256.dp),
         modifier = Modifier.fillMaxSize(),
         state = state,
-        contentPadding = contentPadding,
+        contentPadding = PaddingValues(
+            start = 16.dp,
+            top = 16.dp,
+            end = 16.dp,
+            bottom = 16.dp + bottomPadding
+        ),
         verticalItemSpacing = 8.dp,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
