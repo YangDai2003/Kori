@@ -165,20 +165,17 @@ fun MainScreenContent(
     navigationIcon: @Composable () -> Unit,
     navigateToScreen: (Screen) -> Unit
 ) {
-    var showSortDialog by remember { mutableStateOf(false) }
+    var showSortSheet by remember { mutableStateOf(false) }
     var showFoldersDialog by remember { mutableStateOf(false) }
     val selectedNotes = remember { mutableStateSetOf<String>() }
     val isSelectionMode by remember { derivedStateOf { selectedNotes.isNotEmpty() } }
-    val isWideScreen = rememberIsScreenWidthExpanded()
     BackHandler(enabled = isSelectionMode) { selectedNotes.clear() }
-    var fabMenuExpanded by remember { mutableStateOf(false) }
-    LaunchedEffect(isSelectionMode) { if (isSelectionMode) fabMenuExpanded = false }
-    BackHandler(enabled = fabMenuExpanded) { fabMenuExpanded = false }
 
+    val isWideScreen = rememberIsScreenWidthExpanded()
     val textFieldState = rememberTextFieldState()
     val searchBarState = rememberSearchBarState()
     val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
+    val hostState = remember { SnackbarHostState() }
     val inputField = @Composable {
         SearchBarInputField(
             searchBarState = searchBarState,
@@ -228,7 +225,7 @@ fun MainScreenContent(
                         TooltipIconButton(
                             hint = stringResource(Res.string.sort_by),
                             icon = Icons.Default.SortByAlpha,
-                            onClick = { showSortDialog = true }
+                            onClick = { showSortSheet = true }
                         )
                 }
             }
@@ -236,6 +233,10 @@ fun MainScreenContent(
     }
     val cardPaneState by viewModel.cardPaneState.collectAsStateWithLifecycle()
     val topBarPadding = LocalTopAppBarPadding.current
+
+    var fabMenuExpanded by remember { mutableStateOf(false) }
+    LaunchedEffect(isSelectionMode, searchBarState.currentValue) { fabMenuExpanded = false }
+    BackHandler(enabled = fabMenuExpanded) { fabMenuExpanded = false }
 
     Scaffold(
         topBar = {
@@ -293,7 +294,7 @@ fun MainScreenContent(
                                     icon = painterResource(Res.drawable.pinboard),
                                     onClick = {
                                         viewModel.pinNotes(selectedNotes.toSet())
-                                        scope.launch { snackbarHostState.showSnackbar(pinnedStr) }
+                                        scope.launch { hostState.showSnackbar(pinnedStr) }
                                         selectedNotes.clear()
                                     }
                                 )
@@ -324,7 +325,7 @@ fun MainScreenContent(
                                     icon = Icons.Default.RestoreFromTrash,
                                     onClick = {
                                         viewModel.restoreNotesFromTrash(selectedNotes.toSet())
-                                        scope.launch { snackbarHostState.showSnackbar(restoredStr) }
+                                        scope.launch { hostState.showSnackbar(restoredStr) }
                                         selectedNotes.clear()
                                     }
                                 )
@@ -352,12 +353,12 @@ fun MainScreenContent(
                                     if (deleteForever) {
                                         viewModel.deleteNotes(selectedNotes.toSet())
                                         scope.launch {
-                                            snackbarHostState.showSnackbar(deletedForeverStr)
+                                            hostState.showSnackbar(deletedForeverStr)
                                         }
                                     } else {
                                         viewModel.moveNotesToTrash(selectedNotes.toSet())
                                         scope.launch {
-                                            snackbarHostState.showSnackbar(movedToTrashStr)
+                                            hostState.showSnackbar(movedToTrashStr)
                                         }
                                     }
                                     selectedNotes.clear()
@@ -451,7 +452,7 @@ fun MainScreenContent(
                                     TooltipIconButton(
                                         hint = stringResource(Res.string.sort_by),
                                         icon = Icons.Default.SortByAlpha,
-                                        onClick = { showSortDialog = true }
+                                        onClick = { showSortSheet = true }
                                     )
 
                                 if (currentDrawerItem is DrawerItem.Trash) {
@@ -494,7 +495,7 @@ fun MainScreenContent(
                                                     showMenu = false
                                                     viewModel.restoreAllNotesFromTrash()
                                                     scope.launch {
-                                                        snackbarHostState.showSnackbar(
+                                                        hostState.showSnackbar(
                                                             restoredAllStr
                                                         )
                                                     }
@@ -518,7 +519,7 @@ fun MainScreenContent(
                                                     showMenu = false
                                                     viewModel.emptyTrash()
                                                     scope.launch {
-                                                        snackbarHostState.showSnackbar(deletedAllStr)
+                                                        hostState.showSnackbar(deletedAllStr)
                                                     }
                                                 })
                                         }
@@ -536,7 +537,7 @@ fun MainScreenContent(
                 }
             }
         },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        snackbarHost = { SnackbarHost(hostState) },
         containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) { innerPadding ->
         val pagerState = rememberPagerState { 5 }
@@ -748,13 +749,11 @@ fun MainScreenContent(
         }
     }
 
-    if (showSortDialog)
+    if (showSortSheet)
         NoteSortOptionBottomSheet(
             oNoteSortType = viewModel.noteSortType,
-            onDismissRequest = { showSortDialog = false },
-            onSortTypeSelected = {
-                viewModel.setNoteSorting(it)
-            }
+            onDismissRequest = { showSortSheet = false },
+            onSortTypeSelected = { viewModel.setNoteSorting(it) }
         )
 
     if (showFoldersDialog) {

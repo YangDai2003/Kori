@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -23,8 +22,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.InputTransformation
-import androidx.compose.foundation.text.input.OutputTransformation
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -68,7 +65,7 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalInputModeManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -77,10 +74,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.constrain
 import androidx.compose.ui.unit.constrainHeight
 import androidx.compose.ui.unit.constrainWidth
@@ -92,7 +86,6 @@ import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMaxOfOrNull
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -104,7 +97,7 @@ fun TopSearchBar(
     inputField: @Composable () -> Unit,
     expandedContent: @Composable ColumnScope.() -> Unit
 ) = Box(
-    modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth(),
+    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
     contentAlignment = Alignment.Center
 ) {
     val colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceBright)
@@ -115,7 +108,7 @@ fun TopSearchBar(
         inputField = inputField,
         colors = colors
     )
-    val shadowElevation by animateDpAsState(targetValue = if (searchBarState.currentValue == SearchBarValue.Expanded) 4.dp else 0.dp)
+    val shadowElevation by animateDpAsState(targetValue = if (searchBarState.targetValue == SearchBarValue.Expanded) 4.dp else 0.dp)
     ExpandedSearchBar(
         state = searchBarState,
         inputField = inputField,
@@ -126,9 +119,8 @@ fun TopSearchBar(
 }
 
 private val SearchBarState.collapsedBounds: IntRect
-    get() =
-        collapsedCoords?.let { IntRect(offset = it.positionInWindow().round(), size = it.size) }
-            ?: IntRect.Zero
+    get() = collapsedCoords?.let { IntRect(offset = it.positionInParent().round(), size = it.size) }
+        ?: IntRect.Zero
 
 private val SearchBarState.isExpanded
     get() = this.currentValue == SearchBarValue.Expanded
@@ -137,34 +129,20 @@ private val SearchBarState.isExpanded
 private fun ExpandedSearchBar(
     state: SearchBarState,
     inputField: @Composable () -> Unit,
-    modifier: Modifier = Modifier,
     shape: Shape = SearchBarDefaults.dockedShape,
     colors: SearchBarColors = SearchBarDefaults.colors(),
-    tonalElevation: Dp = SearchBarDefaults.TonalElevation,
     shadowElevation: Dp = SearchBarDefaults.ShadowElevation,
     properties: PopupProperties = PopupProperties(focusable = true, clippingEnabled = false),
-    content: @Composable ColumnScope.() -> Unit,
+    content: @Composable ColumnScope.() -> Unit
 ) {
     if (!state.isExpanded) return
-
-    val positionProvider =
-        remember(state) {
-            object : PopupPositionProvider {
-                override fun calculatePosition(
-                    anchorBounds: IntRect,
-                    windowSize: IntSize,
-                    layoutDirection: LayoutDirection,
-                    popupContentSize: IntSize,
-                ): IntOffset = state.collapsedBounds.topLeft
-            }
-        }
 
     val scope = rememberCoroutineScope()
 
     Popup(
-        popupPositionProvider = positionProvider,
+        offset = state.collapsedBounds.topLeft,
         onDismissRequest = { scope.launch { state.animateToCollapsed() } },
-        properties = properties,
+        properties = properties
     ) {
         val focusRequester = remember { FocusRequester() }
 
@@ -178,12 +156,10 @@ private fun ExpandedSearchBar(
                     inputField()
                 }
             },
-            modifier = modifier,
             shape = shape,
             colors = colors,
-            tonalElevation = tonalElevation,
             shadowElevation = shadowElevation,
-            content = content,
+            content = content
         )
 
         // Focus the input field on the first expansion,
@@ -206,12 +182,10 @@ private fun ExpandedSearchBar(
 private fun DockedSearchBarLayout(
     state: SearchBarState,
     inputField: @Composable () -> Unit,
-    modifier: Modifier,
     shape: Shape,
     colors: SearchBarColors,
-    tonalElevation: Dp,
     shadowElevation: Dp,
-    content: @Composable ColumnScope.() -> Unit,
+    content: @Composable ColumnScope.() -> Unit
 ) {
     val scope = rememberCoroutineScope()
     BackHandler(enabled = state.isExpanded) { scope.launch { state.animateToCollapsed() } }
@@ -220,9 +194,7 @@ private fun DockedSearchBarLayout(
         shape = shape,
         color = colors.containerColor,
         contentColor = contentColorFor(colors.containerColor),
-        tonalElevation = tonalElevation,
-        shadowElevation = shadowElevation,
-        modifier = modifier.imePadding(),
+        shadowElevation = shadowElevation
     ) {
         val windowContainerHeight = LocalWindowInfo.current.containerDpSize.height
         val maxHeight = windowContainerHeight * 2f / 3f
@@ -280,18 +252,13 @@ fun SearchBarInputField(
     textFieldState: TextFieldState,
     searchBarState: SearchBarState,
     onSearch: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    readOnly: Boolean = false,
     textStyle: TextStyle = LocalTextStyle.current,
     placeholder: @Composable (() -> Unit)? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     prefix: @Composable (() -> Unit)? = null,
     suffix: @Composable (() -> Unit)? = null,
-    inputTransformation: InputTransformation? = null,
-    outputTransformation: OutputTransformation? = null,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardOptions: KeyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
     lineLimits: TextFieldLineLimits = TextFieldLineLimits.SingleLine,
     scrollState: ScrollState = rememberScrollState(),
     shape: Shape = inputFieldShape,
@@ -299,11 +266,9 @@ fun SearchBarInputField(
         focusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
         unfocusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
         disabledContainerColor = MaterialTheme.colorScheme.surfaceBright,
-    ),
-    interactionSource: MutableInteractionSource? = null,
+    )
 ) {
-    @Suppress("NAME_SHADOWING")
-    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+    val interactionSource = remember { MutableInteractionSource() }
 
     /*
     Relationship between focus and expansion state:
@@ -318,80 +283,70 @@ fun SearchBarInputField(
     val focusManager = LocalFocusManager.current
     val isInTouchMode = LocalInputModeManager.current.inputMode == InputMode.Touch
 
-    val textColor =
-        textStyle.color.takeOrElse {
-            colors.textColor(enabled, isError = false, focused = focused)
-        }
+    val textColor = textStyle.color.takeOrElse {
+        colors.textColor(true, isError = false, focused = focused)
+    }
     val mergedTextStyle = textStyle.merge(TextStyle(color = textColor))
 
     val coroutineScope = rememberCoroutineScope()
 
     BasicTextField(
         state = textFieldState,
-        modifier =
-            modifier
-                .onPreviewKeyEvent {
-                    val expandOnDownKey = !isInTouchMode && !searchBarState.isExpanded
-                    if (expandOnDownKey && it.key == Key.DirectionDown) {
-                        coroutineScope.launch { searchBarState.animateToExpanded() }
-                        return@onPreviewKeyEvent true
-                    }
-                    // Make sure arrow key down moves to list of suggestions.
-                    if (searchBarState.isExpanded && it.key == Key.DirectionDown) {
-                        focusManager.moveFocus(FocusDirection.Down)
-                        return@onPreviewKeyEvent true
-                    }
-                    false
+        modifier = Modifier
+            .onPreviewKeyEvent {
+                val expandOnDownKey = !isInTouchMode && !searchBarState.isExpanded
+                if (expandOnDownKey && it.key == Key.DirectionDown) {
+                    coroutineScope.launch { searchBarState.animateToExpanded() }
+                    return@onPreviewKeyEvent true
                 }
-                .width(320.dp)
-                .sizeIn(minHeight = InputFieldHeight)
-                .onFocusChanged {
-                    if (it.isFocused && isInTouchMode) {
-                        coroutineScope.launch { searchBarState.animateToExpanded() }
-                    }
-                },
-        enabled = enabled,
-        readOnly = readOnly,
+                // Make sure arrow key down moves to list of suggestions.
+                if (searchBarState.isExpanded && it.key == Key.DirectionDown) {
+                    focusManager.moveFocus(FocusDirection.Down)
+                    return@onPreviewKeyEvent true
+                }
+                false
+            }
+            .width(320.dp)
+            .sizeIn(minHeight = InputFieldHeight)
+            .onFocusChanged {
+                if (it.isFocused && isInTouchMode) {
+                    coroutineScope.launch { searchBarState.animateToExpanded() }
+                }
+            },
         lineLimits = lineLimits,
         textStyle = mergedTextStyle,
         cursorBrush = SolidColor(colors.cursorColor(isError = false)),
-        keyboardOptions = keyboardOptions.merge(KeyboardOptions(imeAction = ImeAction.Search)),
+        keyboardOptions = keyboardOptions,
         onKeyboardAction = { onSearch(textFieldState.text.toString()) },
         interactionSource = interactionSource,
-        inputTransformation = inputTransformation,
-        outputTransformation = outputTransformation,
         scrollState = scrollState,
         decorator =
             TextFieldDefaults.decorator(
                 state = textFieldState,
-                enabled = enabled,
+                enabled = true,
                 lineLimits = lineLimits,
-                outputTransformation = outputTransformation,
+                outputTransformation = null,
                 interactionSource = interactionSource,
                 placeholder = placeholder,
-                leadingIcon =
-                    leadingIcon?.let { leading ->
-                        { Box(Modifier.offset(x = 4.dp)) { leading() } }
-                    },
-                trailingIcon =
-                    trailingIcon?.let { trailing ->
-                        { Box(Modifier.offset(x = (-4).dp)) { trailing() } }
-                    },
+                leadingIcon = leadingIcon?.let { leading ->
+                    { Box(Modifier.offset(x = 4.dp)) { leading() } }
+                },
+                trailingIcon = trailingIcon?.let { trailing ->
+                    { Box(Modifier.offset(x = (-4).dp)) { trailing() } }
+                },
                 prefix = prefix,
                 suffix = suffix,
                 colors = colors,
                 contentPadding = TextFieldDefaults.contentPaddingWithoutLabel(),
                 container = {
-                    val containerColor =
-                        animateColorAsState(
-                            targetValue =
-                                colors.containerColor(
-                                    enabled = enabled,
-                                    isError = false,
-                                    focused = focused,
-                                ),
-                            animationSpec = MaterialTheme.motionScheme.fastEffectsSpec(),
-                        )
+                    val containerColor = animateColorAsState(
+                        targetValue = colors.containerColor(
+                            enabled = true,
+                            isError = false,
+                            focused = focused,
+                        ),
+                        animationSpec = MaterialTheme.motionScheme.fastEffectsSpec(),
+                    )
                     Box(Modifier.drawWithCache {
                         val outline = shape.createOutline(size, layoutDirection, this)
                         onDrawBehind { drawOutline(outline, color = containerColor.value) }
@@ -431,10 +386,8 @@ fun SearchBarInputField(
         }
     }
 
-    val shouldClearFocusOnCollapse = !searchBarState.isExpanded && focused && isInTouchMode
     LaunchedEffect(searchBarState.isExpanded) {
-        if (shouldClearFocusOnCollapse) {
-            focusManager.clearFocus()
-        }
+        val shouldClearFocusOnCollapse = !searchBarState.isExpanded && focused && isInTouchMode
+        if (shouldClearFocusOnCollapse) focusManager.clearFocus()
     }
 }
