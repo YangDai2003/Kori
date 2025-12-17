@@ -11,18 +11,6 @@ import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.todayIn
 
-fun TextFieldBuffer.moveCursorLeftStateless() {
-    if (selection.min > 0) {
-        selection = TextRange(selection.min - 1, selection.min - 1)
-    }
-}
-
-fun TextFieldBuffer.moveCursorRightStateless() {
-    if (selection.max < length) {
-        selection = TextRange(selection.max + 1, selection.max + 1)
-    }
-}
-
 private fun TextFieldBuffer.inlineWrap(
     startWrappedString: String,
     endWrappedString: String = startWrappedString,

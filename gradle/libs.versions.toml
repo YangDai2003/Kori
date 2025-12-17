@@ -1,5 +1,5 @@
 [versions]
-agp = "8.13.1"
+agp = "8.13.2"
 androidx-activityCompose = "1.12.1"
 androidx-appcompat = "1.7.1"
 androidx-biometric = "1.4.0-alpha04"

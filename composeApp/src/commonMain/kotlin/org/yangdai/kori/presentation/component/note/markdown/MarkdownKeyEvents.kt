@@ -9,8 +9,6 @@ import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
-import org.yangdai.kori.OS
-import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.presentation.component.isPlatformActionKeyPressed
 import org.yangdai.kori.presentation.component.note.addAfter
 import org.yangdai.kori.presentation.component.note.bold
@@ -23,8 +21,6 @@ import org.yangdai.kori.presentation.component.note.italic
 import org.yangdai.kori.presentation.component.note.link
 import org.yangdai.kori.presentation.component.note.math
 import org.yangdai.kori.presentation.component.note.mermaidDiagram
-import org.yangdai.kori.presentation.component.note.moveCursorLeftStateless
-import org.yangdai.kori.presentation.component.note.moveCursorRightStateless
 import org.yangdai.kori.presentation.component.note.numberedList
 import org.yangdai.kori.presentation.component.note.quote
 import org.yangdai.kori.presentation.component.note.strikeThrough
@@ -148,20 +144,6 @@ fun Modifier.markdownKeyEvents(textFieldState: TextFieldState): Modifier =
 
             } else {
                 when (keyEvent.key) {
-
-                    Key.DirectionLeft -> {
-                        if (currentPlatformInfo.operatingSystem == OS.ANDROID) {
-                            textFieldState.edit { moveCursorLeftStateless() }
-                            true
-                        } else false
-                    }
-
-                    Key.DirectionRight -> {
-                        if (currentPlatformInfo.operatingSystem == OS.ANDROID) {
-                            textFieldState.edit { moveCursorRightStateless() }
-                            true
-                        } else false
-                    }
 
                     Key.Enter, Key.NumPadEnter -> { // 改进换行键行为
                         val currentText = textFieldState.text.toString()

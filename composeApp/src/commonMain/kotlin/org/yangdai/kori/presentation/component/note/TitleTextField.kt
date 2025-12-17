@@ -23,11 +23,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
@@ -36,8 +31,6 @@ import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.title
 import org.jetbrains.compose.resources.stringResource
-import org.yangdai.kori.OS
-import org.yangdai.kori.currentPlatformInfo
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -58,29 +51,6 @@ fun TitleTextField(
             .onFocusChanged {
                 if (focused && !it.isFocused) onDone()
                 focused = it.isFocused
-            }
-            .onPreviewKeyEvent { keyEvent ->
-                if (keyEvent.type == KeyEventType.KeyDown) {
-                    when (keyEvent.key) {
-                        Key.DirectionLeft -> {
-                            if (currentPlatformInfo.operatingSystem == OS.ANDROID) {
-                                state.edit { moveCursorLeftStateless() }
-                                true
-                            } else false
-                        }
-
-                        Key.DirectionRight -> {
-                            if (currentPlatformInfo.operatingSystem == OS.ANDROID) {
-                                state.edit { moveCursorRightStateless() }
-                                true
-                            } else false
-                        }
-
-                        else -> false
-                    }
-                } else {
-                    false
-                }
             },
         state = state,
         lineLimits = TextFieldLineLimits.SingleLine,
