@@ -109,10 +109,7 @@ private fun LoadingScrim() {
 }
 
 @Composable
-private fun AIAssistChip(
-    onClick: () -> Unit,
-    label: String
-) {
+private fun AIAssistChip(label: String, onClick: () -> Unit) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val scale by animateFloatAsState(
@@ -185,26 +182,21 @@ fun AIAssist(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Spacer(Modifier.width(6.dp))
-            AIAssistChip(
-                onClick = { onEvent(AIAssistEvent.Proofread) },
-                label = stringResource(Res.string.proofread)
-            )
-            AIAssistChip(
-                onClick = { onEvent(AIAssistEvent.Shorten) },
-                label = stringResource(Res.string.shorten)
-            )
-            AIAssistChip(
-                onClick = { onEvent(AIAssistEvent.Elaborate) },
-                label = stringResource(Res.string.elaborate)
-            )
-            AIAssistChip(
-                onClick = { onEvent(AIAssistEvent.Rewrite) },
-                label = stringResource(Res.string.rewrite)
-            )
-            AIAssistChip(
-                onClick = { onEvent(AIAssistEvent.Summarize) },
-                label = stringResource(Res.string.summarize)
-            )
+            AIAssistChip(stringResource(Res.string.proofread)) {
+                onEvent(AIAssistEvent.Proofread)
+            }
+            AIAssistChip(stringResource(Res.string.shorten)) {
+                onEvent(AIAssistEvent.Shorten)
+            }
+            AIAssistChip(stringResource(Res.string.elaborate)) {
+                onEvent(AIAssistEvent.Elaborate)
+            }
+            AIAssistChip(stringResource(Res.string.rewrite)) {
+                onEvent(AIAssistEvent.Rewrite)
+            }
+            AIAssistChip(stringResource(Res.string.summarize)) {
+                onEvent(AIAssistEvent.Summarize)
+            }
             Spacer(Modifier.width(6.dp))
         }
     }
