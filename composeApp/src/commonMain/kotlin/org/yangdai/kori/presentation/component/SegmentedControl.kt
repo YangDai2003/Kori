@@ -30,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -58,7 +57,7 @@ import kotlin.math.abs
 
 @Preview
 @Composable
-fun SegmentedDemo() {
+private fun SegmentedDemo() {
     MaterialTheme {
         Surface {
             Column(Modifier.padding(8.dp), verticalArrangement = spacedBy(16.dp)) {
@@ -311,7 +310,7 @@ private fun <T> Segments(
                 .weight(1f)
                 .then(semanticsModifier)
                 .padding(SEGMENT_PADDING)
-                .alpha(alpha)
+                .graphicsLayer { this.alpha = alpha }
                 .segmentScaleModifier(
                     pressed = isPressed && isSelected,
                     pressedSelectedScale = state.pressedSelectedScale,

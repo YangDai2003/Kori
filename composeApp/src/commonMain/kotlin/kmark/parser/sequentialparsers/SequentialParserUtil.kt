@@ -21,10 +21,10 @@ class SequentialParserUtil {
             var lastStart = textRange.first
 
             val rangeEnd = textRange.last
-            for (i in lastStart..rangeEnd - 1) {
+            for (i in lastStart..<rangeEnd) {
                 if (tokensCache.Iterator(i).type == MarkdownTokenTypes.BLOCK_QUOTE) {
                     if (lastStart < i) {
-                        result.add(lastStart..i - 1)
+                        result.add(lastStart..<i)
                     }
                     lastStart = i + 1
                 }

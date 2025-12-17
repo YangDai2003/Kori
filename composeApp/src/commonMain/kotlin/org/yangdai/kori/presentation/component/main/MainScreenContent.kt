@@ -165,8 +165,8 @@ operator fun Digit.compareTo(other: Digit): Int {
 fun MainScreenContent(
     viewModel: MainViewModel,
     currentDrawerItem: DrawerItem,
-    navigationIcon: @Composable () -> Unit,
-    navigateToScreen: (Screen) -> Unit
+    navigateToScreen: (Screen) -> Unit,
+    navigationIcon: @Composable () -> Unit
 ) {
     var showSortSheet by remember { mutableStateOf(false) }
     var showFoldersDialog by remember { mutableStateOf(false) }

@@ -90,6 +90,7 @@ import androidx.compose.ui.input.pointer.isCtrlPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.area_eraser
@@ -234,7 +235,7 @@ private fun InkScreenBackground(
 
                 Box(
                     Modifier
-                        .offset(x.dp, y.dp)
+                        .offset { IntOffset(x.dp.roundToPx(), y.dp.roundToPx()) }
                         .requiredSize(size.dp)
                         .background(
                             brush = Brush.radialGradient(
@@ -759,12 +760,12 @@ private fun EraserStylusPane(
     horizontalAlignment = Alignment.CenterHorizontally
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().height(36.dp).padding(horizontal = 4.dp).selectable(
+        modifier = Modifier.fillMaxWidth().height(36.dp).selectable(
             selected = state.toolMode.value == ToolMode.ERASER_ENTIRE, onClick = {
                 state.toolMode.value = ToolMode.ERASER_ENTIRE
                 lastSelectedEraserMode.value = ToolMode.ERASER_ENTIRE
             }, role = Role.RadioButton
-        ),
+        ).padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -774,12 +775,12 @@ private fun EraserStylusPane(
         )
     }
     Row(
-        modifier = Modifier.fillMaxWidth().height(36.dp).padding(horizontal = 4.dp).selectable(
+        modifier = Modifier.fillMaxWidth().height(36.dp).selectable(
             selected = state.toolMode.value == ToolMode.ERASER_PARTIAL, onClick = {
                 state.toolMode.value = ToolMode.ERASER_PARTIAL
                 lastSelectedEraserMode.value = ToolMode.ERASER_PARTIAL
             }, role = Role.RadioButton
-        ),
+        ).padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

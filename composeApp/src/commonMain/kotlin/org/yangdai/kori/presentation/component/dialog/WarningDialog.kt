@@ -16,7 +16,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 @Preview
-fun WarningDialogPreview() {
+private fun WarningDialogPreview() {
     WarningDialog(
         message = "This is a warning message.",
         onDismissRequest = {},

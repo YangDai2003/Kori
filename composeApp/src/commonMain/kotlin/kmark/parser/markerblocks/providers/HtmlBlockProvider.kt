@@ -49,7 +49,7 @@ class HtmlBlockProvider : MarkerBlockProvider<MarkerProcessor.StateInfo> {
         val matchResult = FIND_START_REGEX.find(text.substring(offset))
             ?: return -1
         assert(matchResult.groups.size == OPEN_CLOSE_REGEXES.size + 2) { "There are some excess capturing groups probably!" }
-        for (i in 0..OPEN_CLOSE_REGEXES.size - 1) {
+        for (i in 0..<OPEN_CLOSE_REGEXES.size) {
             if (matchResult.groups[i + 2] != null) {
                 return i
             }
@@ -93,7 +93,7 @@ class HtmlBlockProvider : MarkerBlockProvider<MarkerProcessor.StateInfo> {
             Pair(Regex("<!--"), Regex("-->")),
             Pair(Regex("<\\?"), Regex("\\?>")),
             Pair(Regex("<![A-Z]"), Regex(">")),
-            Pair(Regex("<!\\[CDATA\\["), Regex("\\]\\]>")),
+            Pair(Regex("<!\\[CDATA\\["), Regex("]]>")),
             Pair(
                 Regex(
                     "</?(?:${TAG_NAMES.replace(", ", "|")})(?: |/?>|$)",

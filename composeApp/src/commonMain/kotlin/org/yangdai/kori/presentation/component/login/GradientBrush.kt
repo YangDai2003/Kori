@@ -19,7 +19,7 @@ class GradientBrush(
     private var colorStops: List<Float>,
     private var scaleX: Float = 1f,
     private var scaleY: Float = 1f,
-    private var gradientOffset: Offset = Offset.Companion.Zero,
+    private var gradientOffset: Offset = Offset.Zero,
 ) : ShaderBrush() {
 
     init {

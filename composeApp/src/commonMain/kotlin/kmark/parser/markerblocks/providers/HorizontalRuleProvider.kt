@@ -40,7 +40,7 @@ class HorizontalRuleProvider : MarkerBlockProvider<MarkerProcessor.StateInfo> {
             var hrChar: Char? = null
             var startSpace = 0
             var charCount = 1
-            for (i in offset..line.length - 1) {
+            for (i in offset..<line.length) {
                 val c = line[i]
                 if (hrChar == null) {
                     if (c == '*' || c == '-' || c == '_') {

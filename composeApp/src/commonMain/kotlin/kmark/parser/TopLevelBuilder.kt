@@ -38,7 +38,7 @@ class TopLevelBuilder(nodeBuilder: ASTNodeBuilder) : TreeBuilder(nodeBuilder) {
             currentNodeChildren.firstOrNull()?.startTokenIndex ?: endOffset
         )
 
-        for (i in 1..currentNodeChildren.size - 1) {
+        for (i in 1..<currentNodeChildren.size) {
             val prev = currentNodeChildren[i - 1]
             val next = currentNodeChildren[i]
 

@@ -39,7 +39,7 @@ import org.yangdai.kori.presentation.screen.settings.DataActionState
 
 @Preview
 @Composable
-fun ProgressDialogPreview() {
+private fun ProgressDialogPreview() {
     ProgressDialog(
         dataActionState = DataActionState(
             progress = 0.5f,

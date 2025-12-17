@@ -67,14 +67,14 @@ abstract class DelimiterParser {
         val isRightFlanking = isRightFlankingRun(tokens, left, right)
         val canOpen = when {
             canSplitText -> isLeftFlanking
-            else -> isLeftFlanking && (!isRightFlanking || SequentialParserUtil.Companion.isPunctuation(
+            else -> isLeftFlanking && (!isRightFlanking || SequentialParserUtil.isPunctuation(
                 left,
                 -1
             ))
         }
         val canClose = when {
             canSplitText -> isRightFlanking
-            else -> isRightFlanking && (!isLeftFlanking || SequentialParserUtil.Companion.isPunctuation(
+            else -> isRightFlanking && (!isLeftFlanking || SequentialParserUtil.isPunctuation(
                 right,
                 1
             ))
@@ -111,11 +111,11 @@ abstract class DelimiterParser {
     }
 
     open fun isWhitespace(info: TokensCache.Iterator, lookup: Int): Boolean {
-        return SequentialParserUtil.Companion.isWhitespace(info, lookup)
+        return SequentialParserUtil.isWhitespace(info, lookup)
     }
 
     open fun isPunctuation(info: TokensCache.Iterator, lookup: Int): Boolean {
-        return SequentialParserUtil.Companion.isPunctuation(info, lookup)
+        return SequentialParserUtil.isPunctuation(info, lookup)
     }
 
     companion object {

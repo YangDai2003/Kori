@@ -77,12 +77,12 @@ private const val TOTAL_PASSWORD_LENGTH = 6
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun NumberLockScreen(
-    modifier: Modifier = Modifier,
     storedPassword: String,
     isCreatingPassword: Boolean,
     onCreatingCanceled: () -> Unit,
     onPassCreated: (String) -> Unit,
     onAuthenticated: () -> Unit,
+    modifier: Modifier = Modifier,
     isBiometricAuthEnabled: Boolean = false,
     onBiometricClick: () -> Unit = {}
 ) = LoginDialog {

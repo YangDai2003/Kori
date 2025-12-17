@@ -38,7 +38,7 @@ class InlineLinkParser : SequentialParser {
             val startIndex = iterator.index
             var it = iterator
 
-            val linkText = LinkParserUtil.Companion.parseLinkText(it)
+            val linkText = LinkParserUtil.parseLinkText(it)
                 ?: return null
             it = linkText.iteratorPosition
             if (it.rawLookup(1) != MarkdownTokenTypes.LPAREN) {
@@ -49,14 +49,14 @@ class InlineLinkParser : SequentialParser {
             if (it.type == MarkdownTokenTypes.EOL) {
                 it = it.advance()
             }
-            val linkDestination = LinkParserUtil.Companion.parseLinkDestination(it)
+            val linkDestination = LinkParserUtil.parseLinkDestination(it)
             if (linkDestination != null) {
                 it = linkDestination.iteratorPosition.advance()
                 if (it.type == MarkdownTokenTypes.EOL) {
                     it = it.advance()
                 }
             }
-            val linkTitle = LinkParserUtil.Companion.parseLinkTitle(it)
+            val linkTitle = LinkParserUtil.parseLinkTitle(it)
             if (linkTitle != null) {
                 it = linkTitle.iteratorPosition.advance()
                 if (it.type == MarkdownTokenTypes.EOL) {

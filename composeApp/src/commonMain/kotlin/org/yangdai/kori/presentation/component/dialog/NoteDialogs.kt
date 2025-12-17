@@ -81,7 +81,7 @@ import org.yangdai.kori.presentation.util.clipEntryOf
 
 @Preview
 @Composable
-fun ExportDialogPreview() {
+private fun ExportDialogPreview() {
     ExportDialog(
         noteEntity = NoteEntity(),
         onDismissRequest = {}
@@ -90,7 +90,7 @@ fun ExportDialogPreview() {
 
 @Preview
 @Composable
-fun NoteTypeDialogPreview() {
+private fun NoteTypeDialogPreview() {
     NoteTypeDialog(
         oNoteType = NoteType.PLAIN_TEXT,
         onDismissRequest = {},
@@ -100,7 +100,7 @@ fun NoteTypeDialogPreview() {
 
 @Preview
 @Composable
-fun ShareDialogPreview() {
+private fun ShareDialogPreview() {
     ShareDialog(
         noteEntity = NoteEntity(),
         onDismissRequest = {}

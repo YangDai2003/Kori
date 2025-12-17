@@ -19,8 +19,8 @@ class ImageParser : SequentialParser {
             if (iterator.type == MarkdownTokenTypes.EXCLAMATION_MARK
                 && iterator.rawLookup(1) == MarkdownTokenTypes.LBRACKET
             ) {
-                val link = InlineLinkParser.Companion.parseInlineLink(iterator.advance())
-                    ?: ReferenceLinkParser.Companion.parseReferenceLink(iterator.advance())
+                val link = InlineLinkParser.parseInlineLink(iterator.advance())
+                    ?: ReferenceLinkParser.parseReferenceLink(iterator.advance())
 
                 if (link != null) {
                     result = result

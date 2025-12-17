@@ -50,7 +50,7 @@ class LinkMap(private val map: Map<CharSequence, LinkInfo>) {
                 val c = code.toChar()
                 if (code == 32) {
                     sb.append("%20")
-                } else if (code < 32 || code >= 128 || "\".<>\\^_`{|}".contains(c)) {
+                } else if (code !in 32..<128 || "\".<>\\^_`{|}".contains(c)) {
                     sb.append(urlEncode(codePointToString(code)))
                 } else {
                     sb.append(c)

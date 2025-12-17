@@ -94,7 +94,7 @@ class GitHubTableMarkerBlock(
         var cellNodesAdded = 0
         for (i in cells.indices) {
             val cell = cells[i]
-            if (!cell.isBlank() || i in 1..cells.lastIndex - 1) {
+            if (!cell.isBlank() || i in 1..<cells.lastIndex) {
                 result.add(SequentialParser.Node(offset..offset + cell.length, GFMTokenTypes.CELL))
                 cellNodesAdded++
             }

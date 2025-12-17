@@ -70,7 +70,7 @@ internal fun parseUrl(rawInput: String, base: URL?): URL {
     val buffer = StringBuilder(rawInput.length)
     // validation error if rawInput contains any leading or trailing C0 control or space
     // validation error if rawInput contains any ASCII tab or newline
-    val input = rawInput.trim { it <= ' ' || it > '~' }.replace(Regex("[\t\r\n]"), "")
+    val input = rawInput.trim { it !in '!'..'~' }.replace(Regex("[\t\r\n]"), "")
     var pointer = 0
     var state = STATE_START
 
@@ -577,7 +577,7 @@ internal fun percentEncode(input: String, encodeSet: String): String = buildStri
     for (b in input.encodeToByteArray()) {
         val unsigned = (b.toInt() and 0xff)
         val isomorph = unsigned.toChar()
-        if (b <= 0x1f || b > 0x7e || isomorph in encodeSet) {
+        if (b !in 0x20..0x7e || isomorph in encodeSet) {
             append('%')
             append(unsigned.toString(16).uppercase())
         } else {

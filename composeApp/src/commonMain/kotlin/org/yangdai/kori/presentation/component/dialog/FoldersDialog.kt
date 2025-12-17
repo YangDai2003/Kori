@@ -76,7 +76,7 @@ fun FoldersDialog(
                         }
                     }
                 ) {
-                    item {
+                    item(key = "all_notes") {
                         val isSelected = selectedFolderId == null
                         ListItem(
                             modifier = Modifier.clickable { selectedFolderId = null },
@@ -134,7 +134,7 @@ fun FoldersDialog(
 
 @Composable
 @Preview
-fun FoldersDialogPreview() {
+private fun FoldersDialogPreview() {
     FoldersDialog(
         hint = stringResource(Res.string.destination_folder),
         oFolderId = null,

@@ -67,7 +67,7 @@ open class ASTNodeBuilder @ExperimentalApi constructor(
 
     companion object {
         fun indexOfSubSeq(s: CharSequence, from: Int, to: Int, c: Char): Int {
-            for (i in from..to - 1) {
+            for (i in from..<to) {
                 if (s[i] == c) {
                     return i
                 }

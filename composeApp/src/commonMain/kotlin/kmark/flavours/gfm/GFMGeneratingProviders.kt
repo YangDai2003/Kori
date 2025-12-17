@@ -255,7 +255,7 @@ internal class TablesGeneratingProvider : GeneratingProvider {
             visitor.consumeTagClose(cellName)
         }
 
-        for (i in node.children.count { it.type == GFMTokenTypes.CELL }..alignmentInfo.size - 1) {
+        for (i in node.children.count { it.type == GFMTokenTypes.CELL }..<alignmentInfo.size) {
             visitor.consumeHtml("<td></td>")
         }
         visitor.consumeTagClose("tr")
@@ -270,7 +270,7 @@ internal class TablesGeneratingProvider : GeneratingProvider {
         val cells = SPLIT_REGEX.split(separatorRow.getTextInNode(text))
         for (i in cells.indices) {
             val cell = cells[i]
-            if (!cell.isBlank() || i in 1..cells.lastIndex - 1) {
+            if (!cell.isBlank() || i in 1..<cells.lastIndex) {
                 val trimmed = cell.trim()
                 val starts = trimmed.startsWith(':')
                 val ends = trimmed.endsWith(':')

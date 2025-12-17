@@ -32,7 +32,7 @@ object Compat {
         codePointOffset: Int
     ): Int {
         val length = seq.length
-        if (index < 0 || index > length) {
+        if (index !in 0..length) {
             throw IndexOutOfBoundsException()
         }
 

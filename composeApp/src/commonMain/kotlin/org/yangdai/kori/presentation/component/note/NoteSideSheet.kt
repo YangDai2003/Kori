@@ -308,7 +308,7 @@ fun NoteSideSheet(
 
                         LazyColumn(Modifier.fillMaxSize()) {
                             // 顶部操作按钮
-                            item {
+                            item(contentType = "TopBar") {
                                 Row(
                                     modifier = Modifier.fillMaxWidth()
                                         .padding(top = 4.dp, end = 4.dp),
@@ -338,7 +338,7 @@ fun NoteSideSheet(
                             }
 
                             // 详细内容
-                            item {
+                            item(contentType = "Detail") {
                                 SelectionContainer {
                                     Column(Modifier.padding(start = 16.dp, end = 12.dp)) {
                                         NoteSideSheetItem(
@@ -425,7 +425,7 @@ fun NoteSideSheet(
 
                             // ... 大纲部分 (outline) ...
                             if (outline.children.isNotEmpty() && noteType == NoteType.MARKDOWN)
-                                item {
+                                item(contentType = "Divider") {
                                     HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
                                     Row(
                                         modifier = Modifier.fillMaxWidth().padding(end = 4.dp),

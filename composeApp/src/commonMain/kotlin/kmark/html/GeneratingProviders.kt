@@ -170,7 +170,7 @@ class CodeSpanGeneratingProvider : GeneratingProvider {
     ) {
         val nodes = node.children.subList(1, node.children.size - 1)
         val output =
-            nodes.joinToString(separator = "") { HtmlGenerator.Companion.leafText(text, it, false) }
+            nodes.joinToString(separator = "") { HtmlGenerator.leafText(text, it, false) }
                 .trim()
         visitor.consumeTagOpen(node, "code")
         visitor.consumeHtml(output)
@@ -313,8 +313,8 @@ internal class CodeFenceGeneratingProvider : GeneratingProvider {
                 )
             ) {
                 visitor.consumeHtml(
-                    HtmlGenerator.Companion.trimIndents(
-                        HtmlGenerator.Companion.leafText(
+                    HtmlGenerator.trimIndents(
+                        HtmlGenerator.leafText(
                             text,
                             child,
                             false
@@ -326,7 +326,7 @@ internal class CodeFenceGeneratingProvider : GeneratingProvider {
             if (state == 0 && child.type == MarkdownTokenTypes.FENCE_LANG) {
                 attributes.add(
                     "class=\"language-${
-                        HtmlGenerator.Companion.leafText(text, child).toString().trim()
+                        HtmlGenerator.leafText(text, child).toString().trim()
                             .split(' ')[0]
                     }\""
                 )

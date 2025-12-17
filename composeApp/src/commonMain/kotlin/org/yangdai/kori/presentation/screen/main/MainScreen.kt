@@ -76,6 +76,7 @@ fun MainScreen(
         MainScreenContent(
             viewModel = viewModel,
             currentDrawerItem = currentDrawerItem,
+            navigateToScreen = navigateToScreen,
             navigationIcon = {
                 if (!isWideScreen) {
                     TooltipIconButton(
@@ -89,8 +90,7 @@ fun MainScreen(
                         }
                     )
                 }
-            },
-            navigateToScreen = navigateToScreen
+            }
         )
     }
 }

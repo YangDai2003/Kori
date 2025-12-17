@@ -29,14 +29,13 @@ internal fun Color.toHSV(): Triple<Float, Float, Float> {
         (60 * ((red - green) / diff) + 240f) % 360f
     }
     val s = if (max == 0f) 0f else diff / max
-    val v = max
 
-    return Triple(h, s, v)
+    return Triple(h, s, max)
 }
 
 /** Converts an HS(V) color to a coordinate on the hue/saturation circle. */
 internal fun hsvToCoord(h: Float, s: Float, center: Offset) =
-    Offset.Companion.fromAngle(hueToAngle(h), s * center.minCoordinate) + center
+    Offset.fromAngle(hueToAngle(h), s * center.minCoordinate) + center
 
 internal fun angleToHue(angle: Float) = (-angle.toDegrees() + 360f) % 360f
 internal fun hueToAngle(hue: Float) = -hue.toRadians()

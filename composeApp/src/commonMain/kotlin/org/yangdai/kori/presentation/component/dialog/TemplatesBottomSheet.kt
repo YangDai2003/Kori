@@ -145,7 +145,7 @@ fun TemplatesBottomSheet(
                         )
                     }
                 }
-                item {
+                item(contentType = "Button") {
                     TextButton(
                         modifier = Modifier.padding(vertical = 8.dp),
                         onClick = { viewModel.saveNoteAsTemplate() }
@@ -255,7 +255,7 @@ fun TemplatesBottomSheet(
                         )
                     }
                 }
-                item {
+                item(contentType = "Button") {
                     TextButton(
                         modifier = Modifier.padding(vertical = 8.dp),
                         onClick = { viewModel.saveNoteAsTemplate() }
