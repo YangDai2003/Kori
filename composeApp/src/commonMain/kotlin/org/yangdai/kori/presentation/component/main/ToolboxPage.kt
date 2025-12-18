@@ -1,7 +1,6 @@
 package org.yangdai.kori.presentation.component.main
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.NoteAdd
 import androidx.compose.material.icons.automirrored.outlined.ArrowRight
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
@@ -29,7 +29,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Text
@@ -41,7 +41,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -139,27 +138,26 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
 
                     DropdownMenu(
                         expanded = checked,
-                        shape = MaterialTheme.shapes.small,
+                        onDismissRequest = { checked = false },
                         offset = DpOffset(x = 48.dp, y = 0.dp),
-                        onDismissRequest = { checked = false }
+                        shape = MenuDefaults.standaloneGroupShape,
+                        containerColor = MenuDefaults.groupStandardContainerColor
                     ) {
                         DropdownMenuItem(
-                            modifier = Modifier.background(
-                                color = if (type == NoteType.MARKDOWN) MaterialTheme.colorScheme.secondaryContainer
-                                else Color.Transparent
-                            ),
+                            selected = type == NoteType.MARKDOWN,
+                            shapes = MenuDefaults.itemShape(0, 2),
                             text = { Text(stringResource(Res.string.markdown)) },
+                            checkedLeadingIcon = { Icon(Icons.Filled.Check, null) },
                             onClick = {
                                 type = NoteType.MARKDOWN
                                 checked = false
                             }
                         )
                         DropdownMenuItem(
-                            modifier = Modifier.background(
-                                color = if (type == NoteType.TODO) MaterialTheme.colorScheme.secondaryContainer
-                                else Color.Transparent
-                            ),
+                            selected = type == NoteType.TODO,
+                            shapes = MenuDefaults.itemShape(1, 2),
                             text = { Text(stringResource(Res.string.todo_text)) },
+                            checkedLeadingIcon = { Icon(Icons.Filled.Check, null) },
                             onClick = {
                                 type = NoteType.TODO
                                 checked = false

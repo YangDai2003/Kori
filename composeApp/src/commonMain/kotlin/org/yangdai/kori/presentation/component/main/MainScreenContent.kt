@@ -54,6 +54,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SearchBarValue
@@ -480,7 +481,9 @@ fun MainScreenContent(
 
                                         DropdownMenu(
                                             expanded = showMenu,
-                                            onDismissRequest = { showMenu = false }
+                                            onDismissRequest = { showMenu = false },
+                                            shape = MenuDefaults.standaloneGroupShape,
+                                            containerColor = MenuDefaults.groupStandardContainerColor
                                         ) {
                                             val deletedAllStr =
                                                 stringResource(Res.string.snackbar_deleted_all)
@@ -493,6 +496,7 @@ fun MainScreenContent(
                                                         contentDescription = null
                                                     )
                                                 },
+                                                shape = MenuDefaults.leadingItemShape,
                                                 text = { Text(text = stringResource(Res.string.restore_all)) },
                                                 onClick = {
                                                     showMenu = false
@@ -512,6 +516,7 @@ fun MainScreenContent(
                                                         contentDescription = null
                                                     )
                                                 },
+                                                shape = MenuDefaults.trailingItemShape,
                                                 text = {
                                                     Text(
                                                         text = stringResource(Res.string.delete_all),
