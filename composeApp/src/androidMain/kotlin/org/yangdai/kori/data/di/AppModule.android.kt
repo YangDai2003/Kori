@@ -11,10 +11,7 @@ import org.yangdai.kori.data.local.AppDatabase
 import org.yangdai.kori.data.local.getRoomDatabase
 
 actual fun platformModule(): Module = module {
-    single {
-        val db = getRoomDatabase(getDatabaseBuilder(androidContext()))
-        db
-    }
+    single { getRoomDatabase(getDatabaseBuilder(androidContext())) }
     single { get<AppDatabase>().noteDao() }
     single { get<AppDatabase>().folderDao() }
     single { createDataStore(androidContext()) }
