@@ -134,6 +134,29 @@ private fun ExpandedSearchBar(
     shadowElevation: Dp = SearchBarDefaults.ShadowElevation,
     properties: PopupProperties = PopupProperties(focusable = true, clippingEnabled = false),
     content: @Composable ColumnScope.() -> Unit
+) = ExpandedSearchBarImpl(state = state, properties = properties) { focusRequester ->
+    SearchBarLayout(
+        state = state,
+        inputField = {
+            Box(
+                modifier = Modifier.focusRequester(focusRequester),
+                propagateMinConstraints = true,
+            ) {
+                inputField()
+            }
+        },
+        shape = shape,
+        colors = colors,
+        shadowElevation = shadowElevation,
+        content = content
+    )
+}
+
+@Composable
+private fun ExpandedSearchBarImpl(
+    state: SearchBarState,
+    properties: PopupProperties,
+    content: @Composable (FocusRequester) -> Unit
 ) {
     if (!state.isExpanded) return
 
@@ -145,22 +168,7 @@ private fun ExpandedSearchBar(
         properties = properties
     ) {
         val focusRequester = remember { FocusRequester() }
-
-        DockedSearchBarLayout(
-            state = state,
-            inputField = {
-                Box(
-                    modifier = Modifier.focusRequester(focusRequester),
-                    propagateMinConstraints = true,
-                ) {
-                    inputField()
-                }
-            },
-            shape = shape,
-            colors = colors,
-            shadowElevation = shadowElevation,
-            content = content
-        )
+        content(focusRequester)
 
         // Focus the input field on the first expansion,
         // but no need to re-focus if the focus gets cleared.
@@ -179,7 +187,7 @@ private fun ExpandedSearchBar(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun DockedSearchBarLayout(
+private fun SearchBarLayout(
     state: SearchBarState,
     inputField: @Composable () -> Unit,
     shape: Shape,
