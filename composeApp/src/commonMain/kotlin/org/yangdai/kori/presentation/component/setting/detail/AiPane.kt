@@ -9,7 +9,6 @@ import ai.koog.prompt.executor.clients.openai.OpenAIClientSettings
 import ai.koog.prompt.llm.LLMProvider
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -58,8 +57,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
@@ -102,14 +99,12 @@ fun AiPane(mainViewModel: MainViewModel) {
 
     val aiPaneState by mainViewModel.aiPaneState.collectAsStateWithLifecycle()
     val hapticFeedback = LocalHapticFeedback.current
-    val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
 
     Column(
         Modifier
             .padding(horizontal = 16.dp)
             .fillMaxSize()
-            .pointerInput(Unit) { detectTapGestures { focusManager.clearFocus() } }
             .verticalScroll(rememberScrollState())
     ) {
 
