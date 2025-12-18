@@ -84,7 +84,8 @@ actual fun AppNavHost(
             usePlatformDefaultWidth = false,
             usePlatformInsets = false,
             useSoftwareKeyboardInset = false,
-            scrimColor = Color.Black.copy(alpha = 0.32f)
+            scrimColor = Color.Black.copy(alpha = 0.32f),
+            animateTransition = false
         ),
         deepLinks = listOf(
             navDeepLink { uriPattern = "${Constants.DEEP_LINK}/settings" }
