@@ -140,7 +140,8 @@ fun AiPane(mainViewModel: MainViewModel) {
                 modifier = Modifier.fillMaxWidth().imePadding(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val pagerState = rememberPagerState { AI.providers.size }
+                val pagerState =
+                    rememberPagerState(AI.providers.values.indexOf(aiPaneState.llmProvider)) { AI.providers.size }
                 PrimaryScrollableTabRow(
                     selectedTabIndex = pagerState.currentPage,
                     containerColor = MaterialTheme.colorScheme.surfaceContainerLow,

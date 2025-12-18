@@ -107,6 +107,20 @@ object Constants {
                         Triple(baseUrl, model, apiKey)
                     }
 
+                    LLMProvider.Alibaba -> {
+                        val baseUrl = dataStoreRepository.getString(ALIBABA_BASE_URL)
+                        val model = dataStoreRepository.getString(ALIBABA_MODEL)
+                        val apiKey = dataStoreRepository.getString(ALIBABA_API_KEY)
+                        Triple(baseUrl, model, apiKey)
+                    }
+
+                    LLMProvider.MistralAI -> {
+                        val baseUrl = dataStoreRepository.getString(MISTRAL_BASE_URL)
+                        val model = dataStoreRepository.getString(MISTRAL_MODEL)
+                        val apiKey = dataStoreRepository.getString(MISTRAL_API_KEY)
+                        Triple(baseUrl, model, apiKey)
+                    }
+
                     LLMProvider.Ollama -> {
                         val baseUrl = dataStoreRepository.getString(OLLAMA_BASE_URL)
                         val model = dataStoreRepository.getString(OLLAMA_MODEL)
