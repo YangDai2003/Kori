@@ -56,7 +56,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.appcompat)
-            implementation(libs.androidx.biometric)
+            implementation(libs.androidx.biometric.compose)
             implementation(libs.androidx.documentfile)
             implementation(libs.androidx.browser)
             implementation(libs.androidx.glance)

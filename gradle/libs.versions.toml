@@ -1,12 +1,12 @@
 [versions]
 agp = "8.13.2"
-androidx-activityCompose = "1.12.1"
+androidx-activityCompose = "1.12.2"
 androidx-appcompat = "1.7.1"
-androidx-biometric = "1.4.0-alpha04"
+androidx-biometricCompose = "1.4.0-alpha05"
 androidx-documentfile = "1.1.0"
 androidx-browser = "1.9.0"
 androidx-glance = "1.2.0-rc01"
-androidx-webkit = "1.14.0"
+androidx-webkit = "1.15.0"
 
 androidx-lifecycle = "2.9.6"
 androidx-navigation = "2.9.1"
@@ -57,7 +57,7 @@ koin-compose-viewmodel-navigation = { module = "io.insert-koin:koin-compose-view
 ## Android-specific libraries
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activityCompose" }
-androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "androidx-biometric" }
+androidx-biometric-compose = { group = "androidx.biometric", name = "biometric-compose", version.ref = "androidx-biometricCompose" }
 androidx-documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "androidx-documentfile" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "androidx-browser" }
 androidx-webkit = { group = "androidx.webkit", name = "webkit", version.ref = "androidx-webkit" }

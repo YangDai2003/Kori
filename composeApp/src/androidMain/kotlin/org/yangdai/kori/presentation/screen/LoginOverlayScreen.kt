@@ -1,26 +1,27 @@
 package org.yangdai.kori.presentation.screen
 
+import android.content.Intent
 import android.os.Build
+import android.provider.Settings
 import android.widget.Toast
-import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
+import androidx.biometric.AuthenticationRequest
+import androidx.biometric.AuthenticationRequest.Companion.biometricRequest
+import androidx.biometric.AuthenticationResult
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
+import androidx.biometric.compose.rememberAuthenticationLauncher
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.cancel
 import org.yangdai.kori.R
 import org.yangdai.kori.presentation.component.login.NumberLockScreen
-import org.yangdai.kori.presentation.util.BiometricPromptManager
 
 @Composable
 fun LoginOverlayScreen(
@@ -33,39 +34,32 @@ fun LoginOverlayScreen(
     onAuthenticationNotEnrolled: () -> Unit
 ) {
     val context = LocalContext.current
-    val activity = LocalActivity.current as AppCompatActivity
-    val promptManager = remember(activity) { BiometricPromptManager(activity) }
-    val biometricPromptResult by promptManager.promptResult.collectAsStateWithLifecycle(initialValue = null)
-
     val enrollBiometricsLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) {}
+    val biometricLauncher = rememberAuthenticationLauncher { result ->
+        when (result) {
+            is AuthenticationResult.Error -> {
+                Toast.makeText(
+                    context,
+                    "${"Err:${result.errorCode} "}${result.errString}",
+                    Toast.LENGTH_SHORT
+                ).show()
 
-    LaunchedEffect(biometricPromptResult) {
-        when (biometricPromptResult) {
-            is BiometricPromptManager.BiometricPromptResult.AuthenticationError -> {
-                val error =
-                    (biometricPromptResult as BiometricPromptManager.BiometricPromptResult.AuthenticationError).errString
-                Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                if (result.errorCode == BiometricPrompt.ERROR_NO_BIOMETRICS) {
+                    onAuthenticationNotEnrolled()
+                    (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
+                            putExtra(
+                                Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
+                                BiometricManager.Authenticators.BIOMETRIC_WEAK
+                            )
+                        }
+                    } else null)?.let { enrollBiometricsLauncher.launch(it) }
+                }
             }
 
-            BiometricPromptManager.BiometricPromptResult.AuthenticationFailed -> {
-                Toast.makeText(context, "Authentication Failed", Toast.LENGTH_SHORT).show()
-            }
-
-            BiometricPromptManager.BiometricPromptResult.AuthenticationSucceeded -> {
-                onAuthenticated()
-            }
-
-            BiometricPromptManager.BiometricPromptResult.AuthenticationNotEnrolled -> {
-                // 处理未注册生物识别的情况
-                promptManager.createEnrollBiometricsIntent()?.let {
-                    enrollBiometricsLauncher.launch(it)
-                } ?: onAuthenticationNotEnrolled()
-            }
-
-            null -> { /* 初始状态，不处理 */
-            }
+            is AuthenticationResult.Success -> onAuthenticated()
         }
     }
 
@@ -84,7 +78,18 @@ fun LoginOverlayScreen(
         isCreatingPassword = isCreatingPassword,
         onCreatingCanceled = onCreatingCanceled,
         onPassCreated = onPassCreated,
-        onBiometricClick = { promptManager.showBiometricPrompt(title, negativeButtonText) },
+        onBiometricClick = {
+            biometricLauncher.launch(
+                biometricRequest(
+                    title = title,
+                    authFallback = AuthenticationRequest.Biometric.Fallback.NegativeButton(
+                        negativeButtonText = negativeButtonText
+                    )
+                ) {
+                    setIsConfirmationRequired(false)
+                }
+            )
+        },
         onAuthenticated = onAuthenticated
     )
 }
