@@ -270,14 +270,9 @@ fun SearchBarInputField(
     lineLimits: TextFieldLineLimits = TextFieldLineLimits.SingleLine,
     scrollState: ScrollState = rememberScrollState(),
     shape: Shape = inputFieldShape,
-    colors: TextFieldColors = inputFieldColors(
-        focusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
-        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
-        disabledContainerColor = MaterialTheme.colorScheme.surfaceBright,
-    )
+    colors: TextFieldColors = inputFieldColors(),
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
-
     /*
     Relationship between focus and expansion state:
         * In touch mode, the two are coupled:

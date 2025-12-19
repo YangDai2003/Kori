@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asSkiaBitmap
+import androidx.compose.ui.graphics.toAwtImage
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_name
 import kori.composeapp.generated.resources.save
@@ -61,11 +62,7 @@ actual fun SaveBitmapToFileOnDispose(imageBitmap: ImageBitmap?, uuid: String) {
                 if (!Files.exists(noteDirectoryPath)) Files.createDirectories(noteDirectoryPath)
                 val bitmapFilePath = noteDirectoryPath.resolve("ink.png")
                 Files.newOutputStream(bitmapFilePath).use { outputStream ->
-                    ImageIO.write(
-                        imageBitmap.asSkiaBitmap().toBufferedImage(),
-                        "png",
-                        outputStream
-                    )
+                    ImageIO.write(imageBitmap.toAwtImage(), "png", outputStream)
                 }
             }
         }
