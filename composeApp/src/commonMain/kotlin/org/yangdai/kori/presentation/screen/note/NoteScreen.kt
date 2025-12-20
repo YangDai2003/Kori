@@ -67,9 +67,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kfile.AudioPicker
-import kfile.ImagesPicker
-import kfile.VideoPicker
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.all_notes
 import kori.composeapp.generated.resources.created
@@ -98,7 +95,6 @@ import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
 import org.yangdai.kori.presentation.component.dialog.ShareDialog
 import org.yangdai.kori.presentation.component.dialog.TemplatesBottomSheet
 import org.yangdai.kori.presentation.component.note.AIAssist
-import org.yangdai.kori.presentation.component.note.Action
 import org.yangdai.kori.presentation.component.note.AdaptiveActionRow
 import org.yangdai.kori.presentation.component.note.AdaptiveEditor
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorViewer
@@ -108,9 +104,6 @@ import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.note.TitleText
 import org.yangdai.kori.presentation.component.note.TitleTextField
-import org.yangdai.kori.presentation.component.note.addAudioLink
-import org.yangdai.kori.presentation.component.note.addImageLinks
-import org.yangdai.kori.presentation.component.note.addVideoLink
 import org.yangdai.kori.presentation.component.note.drawing.DrawState
 import org.yangdai.kori.presentation.component.note.drawing.DrawingViewer
 import org.yangdai.kori.presentation.component.note.drawing.InkScreen
@@ -180,9 +173,6 @@ fun NoteScreen(
     var showShareDialog by remember { mutableStateOf(false) }
     var showExportDialog by remember { mutableStateOf(false) }
     var showTemplatesBottomSheet by remember { mutableStateOf(false) }
-    var showImagesPicker by remember { mutableStateOf(false) }
-    var showVideoPicker by remember { mutableStateOf(false) }
-    var showAudioPicker by remember { mutableStateOf(false) }
     val printTrigger = remember { mutableStateOf(false) }
     val cachedImageBitmap = remember { mutableStateOf<ImageBitmap?>(null) }
     val isWideScreen = rememberIsScreenWidthExpanded()
@@ -271,18 +261,13 @@ fun NoteScreen(
         bottomBar = {
             AdaptiveActionRow(
                 visible = !isReadView && !isSearching,
-                type = editingState.noteType,
+                noteType = editingState.noteType,
+                noteId = editingState.id,
                 scrollState = scrollState,
+                contentState = viewModel.contentState,
                 startPadding = if (showAI && editingState.noteType != NoteType.PLAIN_TEXT) 52.dp else 0.dp,
-                textFieldState = viewModel.contentState
-            ) { action ->
-                when (action) {
-                    Action.Templates -> showTemplatesBottomSheet = true
-                    Action.Images -> showImagesPicker = true
-                    Action.Video -> showVideoPicker = true
-                    Action.Audio -> showAudioPicker = true
-                }
-            }
+                onTemplatesAction = { showTemplatesBottomSheet = true }
+            )
         }
     ) { innerPadding ->
         Column(Modifier.padding(innerPadding)) {
@@ -393,27 +378,6 @@ fun NoteScreen(
         onDismissRequest = { showTemplatesBottomSheet = false },
         viewModel = viewModel
     )
-
-    if (showImagesPicker) {
-        ImagesPicker(editingState.id) {
-            if (it.isNotEmpty()) viewModel.contentState.edit { addImageLinks(it) }
-            showImagesPicker = false
-        }
-    }
-
-    if (showVideoPicker) {
-        VideoPicker(editingState.id) {
-            if (it != null) viewModel.contentState.edit { addVideoLink(it) }
-            showVideoPicker = false
-        }
-    }
-
-    if (showAudioPicker) {
-        AudioPicker(editingState.id) {
-            if (it != null) viewModel.contentState.edit { addAudioLink(it) }
-            showAudioPicker = false
-        }
-    }
 
     NoteSideSheet(
         isDrawerOpen = isSideSheetOpen,

@@ -201,10 +201,11 @@ fun TemplateScreen(
         bottomBar = {
             AdaptiveActionRow(
                 visible = !isReadView && !isSearching,
-                type = editingState.noteType,
+                noteType = editingState.noteType,
+                noteId = editingState.id,
                 scrollState = scrollState,
+                contentState = viewModel.contentState,
                 startPadding = if (showAI && editingState.noteType != NoteType.PLAIN_TEXT) 52.dp else 0.dp,
-                textFieldState = viewModel.contentState,
                 isTemplate = true
             )
         }

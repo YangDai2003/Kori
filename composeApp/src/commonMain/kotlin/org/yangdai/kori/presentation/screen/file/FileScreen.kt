@@ -43,10 +43,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kfile.AudioPicker
-import kfile.ImagesPicker
 import kfile.PlatformFile
-import kfile.VideoPicker
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.find
 import kori.composeapp.generated.resources.replace
@@ -69,7 +66,6 @@ import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
 import org.yangdai.kori.presentation.component.dialog.ShareDialog
 import org.yangdai.kori.presentation.component.dialog.TemplatesBottomSheet
 import org.yangdai.kori.presentation.component.note.AIAssist
-import org.yangdai.kori.presentation.component.note.Action
 import org.yangdai.kori.presentation.component.note.AdaptiveActionRow
 import org.yangdai.kori.presentation.component.note.AdaptiveEditor
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorViewer
@@ -78,9 +74,6 @@ import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
 import org.yangdai.kori.presentation.component.note.TitleText
-import org.yangdai.kori.presentation.component.note.addAudioLink
-import org.yangdai.kori.presentation.component.note.addImageLinks
-import org.yangdai.kori.presentation.component.note.addVideoLink
 import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.navigation.UiEvent
@@ -116,9 +109,6 @@ fun FileScreen(
     var isReadView by rememberSaveable { mutableStateOf(false) }
     var isSideSheetOpen by rememberSaveable { mutableStateOf(false) }
     var showTemplatesBottomSheet by remember { mutableStateOf(false) }
-    var showImagesPicker by remember { mutableStateOf(false) }
-    var showVideoPicker by remember { mutableStateOf(false) }
-    var showAudioPicker by remember { mutableStateOf(false) }
     var isSearching by remember { mutableStateOf(false) }
     val findAndReplaceState = rememberFindAndReplaceState()
     var selectedHeader by remember { mutableStateOf<IntRange?>(null) }
@@ -207,18 +197,13 @@ fun FileScreen(
         bottomBar = {
             AdaptiveActionRow(
                 visible = !isReadView && !isSearching,
-                type = editingState.fileType,
+                noteType = editingState.fileType,
+                noteId = "",
                 scrollState = scrollState,
+                contentState = viewModel.contentState,
                 startPadding = if (showAI && editingState.fileType != NoteType.PLAIN_TEXT) 52.dp else 0.dp,
-                textFieldState = viewModel.contentState
-            ) { action ->
-                when (action) {
-                    Action.Templates -> showTemplatesBottomSheet = true
-                    Action.Images -> showImagesPicker = true
-                    Action.Video -> showVideoPicker = true
-                    Action.Audio -> showAudioPicker = true
-                }
-            }
+                onTemplatesAction = { showTemplatesBottomSheet = true }
+            )
         }
     ) { innerPadding ->
         Column(Modifier.padding(innerPadding)) {
@@ -278,27 +263,6 @@ fun FileScreen(
         onDismissRequest = { showTemplatesBottomSheet = false },
         viewModel = viewModel
     )
-
-    if (showImagesPicker) {
-        ImagesPicker("") {
-            if (it.isNotEmpty()) viewModel.contentState.edit { addImageLinks(it) }
-            showImagesPicker = false
-        }
-    }
-
-    if (showVideoPicker) {
-        VideoPicker("") {
-            if (it != null) viewModel.contentState.edit { addVideoLink(it) }
-            showVideoPicker = false
-        }
-    }
-
-    if (showAudioPicker) {
-        AudioPicker("") {
-            if (it != null) viewModel.contentState.edit { addAudioLink(it) }
-            showAudioPicker = false
-        }
-    }
 
     NoteSideSheet(
         isDrawerOpen = isSideSheetOpen,

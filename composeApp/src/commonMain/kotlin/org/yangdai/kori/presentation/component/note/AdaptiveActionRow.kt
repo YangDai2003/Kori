@@ -31,7 +31,9 @@ import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
@@ -48,6 +50,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kfile.AudioPicker
+import kfile.ImagesPicker
+import kfile.VideoPicker
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.control
 import org.jetbrains.compose.resources.stringResource
@@ -197,16 +202,16 @@ class ActionRowScopeImpl(val showElevation: Boolean) : ActionRowScope {
  * The row's appearance, such as its elevation, changes based on the scroll state.
  *
  * @param visible Controls the visibility of the action row.
- * @param type The [NoteType] of the note being edited, which determines which set of actions to display.
+ * @param noteType The [NoteType] of the note being edited, which determines which set of actions to display.
  * @param scrollState The [ScrollState] of the associated editor content. Used to determine if elevation should be shown.
  * @param textFieldState The [TextFieldState] of the editor, passed to the specific action row implementations.
  * @param isTemplate A flag indicating if the note is a template, which might alter the available actions.
  * @param onEditorRowAction A callback lambda that is invoked when an action within the row is triggered.
  */
 @Composable
-fun AdaptiveActionRow(
+private fun AdaptiveActionRowLayout(
     visible: Boolean,
-    type: NoteType,
+    noteType: NoteType,
     scrollState: ScrollState,
     textFieldState: TextFieldState,
     startPadding: Dp,
@@ -235,7 +240,7 @@ fun AdaptiveActionRow(
         ) {
             AnimatedVisibility(visible) {
                 with(scope) {
-                    when (type) {
+                    when (noteType) {
                         NoteType.PLAIN_TEXT ->
                             PlainTextEditorRow(isTemplate, textFieldState, onEditorRowAction)
 
@@ -251,6 +256,60 @@ fun AdaptiveActionRow(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun AdaptiveActionRow(
+    visible: Boolean,
+    noteType: NoteType,
+    noteId: String,
+    scrollState: ScrollState,
+    contentState: TextFieldState,
+    startPadding: Dp,
+    isTemplate: Boolean = false,
+    onTemplatesAction: () -> Unit = {}
+) {
+
+    var showImagesPicker by remember { mutableStateOf(false) }
+    var showVideoPicker by remember { mutableStateOf(false) }
+    var showAudioPicker by remember { mutableStateOf(false) }
+
+    AdaptiveActionRowLayout(
+        visible = visible,
+        noteType = noteType,
+        scrollState = scrollState,
+        textFieldState = contentState,
+        startPadding = startPadding,
+        isTemplate = isTemplate
+    ) { action ->
+        when (action) {
+            Action.Templates -> onTemplatesAction()
+            Action.Images -> showImagesPicker = true
+            Action.Video -> showVideoPicker = true
+            Action.Audio -> showAudioPicker = true
+        }
+    }
+
+    if (showImagesPicker) {
+        ImagesPicker(noteId) {
+            if (it.isNotEmpty()) contentState.edit { addImageLinks(it) }
+            showImagesPicker = false
+        }
+    }
+
+    if (showVideoPicker) {
+        VideoPicker(noteId) {
+            if (it != null) contentState.edit { addVideoLink(it) }
+            showVideoPicker = false
+        }
+    }
+
+    if (showAudioPicker) {
+        AudioPicker(noteId) {
+            if (it != null) contentState.edit { addAudioLink(it) }
+            showAudioPicker = false
         }
     }
 }
