@@ -24,6 +24,7 @@ import org.yangdai.kori.presentation.component.note.mermaidDiagram
 import org.yangdai.kori.presentation.component.note.numberedList
 import org.yangdai.kori.presentation.component.note.quote
 import org.yangdai.kori.presentation.component.note.strikeThrough
+import org.yangdai.kori.presentation.component.note.table
 import org.yangdai.kori.presentation.component.note.taskList
 import org.yangdai.kori.presentation.component.note.underline
 
@@ -105,6 +106,11 @@ fun Modifier.markdownKeyEvents(textFieldState: TextFieldState): Modifier =
 
                         Key.M -> {
                             textFieldState.edit { math() }
+                            true
+                        }
+
+                        Key.T -> {
+                            textFieldState.edit { table() }
                             true
                         }
 

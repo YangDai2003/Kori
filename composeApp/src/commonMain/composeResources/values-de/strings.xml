@@ -183,6 +183,8 @@
     <string name="code">Code</string>
     <string name="quote">Zitat</string>
     <string name="math">Mathe</string>
+    <string name="table">Tabelle</string>
+    <string name="insert_table">Tabelle einfügen</string>
     <string name="indent_increase">Einzug vergrößern</string>
     <string name="indent_decrease">Einzug verkleinern</string>
     <string name="numbered_list">Nummerierte Liste</string>

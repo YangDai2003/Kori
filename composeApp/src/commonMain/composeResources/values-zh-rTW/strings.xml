@@ -183,6 +183,8 @@
     <string name="code">程式碼</string>
     <string name="quote">引用</string>
     <string name="math">數學公式</string>
+    <string name="table">表格</string>
+    <string name="insert_table">插入表格</string>
     <string name="indent_increase">增加縮排</string>
     <string name="indent_decrease">減少縮排</string>
     <string name="numbered_list">有序清單</string>

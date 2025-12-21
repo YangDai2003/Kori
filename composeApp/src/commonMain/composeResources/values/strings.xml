@@ -186,6 +186,8 @@
     <string name="code">Code</string>
     <string name="quote">Quote</string>
     <string name="math">Math</string>
+    <string name="table">Table</string>
+    <string name="insert_table">Insert Table</string>
     <string name="indent_increase">Increase Indent</string>
     <string name="indent_decrease">Decrease Indent</string>
     <string name="numbered_list">Numbered List</string>

@@ -59,8 +59,6 @@ fun TextFieldBuffer.underline() = inlineWrap("<ins>", "</ins>")
 fun TextFieldBuffer.strikeThrough() = inlineWrap("~~")
 fun TextFieldBuffer.highlight() = inlineWrap("<mark>", "</mark>")
 fun TextFieldBuffer.parentheses() = inlineWrap("(", ")")
-fun TextFieldBuffer.brackets() = inlineWrap("[", "]")
-fun TextFieldBuffer.braces() = inlineWrap("{", "}")
 fun TextFieldBuffer.link() = inlineWrap("[", "]()")
 
 fun TextFieldBuffer.code() {
@@ -240,6 +238,7 @@ fun TextFieldBuffer.addInNewLine(str: String) {
 }
 
 fun TextFieldBuffer.header(level: Int) {
+    if (level !in 1..6) return
     val heading = "${"#".repeat(level)} "
     val text = toString()
     val initialSelection = selection
@@ -411,4 +410,19 @@ fun TextFieldBuffer.addVideoLink(name: Pair<String, String>) {
 fun TextFieldBuffer.addAudioLink(name: Pair<String, String>) {
     val htmlAudio = "<audio src=\"${name.second}\" controls>${name.first}</audio>\n"
     addInNewLine(htmlAudio)
+}
+
+fun TextFieldBuffer.table(rows: Int = 3, cols: Int = 3) {
+    if (rows < 3 || cols < 2) return // 最少3行2列，标题行、格式行、数据行，默认3行3列
+    val table = buildString {
+        append("|")
+        repeat(cols) { append(" Header |") }
+        append("\n|")
+        repeat(cols) { append(" ------ |") }
+        repeat(rows - 2) {
+            append("\n|")
+            repeat(cols) { append("  Cell  |") }
+        }
+    }
+    addInNewLine(table)
 }

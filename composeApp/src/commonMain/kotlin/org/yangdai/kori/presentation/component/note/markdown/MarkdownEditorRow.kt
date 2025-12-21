@@ -25,8 +25,6 @@ import androidx.compose.material.icons.outlined.AddChart
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.Code
-import androidx.compose.material.icons.outlined.DataArray
-import androidx.compose.material.icons.outlined.DataObject
 import androidx.compose.material.icons.outlined.FormatBold
 import androidx.compose.material.icons.outlined.FormatItalic
 import androidx.compose.material.icons.outlined.FormatListNumbered
@@ -71,11 +69,12 @@ import kori.composeapp.generated.resources.link
 import kori.composeapp.generated.resources.math
 import kori.composeapp.generated.resources.mermaid_diagram
 import kori.composeapp.generated.resources.numbered_list
-import kori.composeapp.generated.resources.parentheses
 import kori.composeapp.generated.resources.photo_library_24px
 import kori.composeapp.generated.resources.quote
 import kori.composeapp.generated.resources.redo
 import kori.composeapp.generated.resources.strikethrough
+import kori.composeapp.generated.resources.table
+import kori.composeapp.generated.resources.table_24px
 import kori.composeapp.generated.resources.task_list
 import kori.composeapp.generated.resources.templates
 import kori.composeapp.generated.resources.underline
@@ -88,8 +87,6 @@ import org.yangdai.kori.presentation.component.note.ActionRowScope
 import org.yangdai.kori.presentation.component.note.addAfter
 import org.yangdai.kori.presentation.component.note.alert
 import org.yangdai.kori.presentation.component.note.bold
-import org.yangdai.kori.presentation.component.note.braces
-import org.yangdai.kori.presentation.component.note.brackets
 import org.yangdai.kori.presentation.component.note.bulletList
 import org.yangdai.kori.presentation.component.note.code
 import org.yangdai.kori.presentation.component.note.header
@@ -100,7 +97,6 @@ import org.yangdai.kori.presentation.component.note.link
 import org.yangdai.kori.presentation.component.note.math
 import org.yangdai.kori.presentation.component.note.mermaidDiagram
 import org.yangdai.kori.presentation.component.note.numberedList
-import org.yangdai.kori.presentation.component.note.parentheses
 import org.yangdai.kori.presentation.component.note.quote
 import org.yangdai.kori.presentation.component.note.strikeThrough
 import org.yangdai.kori.presentation.component.note.tab
@@ -318,18 +314,6 @@ fun ActionRowScope.MarkdownEditorRow(
 
     ActionRowSection {
         ActionButton(
-            icon = painterResource(Res.drawable.parentheses),
-            onClick = { textFieldState.edit { parentheses() } }
-        )
-        ActionButton(
-            icon = Icons.Outlined.DataArray,
-            onClick = { textFieldState.edit { brackets() } }
-        )
-        ActionButton(
-            icon = Icons.Outlined.DataObject,
-            onClick = { textFieldState.edit { braces() } }
-        )
-        ActionButton(
             hint = stringResource(Res.string.horizontal_rule),
             actionText = "R",
             icon = Icons.Outlined.HorizontalRule,
@@ -340,6 +324,12 @@ fun ActionRowScope.MarkdownEditorRow(
             actionText = "⇧ + D",
             icon = Icons.Outlined.AddChart,
             onClick = { textFieldState.edit { mermaidDiagram() } }
+        )
+        ActionButton(
+            hint = stringResource(Res.string.table),
+            actionText = "T",
+            icon = painterResource(Res.drawable.table_24px),
+            onClick = { onRowAction(Action.Table) }
         )
     }
 

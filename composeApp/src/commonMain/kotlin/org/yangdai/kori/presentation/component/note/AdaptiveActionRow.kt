@@ -59,6 +59,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.OS
 import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.data.local.entity.NoteType
+import org.yangdai.kori.presentation.component.dialog.TableDialog
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownEditorRow
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditorRow
 import org.yangdai.kori.presentation.component.note.todo.TodoTextEditorRow
@@ -275,6 +276,7 @@ fun AdaptiveActionRow(
     var showImagesPicker by remember { mutableStateOf(false) }
     var showVideoPicker by remember { mutableStateOf(false) }
     var showAudioPicker by remember { mutableStateOf(false) }
+    var showTableDialog by remember { mutableStateOf(false) }
 
     AdaptiveActionRowLayout(
         visible = visible,
@@ -289,7 +291,18 @@ fun AdaptiveActionRow(
             Action.Images -> showImagesPicker = true
             Action.Video -> showVideoPicker = true
             Action.Audio -> showAudioPicker = true
+            Action.Table -> showTableDialog = true
         }
+    }
+
+    if (showTableDialog) {
+        TableDialog(
+            onDismissRequest = { showTableDialog = false },
+            onConfirm = { rows, columns ->
+                contentState.edit { table(rows, columns) }
+                showTableDialog = false
+            }
+        )
     }
 
     if (showImagesPicker) {
@@ -319,4 +332,5 @@ sealed class Action {
     object Video : Action()
     object Audio : Action()
     object Templates : Action()
+    object Table : Action()
 }
