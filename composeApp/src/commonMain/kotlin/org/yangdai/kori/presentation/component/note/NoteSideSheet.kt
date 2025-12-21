@@ -1,7 +1,6 @@
 package org.yangdai.kori.presentation.component.note
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,19 +9,21 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
@@ -74,6 +75,7 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -139,7 +141,7 @@ fun NoteSideSheet(
         val focusRequester = remember { FocusRequester() }
         var isExiting by remember { mutableStateOf(false) }
         val density = LocalDensity.current
-
+        val layoutDirection = LocalLayoutDirection.current
         BoxWithConstraints(Modifier.fillMaxSize().clipToBounds()) {
             val drawerWidth = remember(maxWidth) {
                 val maxAllowedWidth = maxWidth - 96.dp
@@ -147,14 +149,17 @@ fun NoteSideSheet(
             }
             val drawerWidthPx = with(density) { drawerWidth.toPx() }
             val actionWidthPx = with(density) { ActionWidth.toPx() }
-            val fullOffsetPx = drawerWidthPx + actionWidthPx
+            val paddingWidth =
+                WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(layoutDirection)
+            val paddingWidthPx = with(density) { paddingWidth.toPx() }
+            val fullOffsetPx = drawerWidthPx + actionWidthPx + paddingWidthPx
             val offsetX = remember { Animatable(fullOffsetPx) }
 
             // isExiting 状态变化时触发退出动画
             LaunchedEffect(isExiting) {
                 if (isExiting) {
                     scope.launch {
-                        offsetX.animateTo(fullOffsetPx, animationSpec = tween())
+                        offsetX.animateTo(fullOffsetPx)
                     }.invokeOnCompletion {
                         onDismiss()
                     }
@@ -179,9 +184,28 @@ fun NoteSideSheet(
                 }
             }
 
-            // 整个 Dialog 内容的根 Box
-            Box(
-                Modifier.fillMaxSize().focusRequester(focusRequester)
+            val scrimColor = DrawerDefaults.scrimColor
+            Canvas(
+                Modifier.fillMaxSize().pointerInput(Unit) {
+                    detectTapGestures { if (!isExiting) isExiting = true }
+                }
+            ) {
+                val alpha = (fullOffsetPx - offsetX.value) / fullOffsetPx * 0.32f
+                drawRect(scrimColor.copy(alpha = alpha))
+            }
+
+            // 拖动状态
+            val dragState = rememberDraggableState { delta ->
+                scope.launch {
+                    val newValue = (offsetX.value + delta).coerceIn(0f, fullOffsetPx)
+                    offsetX.snapTo(newValue)
+                }
+            }
+
+            val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()
+            Row(
+                modifier = Modifier
+                    .focusRequester(focusRequester)
                     .onPreviewKeyEvent { keyEvent ->
                         if (keyEvent.type == KeyEventType.KeyDown && keyEvent.isCtrlPressed) {
                             when (keyEvent.key) {
@@ -194,119 +218,94 @@ fun NoteSideSheet(
                             }
                         } else false
                     }
-            ) {
-
-                val scrimColor = DrawerDefaults.scrimColor
-                Canvas(
-                    Modifier.fillMaxSize().pointerInput(Unit) {
-                        detectTapGestures { if (!isExiting) isExiting = true }
-                    }
-                ) {
-                    val alpha = (fullOffsetPx - offsetX.value) / fullOffsetPx * 0.32f
-                    drawRect(scrimColor.copy(alpha = alpha))
-                }
-
-                // 拖动状态
-                val dragState = rememberDraggableState { delta ->
-                    scope.launch {
-                        val newValue = (offsetX.value + delta).coerceIn(0f, fullOffsetPx)
-                        offsetX.snapTo(newValue)
-                    }
-                }
-
-                val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()
-                Row(
-                    modifier = Modifier
-                        .padding(
-                            top = systemBarsPadding.calculateTopPadding(),
-                            bottom = systemBarsPadding.calculateBottomPadding()
-                        )
-                        .align(Alignment.CenterEnd)
-                        .offset { IntOffset(x = offsetX.value.roundToInt(), y = 0) },
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.Top
-                ) {
-                    // 侧边操作栏 (左侧部分)
-                    Column(
-                        modifier = Modifier
-                            .padding(top = 16.dp)
-                            .background(
-                                color = DrawerDefaults.modalContainerColor.copy(alpha = 0.9f),
-                                shape = MaterialTheme.shapes.extraLarge.copy(
-                                    topEnd = CornerSize(0),
-                                    bottomEnd = CornerSize(0)
-                                )
-                            ),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        content = actionContent
+                    .padding(
+                        top = systemBarsPadding.calculateTopPadding(),
+                        bottom = systemBarsPadding.calculateBottomPadding()
                     )
-
-                    // 抽屉内容 (右侧主体)
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(drawerWidth)
-                            .draggable(
-                                orientation = Orientation.Horizontal,
-                                state = dragState,
-                                enabled = !isExiting,
-                                onDragStopped = { velocity ->
-                                    val shouldClose = if (abs(velocity) < 100) {
-                                        offsetX.value > drawerWidthPx / 2
-                                    } else {
-                                        velocity > 0
-                                    }
-
-                                    if (shouldClose) {
-                                        if (!isExiting) isExiting = true
-                                    } else {
-                                        // 动画恢复到打开状态
-                                        scope.launch {
-                                            offsetX.animateTo(0f)
-                                        }
-                                    }
-                                }
-                            ),
-                        color = DrawerDefaults.modalContainerColor.copy(alpha = 0.95f),
-                        shape = MaterialTheme.shapes.large.copy(
-                            topEnd = CornerSize(0),
-                            bottomEnd = CornerSize(0)
+                    .align(Alignment.CenterEnd)
+                    .offset { IntOffset(x = offsetX.value.roundToInt(), y = 0) },
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.Top
+            ) {
+                // 侧边操作栏 (左侧部分)
+                Column(
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .background(
+                            color = DrawerDefaults.modalContainerColor.copy(alpha = 0.9f),
+                            shape = MaterialTheme.shapes.extraLarge.copy(
+                                topEnd = CornerSize(0),
+                                bottomEnd = CornerSize(0)
+                            )
                         ),
-                        shadowElevation = 2.dp,
-                        tonalElevation = DrawerDefaults.ModalDrawerElevation
-                    ) {
-                        var isAllExpanded by rememberSaveable { mutableStateOf(true) }
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    content = actionContent
+                )
 
-                        var outline by remember {
-                            mutableStateOf(HeaderNode("", 0, IntRange.EMPTY))
-                        }
+                // 抽屉内容 (右侧主体)
+                Surface(
+                    modifier = Modifier.draggable(
+                        orientation = Orientation.Horizontal,
+                        state = dragState,
+                        enabled = !isExiting,
+                        onDragStopped = { velocity ->
+                            val shouldClose = if (abs(velocity) < 100) {
+                                offsetX.value > drawerWidthPx / 2
+                            } else {
+                                velocity > 0
+                            }
 
-                        LaunchedEffect(text, noteType) {
-                            withContext(Dispatchers.Default) {
-                                val root = HeaderNode("", 0, IntRange.EMPTY)
-                                // 只有 Markdown 才有大纲
-                                if (noteType != NoteType.MARKDOWN || text.isBlank()) {
-                                    outline = root
-                                    return@withContext
+                            if (shouldClose) {
+                                if (!isExiting) isExiting = true
+                            } else {
+                                // 动画恢复到打开状态
+                                scope.launch {
+                                    offsetX.animateTo(0f)
                                 }
-                                val tree = MarkdownDefaults.parser.buildMarkdownTreeFromString(text)
-                                val propertiesLineRange = text.getPropertiesLineRange()
-                                try {
-                                    val headerStack = mutableListOf(root)
-                                    findHeadersRecursive(
-                                        tree,
-                                        text,
-                                        headerStack,
-                                        propertiesLineRange
-                                    )
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
-                                }
-                                outline = root
                             }
                         }
+                    ),
+                    color = DrawerDefaults.modalContainerColor.copy(alpha = 0.95f),
+                    shape = MaterialTheme.shapes.large.copy(
+                        topEnd = CornerSize(0),
+                        bottomEnd = CornerSize(0)
+                    ),
+                    shadowElevation = 2.dp,
+                    tonalElevation = DrawerDefaults.ModalDrawerElevation
+                ) {
+                    var isAllExpanded by rememberSaveable { mutableStateOf(true) }
 
-                        LazyColumn(Modifier.fillMaxSize()) {
+                    var outline by remember {
+                        mutableStateOf(HeaderNode("", 0, IntRange.EMPTY))
+                    }
+
+                    LaunchedEffect(text, noteType) {
+                        withContext(Dispatchers.Default) {
+                            val root = HeaderNode("", 0, IntRange.EMPTY)
+                            // 只有 Markdown 才有大纲
+                            if (noteType != NoteType.MARKDOWN || text.isBlank()) {
+                                outline = root
+                                return@withContext
+                            }
+                            val tree = MarkdownDefaults.parser.buildMarkdownTreeFromString(text)
+                            val propertiesLineRange = text.getPropertiesLineRange()
+                            try {
+                                val headerStack = mutableListOf(root)
+                                findHeadersRecursive(
+                                    tree,
+                                    text,
+                                    headerStack,
+                                    propertiesLineRange
+                                )
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                            outline = root
+                        }
+                    }
+
+                    Row {
+                        LazyColumn(Modifier.fillMaxHeight().width(drawerWidth)) {
                             // 顶部操作按钮
                             item(contentType = "TopBar") {
                                 Row(
@@ -460,12 +459,13 @@ fun NoteSideSheet(
                                     )
                                 }
                         }
+                        Spacer(Modifier.fillMaxHeight().width(paddingWidth))
                     }
                 }
             }
 
             LaunchedEffect(Unit) {
-                offsetX.animateTo(0f, animationSpec = tween())
+                offsetX.animateTo(0f)
                 focusRequester.requestFocus()
             }
         }

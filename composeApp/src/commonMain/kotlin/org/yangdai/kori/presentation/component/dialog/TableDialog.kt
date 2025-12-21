@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -58,6 +59,7 @@ fun TableDialog(
     var selectedColumns by remember { mutableStateOf(3) }
 
     AlertDialog(
+        modifier = Modifier.widthIn(max = DialogMaxWidth),
         onDismissRequest = onDismissRequest,
         confirmButton = { ConfirmButton { onConfirm(selectedRows, selectedColumns) } },
         dismissButton = { DismissButton(onDismissRequest) },
