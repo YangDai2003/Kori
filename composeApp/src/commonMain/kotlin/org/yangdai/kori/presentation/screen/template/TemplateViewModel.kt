@@ -108,7 +108,16 @@ class TemplateViewModel(
             isDefaultReadingView = isDefaultReadingView,
             editorWeight = editorWeight
         )
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, EditorPaneState())
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly,
+        EditorPaneState(
+            editorWeight = dataStoreRepository.getFloat(
+                Constants.Preferences.EDITOR_WEIGHT,
+                0.5f
+            )
+        )
+    )
 
     fun changeDefaultEditorWeight(weight: Float) {
         viewModelScope.launch {

@@ -12,11 +12,11 @@ interface DataStoreRepository {
     fun intFlow(key: String, defaultValue: Int = 0): Flow<Int>
     fun stringFlow(key: String, defaultValue: String = ""): Flow<String>
     fun floatFlow(key: String, defaultValue: Float = 1f): Flow<Float>
-    fun booleanFlow(key: String): Flow<Boolean>
+    fun booleanFlow(key: String, defaultValue: Boolean = false): Flow<Boolean>
     fun stringSetFlow(key: String, defaultValue: Set<String> = emptySet()): Flow<Set<String>>
 
     fun getString(key: String, defaultValue: String = ""): String
-    fun getBoolean(key: String, defaultValue: Boolean): Boolean
+    fun getBoolean(key: String, defaultValue: Boolean = false): Boolean
     fun getInt(key: String, defaultValue: Int): Int
     fun getFloat(key: String, defaultValue: Float): Float
 }

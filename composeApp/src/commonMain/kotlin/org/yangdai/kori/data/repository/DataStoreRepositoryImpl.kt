@@ -71,10 +71,10 @@ class DataStoreRepositoryImpl(private val dataStore: DataStore<Preferences>) : D
         }
     }
 
-    override fun booleanFlow(key: String): Flow<Boolean> {
+    override fun booleanFlow(key: String, defaultValue: Boolean): Flow<Boolean> {
         val preferencesKey = booleanPreferencesKey(key)
         return dataStore.data.map { preferences ->
-            preferences[preferencesKey] == true
+            preferences[preferencesKey] ?: defaultValue
         }
     }
 
