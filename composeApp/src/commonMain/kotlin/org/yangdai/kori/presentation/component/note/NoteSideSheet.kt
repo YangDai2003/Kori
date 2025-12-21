@@ -1,6 +1,8 @@
 package org.yangdai.kori.presentation.component.note
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -465,7 +467,7 @@ fun NoteSideSheet(
             }
 
             LaunchedEffect(Unit) {
-                offsetX.animateTo(0f)
+                offsetX.animateTo(0f, spring(stiffness = Spring.StiffnessMediumLow))
                 focusRequester.requestFocus()
             }
         }
