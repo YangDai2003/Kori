@@ -25,6 +25,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -73,6 +74,7 @@ fun TableDialog(
                 Text(
                     text = "$selectedRows × $selectedColumns",
                     style = MaterialTheme.typography.titleMedium,
+                    fontFamily = FontFamily.Monospace,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
