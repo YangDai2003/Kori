@@ -21,6 +21,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -61,6 +62,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
@@ -257,7 +259,7 @@ private fun KeyTextField(value: String, onValueChange: (String) -> Unit) {
         },
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Password,
-            imeAction = ImeAction.Done
+            imeAction = ImeAction.Next
         ),
         modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
     )
@@ -280,24 +282,31 @@ private fun UrlTextField(
     value: String,
     onValueChange: (String) -> Unit,
     defaultValue: String
-) = OutlinedTextField(
-    value = value,
-    onValueChange = onValueChange,
-    label = { Text("Base URL") },
-    placeholder = { Text(defaultValue, maxLines = 1) },
-    trailingIcon = if (value != defaultValue) {
-        {
-            TextButton(onClick = { onValueChange(defaultValue) }) {
-                Text(stringResource(Res.string.reset))
+) {
+    val focusManager = LocalFocusManager.current
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text("Base URL") },
+        placeholder = { Text(defaultValue, maxLines = 1) },
+        trailingIcon = if (value != defaultValue) {
+            {
+                TextButton(onClick = { onValueChange(defaultValue) }) {
+                    Text(stringResource(Res.string.reset))
+                }
             }
-        }
-    } else {
-        null
-    },
-    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Done),
-    singleLine = true,
-    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
-)
+        } else {
+            null
+        },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Uri,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable

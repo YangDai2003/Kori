@@ -51,11 +51,9 @@ import org.yangdai.kori.presentation.component.note.markdown.MarkdownTransformat
 import org.yangdai.kori.presentation.component.note.markdown.MarkdownViewer
 import org.yangdai.kori.presentation.component.note.markdown.markdownKeyEvents
 import org.yangdai.kori.presentation.component.note.plaintext.PlainTextTransformation
-import org.yangdai.kori.presentation.component.note.plaintext.plainTextKeyEvents
 import org.yangdai.kori.presentation.component.note.todo.TodoLint
 import org.yangdai.kori.presentation.component.note.todo.TodoTransformation
 import org.yangdai.kori.presentation.component.note.todo.TodoViewer
-import org.yangdai.kori.presentation.component.note.todo.todoTextKeyEvents
 import kotlin.math.abs
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
@@ -176,8 +174,6 @@ fun AdaptiveEditor(
     val textFieldModifier = remember(noteType, textFieldState) {
         when (noteType) {
             NoteType.MARKDOWN -> Modifier.markdownKeyEvents(textFieldState)
-            NoteType.TODO -> Modifier.todoTextKeyEvents(textFieldState)
-            NoteType.PLAIN_TEXT -> Modifier.plainTextKeyEvents(textFieldState)
             else -> Modifier
         }
     }

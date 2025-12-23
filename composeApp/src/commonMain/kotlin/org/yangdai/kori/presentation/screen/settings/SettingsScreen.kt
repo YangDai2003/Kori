@@ -1,8 +1,8 @@
 package org.yangdai.kori.presentation.screen.settings
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -85,19 +85,13 @@ fun SettingsScreen(mainViewModel: MainViewModel, navigateUp: () -> Unit) {
     }
 
     var isVisible by rememberSaveable { mutableStateOf(false) }
+    val visibilityProgress = remember { Animatable(if (isVisible) 1f else 0f) }
     LaunchedEffect(Unit) { isVisible = true }
-    val visibilityProgress = remember { Animatable(0f) }
     LaunchedEffect(isVisible) {
         if (isVisible) {
-            visibilityProgress.animateTo(
-                1f,
-                spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMediumLow)
-            )
+            visibilityProgress.animateTo(1f, tween(easing = LinearOutSlowInEasing))
         } else {
-            visibilityProgress.animateTo(
-                0f,
-                spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMediumLow)
-            )
+            visibilityProgress.animateTo(0f)
             navigateUp()
         }
     }
