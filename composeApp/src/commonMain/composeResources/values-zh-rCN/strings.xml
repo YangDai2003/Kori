@@ -154,6 +154,7 @@
     <string name="toolbox">工具箱</string>
     <string name="edit_local_file">编辑本机文件</string>
     <string name="fetch_file_from_url">从 URL 获取文件内容</string>
+    <string name="drag_drop">拖放文件至此以打开</string>
     <string name="language">语言</string>
     <string name="language_description">选择应用语言</string>
     <string name="todo_completed_at">完成于：%1$s</string>

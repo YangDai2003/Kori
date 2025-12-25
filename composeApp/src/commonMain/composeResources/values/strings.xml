@@ -157,6 +157,7 @@
     <string name="toolbox">Toolbox</string>
     <string name="edit_local_file">Edit local file</string>
     <string name="fetch_file_from_url">Fetch file from URL</string>
+    <string name="drag_drop">Drag &amp; drop to open</string>
     <string name="language">Language</string>
     <string name="language_description">Choose the app language</string>
     <string name="todo_completed_at">Completed: %1$s</string>

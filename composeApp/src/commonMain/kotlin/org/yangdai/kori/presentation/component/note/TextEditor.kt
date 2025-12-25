@@ -201,14 +201,6 @@ fun TextEditor(
         }
     }
 
-    val infiniteTransition = rememberInfiniteTransition("wavy-line")
-    val phase by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 2f * PI.toFloat(),
-        animationSpec = infiniteRepeatable(tween(1000, easing = LinearEasing)),
-        label = "wave-phase"
-    )
-
     val lintErrors by produceState(emptyList(), lint) {
         if (lint != null) {
             snapshotFlow { textFieldState.text.toString() }
@@ -278,31 +270,12 @@ fun TextEditor(
                     Box(
                         modifier = Modifier
                             .clipToBounds()
-                            .drawWithCache {
-                                // 预先计算颜色，避免在绘制循环中重复创建
-                                val highlightBgColor = Color.Cyan.copy(alpha = 0.5f)
-                                val currentHighlightBorderColor = Color.Blue
-                                val otherHighlightBorderColor = Color.Cyan
-
-                                onDrawBehind {
-                                    val currentScroll = scrollState.value.toFloat()
-                                    withTransform({ translate(top = -currentScroll) }) {
-                                        // 绘制搜索高亮
-                                        searchPaths.forEachIndexed { index, path ->
-                                            drawPath(path, highlightBgColor, 0.5f)
-                                            val borderColor =
-                                                if (index == currentRangeIndex) currentHighlightBorderColor
-                                                else otherHighlightBorderColor
-                                            drawPath(path, borderColor, style = Stroke(1.sp.toPx()))
-                                        }
-                                        val currentPhase = phase
-                                        // 绘制波浪线
-                                        lintPaths.forEach {
-                                            drawWavyUnderlineOptimized(it, currentPhase)
-                                        }
-                                    }
-                                }
-                            }
+                            .textEditorDrawing(
+                                searchPaths = searchPaths,
+                                currentRangeIndex = currentRangeIndex,
+                                lintPaths = lintPaths,
+                                scrollState = scrollState
+                            )
                     ) {
                         if (textFieldState.text.isEmpty()) {
                             Text(
@@ -367,4 +340,45 @@ private fun DrawScope.drawWavyUnderlineOptimized(
         strokeWidth = 1.5f,
         cap = StrokeCap.Round
     )
+}
+
+@Composable
+private fun Modifier.textEditorDrawing(
+    searchPaths: List<Path>,
+    currentRangeIndex: Int,
+    lintPaths: List<Path>,
+    scrollState: ScrollState
+): Modifier {
+    val infiniteTransition = rememberInfiniteTransition("wavy-line")
+    val phase by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 2f * PI.toFloat(),
+        animationSpec = infiniteRepeatable(tween(1000, easing = LinearEasing)),
+        label = "wave-phase"
+    )
+
+    return drawWithCache {
+        // 预先计算颜色，避免在绘制循环中重复创建
+        val highlightBgColor = Color.Cyan.copy(alpha = 0.5f)
+        val currentHighlightBorderColor = Color.Blue
+        val otherHighlightBorderColor = Color.Cyan
+
+        onDrawBehind {
+            val currentScroll = scrollState.value.toFloat()
+            withTransform({ translate(top = -currentScroll) }) {
+                // 绘制搜索高亮
+                searchPaths.forEachIndexed { index, path ->
+                    drawPath(path, highlightBgColor, 0.5f)
+                    val borderColor =
+                        if (index == currentRangeIndex) currentHighlightBorderColor
+                        else otherHighlightBorderColor
+                    drawPath(path, borderColor, style = Stroke(1.sp.toPx()))
+                }
+                // 绘制波浪线
+                lintPaths.forEach {
+                    drawWavyUnderlineOptimized(it, phase)
+                }
+            }
+        }
+    }
 }

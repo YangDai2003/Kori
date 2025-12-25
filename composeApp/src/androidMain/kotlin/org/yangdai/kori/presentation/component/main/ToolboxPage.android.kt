@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.setWidgetPreviews
+import kfile.PlatformFile
 import kotlinx.coroutines.launch
 import org.yangdai.kori.R
 import org.yangdai.kori.presentation.glance.MyAppWidgetReceiver
@@ -53,4 +54,8 @@ actual fun WidgetListItem() {
             )
         }
     )
+}
+
+@Composable
+actual fun DropTarget(onFilePicked: (PlatformFile) -> Unit) {
 }

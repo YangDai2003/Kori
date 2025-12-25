@@ -1,9 +1,11 @@
 package org.yangdai.kori.presentation.component.main
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,12 +29,14 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,12 +45,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import kfile.PlatformFile
 import kfile.PlatformFilePicker
 import kfile.getPath
 import kori.composeapp.generated.resources.Res
@@ -55,7 +61,9 @@ import kori.composeapp.generated.resources.edit_local_file
 import kori.composeapp.generated.resources.markdown
 import kori.composeapp.generated.resources.todo_text
 import org.jetbrains.compose.resources.stringResource
+import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.data.local.entity.NoteType
+import org.yangdai.kori.isDesktop
 import org.yangdai.kori.presentation.navigation.Screen
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -63,14 +71,17 @@ import org.yangdai.kori.presentation.navigation.Screen
 fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) -> Unit) {
 
     var showFilePickerDialog by remember { mutableStateOf(false) }
+    var showDropTarget by remember { mutableStateOf(false) }
+    val degrees by animateFloatAsState(if (showDropTarget) 90f else 0f)
 
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
-            Modifier.widthIn(max = 600.dp).padding(horizontal = 16.dp)
-                .verticalScroll(rememberScrollState())
+            modifier = Modifier.widthIn(max = 600.dp).padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Spacer(Modifier.height(16.dp))
@@ -173,12 +184,28 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
                 colors = ListItemDefaults.colors(containerColor = CardDefaults.elevatedCardColors().containerColor),
                 headlineContent = { Text(stringResource(Res.string.edit_local_file)) },
                 trailingContent = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.ArrowRight,
-                        contentDescription = null
-                    )
+                    if (currentPlatformInfo.isDesktop())
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            VerticalDivider(Modifier.height(40.dp).padding(end = 8.dp))
+                            IconButton(onClick = { showDropTarget = !showDropTarget }) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Outlined.ArrowRight,
+                                    modifier = Modifier.rotate(degrees),
+                                    contentDescription = null
+                                )
+                            }
+                        }
+                    else
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.ArrowRight,
+                            contentDescription = null
+                        )
                 }
             )
+
+            AnimatedVisibility(showDropTarget) {
+                DropTarget { navigateToScreen(Screen.File(it.getPath())) }
+            }
 
             WidgetListItem()
 
@@ -194,6 +221,9 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
             }
         }
 }
+
+@Composable
+expect fun DropTarget(onFilePicked: (PlatformFile) -> Unit)
 
 @Composable
 expect fun WidgetListItem()

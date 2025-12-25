@@ -154,6 +154,7 @@
     <string name="toolbox">Werkzeugkasten</string>
     <string name="edit_local_file">Lokale Datei bearbeiten</string>
     <string name="fetch_file_from_url">Datei von URL abrufen</string>
+    <string name="drag_drop">Ziehen &amp; ablegen zum Öffnen</string>
     <string name="language">Sprache</string>
     <string name="language_description">Wählen Sie die App-Sprache</string>
     <string name="todo_completed_at">Abgeschlossen: %1$s</string>

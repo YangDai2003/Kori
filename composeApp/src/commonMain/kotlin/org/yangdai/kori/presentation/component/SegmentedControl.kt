@@ -29,7 +29,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -328,16 +327,17 @@ private fun <T> Segments(
  * A modifier that scales an element when pressed.
  * It uses `Modifier.composed` to gain a @Composable context for animations.
  */
+@Composable
 private fun Modifier.segmentScaleModifier(
     pressed: Boolean,
     pressedSelectedScale: Float,
     segment: Int,
     segmentCount: Int
-): Modifier = this.composed {
+): Modifier {
     val scale by animateFloatAsState(if (pressed) pressedSelectedScale else 1f)
     val xOffset by animateDpAsState(if (pressed) PRESSED_TRACK_PADDING else 0.dp)
 
-    graphicsLayer {
+    return graphicsLayer {
         this.scaleX = scale
         this.scaleY = scale
 
