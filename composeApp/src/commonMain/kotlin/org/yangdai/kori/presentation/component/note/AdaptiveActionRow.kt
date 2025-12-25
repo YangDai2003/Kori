@@ -2,8 +2,11 @@ package org.yangdai.kori.presentation.component.note
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,8 +18,10 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -48,7 +53,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kfile.AudioPicker
 import kfile.ImagesPicker
@@ -60,11 +64,14 @@ import org.yangdai.kori.OS
 import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.component.dialog.TableDialog
-import org.yangdai.kori.presentation.component.note.markdown.MarkdownEditorRow
-import org.yangdai.kori.presentation.component.note.plaintext.PlainTextEditorRow
-import org.yangdai.kori.presentation.component.note.todo.TodoTextEditorRow
+import org.yangdai.kori.presentation.component.note.markdown.MarkdownActionRow
+import org.yangdai.kori.presentation.component.note.plaintext.PlainTextActionRow
+import org.yangdai.kori.presentation.component.note.todo.TodoTextActionRow
 
 interface ActionRowScope {
+    @Composable
+    fun ActionRow(content: @Composable RowScope.() -> Unit)
+
     @Composable
     fun ActionRowSection(content: @Composable RowScope.() -> Unit)
 
@@ -87,7 +94,26 @@ interface ActionRowScope {
     )
 }
 
-class ActionRowScopeImpl(val showElevation: Boolean) : ActionRowScope {
+class ActionRowScopeImpl(
+    val showElevation: Boolean,
+    val showAIAssistPlaceholder: Boolean
+) : ActionRowScope {
+    @Composable
+    override fun ActionRow(content: @Composable RowScope.() -> Unit) {
+        val layoutDirection = LocalLayoutDirection.current
+        val displayCutoutPadding =
+            WindowInsets.displayCutout.asPaddingValues().calculateStartPadding(layoutDirection)
+        val startPadding by animateDpAsState(if (showAIAssistPlaceholder) 52.dp else 0.dp)
+        Row(
+            modifier = Modifier.padding(start = displayCutoutPadding + startPadding)
+                .fillMaxWidth().height(48.dp)
+                .horizontalScroll(rememberScrollState()),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
+            content = content
+        )
+    }
+
     @Composable
     override fun ActionRowSection(content: @Composable RowScope.() -> Unit) {
         val color by animateColorAsState(
@@ -215,7 +241,7 @@ private fun AdaptiveActionRowLayout(
     noteType: NoteType,
     scrollState: ScrollState,
     textFieldState: TextFieldState,
-    startPadding: Dp,
+    showAIAssistPlaceholder: Boolean,
     isTemplate: Boolean = false,
     onEditorRowAction: (Action) -> Unit = { _ -> }
 ) {
@@ -230,26 +256,23 @@ private fun AdaptiveActionRowLayout(
         label = "EditorRowColorAnimation"
     )
 
-    val scope = remember(showElevation) { ActionRowScopeImpl(showElevation) }
+    val scope = remember(showElevation, showAIAssistPlaceholder) {
+        ActionRowScopeImpl(showElevation, showAIAssistPlaceholder)
+    }
 
-    val layoutDirection = LocalLayoutDirection.current
-    val displayCutoutPadding =
-        WindowInsets.displayCutout.asPaddingValues().calculateStartPadding(layoutDirection)
     Surface(modifier = Modifier.fillMaxWidth(), color = color) {
-        Column(
-            Modifier.navigationBarsPadding().padding(start = startPadding + displayCutoutPadding)
-        ) {
+        Column(Modifier.navigationBarsPadding()) {
             AnimatedVisibility(visible) {
                 with(scope) {
                     when (noteType) {
                         NoteType.PLAIN_TEXT ->
-                            PlainTextEditorRow(isTemplate, textFieldState, onEditorRowAction)
+                            PlainTextActionRow(isTemplate, textFieldState, onEditorRowAction)
 
                         NoteType.MARKDOWN ->
-                            MarkdownEditorRow(isTemplate, textFieldState, onEditorRowAction)
+                            MarkdownActionRow(isTemplate, textFieldState, onEditorRowAction)
 
                         NoteType.TODO ->
-                            TodoTextEditorRow(isTemplate, textFieldState, onEditorRowAction)
+                            TodoTextActionRow(isTemplate, textFieldState, onEditorRowAction)
 
                         NoteType.Drawing -> {
                             // 绘图不需要编辑栏
@@ -268,7 +291,7 @@ fun AdaptiveActionRow(
     noteId: String,
     scrollState: ScrollState,
     contentState: TextFieldState,
-    startPadding: Dp,
+    showAIAssistPlaceholder: Boolean,
     isTemplate: Boolean = false,
     onTemplatesAction: () -> Unit = {}
 ) {
@@ -283,7 +306,7 @@ fun AdaptiveActionRow(
         noteType = noteType,
         scrollState = scrollState,
         textFieldState = contentState,
-        startPadding = startPadding,
+        showAIAssistPlaceholder = showAIAssistPlaceholder && noteType != NoteType.PLAIN_TEXT,
         isTemplate = isTemplate
     ) { action ->
         when (action) {

@@ -41,7 +41,6 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kfile.PlatformFile
 import kori.composeapp.generated.resources.Res
@@ -201,7 +200,7 @@ fun FileScreen(
                 noteId = "",
                 scrollState = scrollState,
                 contentState = viewModel.contentState,
-                startPadding = if (showAI && editingState.fileType != NoteType.PLAIN_TEXT) 52.dp else 0.dp,
+                showAIAssistPlaceholder = showAI,
                 onTemplatesAction = { showTemplatesBottomSheet = true }
             )
         }

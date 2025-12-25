@@ -265,7 +265,7 @@ fun NoteScreen(
                 noteId = editingState.id,
                 scrollState = scrollState,
                 contentState = viewModel.contentState,
-                startPadding = if (showAI && editingState.noteType != NoteType.PLAIN_TEXT) 52.dp else 0.dp,
+                showAIAssistPlaceholder = showAI,
                 onTemplatesAction = { showTemplatesBottomSheet = true }
             )
         }
