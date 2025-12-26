@@ -105,8 +105,6 @@ fun ActionRowScope.MarkdownActionRow(
     onRowAction: (Action) -> Unit
 ) = ActionRow {
 
-    Spacer(Modifier.width(4.dp))
-
     ActionRowSection {
         ActionButton(
             hint = stringResource(Res.string.undo),

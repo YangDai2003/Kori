@@ -2,25 +2,29 @@ package org.yangdai.kori.presentation.component.note
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,6 +42,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,7 +51,8 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
-import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -99,27 +105,50 @@ class ActionRowScopeImpl(
     val showAIAssistPlaceholder: Boolean
 ) : ActionRowScope {
     @Composable
-    override fun ActionRow(content: @Composable RowScope.() -> Unit) {
-        val layoutDirection = LocalLayoutDirection.current
-        val displayCutoutPadding =
-            WindowInsets.displayCutout.asPaddingValues().calculateStartPadding(layoutDirection)
-        val startPadding by animateDpAsState(if (showAIAssistPlaceholder) 52.dp else 0.dp)
-        Row(
-            modifier = Modifier.padding(start = displayCutoutPadding + startPadding)
-                .fillMaxWidth().height(48.dp)
-                .horizontalScroll(rememberScrollState()),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
-            content = content
-        )
-    }
+    override fun ActionRow(content: @Composable RowScope.() -> Unit) =
+        BoxWithConstraints(
+            modifier = Modifier.fillMaxWidth().height(48.dp)
+                .windowInsetsPadding(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal)),
+            contentAlignment = Alignment.Center
+        ) {
+            val density = LocalDensity.current
+            val containerWidth by rememberUpdatedState(constraints.maxWidth)
+            var contentWidth by remember { mutableStateOf(0) }
+            val startPadding by remember(showAIAssistPlaceholder) {
+                derivedStateOf {
+                    if (showAIAssistPlaceholder) {
+                        val availableWidth = containerWidth - contentWidth
+                        if (contentWidth <= 0 || availableWidth <= 0) 52.dp
+                        else {
+                            with(density) {
+                                val startWidth = (availableWidth / 2f).toDp()
+                                if (startWidth < 52.dp) 52.dp - startWidth
+                                else 0.dp
+                            }
+                        }
+                    } else 0.dp
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .onSizeChanged { contentWidth = it.width }
+                    .padding(start = startPadding)
+                    .horizontalScroll(rememberScrollState()),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                content = {
+                    if (!showAIAssistPlaceholder) Spacer(Modifier.width(4.dp))
+                    content()
+                }
+            )
+        }
 
     @Composable
     override fun ActionRowSection(content: @Composable RowScope.() -> Unit) {
         val color by animateColorAsState(
             targetValue = if (showElevation) MaterialTheme.colorScheme.surface
             else MaterialTheme.colorScheme.surfaceContainerLow,
-            label = "EditorRowSectionColorAnimation"
+            label = "ActionRowSectionColorAnimation"
         )
         Surface(
             modifier = Modifier
@@ -253,30 +282,28 @@ private fun AdaptiveActionRowLayout(
     val color by animateColorAsState(
         targetValue = if (showElevation) MaterialTheme.colorScheme.surfaceContainerLow
         else MaterialTheme.colorScheme.surface,
-        label = "EditorRowColorAnimation"
+        label = "ActionRowColorAnimation"
     )
 
     val scope = remember(showElevation, showAIAssistPlaceholder) {
         ActionRowScopeImpl(showElevation, showAIAssistPlaceholder)
     }
 
-    Surface(modifier = Modifier.fillMaxWidth(), color = color) {
-        Column(Modifier.navigationBarsPadding()) {
-            AnimatedVisibility(visible) {
-                with(scope) {
-                    when (noteType) {
-                        NoteType.PLAIN_TEXT ->
-                            PlainTextActionRow(isTemplate, textFieldState, onEditorRowAction)
+    Column(Modifier.fillMaxWidth().background(color).navigationBarsPadding()) {
+        AnimatedVisibility(visible) {
+            with(scope) {
+                when (noteType) {
+                    NoteType.PLAIN_TEXT ->
+                        PlainTextActionRow(isTemplate, textFieldState, onEditorRowAction)
 
-                        NoteType.MARKDOWN ->
-                            MarkdownActionRow(isTemplate, textFieldState, onEditorRowAction)
+                    NoteType.MARKDOWN ->
+                        MarkdownActionRow(isTemplate, textFieldState, onEditorRowAction)
 
-                        NoteType.TODO ->
-                            TodoTextActionRow(isTemplate, textFieldState, onEditorRowAction)
+                    NoteType.TODO ->
+                        TodoTextActionRow(isTemplate, textFieldState, onEditorRowAction)
 
-                        NoteType.Drawing -> {
-                            // 绘图不需要编辑栏
-                        }
+                    NoteType.Drawing -> {
+                        // 绘图不需要编辑栏
                     }
                 }
             }
