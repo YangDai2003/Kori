@@ -197,7 +197,7 @@ fun AdaptiveEditor(
         } else null
     }
 
-    TextEditor(
+    Editor(
         modifier = modifier,
         textFieldModifier = textFieldModifier,
         textFieldState = textFieldState,

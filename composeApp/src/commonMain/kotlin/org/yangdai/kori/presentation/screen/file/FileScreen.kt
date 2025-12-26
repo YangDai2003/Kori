@@ -4,9 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
@@ -22,7 +19,6 @@ import androidx.compose.material.icons.outlined.SwapHorizontalCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -69,6 +65,7 @@ import org.yangdai.kori.presentation.component.note.AdaptiveActionRow
 import org.yangdai.kori.presentation.component.note.AdaptiveEditor
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorViewer
 import org.yangdai.kori.presentation.component.note.AdaptiveViewer
+import org.yangdai.kori.presentation.component.note.EditorScaffold
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
@@ -122,8 +119,8 @@ fun FileScreen(
         pagerState.animateScrollToPage(if (isReadView) 1 else 0)
     }
 
-    Scaffold(
-        modifier = Modifier.imePadding().onPreviewKeyEvent { keyEvent ->
+    EditorScaffold(
+        modifier = Modifier.onPreviewKeyEvent { keyEvent ->
             if (keyEvent.type == KeyEventType.KeyDown && keyEvent.isCtrlPressed) {
                 when (keyEvent.key) {
                     Key.F -> {
@@ -204,45 +201,43 @@ fun FileScreen(
                 onTemplatesAction = { showTemplatesBottomSheet = true }
             )
         }
-    ) { innerPadding ->
-        Column(Modifier.padding(innerPadding)) {
-            AnimatedVisibility(isSearching) {
-                FindAndReplaceField(findAndReplaceState)
-            }
+    ) {
+        AnimatedVisibility(isSearching) {
+            FindAndReplaceField(findAndReplaceState)
+        }
 
-            if (editingState.fileType != NoteType.Drawing) {
-                var firstVisibleCharPosition by remember { mutableIntStateOf(0) }
-                AdaptiveEditorViewer(
-                    showDualPane = rememberIsScreenWidthExpanded(),
-                    pagerState = pagerState,
-                    defaultEditorWeight = editorState.editorWeight,
-                    onEditorWeightChanged = { viewModel.changeDefaultEditorWeight(it) },
-                    editor = { modifier ->
-                        AdaptiveEditor(
-                            modifier = modifier,
-                            noteType = editingState.fileType,
-                            textFieldState = viewModel.contentState,
-                            scrollState = scrollState,
-                            readOnly = isReadView,
-                            isLineNumberVisible = editorState.isLineNumberVisible,
-                            isLintingEnabled = editorState.isLintingEnabled,
-                            headerRange = selectedHeader,
-                            findAndReplaceState = findAndReplaceState,
-                            onScroll = { firstVisibleCharPosition = it }
-                        )
-                    },
-                    viewer = if (editingState.fileType == NoteType.MARKDOWN || editingState.fileType == NoteType.TODO) { modifier ->
-                        AdaptiveViewer(
-                            modifier = modifier,
-                            noteType = editingState.fileType,
-                            textFieldState = viewModel.contentState,
-                            firstVisibleCharPosition = firstVisibleCharPosition,
-                            isSheetVisible = isSideSheetOpen || showTemplatesBottomSheet,
-                            printTrigger = printTrigger
-                        )
-                    } else null
-                )
-            }
+        if (editingState.fileType != NoteType.Drawing) {
+            var firstVisibleCharPosition by remember { mutableIntStateOf(0) }
+            AdaptiveEditorViewer(
+                showDualPane = rememberIsScreenWidthExpanded(),
+                pagerState = pagerState,
+                defaultEditorWeight = editorState.editorWeight,
+                onEditorWeightChanged = { viewModel.changeDefaultEditorWeight(it) },
+                editor = { modifier ->
+                    AdaptiveEditor(
+                        modifier = modifier,
+                        noteType = editingState.fileType,
+                        textFieldState = viewModel.contentState,
+                        scrollState = scrollState,
+                        readOnly = isReadView,
+                        isLineNumberVisible = editorState.isLineNumberVisible,
+                        isLintingEnabled = editorState.isLintingEnabled,
+                        headerRange = selectedHeader,
+                        findAndReplaceState = findAndReplaceState,
+                        onScroll = { firstVisibleCharPosition = it }
+                    )
+                },
+                viewer = if (editingState.fileType == NoteType.MARKDOWN || editingState.fileType == NoteType.TODO) { modifier ->
+                    AdaptiveViewer(
+                        modifier = modifier,
+                        noteType = editingState.fileType,
+                        textFieldState = viewModel.contentState,
+                        firstVisibleCharPosition = firstVisibleCharPosition,
+                        isSheetVisible = isSideSheetOpen || showTemplatesBottomSheet,
+                        printTrigger = printTrigger
+                    )
+                } else null
+            )
         }
     }
 

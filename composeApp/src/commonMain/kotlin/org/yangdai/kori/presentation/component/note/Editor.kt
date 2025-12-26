@@ -65,7 +65,7 @@ import kotlin.math.sin
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @Composable
-fun TextEditor(
+fun Editor(
     modifier: Modifier,
     textFieldModifier: Modifier,
     textFieldState: TextFieldState,
@@ -237,7 +237,7 @@ fun TextEditor(
 
     Row(modifier) {
         if (isLineNumberVisible) {
-            LineNumbersColumn(
+            EditorLineNumbers(
                 currentLinesProvider = { currentLines },
                 actualLinePositions = actualLinePositions,
                 scrollProvider = { scrollState.value }
@@ -270,7 +270,7 @@ fun TextEditor(
                     Box(
                         modifier = Modifier
                             .clipToBounds()
-                            .textEditorDrawing(
+                            .editorDrawing(
                                 searchPaths = searchPaths,
                                 currentRangeIndex = currentRangeIndex,
                                 lintPaths = lintPaths,
@@ -343,7 +343,7 @@ private fun DrawScope.drawWavyUnderlineOptimized(
 }
 
 @Composable
-private fun Modifier.textEditorDrawing(
+private fun Modifier.editorDrawing(
     searchPaths: List<Path>,
     currentRangeIndex: Int,
     lintPaths: List<Path>,

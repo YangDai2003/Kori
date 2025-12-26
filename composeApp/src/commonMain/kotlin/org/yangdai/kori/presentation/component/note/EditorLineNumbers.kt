@@ -44,7 +44,7 @@ private class LineNumberLayoutCache(
 }
 
 @Composable
-fun LineNumbersColumn(
+fun EditorLineNumbers(
     currentLinesProvider: () -> IntRange,
     actualLinePositions: List<Pair<Int, Float>>, // line start index to line top position
     scrollProvider: () -> Int,

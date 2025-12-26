@@ -11,10 +11,8 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.pager.rememberPagerState
@@ -40,7 +38,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -99,6 +96,7 @@ import org.yangdai.kori.presentation.component.note.AdaptiveActionRow
 import org.yangdai.kori.presentation.component.note.AdaptiveEditor
 import org.yangdai.kori.presentation.component.note.AdaptiveEditorViewer
 import org.yangdai.kori.presentation.component.note.AdaptiveViewer
+import org.yangdai.kori.presentation.component.note.EditorScaffold
 import org.yangdai.kori.presentation.component.note.FindAndReplaceField
 import org.yangdai.kori.presentation.component.note.NoteSideSheet
 import org.yangdai.kori.presentation.component.note.NoteSideSheetItem
@@ -184,8 +182,8 @@ fun NoteScreen(
         pagerState.animateScrollToPage(if (isReadView) 1 else 0)
     }
 
-    Scaffold(
-        modifier = Modifier.imePadding().onPreviewKeyEvent { keyEvent ->
+    EditorScaffold(
+        modifier = Modifier.onPreviewKeyEvent { keyEvent ->
             if (keyEvent.type == KeyEventType.KeyDown && keyEvent.isCtrlPressed) {
                 when (keyEvent.key) {
                     Key.F -> {
@@ -269,72 +267,70 @@ fun NoteScreen(
                 onTemplatesAction = { showTemplatesBottomSheet = true }
             )
         }
-    ) { innerPadding ->
-        Column(Modifier.padding(innerPadding)) {
-            if (isWideScreen) {
-                AnimatedVisibility(editingTitle) {
-                    TitleTextField(
-                        state = viewModel.titleState,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                        initFocus = true,
-                        onDone = { editingTitle = false }
-                    )
-                }
-                AnimatedVisibility(isSearching) {
-                    FindAndReplaceField(findAndReplaceState)
-                }
-            } else
-                AnimatedContent(isSearching) { targetState ->
-                    if (targetState) FindAndReplaceField(findAndReplaceState)
-                    else
-                        TitleTextField(
-                            state = viewModel.titleState,
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
-                        )
-                }
-
-            if (editingState.noteType == NoteType.Drawing) {
-                DrawingViewer(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .verticalScroll(scrollState)
-                        .clickable { isReadView = !isReadView },
-                    imageBitmap = cachedImageBitmap.value,
-                    uuid = editingState.id
-                )
-            } else {
-                var firstVisibleCharPosition by remember { mutableIntStateOf(0) }
-                AdaptiveEditorViewer(
-                    showDualPane = isWideScreen,
-                    pagerState = pagerState,
-                    defaultEditorWeight = editorState.editorWeight,
-                    onEditorWeightChanged = { viewModel.changeDefaultEditorWeight(it) },
-                    editor = { modifier ->
-                        AdaptiveEditor(
-                            modifier = modifier,
-                            noteType = editingState.noteType,
-                            textFieldState = viewModel.contentState,
-                            scrollState = scrollState,
-                            readOnly = isReadView,
-                            isLineNumberVisible = editorState.isLineNumberVisible,
-                            isLintingEnabled = editorState.isLintingEnabled,
-                            headerRange = selectedHeader,
-                            findAndReplaceState = findAndReplaceState,
-                            onScroll = { firstVisibleCharPosition = it }
-                        )
-                    },
-                    viewer = if (editingState.noteType == NoteType.MARKDOWN || editingState.noteType == NoteType.TODO) { modifier ->
-                        AdaptiveViewer(
-                            modifier = modifier,
-                            noteType = editingState.noteType,
-                            textFieldState = viewModel.contentState,
-                            isSheetVisible = isSideSheetOpen || showFolderDialog || showTemplatesBottomSheet,
-                            printTrigger = printTrigger,
-                            firstVisibleCharPosition = firstVisibleCharPosition
-                        )
-                    } else null
+    ) {
+        if (isWideScreen) {
+            AnimatedVisibility(editingTitle) {
+                TitleTextField(
+                    state = viewModel.titleState,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    initFocus = true,
+                    onDone = { editingTitle = false }
                 )
             }
+            AnimatedVisibility(isSearching) {
+                FindAndReplaceField(findAndReplaceState)
+            }
+        } else
+            AnimatedContent(isSearching) { targetState ->
+                if (targetState) FindAndReplaceField(findAndReplaceState)
+                else
+                    TitleTextField(
+                        state = viewModel.titleState,
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                    )
+            }
+
+        if (editingState.noteType == NoteType.Drawing) {
+            DrawingViewer(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .verticalScroll(scrollState)
+                    .clickable { isReadView = !isReadView },
+                imageBitmap = cachedImageBitmap.value,
+                uuid = editingState.id
+            )
+        } else {
+            var firstVisibleCharPosition by remember { mutableIntStateOf(0) }
+            AdaptiveEditorViewer(
+                showDualPane = isWideScreen,
+                pagerState = pagerState,
+                defaultEditorWeight = editorState.editorWeight,
+                onEditorWeightChanged = { viewModel.changeDefaultEditorWeight(it) },
+                editor = { modifier ->
+                    AdaptiveEditor(
+                        modifier = modifier,
+                        noteType = editingState.noteType,
+                        textFieldState = viewModel.contentState,
+                        scrollState = scrollState,
+                        readOnly = isReadView,
+                        isLineNumberVisible = editorState.isLineNumberVisible,
+                        isLintingEnabled = editorState.isLintingEnabled,
+                        headerRange = selectedHeader,
+                        findAndReplaceState = findAndReplaceState,
+                        onScroll = { firstVisibleCharPosition = it }
+                    )
+                },
+                viewer = if (editingState.noteType == NoteType.MARKDOWN || editingState.noteType == NoteType.TODO) { modifier ->
+                    AdaptiveViewer(
+                        modifier = modifier,
+                        noteType = editingState.noteType,
+                        textFieldState = viewModel.contentState,
+                        isSheetVisible = isSideSheetOpen || showFolderDialog || showTemplatesBottomSheet,
+                        printTrigger = printTrigger,
+                        firstVisibleCharPosition = firstVisibleCharPosition
+                    )
+                } else null
+            )
         }
     }
 
