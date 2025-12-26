@@ -1,8 +1,6 @@
 package org.yangdai.kori.presentation.component.note.plaintext
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.FormatIndentDecrease
@@ -13,8 +11,6 @@ import androidx.compose.material.icons.automirrored.outlined.Undo
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.indent_decrease
 import kori.composeapp.generated.resources.indent_increase
@@ -31,11 +27,9 @@ import org.yangdai.kori.presentation.component.note.unTab
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ActionRowScope.PlainTextActionRow(
-    isTemplate: Boolean,
     textFieldState: TextFieldState,
     onRowAction: (Action) -> Unit
 ) = ActionRow {
-
     ActionRowSection {
         ActionButton(
             hint = stringResource(Res.string.undo),
@@ -66,7 +60,7 @@ fun ActionRowScope.PlainTextActionRow(
         )
     }
 
-    if (!isTemplate)
+    if (!isTemplateActionRow)
         ActionRowSection {
             ActionButton(
                 hint = stringResource(Res.string.templates),
@@ -85,6 +79,4 @@ fun ActionRowScope.PlainTextActionRow(
                 onClick = { textFieldState.edit { addAfter("{{time}}") } }
             )
         }
-
-    Spacer(Modifier.width(4.dp))
 }

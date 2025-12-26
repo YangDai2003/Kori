@@ -75,6 +75,9 @@ import org.yangdai.kori.presentation.component.note.plaintext.PlainTextActionRow
 import org.yangdai.kori.presentation.component.note.todo.TodoTextActionRow
 
 interface ActionRowScope {
+
+    val isTemplateActionRow: Boolean
+
     @Composable
     fun ActionRow(content: @Composable RowScope.() -> Unit)
 
@@ -102,8 +105,13 @@ interface ActionRowScope {
 
 class ActionRowScopeImpl(
     val showElevation: Boolean,
-    val showAIAssistPlaceholder: Boolean
+    val showAIAssistPlaceholder: Boolean,
+    val isTemplate: Boolean
 ) : ActionRowScope {
+
+    override val isTemplateActionRow: Boolean
+        get() = isTemplate
+
     @Composable
     override fun ActionRow(content: @Composable RowScope.() -> Unit) =
         BoxWithConstraints(
@@ -137,8 +145,9 @@ class ActionRowScopeImpl(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 content = {
-                    if (!showAIAssistPlaceholder) Spacer(Modifier.width(4.dp))
+                    Spacer(Modifier.width(4.dp))
                     content()
+                    Spacer(Modifier.width(4.dp))
                 }
             )
         }
@@ -271,8 +280,8 @@ private fun AdaptiveActionRowLayout(
     scrollState: ScrollState,
     textFieldState: TextFieldState,
     showAIAssistPlaceholder: Boolean,
-    isTemplate: Boolean = false,
-    onEditorRowAction: (Action) -> Unit = { _ -> }
+    isTemplate: Boolean,
+    onEditorRowAction: (Action) -> Unit
 ) {
     val showElevation by remember(visible) {
         derivedStateOf {
@@ -285,22 +294,19 @@ private fun AdaptiveActionRowLayout(
         label = "ActionRowColorAnimation"
     )
 
-    val scope = remember(showElevation, showAIAssistPlaceholder) {
-        ActionRowScopeImpl(showElevation, showAIAssistPlaceholder)
+    val scope = remember(showElevation, showAIAssistPlaceholder, isTemplate) {
+        ActionRowScopeImpl(showElevation, showAIAssistPlaceholder, isTemplate)
     }
 
     Column(Modifier.fillMaxWidth().background(color).navigationBarsPadding()) {
         AnimatedVisibility(visible) {
             with(scope) {
                 when (noteType) {
-                    NoteType.PLAIN_TEXT ->
-                        PlainTextActionRow(isTemplate, textFieldState, onEditorRowAction)
+                    NoteType.PLAIN_TEXT -> PlainTextActionRow(textFieldState, onEditorRowAction)
 
-                    NoteType.MARKDOWN ->
-                        MarkdownActionRow(isTemplate, textFieldState, onEditorRowAction)
+                    NoteType.MARKDOWN -> MarkdownActionRow(textFieldState, onEditorRowAction)
 
-                    NoteType.TODO ->
-                        TodoTextActionRow(isTemplate, textFieldState, onEditorRowAction)
+                    NoteType.TODO -> TodoTextActionRow(textFieldState, onEditorRowAction)
 
                     NoteType.Drawing -> {
                         // 绘图不需要编辑栏

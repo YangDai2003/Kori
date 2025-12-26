@@ -2,8 +2,6 @@ package org.yangdai.kori.presentation.component.note.markdown
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Announcement
@@ -39,8 +37,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.bold
 import kori.composeapp.generated.resources.bulleted_list
@@ -100,11 +96,9 @@ import org.yangdai.kori.presentation.component.note.underline
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ActionRowScope.MarkdownActionRow(
-    isTemplate: Boolean,
     textFieldState: TextFieldState,
     onRowAction: (Action) -> Unit
 ) = ActionRow {
-
     ActionRowSection {
         ActionButton(
             hint = stringResource(Res.string.undo),
@@ -320,7 +314,7 @@ fun ActionRowScope.MarkdownActionRow(
         )
     }
 
-    if (!isTemplate)
+    if (!isTemplateActionRow)
         ActionRowSection {
             ActionButton(
                 icon = painterResource(Res.drawable.photo_library_24px),
@@ -351,6 +345,4 @@ fun ActionRowScope.MarkdownActionRow(
                 onClick = { textFieldState.edit { addAfter("{{time}}") } }
             )
         }
-
-    Spacer(Modifier.width(4.dp))
 }
