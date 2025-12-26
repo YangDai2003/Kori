@@ -1,6 +1,13 @@
 package org.yangdai.kori.presentation.component.main
 
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +38,9 @@ fun AdaptiveNavigationDrawerLayout(
         drawerContent = {
             PermanentDrawerSheet(
                 modifier = Modifier.widthIn(max = 320.dp),
+                windowInsets = WindowInsets.statusBars.only(WindowInsetsSides.Top)
+                    .union(WindowInsets.navigationBars.only(WindowInsetsSides.Start))
+                    .union(WindowInsets.displayCutout.only(WindowInsetsSides.Start)),
                 drawerContainerColor = MaterialTheme.colorScheme.surfaceContainer
             ) {
                 drawerContent()

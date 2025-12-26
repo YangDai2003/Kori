@@ -24,14 +24,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -171,12 +176,13 @@ fun AIAssist(
     val prompt = rememberTextFieldState()
     var inputMode by rememberSaveable { mutableStateOf(false) }
     var showChips by rememberSaveable { mutableStateOf(true) }
+    val modifier = Modifier.displayCutoutPadding()
+        .windowInsetsPadding(WindowInsets.ime.only(WindowInsetsSides.Bottom))
+        .windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Bottom + WindowInsetsSides.Start))
+
     if (!isTextSelectionCollapsed && showChips) {
         Row(
-            modifier = Modifier.imePadding()
-                .navigationBarsPadding()
-                .displayCutoutPadding()
-                .padding(bottom = 48.dp)
+            modifier = modifier.padding(bottom = 48.dp)
                 .horizontalScroll(rememberScrollState()),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -231,9 +237,7 @@ fun AIAssist(
     val horizontalPadding by animateDpAsState(if (inputMode) 16.dp else 8.dp)
     val shadowRadius by animateFloatAsState(if (inputMode) 60f else 0f)
     Box(
-        modifier = Modifier.imePadding()
-            .navigationBarsPadding()
-            .displayCutoutPadding()
+        modifier = modifier
             .padding(vertical = verticalPadding, horizontal = horizontalPadding)
             .dropShadow(MaterialTheme.shapes.extraLargeIncreased) {
                 radius = shadowRadius
