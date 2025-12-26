@@ -11,12 +11,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.UIKitView
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kori.composeapp.generated.resources.Res
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.ObjCSignatureOverride
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
@@ -40,6 +43,7 @@ import platform.UIKit.UIPrintInfo
 import platform.UIKit.UIPrintInfoOutputType
 import platform.UIKit.UIPrintInteractionController
 import platform.UIKit.viewPrintFormatter
+import platform.WebKit.WKNavigation
 import platform.WebKit.WKNavigationAction
 import platform.WebKit.WKNavigationActionPolicy
 import platform.WebKit.WKNavigationDelegateProtocol
@@ -128,23 +132,29 @@ actual fun MarkdownViewer(
         val currentWebView = webView ?: return@LaunchedEffect
         currentWebView.backgroundColor = styles.backgroundColor.toUIColor()
         currentWebView.loadHTMLString(template, baseURL = NSBundle.mainBundle.resourceURL)
-        snapshotFlow { textFieldState.text }
-            .debounce(200L)
-            .mapLatest { markdownText ->
-                // Escape HTML content for safe injection into a JavaScript template literal
-                processMarkdown(markdownText.toString()).escaped()
-            }
-            .flowOn(Dispatchers.Default)
-            .collect { escapedHtml ->
-                val script = """
+    }
+
+    LaunchedEffect(navigationDelegate.pageLoaded.collectAsStateWithLifecycle().value) {
+        val currentWebView = webView ?: return@LaunchedEffect
+        if (navigationDelegate.pageLoaded.value) {
+            snapshotFlow { textFieldState.text }
+                .debounce(200L)
+                .mapLatest { markdownText ->
+                    // Escape HTML content for safe injection into a JavaScript template literal
+                    processMarkdown(markdownText.toString()).escaped()
+                }
+                .flowOn(Dispatchers.Default)
+                .collect { escapedHtml ->
+                    val script = """
                     if (typeof updateMarkdownContent === 'function') {
                         updateMarkdownContent(`$escapedHtml`);
                     } else {
                         console.error('updateMarkdownContent function not found');
                     }
                 """.trimIndent()
-                currentWebView.evaluateJavaScript(script, null)
-            }
+                    currentWebView.evaluateJavaScript(script, null)
+                }
+        }
     }
 
     LaunchedEffect(firstVisibleCharPositon, webView) {
@@ -169,8 +179,6 @@ actual fun MarkdownViewer(
     }
 }
 
-
-@OptIn(ExperimentalForeignApi::class)
 private class LocalFileSchemeHandler : NSObject(), WKURLSchemeHandlerProtocol {
 
     private val fileManager = NSFileManager.defaultManager
@@ -287,6 +295,19 @@ private class LocalFileSchemeHandler : NSObject(), WKURLSchemeHandlerProtocol {
 }
 
 private class NavigationDelegate : NSObject(), WKNavigationDelegateProtocol {
+
+    private val _pageLoaded = MutableStateFlow(false)
+    val pageLoaded = _pageLoaded.asStateFlow()
+
+    @ObjCSignatureOverride
+    override fun webView(webView: WKWebView, didStartProvisionalNavigation: WKNavigation?) {
+        _pageLoaded.value = false
+    }
+
+    @ObjCSignatureOverride
+    override fun webView(webView: WKWebView, didFinishNavigation: WKNavigation?) {
+        _pageLoaded.value = true
+    }
 
     override fun webView(
         webView: WKWebView,

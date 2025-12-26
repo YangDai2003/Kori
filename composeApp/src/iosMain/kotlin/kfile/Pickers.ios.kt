@@ -39,7 +39,6 @@ import kotlin.coroutines.resume
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalForeignApi::class)
 @Composable
 actual fun PlatformFilePicker(onFileSelected: (PlatformFile?) -> Unit) {
     val currentUIViewController = LocalUIViewController.current
@@ -290,7 +289,7 @@ actual fun JsonPicker(launch: Boolean, onJsonPicked: (String?) -> Unit) {
     }
 }
 
-@OptIn(ExperimentalForeignApi::class, ExperimentalTime::class)
+@OptIn(ExperimentalTime::class)
 @Composable
 actual fun ImagesPicker(
     noteId: String,
@@ -362,7 +361,7 @@ actual fun ImagesPicker(
     )
 }
 
-@OptIn(ExperimentalForeignApi::class, ExperimentalTime::class)
+@OptIn(ExperimentalTime::class)
 @Composable
 actual fun VideoPicker(
     noteId: String,
@@ -448,7 +447,7 @@ actual fun VideoPicker(
     )
 }
 
-@OptIn(ExperimentalForeignApi::class, ExperimentalTime::class)
+@OptIn(ExperimentalTime::class)
 @Composable
 actual fun AudioPicker(
     noteId: String,

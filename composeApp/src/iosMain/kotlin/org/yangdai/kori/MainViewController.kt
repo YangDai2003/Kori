@@ -9,7 +9,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.semantics.hideFromAccessibility
@@ -28,7 +27,6 @@ import org.yangdai.kori.presentation.theme.KoriTheme
 import org.yangdai.kori.presentation.util.AppLockManager
 import org.yangdai.kori.presentation.util.Constants
 
-@OptIn(ExperimentalComposeUiApi::class)
 fun MainViewController() = ComposeUIViewController(configure = { KoinInitializer.init() }) {
     val mainViewModel: MainViewModel = koinViewModel<MainViewModel>()
     val stylePaneState by mainViewModel.stylePaneState.collectAsStateWithLifecycle()

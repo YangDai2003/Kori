@@ -3,6 +3,7 @@ package org.yangdai.kori.presentation.component.note.markdown
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.graphics.Bitmap
 import android.print.PrintAttributes
 import android.print.PrintManager
 import android.view.View
@@ -27,10 +28,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.webkit.WebViewAssetLoader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
@@ -68,8 +72,8 @@ actual fun MarkdownViewer(
             .replace(Placeholders.COLOR_SCHEME, if (appConfig.darkMode) "dark" else "light")
             .replace(Placeholders.FONT_SCALE, "${(appConfig.fontScale * 100).roundToInt()}%")
     }
-
     var webView by remember { mutableStateOf<WebView?>(null) }
+    var wvClient by remember { mutableStateOf<WVClient?>(null) }
     var clickedImageUrl by remember { mutableStateOf<String?>(null) }
 
     AndroidView(
@@ -84,7 +88,8 @@ actual fun MarkdownViewer(
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
                 webView = this
-                webViewClient = WVClient(it)
+                wvClient = WVClient(it)
+                webViewClient = wvClient!!
                 isVerticalScrollBarEnabled = true
                 isHorizontalScrollBarEnabled = false
                 settings.apply {
@@ -127,23 +132,31 @@ actual fun MarkdownViewer(
             "UTF-8",
             null
         )
-        snapshotFlow { textFieldState.text }
-            .debounce(200L)
-            .mapLatest { markdownText ->
-                // Escape HTML content for safe injection into a JavaScript template literal
-                processMarkdown(markdownText.toString()).escaped()
-            }
-            .flowOn(Dispatchers.Default)
-            .collect { escapedHtml ->
-                val script = """
+    }
+
+    LaunchedEffect(wvClient?.pageLoaded?.collectAsStateWithLifecycle()?.value) {
+        val currentWebView = webView ?: return@LaunchedEffect
+        val currentClient = wvClient ?: return@LaunchedEffect
+        if (currentClient.pageLoaded.value) {
+            println("page loaded")
+            snapshotFlow { textFieldState.text }
+                .debounce(200L)
+                .mapLatest { markdownText ->
+                    // Escape HTML content for safe injection into a JavaScript template literal
+                    processMarkdown(markdownText.toString()).escaped()
+                }
+                .flowOn(Dispatchers.Default)
+                .collect { escapedHtml ->
+                    val script = """
                     if (typeof updateMarkdownContent === 'function') {
                         updateMarkdownContent(`$escapedHtml`);
                     } else {
                         console.error('updateMarkdownContent function not found');
                     }
                 """.trimIndent()
-                currentWebView.evaluateJavascript(script, null)
-            }
+                    currentWebView.evaluateJavascript(script, null)
+                }
+        }
     }
 
     LaunchedEffect(firstVisibleCharPositon, webView) {
@@ -169,6 +182,10 @@ actual fun MarkdownViewer(
 }
 
 private class WVClient(context: Context) : WebViewClient() {
+
+    private val _pageLoaded = MutableStateFlow(false)
+    val pageLoaded = _pageLoaded.asStateFlow()
+
     private val assetLoader = WebViewAssetLoader.Builder()
         .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(context))
         .addPathHandler(
@@ -179,10 +196,7 @@ private class WVClient(context: Context) : WebViewClient() {
 
     private val customTabsIntent = CustomTabsIntent.Builder().setShowTitle(true).build()
 
-    override fun shouldOverrideUrlLoading(
-        view: WebView,
-        request: WebResourceRequest
-    ): Boolean {
+    override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
         val url = request.url.toString()
         if (!url.startsWith("https://${WebViewAssetLoader.DEFAULT_DOMAIN}")) {
             customTabsIntent.launchUrl(view.context, request.url)
@@ -195,6 +209,16 @@ private class WVClient(context: Context) : WebViewClient() {
         request: WebResourceRequest
     ): WebResourceResponse? {
         return assetLoader.shouldInterceptRequest(request.url)
+    }
+
+    override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
+        super.onPageStarted(view, url, favicon)
+        _pageLoaded.value = false
+    }
+
+    override fun onPageFinished(view: WebView, url: String) {
+        super.onPageFinished(view, url)
+        _pageLoaded.value = true
     }
 }
 
