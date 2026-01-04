@@ -14,9 +14,7 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-actual class PlatformFile(
-    val url: NSURL
-)
+actual class PlatformFile(val url: NSURL)
 
 actual fun PlatformFile.exists(): Boolean {
     return NSFileManager.defaultManager.fileExistsAtPath(url.path ?: return false)

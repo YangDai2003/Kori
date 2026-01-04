@@ -10,62 +10,36 @@ import kotlin.time.Instant
 actual class PlatformFile(
     val context: Context,
     val uri: Uri,
-    internal val documentFile: DocumentFile? = DocumentFile.fromSingleUri(context, uri)
+    internal val documentFile: DocumentFile = DocumentFile.fromSingleUri(context, uri)
+        ?: throw IllegalArgumentException("Invalid URI")
 )
 
-actual fun PlatformFile.exists(): Boolean {
-    return documentFile?.exists() == true
-}
+actual fun PlatformFile.exists(): Boolean = documentFile.exists()
 
 actual suspend fun PlatformFile.readText(): String {
-    documentFile?.let { documentFile ->
-        if (documentFile.exists() && documentFile.canRead() && documentFile.isFile) {
-            return context.contentResolver.openInputStream(uri)?.bufferedReader()
-                ?.use { it.readText() } ?: ""
-        }
-    }
-    return ""
+    return if (documentFile.exists() && documentFile.canRead() && documentFile.isFile)
+        context.contentResolver.openInputStream(uri)?.use { it.bufferedReader().readText() } ?: ""
+    else ""
 }
 
-actual fun PlatformFile.getFileName(): String {
-    return documentFile?.let { documentFile ->
-        documentFile.name ?: ""
-    } ?: ""
-}
+actual fun PlatformFile.getFileName(): String = documentFile.name ?: ""
 
-actual fun PlatformFile.getPath(): String {
-    return uri.toString()
-}
+actual fun PlatformFile.getPath(): String = uri.toString()
 
-actual fun PlatformFile.isDirectory(): Boolean {
-    return documentFile?.isDirectory == true
-}
+actual fun PlatformFile.isDirectory(): Boolean = documentFile.isDirectory
 
-actual fun PlatformFile.getExtension(): String {
-    return documentFile?.let { documentFile ->
-        documentFile.name?.substringAfterLast('.', "") ?: ""
-    } ?: ""
-}
+actual fun PlatformFile.getExtension(): String =
+    documentFile.name?.substringAfterLast('.', "") ?: ""
 
 actual suspend fun PlatformFile.writeText(text: String) {
-    documentFile?.let { documentFile ->
-        if (documentFile.exists() && documentFile.canWrite() && documentFile.isFile) {
-            context.contentResolver.openOutputStream(uri)?.bufferedWriter()
-                ?.use { it.write(text) }
-        }
-    }
+    context.contentResolver.openOutputStream(uri, "wt")?.use { it.bufferedWriter().write(text) }
 }
 
-actual suspend fun PlatformFile.delete(): Boolean {
-    return documentFile?.let { documentFile ->
-        if (documentFile.exists()) documentFile.delete()
-        else false
-    } == true
-}
+actual suspend fun PlatformFile.delete(): Boolean = documentFile.delete()
 
 @OptIn(ExperimentalTime::class)
 actual fun PlatformFile.getLastModified(): Instant {
-    val milliSeconds = documentFile?.lastModified() ?: 0L
+    val milliSeconds = documentFile.lastModified()
     if (milliSeconds == 0L) return Clock.System.now()
     return Instant.fromEpochMilliseconds(milliSeconds)
 }
