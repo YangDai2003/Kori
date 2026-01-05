@@ -7,11 +7,9 @@ import kotlin.time.Instant
 
 actual class PlatformFile(val file: File)
 
-actual fun PlatformFile.exists(): Boolean = file.exists()
+actual fun PlatformFile.exists(): Boolean = file.exists() && file.isFile
 
-actual suspend fun PlatformFile.readText(): String {
-    return if (file.exists() && file.canRead() && file.isFile) file.readText() else ""
-}
+actual suspend fun PlatformFile.readText(): String = if (file.canRead()) file.readText() else ""
 
 actual fun PlatformFile.getFileName(): String = file.name
 
@@ -22,7 +20,7 @@ actual fun PlatformFile.isDirectory(): Boolean = file.isDirectory
 actual fun PlatformFile.getExtension(): String = file.extension
 
 actual suspend fun PlatformFile.writeText(text: String) {
-    if (file.exists() && file.canWrite() && file.isFile) file.writeText(text)
+    if (file.exists() && file.canWrite()) file.writeText(text)
 }
 
 actual suspend fun PlatformFile.delete(): Boolean = file.delete()

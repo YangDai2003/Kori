@@ -1,6 +1,7 @@
 package kfile
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
@@ -24,11 +25,13 @@ import kotlin.time.ExperimentalTime
 @Composable
 actual fun PlatformFilePicker(onFileSelected: (PlatformFile?) -> Unit) {
     val context = LocalContext.current.applicationContext
+    val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
     val openDocumentLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
-    ) { uri ->
-        uri?.let { documentUri ->
-            onFileSelected(PlatformFile(context, documentUri))
+    ) {
+        it?.let { uri ->
+            context.contentResolver.takePersistableUriPermission(uri, takeFlags)
+            onFileSelected(PlatformFile(context, uri))
         } ?: onFileSelected(null)
     }
 
@@ -61,8 +64,11 @@ actual fun NoteExporter(
         ActivityResultContracts.CreateDocument(mimeType)
     ) { uri ->
         uri?.let { documentUri ->
-            context.contentResolver.openOutputStream(documentUri)?.bufferedWriter()
-                ?.use { it.write(fileContent) }
+            context.contentResolver.openOutputStream(documentUri)?.use { outputStream ->
+                outputStream.bufferedWriter().use { writer ->
+                    writer.write(fileContent)
+                }
+            }
             onFileSaved(true)
         } ?: onFileSaved(false)
     }
@@ -99,8 +105,11 @@ actual fun JsonExporter(launch: Boolean, json: String?, onJsonSaved: (Boolean) -
         ActivityResultContracts.CreateDocument(mimeType)
     ) { uri ->
         uri?.let { documentUri ->
-            context.contentResolver.openOutputStream(documentUri)?.bufferedWriter()
-                ?.use { it.write(json) }
+            context.contentResolver.openOutputStream(documentUri)?.use { outputStream ->
+                outputStream.bufferedWriter().use { writer ->
+                    writer.write(json)
+                }
+            }
             onJsonSaved(true)
         } ?: onJsonSaved(false)
     }
@@ -118,8 +127,11 @@ actual fun JsonPicker(launch: Boolean, onJsonPicked: (String?) -> Unit) {
         ActivityResultContracts.OpenDocument()
     ) { uri ->
         uri?.let { documentUri ->
-            val json = context.contentResolver.openInputStream(documentUri)?.bufferedReader()
-                ?.use { it.readText() }
+            val json = context.contentResolver.openInputStream(documentUri)?.use { inputStream ->
+                inputStream.bufferedReader().use { reader ->
+                    reader.readText()
+                }
+            }
             onJsonPicked(json)
         } ?: onJsonPicked(null)
     }

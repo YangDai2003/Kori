@@ -14,13 +14,15 @@ actual class PlatformFile(
         ?: throw IllegalArgumentException("Invalid URI")
 )
 
-actual fun PlatformFile.exists(): Boolean = documentFile.exists()
+actual fun PlatformFile.exists(): Boolean = documentFile.exists() && documentFile.isFile
 
-actual suspend fun PlatformFile.readText(): String {
-    return if (documentFile.exists() && documentFile.canRead() && documentFile.isFile)
-        context.contentResolver.openInputStream(uri)?.use { it.bufferedReader().readText() } ?: ""
-    else ""
-}
+actual suspend fun PlatformFile.readText(): String = if (documentFile.canRead()) {
+    context.contentResolver.openInputStream(uri)?.use { inputStream ->
+        inputStream.bufferedReader().use { reader ->
+            reader.readText()
+        }
+    } ?: ""
+} else ""
 
 actual fun PlatformFile.getFileName(): String = documentFile.name ?: ""
 
@@ -32,7 +34,12 @@ actual fun PlatformFile.getExtension(): String =
     documentFile.name?.substringAfterLast('.', "") ?: ""
 
 actual suspend fun PlatformFile.writeText(text: String) {
-    context.contentResolver.openOutputStream(uri, "wt")?.use { it.bufferedWriter().write(text) }
+    if (documentFile.exists() && documentFile.canWrite())
+        context.contentResolver.openOutputStream(uri, "wt")?.use { outputStream ->
+            outputStream.bufferedWriter().use { writer ->
+                writer.write(text)
+            }
+        }
 }
 
 actual suspend fun PlatformFile.delete(): Boolean = documentFile.delete()
