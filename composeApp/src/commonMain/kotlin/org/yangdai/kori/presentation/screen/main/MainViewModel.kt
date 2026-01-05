@@ -8,10 +8,10 @@ import androidx.lifecycle.viewModelScope
 import io.ktor.utils.io.charsets.Charsets
 import io.ktor.utils.io.core.toByteArray
 import kfile.PlatformFile
-import kfile.getExtension
-import kfile.getFileName
-import kfile.getLastModified
+import kfile.fileName
+import kfile.lastModified
 import kfile.readText
+import kfile.suitableNoteType
 import knet.ai.AI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -460,25 +460,10 @@ class MainViewModel(
             delay(300L)
             runCatching {
                 files.forEachIndexed { index, it ->
-                    val title = it.getFileName()
+                    val title = it.fileName
                     val content = it.readText()
-                    val modified = it.getLastModified().toString()
-                    val noteType = if (it.getExtension().lowercase() in listOf(
-                            "md",
-                            "markdown",
-                            "mkd",
-                            "mdwn",
-                            "mdown",
-                            "mdtxt",
-                            "mdtext",
-                            "html"
-                        )
-                    ) NoteType.MARKDOWN
-                    else if (
-                        title.contains("todo", ignoreCase = true)
-                        && it.getExtension().lowercase() == "txt"
-                    ) NoteType.TODO
-                    else NoteType.PLAIN_TEXT
+                    val modified = it.lastModified().toString()
+                    val noteType = it.suitableNoteType
                     val noteEntity = NoteEntity(
                         id = Uuid.random().toString(),
                         title = title,

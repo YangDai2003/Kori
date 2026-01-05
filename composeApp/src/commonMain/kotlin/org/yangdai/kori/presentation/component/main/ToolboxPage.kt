@@ -54,7 +54,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import kfile.PlatformFile
 import kfile.PlatformFilePicker
-import kfile.getPath
+import kfile.path
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.add_sample_note
 import kori.composeapp.generated.resources.edit_local_file
@@ -204,7 +204,7 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
             )
 
             AnimatedVisibility(showDropTarget) {
-                DropTarget { navigateToScreen(Screen.File(it.getPath())) }
+                DropTarget { navigateToScreen(Screen.File(it.path)) }
             }
 
             WidgetListItem()
@@ -216,9 +216,7 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
     if (showFilePickerDialog)
         PlatformFilePicker { pickedFile ->
             showFilePickerDialog = false
-            pickedFile?.let {
-                navigateToScreen(Screen.File(pickedFile.getPath()))
-            }
+            pickedFile?.let { navigateToScreen(Screen.File(it.path)) }
         }
 }
 

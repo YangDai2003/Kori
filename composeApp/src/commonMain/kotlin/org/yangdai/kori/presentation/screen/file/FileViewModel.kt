@@ -11,10 +11,10 @@ import androidx.lifecycle.viewModelScope
 import kfile.PlatformFile
 import kfile.delete
 import kfile.exists
-import kfile.getExtension
-import kfile.getFileName
-import kfile.getLastModified
+import kfile.fileName
+import kfile.lastModified
 import kfile.readText
+import kfile.suitableNoteType
 import kfile.writeText
 import knet.ConnectivityObserver
 import knet.ai.AI
@@ -77,31 +77,16 @@ class FileViewModel(
                 _uiEventChannel.send(UiEvent.NavigateUp)
                 return@launch
             }
-            val title = platformFile.getFileName()
+            val title = platformFile.fileName
             val content = platformFile.readText()
-            val noteType = if (platformFile.getExtension().lowercase() in listOf(
-                    "md",
-                    "markdown",
-                    "mkd",
-                    "mdwn",
-                    "mdown",
-                    "mdtxt",
-                    "mdtext",
-                    "html"
-                )
-            ) NoteType.MARKDOWN
-            else if (
-                title.contains("todo", ignoreCase = true)
-                && platformFile.getExtension().lowercase() == "txt"
-            ) NoteType.TODO
-            else NoteType.PLAIN_TEXT
+            val noteType = platformFile.suitableNoteType
             titleState.setTextAndPlaceCursorAtEnd(title)
             contentState.setTextAndPlaceCursorAtEnd(content)
             titleState.undoState.clearHistory()
             contentState.undoState.clearHistory()
             // 记录初始内容
             _initialContent.value = content
-            val updatedAt = platformFile.getLastModified().toString()
+            val updatedAt = platformFile.lastModified().toString()
             _fileEditingState.update {
                 it.copy(updatedAt = updatedAt, fileType = noteType)
             }

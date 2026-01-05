@@ -16,22 +16,27 @@ actual class PlatformFile(
 
 actual fun PlatformFile.exists(): Boolean = documentFile.exists() && documentFile.isFile
 
-actual suspend fun PlatformFile.readText(): String = if (documentFile.canRead()) {
-    context.contentResolver.openInputStream(uri)?.use { inputStream ->
-        inputStream.bufferedReader().use { reader ->
-            reader.readText()
-        }
-    } ?: ""
-} else ""
+actual val PlatformFile.fileName: String
+    get() = documentFile.name ?: ""
 
-actual fun PlatformFile.getFileName(): String = documentFile.name ?: ""
+actual val PlatformFile.path: String
+    get() = uri.toString()
 
-actual fun PlatformFile.getPath(): String = uri.toString()
+actual val PlatformFile.isDirectory: Boolean
+    get() = documentFile.isDirectory
 
-actual fun PlatformFile.isDirectory(): Boolean = documentFile.isDirectory
+actual val PlatformFile.extension: String
+    get() = documentFile.name?.substringAfterLast('.', "") ?: ""
 
-actual fun PlatformFile.getExtension(): String =
-    documentFile.name?.substringAfterLast('.', "") ?: ""
+actual suspend fun PlatformFile.readText(): String {
+    return if (documentFile.canRead()) {
+        context.contentResolver.openInputStream(uri)?.use { inputStream ->
+            inputStream.bufferedReader().use { reader ->
+                reader.readText()
+            }
+        } ?: ""
+    } else ""
+}
 
 actual suspend fun PlatformFile.writeText(text: String) {
     if (documentFile.exists() && documentFile.canWrite())
@@ -45,7 +50,7 @@ actual suspend fun PlatformFile.writeText(text: String) {
 actual suspend fun PlatformFile.delete(): Boolean = documentFile.delete()
 
 @OptIn(ExperimentalTime::class)
-actual fun PlatformFile.getLastModified(): Instant {
+actual fun PlatformFile.lastModified(): Instant {
     val milliSeconds = documentFile.lastModified()
     if (milliSeconds == 0L) return Clock.System.now()
     return Instant.fromEpochMilliseconds(milliSeconds)

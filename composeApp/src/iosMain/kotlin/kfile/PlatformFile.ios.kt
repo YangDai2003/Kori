@@ -20,27 +20,25 @@ actual fun PlatformFile.exists(): Boolean {
     return NSFileManager.defaultManager.fileExistsAtPath(url.path ?: return false)
 }
 
+actual val PlatformFile.fileName: String
+    get() = url.lastPathComponent ?: ""
+
+actual val PlatformFile.path: String
+    get() = url.absoluteString ?: ""
+
+@OptIn(ExperimentalForeignApi::class)
+actual val PlatformFile.isDirectory: Boolean
+    get() {
+        val result = url.resourceValuesForKeys(listOf(NSURLIsDirectoryKey), null)
+        return result?.get(NSURLIsDirectoryKey) == true
+    }
+
+actual val PlatformFile.extension: String
+    get() = url.pathExtension ?: ""
+
 @OptIn(ExperimentalForeignApi::class)
 actual suspend fun PlatformFile.readText(): String {
     return NSString.stringWithContentsOfURL(url, NSUTF8StringEncoding, null) ?: ""
-}
-
-actual fun PlatformFile.getFileName(): String {
-    return url.lastPathComponent ?: ""
-}
-
-actual fun PlatformFile.getPath(): String {
-    return url.absoluteString ?: ""
-}
-
-@OptIn(ExperimentalForeignApi::class)
-actual fun PlatformFile.isDirectory(): Boolean {
-    val result = url.resourceValuesForKeys(listOf(NSURLIsDirectoryKey), null)
-    return result?.get(NSURLIsDirectoryKey) == true
-}
-
-actual fun PlatformFile.getExtension(): String {
-    return url.pathExtension ?: ""
 }
 
 @Suppress("CAST_NEVER_SUCCEEDS")
@@ -55,7 +53,7 @@ actual suspend fun PlatformFile.delete(): Boolean {
 }
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalTime::class)
-actual fun PlatformFile.getLastModified(): Instant {
+actual fun PlatformFile.lastModified(): Instant {
     val path = url.path ?: return Clock.System.now()
     val attributes = NSFileManager.defaultManager.attributesOfItemAtPath(path, null)
     val nsDate = attributes?.get("NSFileModificationDate") as? NSDate ?: return Clock.System.now()
