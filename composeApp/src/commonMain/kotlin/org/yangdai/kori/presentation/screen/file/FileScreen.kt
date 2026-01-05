@@ -38,7 +38,6 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kfile.PlatformFile
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.find
 import kori.composeapp.generated.resources.replace
@@ -49,7 +48,6 @@ import kori.composeapp.generated.resources.updated
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
@@ -81,8 +79,7 @@ import kotlin.time.Instant
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun FileScreen(
-    viewModel: FileViewModel = koinViewModel(),
-    file: PlatformFile,
+    viewModel: FileViewModel,
     navigateToScreen: (Screen) -> Unit,
     navigateUp: () -> Unit
 ) {
@@ -93,7 +90,6 @@ fun FileScreen(
     val isGenerating by viewModel.isGenerating.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.loadFile(file)
         viewModel.uiEventFlow.collect { event ->
             if (event is UiEvent.NavigateUp) navigateUp()
         }
@@ -130,7 +126,7 @@ fun FileScreen(
 
                     Key.S -> {
                         if (needSave) {
-                            viewModel.saveFile(file)
+                            viewModel.saveFile()
                         }
                         true
                     }
@@ -163,7 +159,7 @@ fun FileScreen(
                         hint = stringResource(Res.string.save),
                         actionText = "S",
                         icon = Icons.Outlined.Save,
-                        onClick = { viewModel.saveFile(file) }
+                        onClick = { viewModel.saveFile() }
                     )
 
                     if (!isReadView)
@@ -273,7 +269,7 @@ fun FileScreen(
                 )
             }
 
-            IconButton(onClick = { viewModel.deleteFile(file) }) {
+            IconButton(onClick = { viewModel.deleteFile() }) {
                 Icon(
                     imageVector = Icons.Outlined.Delete,
                     contentDescription = null

@@ -17,6 +17,8 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import kfile.PlatformFile
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 import org.yangdai.kori.presentation.screen.file.FileScreen
 import org.yangdai.kori.presentation.screen.folders.FoldersScreen
 import org.yangdai.kori.presentation.screen.main.MainScreen
@@ -103,9 +105,9 @@ actual fun AppNavHost(
 
     composable<Screen.File> {
         val context = LocalContext.current.applicationContext
-        val route = it.toRoute<Screen.File>()
+        val uri = it.toRoute<Screen.File>().path.toUri()
         FileScreen(
-            file = PlatformFile(context = context, uri = route.path.toUri()),
+            viewModel = koinViewModel { parametersOf(PlatformFile(context, uri)) },
             navigateToScreen = { screen -> navHostController.navigate(screen) }
         ) {
             navHostController.navigateUp()

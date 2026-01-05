@@ -1,8 +1,10 @@
 package org.yangdai.kori.presentation.component.note
 
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
@@ -109,9 +111,11 @@ fun TitleText(
     }
 
     Text(
-        modifier = modifier.pointerInput(Unit) {
-            detectTapGestures { onClick() }
-        },
+        modifier = modifier
+            .horizontalScroll(rememberScrollState())
+            .pointerInput(Unit) {
+                detectTapGestures { onClick() }
+            },
         text = titleText,
         style = MaterialTheme.typography.headlineSmallEmphasized.copy(
             color = textColor

@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kfile.PlatformFile
 import kfile.delete
+import kfile.exists
 import kfile.getExtension
 import kfile.getFileName
 import kfile.getLastModified
@@ -44,8 +45,9 @@ import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalTime::class)
+@OptIn(ExperimentalTime::class, ExperimentalFoundationApi::class)
 class FileViewModel(
+    private val platformFile: PlatformFile,
     private val noteRepository: NoteRepository,
     private val dataStoreRepository: DataStoreRepository,
     connectivityObserver: ConnectivityObserver
@@ -69,12 +71,15 @@ class FileViewModel(
             false
         )
 
-    @OptIn(ExperimentalFoundationApi::class)
-    fun loadFile(file: PlatformFile) {
+    init {
         viewModelScope.launch(Dispatchers.IO) {
-            val title = file.getFileName()
-            val content = file.readText()
-            val noteType = if (file.getExtension().lowercase() in listOf(
+            if (!platformFile.exists()) {
+                _uiEventChannel.send(UiEvent.NavigateUp)
+                return@launch
+            }
+            val title = platformFile.getFileName()
+            val content = platformFile.readText()
+            val noteType = if (platformFile.getExtension().lowercase() in listOf(
                     "md",
                     "markdown",
                     "mkd",
@@ -87,7 +92,7 @@ class FileViewModel(
             ) NoteType.MARKDOWN
             else if (
                 title.contains("todo", ignoreCase = true)
-                && file.getExtension().lowercase() == "txt"
+                && platformFile.getExtension().lowercase() == "txt"
             ) NoteType.TODO
             else NoteType.PLAIN_TEXT
             titleState.setTextAndPlaceCursorAtEnd(title)
@@ -96,12 +101,9 @@ class FileViewModel(
             contentState.undoState.clearHistory()
             // 记录初始内容
             _initialContent.value = content
-            val updatedAt = file.getLastModified().toString()
+            val updatedAt = platformFile.getLastModified().toString()
             _fileEditingState.update {
-                it.copy(
-                    updatedAt = updatedAt,
-                    fileType = noteType
-                )
+                it.copy(updatedAt = updatedAt, fileType = noteType)
             }
         }
     }
@@ -151,18 +153,17 @@ class FileViewModel(
         }
     }
 
-    fun saveFile(file: PlatformFile) {
+    fun saveFile() {
         viewModelScope.launch(Dispatchers.IO) {
             val content = contentState.text.toString()
-            file.writeText(content)
+            platformFile.writeText(content)
             _initialContent.value = content
         }
     }
 
-    fun deleteFile(file: PlatformFile) {
+    fun deleteFile() {
         viewModelScope.launch(Dispatchers.IO) {
-            if (file.delete())
-                _uiEventChannel.send(UiEvent.NavigateUp)
+            if (platformFile.delete()) _uiEventChannel.send(UiEvent.NavigateUp)
         }
     }
 
