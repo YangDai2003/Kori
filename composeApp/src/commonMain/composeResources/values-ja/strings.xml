@@ -1,0 +1,232 @@
+<resources>
+    <string name="title">タイトル</string>
+    <string name="content">コンテンツ</string>
+    <string name="delete">削除</string>
+    <string name="back">戻る</string>
+    <string name="cancel">キャンセル</string>
+    <string name="confirm">確認</string>
+    <string name="open_navigation_drawer">ナビゲーションドロワーを開く</string>
+    <string name="exit">終了</string>
+    <string name="new">新規</string>
+    <string name="open">開く</string>
+    <string name="save">保存</string>
+    <string name="share">共有</string>
+
+    <string name="sort_by">並べ替え</string>
+    <string name="sort_name_a">ファイル名 (A - Z)</string>
+    <string name="sort_name_d">ファイル名 (Z - A)</string>
+    <string name="sort_created_a">作成日時 (古い - 新しい)</string>
+    <string name="sort_created_d">作成日時 (新しい - 古い)</string>
+    <string name="sort_modified_a">更新日時 (古い - 新しい)</string>
+    <string name="sort_modified_d">更新日時 (新しい - 古い)</string>
+
+    <plurals name="note_count">
+        <item quantity="one">%1$d 件のノート</item>
+        <item quantity="other">%1$d 件のノート</item>
+    </plurals>
+    <string name="pin">ピン留め</string>
+    <string name="starred">スター付き</string>
+    <string name="others">その他</string>
+    <string name="move">移動</string>
+    <string name="duplicate">複製</string>
+    <string name="all_notes">すべてのノート</string>
+    <string name="templates">テンプレート</string>
+    <string name="trash">ゴミ箱</string>
+    <string name="folders">フォルダー</string>
+    <string name="manage_folders">フォルダーの管理</string>
+    <string name="settings">設定</string>
+    <string name="restore_all">すべて復元</string>
+    <string name="delete_all">すべて削除</string>
+    <string name="modify">変更</string>
+    <string name="warning">警告</string>
+    <string name="deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue">フォルダーを削除すると、含まれるすべてのノートも削除され、元に戻すことはできません。続行しますか？</string>
+    <string name="restore">復元</string>
+    <string name="app_info">アプリについて</string>
+    <string name="version">バージョン</string>
+    <string name="guide">ユーザーガイド</string>
+    <string name="privacy_policy">プライバシーポリシー</string>
+    <string name="share_this_app">このアプリを共有</string>
+    <string name="shareContent">KoriはCompose Multiplatformで完全に構築されたモダンなMarkdownメモ帳アプリです。
+アプリはレスポンシブデザインを備えており、あらゆるサイズのデバイスに適しています。
+今すぐダウンロードしてお試しください：
+- [GitHub](https://github.com/YangDai2003/Kori/releases)
+    </string>
+    <string name="destination_folder">宛先フォルダー</string>
+    <string name="find">検索</string>
+    <string name="replace">置換</string>
+    <string name="overview">概要</string>
+    <string name="outline">概要</string>
+    <string name="color_picker">カラーピッカー</string>
+    <string name="name">名前</string>
+    <string name="search">検索</string>
+    <string name="search_history">最近の検索履歴</string>
+    <string name="add_sample_note">サンプルノートを追加</string>
+    <string name="todo">Todo</string>
+    <string name="done">完了</string>
+    <string name="total">合計</string>
+
+    <string name="style">スタイル</string>
+    <string name="dark_mode">テーマモード</string>
+    <string name="color_platte">カラーパレット</string>
+    <string name="create_password">6桁のパスコードを作成してください</string>
+    <string name="enter_again">パスコードをもう一度入力してください</string>
+    <string name="lock">ロック</string>
+    <string name="password">パスワード</string>
+    <string name="password_description">アプリを起動する際、ユーザーはロック解除のために6桁のパスワードを入力する必要があります。</string>
+    <string name="security">セキュリティ</string>
+    <string name="keep_screen_on">画面を常にオン</string>
+    <string name="report_a_bug_or_request_a_feature">バグを報告または機能をリクエスト</string>
+    <string name="system_default">システム既定</string>
+    <string name="light">ライトモード</string>
+    <string name="dark">ダークモード</string>
+    <string name="font_size">フォントサイズ</string>
+    <string name="font_size_description">テキストを大きくまたは小さくします。</string>
+    <string name="font">フォント</string>
+
+    <string name="type">種類</string>
+    <string name="plain_text">プレーンテキスト</string>
+    <string name="created">作成日</string>
+    <string name="updated">更新日</string>
+    <string name="char_count">文字数</string>
+    <string name="word_count">単語数</string>
+    <string name="word_count_without_punctuation">単語数（句読点を除く）</string>
+    <string name="line_count">行数</string>
+    <string name="paragraph_count">段落数</string>
+
+    <string name="editor">エディター</string>
+    <string name="default_view_for_note">ノートが開かれるデフォルトのビュー。</string>
+    <string name="default_view">デフォルトビュー</string>
+    <string name="editing_view">編集ビュー</string>
+    <string name="reading_view">閲覧ビュー</string>
+    <string name="line_numbers">行番号</string>
+    <string name="lint">Lint</string>
+    <string name="lint_description">有効にすると、MarkdownおよびTodo.txtの形式と構文が仕様に準拠しているかチェックされ、エラーは赤い波線でマークされます。</string>
+
+    <string name="date_format">日付形式</string>
+    <string name="time_format">時刻形式</string>
+    <string name="date_in_the_template_file_will_be_replaced_with_this_value">テンプレートファイル内の{{date}}はこの値に置換されます。\n</string>
+    <string name="you_can_also_use_date_yyyy_mm_dd_to_override_the_format_once">{{date:yyyy-MM-dd}}を使用して、一度だけ形式を上書きすることもできます。\n</string>
+    <string name="for_more_syntax_refer_to">詳細な構文については </string>
+    <string name="format_reference">形式リファレンス</string>
+    <string name="your_current_syntax_looks_like_this">\n現在の構文は次のようになります：%1$s</string>
+    <string name="time_in_the_template_file_will_be_replaced_with_this_value">テンプレートファイル内の{{time}}はこの値に置換されます。\n</string>
+    <string name="you_can_also_use_time_hh_mm_to_override_the_format_once">{{time:HH:mm}}を使用して、一度だけ形式を上書きすることもできます。\n</string>
+    <string name="template_folder_location">テンプレートフォルダーの場所</string>
+    <string name="files_in_this_folder_will_be_available_as_templates">このフォルダー内のファイルはテンプレートとして利用できます。</string>
+    <string name="saveAsTemplate">このノートをテンプレートとして保存</string>
+    <string name="explore_and_share_community_note_templates">コミュニティのノートテンプレートを探索して共有する</string>
+
+    <string name="card">カード</string>
+    <string name="ellipsis">省略記号</string>
+    <string name="clip">クリップ</string>
+    <string name="default_size">通常</string>
+    <string name="title_only">タイトルのみ</string>
+    <string name="compact">コンパクト</string>
+    <string name="text_overflow">テキストオーバーフロー</string>
+    <string name="card_size">カードサイズ</string>
+
+    <string name="cowriter">共同執筆者</string>
+    <string name="cowriter_description">サードパーティAIモデルへのアクセス</string>
+    <string name="model">モデル</string>
+    <string name="key">キー</string>
+    <string name="test">テスト</string>
+    <string name="set_as_default">デフォルトに設定</string>
+    <string name="describe_the_note_you_want_to_generate">生成したいノートを記述してください</string>
+    <string name="rewrite">書き直し</string>
+    <string name="summarize">要約</string>
+    <string name="proofread">校正</string>
+    <string name="shorten">短縮</string>
+    <string name="elaborate">詳細化</string>
+
+    <string name="share_as">共有形式</string>
+    <string name="file">ファイル</string>
+    <string name="text">テキスト</string>
+    <string name="export_as">エクスポート形式</string>
+    <string name="data">データ</string>
+    <string name="import_files">テキストファイルをインポート</string>
+    <string name="import_files_description">複数のテキストファイルを一括インポートします。ファイル名はタイトルとして使用され、ノートの種類は自動的に検出されます。</string>
+    <string name="backup_description">すべてのフォルダーとノートをJSONファイルとしてバックアップします。</string>
+    <string name="restore_description">選択したJSON形式のバックアップファイルからデータベースにデータを復元します。</string>
+    <string name="reset_database_description">データベース内のすべてのデータ（すべてのノートとフォルダーを含む）をクリアします。</string>
+    <string name="reset">リセット</string>
+    <string name="reset_database">データベースをリセット</string>
+    <string name="reset_database_warning">データベースをリセットすると、すべてのノートとフォルダーが完全に削除され、元に戻すことはできません。続行するかどうかを決定してください。</string>
+    <string name="backup">バックアップ</string>
+    <string name="restore_from_backup">復元</string>
+    <string name="migrate_from_open_note">OpenNote JSONファイルから移行</string>
+
+    <string name="toolbox">ツールボックス</string>
+    <string name="edit_local_file">ローカルファイルを編集</string>
+    <string name="fetch_file_from_url">URLからファイルを取得</string>
+    <string name="drag_drop">ドラッグ＆ドロップで開く</string>
+    <string name="language">言語</string>
+    <string name="language_description">アプリの言語を選択</string>
+    <string name="todo_completed_at">完了：%1$s</string>
+    <string name="todo_created_at">作成：%1$s</string>
+    <string name="project_tag">プロジェクトタグ</string>
+    <string name="context_tag">コンテキストタグ</string>
+    <string name="completion_mark">完了マーク</string>
+    <string name="priority_mark">優先度マーク</string>
+    <string name="total_tasks">総タスク数</string>
+    <string name="completed_tasks">完了タスク数</string>
+    <string name="pending_tasks">保留タスク数</string>
+    <string name="progress">進捗</string>
+
+    <string name="side_sheet">サイドシート</string>
+    <string name="control">Ctrl</string>
+    <string name="undo">元に戻す</string>
+    <string name="redo">やり直し</string>
+    <string name="bold">太字</string>
+    <string name="italic">斜体</string>
+    <string name="underline">下線</string>
+    <string name="strikethrough">取り消し線</string>
+    <string name="highlight">ハイライト</string>
+    <string name="horizontal_rule">水平線</string>
+    <string name="mermaid_diagram">Mermaid図</string>
+    <string name="heading">見出し</string>
+    <string name="link">リンク</string>
+    <string name="code">コード</string>
+    <string name="quote">引用</string>
+    <string name="math">数式</string>
+    <string name="table">表</string>
+    <string name="insert_table">表を挿入</string>
+    <string name="indent_increase">インデントを増やす</string>
+    <string name="indent_decrease">インデントを減らす</string>
+    <string name="numbered_list">番号付きリスト</string>
+    <string name="bulleted_list">箇条書きリスト</string>
+    <string name="task_list">タスクリスト</string>
+    <!-- Snackbar messages -->
+    <plurals name="snackbar_pinned">
+        <item quantity="one">%1$d 件のノートをピン留めしました</item>
+        <item quantity="other">%1$d 件のノートをピン留めしました</item>
+    </plurals>
+    <plurals name="snackbar_moved_to_trash">
+        <item quantity="one">%1$d 件のノートをゴミ箱に移動しました</item>
+        <item quantity="other">%1$d 件のノートをゴミ箱に移動しました</item>
+    </plurals>
+    <plurals name="snackbar_deleted_forever">
+        <item quantity="one">%1$d 件のノートを完全に削除しました</item>
+        <item quantity="other">%1$d 件のノートを完全に削除しました</item>
+    </plurals>
+    <plurals name="snackbar_restored">
+        <item quantity="one">%1$d 件のノートを復元しました</item>
+        <item quantity="other">%1$d 件のノートを復元しました</item>
+    </plurals>
+    <string name="snackbar_restored_all">ゴミ箱内のすべてのノートを復元しました</string>
+    <string name="snackbar_deleted_all">ゴミ箱内のすべてのノートを削除しました</string>
+
+    <string name="drawing">描画</string>
+    <string name="white">白</string>
+    <string name="black">黒</string>
+    <string name="none">なし</string>
+    <string name="square">四角</string>
+    <string name="rule">ルール</string>
+    <string name="dot">ドット</string>
+    <string name="brush_size">ブラシサイズ</string>
+    <string name="brush_color">ブラシカラー</string>
+    <string name="stroke_eraser">ストローク消しゴム</string>
+    <string name="area_eraser">領域消しゴム</string>
+    <string name="eraser_size">消しゴムサイズ</string>
+    <string name="erase_all_strokes">すべてのストロークを消去</string>
+    <string name="reset_canvas">キャンバスをリセット</string>
+</resources>

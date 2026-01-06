@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unlock_to_use">Desbloqueie para usar o Kori</string>
+    <string name="dynamic_only_android_12">Cor dinâmica</string>
+    <string name="screen_protection">Proteção de tela</string>
+    <string name="screen_protection_detail">Quando este recurso está ativado, o conteúdo do app não pode ser capturado ou gravado, e o conteúdo não será exibido na lista de apps em segundo plano.</string>
+    <string name="biometric">Desbloquear com biometria</string>
+    <string name="no_password_set">Por favor, defina a senha da tela de bloqueio do sistema primeiro</string>
+    <string name="view_all_notes">Ver todas as notas</string>
+    <string name="home_widget">Adicionar Widget à Tela Inicial</string>
+    <string name="new_plain_text">Novo Texto Simples</string>
+    <string name="new_markdown">Novo Markdown</string>
+    <string name="new_todo">Novo Todo.txt</string>
+    <string name="new_drawing">Novo Desenho</string>
+</resources>

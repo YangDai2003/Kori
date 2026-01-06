@@ -1,0 +1,232 @@
+<resources>
+    <string name="title">제목</string>
+    <string name="content">내용</string>
+    <string name="delete">삭제</string>
+    <string name="back">뒤로</string>
+    <string name="cancel">취소</string>
+    <string name="confirm">확인</string>
+    <string name="open_navigation_drawer">내비게이션 드로어 열기</string>
+    <string name="exit">종료</string>
+    <string name="new">새로 만들기</string>
+    <string name="open">열기</string>
+    <string name="save">저장</string>
+    <string name="share">공유</string>
+
+    <string name="sort_by">정렬 기준</string>
+    <string name="sort_name_a">파일 이름 (A - Z)</string>
+    <string name="sort_name_d">파일 이름 (Z - A)</string>
+    <string name="sort_created_a">생성 시간 (오래됨 - 최신)</string>
+    <string name="sort_created_d">생성 시간 (최신 - 오래됨)</string>
+    <string name="sort_modified_a">수정 시간 (오래됨 - 최신)</string>
+    <string name="sort_modified_d">수정 시간 (최신 - 오래됨)</string>
+
+    <plurals name="note_count">
+        <item quantity="one">%1$d개의 노트</item>
+        <item quantity="other">%1$d개의 노트</item>
+    </plurals>
+    <string name="pin">고정</string>
+    <string name="starred">별표</string>
+    <string name="others">기타</string>
+    <string name="move">이동</string>
+    <string name="duplicate">복제</string>
+    <string name="all_notes">모든 노트</string>
+    <string name="templates">템플릿</string>
+    <string name="trash">휴지통</string>
+    <string name="folders">폴더</string>
+    <string name="manage_folders">폴더 관리</string>
+    <string name="settings">설정</string>
+    <string name="restore_all">모두 복원</string>
+    <string name="delete_all">모두 삭제</string>
+    <string name="modify">수정</string>
+    <string name="warning">경고</string>
+    <string name="deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue">폴더를 삭제하면 포함된 모든 노트도 삭제되며 복원할 수 없습니다. 계속하시겠습니까?</string>
+    <string name="restore">복원</string>
+    <string name="app_info">앱 정보</string>
+    <string name="version">버전</string>
+    <string name="guide">사용자 가이드</string>
+    <string name="privacy_policy">개인정보 처리방침</string>
+    <string name="share_this_app">이 앱 공유하기</string>
+    <string name="shareContent">Kori는 Compose Multiplatform으로 완전히 구축된 현대적인 Markdown 메모 앱입니다.
+이 앱은 반응형 디자인을 자랑하여 모든 크기의 장치에 적합합니다.
+지금 다운로드하여 사용해보세요:
+- [GitHub](https://github.com/YangDai2003/Kori/releases)
+    </string>
+    <string name="destination_folder">대상 폴더</string>
+    <string name="find">찾기</string>
+    <string name="replace">바꾸기</string>
+    <string name="overview">개요</string>
+    <string name="outline">개요</string>
+    <string name="color_picker">색상 선택기</string>
+    <string name="name">이름</string>
+    <string name="search">검색</string>
+    <string name="search_history">최근 검색 기록</string>
+    <string name="add_sample_note">샘플 노트 추가</string>
+    <string name="todo">할 일</string>
+    <string name="done">완료</string>
+    <string name="total">총계</string>
+
+    <string name="style">스타일</string>
+    <string name="dark_mode">테마 모드</string>
+    <string name="color_platte">색상 팔레트</string>
+    <string name="create_password">6자리 비밀번호를 생성하세요</string>
+    <string name="enter_again">비밀번호를 다시 입력해주세요</string>
+    <string name="lock">잠금</string>
+    <string name="password">비밀번호</string>
+    <string name="password_description">앱을 처음 실행할 때 사용자는 잠금 해제를 위해 6자리 비밀번호를 입력해야 합니다.</string>
+    <string name="security">보안</string>
+    <string name="keep_screen_on">화면 켜짐 유지</string>
+    <string name="report_a_bug_or_request_a_feature">버그 신고 또는 기능 요청</string>
+    <string name="system_default">시스템 기본값</string>
+    <string name="light">라이트 모드</string>
+    <string name="dark">다크 모드</string>
+    <string name="font_size">글꼴 크기</string>
+    <string name="font_size_description">텍스트를 더 크게 또는 작게 만듭니다.</string>
+    <string name="font">글꼴</string>
+
+    <string name="type">유형</string>
+    <string name="plain_text">일반 텍스트</string>
+    <string name="created">생성됨</string>
+    <string name="updated">업데이트됨</string>
+    <string name="char_count">문자</string>
+    <string name="word_count">단어</string>
+    <string name="word_count_without_punctuation">단어 (구두점 제외)</string>
+    <string name="line_count">줄</string>
+    <string name="paragraph_count">단락</string>
+
+    <string name="editor">편집기</string>
+    <string name="default_view_for_note">노트가 열리는 기본 보기입니다.</string>
+    <string name="default_view">기본 보기</string>
+    <string name="editing_view">편집 보기</string>
+    <string name="reading_view">읽기 보기</string>
+    <string name="line_numbers">줄 번호</string>
+    <string name="lint">Lint</string>
+    <string name="lint_description">활성화된 경우, Markdown 및 Todo.txt 형식과 구문이 사양에 부합하는지 확인하고 오류는 빨간색 물결선으로 표시됩니다.</string>
+
+    <string name="date_format">날짜 형식</string>
+    <string name="time_format">시간 형식</string>
+    <string name="date_in_the_template_file_will_be_replaced_with_this_value">템플릿 파일의 {{date}}는 이 값으로 대체됩니다.\n</string>
+    <string name="you_can_also_use_date_yyyy_mm_dd_to_override_the_format_once">한 번만 형식을 재정의하려면 {{date:yyyy-MM-dd}}를 사용할 수도 있습니다.\n</string>
+    <string name="for_more_syntax_refer_to">자세한 구문은 </string>
+    <string name="format_reference">형식 참조</string>
+    <string name="your_current_syntax_looks_like_this">\n현재 구문은 다음과 같습니다: %1$s</string>
+    <string name="time_in_the_template_file_will_be_replaced_with_this_value">템플릿 파일의 {{time}}는 이 값으로 대체됩니다.\n</string>
+    <string name="you_can_also_use_time_hh_mm_to_override_the_format_once">한 번만 형식을 재정의하려면 {{time:HH:mm}}를 사용할 수도 있습니다.\n</string>
+    <string name="template_folder_location">템플릿 폴더 위치</string>
+    <string name="files_in_this_folder_will_be_available_as_templates">이 폴더의 파일은 템플릿으로 사용할 수 있습니다.</string>
+    <string name="saveAsTemplate">이 노트를 템플릿으로 저장</string>
+    <string name="explore_and_share_community_note_templates">커뮤니티 노트 템플릿 탐색 및 공유</string>
+
+    <string name="card">카드</string>
+    <string name="ellipsis">줄임표</string>
+    <string name="clip">클립</string>
+    <string name="default_size">보통</string>
+    <string name="title_only">제목만</string>
+    <string name="compact">소형</string>
+    <string name="text_overflow">텍스트 오버플로</string>
+    <string name="card_size">카드 크기</string>
+
+    <string name="cowriter">공동 집필자</string>
+    <string name="cowriter_description">서드파티 AI 모델 접근</string>
+    <string name="model">모델</string>
+    <string name="key">키</string>
+    <string name="test">테스트</string>
+    <string name="set_as_default">기본값으로 설정</string>
+    <string name="describe_the_note_you_want_to_generate">생성하고 싶은 노트를 설명해주세요</string>
+    <string name="rewrite">다시 쓰기</string>
+    <string name="summarize">요약</string>
+    <string name="proofread">교정</string>
+    <string name="shorten">축약</string>
+    <string name="elaborate">상세화</string>
+
+    <string name="share_as">공유 형식</string>
+    <string name="file">파일</string>
+    <string name="text">텍스트</string>
+    <string name="export_as">내보내기 형식</string>
+    <string name="data">데이터</string>
+    <string name="import_files">텍스트 파일 가져오기</string>
+    <string name="import_files_description">여러 텍스트 파일을 일괄 가져옵니다. 파일 이름은 제목으로 사용되며 노트 유형은 자동으로 감지됩니다.</string>
+    <string name="backup_description">모든 폴더와 노트를 JSON 파일로 백업합니다.</string>
+    <string name="restore_description">선택한 JSON 형식의 백업 파일에서 데이터베이스로 데이터를 복원합니다.</string>
+    <string name="reset_database_description">데이터베이스의 모든 데이터(모든 노트 및 폴더 포함)를 지웁니다.</string>
+    <string name="reset">재설정</string>
+    <string name="reset_database">데이터베이스 재설정</string>
+    <string name="reset_database_warning">데이터베이스를 재설정하면 모든 노트와 폴더가 완전히 삭제되어 복구할 수 없습니다. 계속 진행할지 결정해주세요.</string>
+    <string name="backup">백업</string>
+    <string name="restore_from_backup">복원</string>
+    <string name="migrate_from_open_note">OpenNote JSON 파일에서 마이그레이션</string>
+
+    <string name="toolbox">도구상자</string>
+    <string name="edit_local_file">로컬 파일 편집</string>
+    <string name="fetch_file_from_url">URL에서 파일 가져오기</string>
+    <string name="drag_drop">드래그 앤 드롭으로 열기</string>
+    <string name="language">언어</string>
+    <string name="language_description">앱 언어 선택</string>
+    <string name="todo_completed_at">완료됨: %1$s</string>
+    <string name="todo_created_at">생성됨: %1$s</string>
+    <string name="project_tag">프로젝트 태그</string>
+    <string name="context_tag">컨텍스트 태그</string>
+    <string name="completion_mark">완료 표시</string>
+    <string name="priority_mark">우선순위 표시</string>
+    <string name="total_tasks">총 작업 수</string>
+    <string name="completed_tasks">완료된 작업 수</string>
+    <string name="pending_tasks">대기 중인 작업 수</string>
+    <string name="progress">진행 상황</string>
+
+    <string name="side_sheet">사이드 시트</string>
+    <string name="control">Ctrl</string>
+    <string name="undo">실행 취소</string>
+    <string name="redo">다시 실행</string>
+    <string name="bold">굵게</string>
+    <string name="italic">기울임꼴</string>
+    <string name="underline">밑줄</string>
+    <string name="strikethrough">취소선</string>
+    <string name="highlight">강조</string>
+    <string name="horizontal_rule">가로줄</string>
+    <string name="mermaid_diagram">Mermaid 다이어그램</string>
+    <string name="heading">제목</string>
+    <string name="link">링크</string>
+    <string name="code">코드</string>
+    <string name="quote">인용</string>
+    <string name="math">수식</string>
+    <string name="table">표</string>
+    <string name="insert_table">표 삽입</string>
+    <string name="indent_increase">들여쓰기 증가</string>
+    <string name="indent_decrease">들여쓰기 감소</string>
+    <string name="numbered_list">번호 매기기 목록</string>
+    <string name="bulleted_list">글머리 기호 목록</string>
+    <string name="task_list">작업 목록</string>
+    <!-- Snackbar messages -->
+    <plurals name="snackbar_pinned">
+        <item quantity="one">%1$d개의 노트가 고정되었습니다</item>
+        <item quantity="other">%1$d개의 노트가 고정되었습니다</item>
+    </plurals>
+    <plurals name="snackbar_moved_to_trash">
+        <item quantity="one">%1$d개의 노트가 휴지통으로 이동되었습니다</item>
+        <item quantity="other">%1$d개의 노트가 휴지통으로 이동되었습니다</item>
+    </plurals>
+    <plurals name="snackbar_deleted_forever">
+        <item quantity="one">%1$d개의 노트가 영구적으로 삭제되었습니다</item>
+        <item quantity="other">%1$d개의 노트가 영구적으로 삭제되었습니다</item>
+    </plurals>
+    <plurals name="snackbar_restored">
+        <item quantity="one">%1$d개의 노트가 복원되었습니다</item>
+        <item quantity="other">%1$d개의 노트가 복원되었습니다</item>
+    </plurals>
+    <string name="snackbar_restored_all">휴지통의 모든 노트가 복원되었습니다</string>
+    <string name="snackbar_deleted_all">휴지통의 모든 노트가 삭제되었습니다</string>
+
+    <string name="drawing">그리기</string>
+    <string name="white">흰색</string>
+    <string name="black">검은색</string>
+    <string name="none">없음</string>
+    <string name="square">사각형</string>
+    <string name="rule">규칙</string>
+    <string name="dot">점</string>
+    <string name="brush_size">브러시 크기</string>
+    <string name="brush_color">브러시 색상</string>
+    <string name="stroke_eraser">선 지우개</string>
+    <string name="area_eraser">영역 지우개</string>
+    <string name="eraser_size">지우개 크기</string>
+    <string name="erase_all_strokes">모든 선 지우기</string>
+    <string name="reset_canvas">캔버스 재설정</string>
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unlock_to_use">Kori 사용을 위해 잠금 해제</string>
+    <string name="dynamic_only_android_12">다이나믹 색상</string>
+    <string name="screen_protection">화면 보호</string>
+    <string name="screen_protection_detail">이 기능을 켜면 앱 콘텐츠를 캡처하거나 녹화할 수 없으며 백그라운드 앱 목록에 콘텐츠가 표시되지 않습니다.</string>
+    <string name="biometric">생체 인식으로 잠금 해제</string>
+    <string name="no_password_set">먼저 시스템 잠금 화면 비밀번호를 설정해주세요</string>
+    <string name="view_all_notes">모든 노트 보기</string>
+    <string name="home_widget">홈 화면에 위젯 추가</string>
+    <string name="new_plain_text">새 일반 텍스트</string>
+    <string name="new_markdown">새 마크다운</string>
+    <string name="new_todo">새 Todo.txt</string>
+    <string name="new_drawing">새 그리기</string>
+</resources>

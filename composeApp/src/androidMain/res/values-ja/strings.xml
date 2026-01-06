@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unlock_to_use">Koriを使用するにはロックを解除してください</string>
+    <string name="dynamic_only_android_12">ダイナミックカラー</string>
+    <string name="screen_protection">画面保護</string>
+    <string name="screen_protection_detail">この機能を有効にすると、アプリのコンテンツをキャプチャまたは録画できなくなり、画面オフ時にアプリの内容がバックグラウンドアプリリストに表示されなくなります。</string>
+    <string name="biometric">生体認証でロック解除</string>
+    <string name="no_password_set">まずシステムのロック画面パスワードを設定してください</string>
+    <string name="view_all_notes">すべてのノートを表示</string>
+    <string name="home_widget">ホーム画面にウィジェットを追加</string>
+    <string name="new_plain_text">新しいプレーンテキスト</string>
+    <string name="new_markdown">新しいMarkdown</string>
+    <string name="new_todo">新しいTodo.txt</string>
+    <string name="new_drawing">新しい描画</string>
+</resources>
