@@ -1,0 +1,232 @@
+<resources>
+    <string name="title">Tiêu đề</string>
+    <string name="content">Nội dung</string>
+    <string name="delete">Xóa</string>
+    <string name="back">Quay lại</string>
+    <string name="cancel">Hủy</string>
+    <string name="confirm">Xác nhận</string>
+    <string name="open_navigation_drawer">Mở ngăn điều hướng</string>
+    <string name="exit">Thoát</string>
+    <string name="new">Mới</string>
+    <string name="open">Mở</string>
+    <string name="save">Lưu</string>
+    <string name="share">Chia sẻ</string>
+
+    <string name="sort_by">Sắp xếp theo</string>
+    <string name="sort_name_a">Tên tệp (A - Z)</string>
+    <string name="sort_name_d">Tên tệp (Z - A)</string>
+    <string name="sort_created_a">Thời gian tạo (cũ - mới)</string>
+    <string name="sort_created_d">Thời gian tạo (mới - cũ)</string>
+    <string name="sort_modified_a">Thời gian sửa đổi (cũ - mới)</string>
+    <string name="sort_modified_d">Thời gian sửa đổi (mới - cũ)</string>
+
+    <plurals name="note_count">
+        <item quantity="one">%1$d ghi chú</item>
+        <item quantity="other">%1$d ghi chú</item>
+    </plurals>
+    <string name="pin">Ghim</string>
+    <string name="starred">Được đánh dấu sao</string>
+    <string name="others">Khác</string>
+    <string name="move">Di chuyển</string>
+    <string name="duplicate">Nhân bản</string>
+    <string name="all_notes">Tất cả ghi chú</string>
+    <string name="templates">Mẫu</string>
+    <string name="trash">Thùng rác</string>
+    <string name="folders">Thư mục</string>
+    <string name="manage_folders">Quản lý thư mục</string>
+    <string name="settings">Cài đặt</string>
+    <string name="restore_all">Khôi phục tất cả</string>
+    <string name="delete_all">Xóa tất cả</string>
+    <string name="modify">Sửa đổi</string>
+    <string name="warning">Cảnh báo</string>
+    <string name="deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue">Xóa một thư mục cũng sẽ xóa tất cả ghi chú trong đó và chúng không thể được khôi phục. Bạn có muốn tiếp tục không?</string>
+    <string name="restore">Khôi phục</string>
+    <string name="app_info">Giới thiệu ứng dụng</string>
+    <string name="version">Phiên bản</string>
+    <string name="guide">Hướng dẫn sử dụng</string>
+    <string name="privacy_policy">Chính sách bảo mật</string>
+    <string name="share_this_app">Chia sẻ ứng dụng này</string>
+    <string name="shareContent">Kori là một ứng dụng ghi chú Markdown hiện đại được xây dựng hoàn toàn bằng Compose Multiplatform.
+Ứng dụng có thiết kế phản hồi, giúp nó phù hợp với các thiết bị có mọi kích thước.
+Tải về và dùng thử ngay:
+- [GitHub](https://github.com/YangDai2003/Kori/releases)
+    </string>
+    <string name="destination_folder">Thư mục đích</string>
+    <string name="find">Tìm</string>
+    <string name="replace">Thay thế</string>
+    <string name="overview">Tổng quan</string>
+    <string name="outline">Đề cương</string>
+    <string name="color_picker">Bộ chọn màu</string>
+    <string name="name">Tên</string>
+    <string name="search">Tìm kiếm</string>
+    <string name="search_history">Lịch sử tìm kiếm gần đây</string>
+    <string name="add_sample_note">Thêm ghi chú mẫu</string>
+    <string name="todo">Việc cần làm</string>
+    <string name="done">Hoàn thành</string>
+    <string name="total">Tổng cộng</string>
+
+    <string name="style">Kiểu</string>
+    <string name="dark_mode">Chế độ chủ đề</string>
+    <string name="color_platte">Bảng màu</string>
+    <string name="create_password">Tạo mã sáu chữ số</string>
+    <string name="enter_again">Vui lòng nhập lại mã của bạn</string>
+    <string name="lock">Khóa</string>
+    <string name="password">Mật khẩu</string>
+    <string name="password_description">Khi ứng dụng khởi động, người dùng cần nhập mật khẩu sáu chữ số để mở khóa.</string>
+    <string name="security">Bảo mật</string>
+    <string name="keep_screen_on">Giữ màn hình bật</string>
+    <string name="report_a_bug_or_request_a_feature">Báo lỗi hoặc yêu cầu tính năng</string>
+    <string name="system_default">Mặc định hệ thống</string>
+    <string name="light">Chế độ sáng</string>
+    <string name="dark">Chế độ tối</string>
+    <string name="font_size">Cỡ chữ</string>
+    <string name="font_size_description">Làm cho văn bản lớn hơn hoặc nhỏ hơn.</string>
+    <string name="font">Phông chữ</string>
+
+    <string name="type">Loại</string>
+    <string name="plain_text">Văn bản thuần</string>
+    <string name="created">Đã tạo</string>
+    <string name="updated">Đã cập nhật</string>
+    <string name="char_count">Ký tự</string>
+    <string name="word_count">Từ</string>
+    <string name="word_count_without_punctuation">Từ (không bao gồm dấu câu)</string>
+    <string name="line_count">Dòng</string>
+    <string name="paragraph_count">Đoạn văn</string>
+
+    <string name="editor">Trình soạn thảo</string>
+    <string name="default_view_for_note">Chế độ xem mặc định mà ghi chú được mở trong.</string>
+    <string name="default_view">Chế độ xem mặc định</string>
+    <string name="editing_view">Chế độ xem khi chỉnh sửa</string>
+    <string name="reading_view">Chế độ xem khi đọc</string>
+    <string name="line_numbers">Số dòng</string>
+    <string name="lint">Kiểm tra</string>
+    <string name="lint_description">Khi được bật, định dạng và cú pháp Markdown và Todo.txt sẽ được kiểm tra để xem có đáp ứng đặc tả hay không, và các lỗi sẽ được đánh dấu bằng các đường gạch sóng đỏ.</string>
+
+    <string name="date_format">Định dạng ngày</string>
+    <string name="time_format">Định dạng giờ</string>
+    <string name="date_in_the_template_file_will_be_replaced_with_this_value">{{date}} trong tệp mẫu sẽ được thay thế bằng giá trị này.\n</string>
+    <string name="you_can_also_use_date_yyyy_mm_dd_to_override_the_format_once">Bạn cũng có thể sử dụng {{date:yyyy-MM-dd}} để ghi đè định dạng một lần.\n</string>
+    <string name="for_more_syntax_refer_to">Để biết thêm cú pháp, hãy tham khảo </string>
+    <string name="format_reference">tài liệu tham khảo định dạng</string>
+    <string name="your_current_syntax_looks_like_this">\nCú pháp hiện tại của bạn trông như thế này: %1$s</string>
+    <string name="time_in_the_template_file_will_be_replaced_with_this_value">{{time}} trong tệp mẫu sẽ được thay thế bằng giá trị này.\n</string>
+    <string name="you_can_also_use_time_hh_mm_to_override_the_format_once">Bạn cũng có thể sử dụng {{time:HH:mm}} để ghi đè định dạng một lần.\n</string>
+    <string name="template_folder_location">Vị trí thư mục mẫu</string>
+    <string name="files_in_this_folder_will_be_available_as_templates">Các tệp trong thư mục này sẽ có sẵn dưới dạng mẫu.</string>
+    <string name="saveAsTemplate">Lưu ghi chú này dưới dạng mẫu</string>
+    <string name="explore_and_share_community_note_templates">Khám phá và Chia sẻ các Mẫu Ghi chú với Cộng đồng</string>
+
+    <string name="card">Thẻ</string>
+    <string name="ellipsis">Dấu chấm lửng</string>
+    <string name="clip">Kẹp</string>
+    <string name="default_size">Bình thường</string>
+    <string name="title_only">Chỉ tiêu đề</string>
+    <string name="compact">Gọn</string>
+    <string name="text_overflow">Tràn văn bản</string>
+    <string name="card_size">Kích thước thẻ</string>
+
+    <string name="cowriter">Đồng tác giả</string>
+    <string name="cowriter_description">Truy cập vào các mô hình AI của bên thứ ba</string>
+    <string name="model">Mô hình</string>
+    <string name="key">Khóa</string>
+    <string name="test">Kiểm tra</string>
+    <string name="set_as_default">Đặt làm mặc định</string>
+    <string name="describe_the_note_you_want_to_generate">Mô tả ghi chú bạn muốn tạo</string>
+    <string name="rewrite">Viết lại</string>
+    <string name="summarize">Tóm tắt</string>
+    <string name="proofread">Hiệu đính</string>
+    <string name="shorten">Rút gọn</string>
+    <string name="elaborate">Diễn giải</string>
+
+    <string name="share_as">Chia sẻ dưới dạng</string>
+    <string name="file">Tệp</string>
+    <string name="text">Văn bản</string>
+    <string name="export_as">Xuất dưới dạng</string>
+    <string name="data">Dữ liệu</string>
+    <string name="import_files">Nhập tệp văn bản</string>
+    <string name="import_files_description">Nhập hàng loạt tệp văn bản. Tên tệp sẽ được sử dụng làm tiêu đề và loại ghi chú sẽ được tự động phát hiện.</string>
+    <string name="backup_description">Sao lưu tất cả thư mục và ghi chú dưới dạng tệp JSON.</string>
+    <string name="restore_description">Khôi phục dữ liệu trong tệp sao lưu loại JSON đã chọn vào cơ sở dữ liệu.</string>
+    <string name="reset_database_description">Xóa tất cả dữ liệu trong cơ sở dữ liệu (bao gồm tất cả ghi chú và thư mục).</string>
+    <string name="reset">Đặt lại</string>
+    <string name="reset_database">Đặt lại cơ sở dữ liệu</string>
+    <string name="reset_database_warning">Đặt lại cơ sở dữ liệu sẽ khiến tất cả ghi chú và thư mục bị xóa hoàn toàn và không thể khôi phục. Vui lòng quyết định xem có tiếp tục không?</string>
+    <string name="backup">Sao lưu</string>
+    <string name="restore_from_backup">Khôi phục</string>
+    <string name="migrate_from_open_note">Chuyển đổi từ Tệp JSON OpenNote</string>
+
+    <string name="toolbox">Hộp công cụ</string>
+    <string name="edit_local_file">Chỉnh sửa tệp cục bộ</string>
+    <string name="fetch_file_from_url">Lấy tệp từ URL</string>
+    <string name="drag_drop">Kéo &amp; thả để mở</string>
+    <string name="language">Ngôn ngữ</string>
+    <string name="language_description">Chọn ngôn ngữ ứng dụng</string>
+    <string name="todo_completed_at">Đã hoàn thành: %1$s</string>
+    <string name="todo_created_at">Đã tạo: %1$s</string>
+    <string name="project_tag">Thẻ Dự án</string>
+    <string name="context_tag">Thẻ Ngữ cảnh</string>
+    <string name="completion_mark">Dấu Hoàn thành</string>
+    <string name="priority_mark">Dấu Ưu tiên</string>
+    <string name="total_tasks">Tổng số Nhiệm vụ</string>
+    <string name="completed_tasks">Nhiệm vụ Đã hoàn thành</string>
+    <string name="pending_tasks">Nhiệm vụ Đang chờ</string>
+    <string name="progress">Tiến độ</string>
+
+    <string name="side_sheet">Bảng phụ</string>
+    <string name="control">Ctrl</string>
+    <string name="undo">Hoàn tác</string>
+    <string name="redo">Làm lại</string>
+    <string name="bold">Đậm</string>
+    <string name="italic">Nghiêng</string>
+    <string name="underline">Gạch chân</string>
+    <string name="strikethrough">Gạch ngang</string>
+    <string name="highlight">Làm nổi bật</string>
+    <string name="horizontal_rule">Quy tắc ngang</string>
+    <string name="mermaid_diagram">Biểu đồ Mermaid</string>
+    <string name="heading">Tiêu đề</string>
+    <string name="link">Liên kết</string>
+    <string name="code">Mã</string>
+    <string name="quote">Trích dẫn</string>
+    <string name="math">Toán học</string>
+    <string name="table">Bảng</string>
+    <string name="insert_table">Chèn Bảng</string>
+    <string name="indent_increase">Tăng Thụt lề</string>
+    <string name="indent_decrease">Giảm Thụt lề</string>
+    <string name="numbered_list">Danh sách đánh số</string>
+    <string name="bulleted_list">Danh sách đánh dấu</string>
+    <string name="task_list">Danh sách nhiệm vụ</string>
+    <!-- Snackbar messages -->
+    <plurals name="snackbar_pinned">
+        <item quantity="one">%1$d ghi chú đã ghim</item>
+        <item quantity="other">%1$d ghi chú đã ghim</item>
+    </plurals>
+    <plurals name="snackbar_moved_to_trash">
+        <item quantity="one">%1$d ghi chú đã chuyển vào thùng rác</item>
+        <item quantity="other">%1$d ghi chú đã chuyển vào thùng rác</item>
+    </plurals>
+    <plurals name="snackbar_deleted_forever">
+        <item quantity="one">%1$d ghi chú đã xóa vĩnh viễn</item>
+        <item quantity="other">%1$d ghi chú đã xóa vĩnh viễn</item>
+    </plurals>
+    <plurals name="snackbar_restored">
+        <item quantity="one">%1$d ghi chú đã khôi phục</item>
+        <item quantity="other">%1$d ghi chú đã khôi phục</item>
+    </plurals>
+    <string name="snackbar_restored_all">Tất cả ghi chú trong thùng rác đã được khôi phục</string>
+    <string name="snackbar_deleted_all">Tất cả ghi chú trong thùng rác đã bị xóa</string>
+
+    <string name="drawing">Vẽ</string>
+    <string name="white">Trắng</string>
+    <string name="black">Đen</string>
+    <string name="none">Không có</string>
+    <string name="square">Vuông</string>
+    <string name="rule">Quy tắc</string>
+    <string name="dot">Chấm</string>
+    <string name="brush_size">Kích thước cọ</string>
+    <string name="brush_color">Màu cọ</string>
+    <string name="stroke_eraser">Tẩy nét</string>
+    <string name="area_eraser">Tẩy vùng</string>
+    <string name="eraser_size">Kích thước tẩy</string>
+    <string name="erase_all_strokes">Xóa tất cả nét vẽ</string>
+    <string name="reset_canvas">Đặt lại bảng vẽ</string>
+</resources>

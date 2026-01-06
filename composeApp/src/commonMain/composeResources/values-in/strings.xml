@@ -1,0 +1,232 @@
+<resources>
+    <string name="title">Judul</string>
+    <string name="content">Konten</string>
+    <string name="delete">Hapus</string>
+    <string name="back">Kembali</string>
+    <string name="cancel">Batal</string>
+    <string name="confirm">Konfirmasi</string>
+    <string name="open_navigation_drawer">Buka laci navigasi</string>
+    <string name="exit">Keluar</string>
+    <string name="new">Baru</string>
+    <string name="open">Buka</string>
+    <string name="save">Simpan</string>
+    <string name="share">Bagikan</string>
+
+    <string name="sort_by">Urutkan berdasarkan</string>
+    <string name="sort_name_a">Nama file (A - Z)</string>
+    <string name="sort_name_d">Nama file (Z - A)</string>
+    <string name="sort_created_a">Waktu dibuat (lama - baru)</string>
+    <string name="sort_created_d">Waktu dibuat (baru - lama)</string>
+    <string name="sort_modified_a">Waktu diubah (lama - baru)</string>
+    <string name="sort_modified_d">Waktu diubah (baru - lama)</string>
+
+    <plurals name="note_count">
+        <item quantity="one">%1$d catatan</item>
+        <item quantity="other">%1$d catatan</item>
+    </plurals>
+    <string name="pin">Sematkan</string>
+    <string name="starred">Diberi bintang</string>
+    <string name="others">Lainnya</string>
+    <string name="move">Pindahkan</string>
+    <string name="duplicate">Duplikat</string>
+    <string name="all_notes">Semua catatan</string>
+    <string name="templates">Templat</string>
+    <string name="trash">Sampah</string>
+    <string name="folders">Folder</string>
+    <string name="manage_folders">Kelola folder</string>
+    <string name="settings">Pengaturan</string>
+    <string name="restore_all">Pulihkan semua</string>
+    <string name="delete_all">Hapus semua</string>
+    <string name="modify">Ubah</string>
+    <string name="warning">Peringatan</string>
+    <string name="deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue">Menghapus folder juga akan menghapus semua catatan di dalamnya dan tidak dapat dipulihkan. Apakah Anda ingin melanjutkan?</string>
+    <string name="restore">Pulihkan</string>
+    <string name="app_info">Tentang aplikasi</string>
+    <string name="version">Versi</string>
+    <string name="guide">Panduan pengguna</string>
+    <string name="privacy_policy">Kebijakan privasi</string>
+    <string name="share_this_app">Bagikan aplikasi ini</string>
+    <string name="shareContent">Kori adalah aplikasi notepad Markdown modern yang dibangun sepenuhnya dengan Compose Multiplatform.
+Aplikasi ini menawarkan desain responsif, membuatnya cocok untuk perangkat berbagai ukuran.
+Unduh dan coba sekarang:
+- [GitHub](https://github.com/YangDai2003/Kori/releases)
+    </string>
+    <string name="destination_folder">Folder tujuan</string>
+    <string name="find">Cari</string>
+    <string name="replace">Ganti</string>
+    <string name="overview">Ringkasan</string>
+    <string name="outline">Kerangka</string>
+    <string name="color_picker">Pemilih warna</string>
+    <string name="name">Nama</string>
+    <string name="search">Cari</string>
+    <string name="search_history">Riwayat pencarian terbaru</string>
+    <string name="add_sample_note">Tambahkan contoh catatan</string>
+    <string name="todo">Yang harus dilakukan</string>
+    <string name="done">Selesai</string>
+    <string name="total">Total</string>
+
+    <string name="style">Gaya</string>
+    <string name="dark_mode">Mode tema</string>
+    <string name="color_platte">Palet warna</string>
+    <string name="create_password">Buat kode sandi enam digit</string>
+    <string name="enter_again">Silakan masukkan kode sandi Anda lagi</string>
+    <string name="lock">Kunci</string>
+    <string name="password">Kata sandi</string>
+    <string name="password_description">Ketika aplikasi dijalankan, pengguna perlu memasukkan kata sandi enam digit untuk membukanya.</string>
+    <string name="security">Keamanan</string>
+    <string name="keep_screen_on">Biarkan layar tetap menyala</string>
+    <string name="report_a_bug_or_request_a_feature">Laporkan bug atau minta fitur</string>
+    <string name="system_default">Bawaan sistem</string>
+    <string name="light">Mode terang</string>
+    <string name="dark">Mode gelap</string>
+    <string name="font_size">Ukuran font</string>
+    <string name="font_size_description">Buat teks lebih besar atau lebih kecil.</string>
+    <string name="font">Font</string>
+
+    <string name="type">Jenis</string>
+    <string name="plain_text">Teks biasa</string>
+    <string name="created">Dibuat</string>
+    <string name="updated">Diperbarui</string>
+    <string name="char_count">Karakter</string>
+    <string name="word_count">Kata</string>
+    <string name="word_count_without_punctuation">Kata (tanpa tanda baca)</string>
+    <string name="line_count">Baris</string>
+    <string name="paragraph_count">Paragraf</string>
+
+    <string name="editor">Editor</string>
+    <string name="default_view_for_note">Tampilan bawaan tempat catatan dibuka.</string>
+    <string name="default_view">Tampilan bawaan</string>
+    <string name="editing_view">Tampilan pengeditan</string>
+    <string name="reading_view">Tampilan pembacaan</string>
+    <string name="line_numbers">Nomor baris</string>
+    <string name="lint">Lint</string>
+    <string name="lint_description">Saat diaktifkan, format dan sintaks Markdown serta Todo.txt akan diperiksa untuk memastikan sesuai spesifikasi, dan kesalahan akan ditandai dengan garis bergelombang merah.</string>
+
+    <string name="date_format">Format tanggal</string>
+    <string name="time_format">Format waktu</string>
+    <string name="date_in_the_template_file_will_be_replaced_with_this_value">{{date}} dalam file templat akan diganti dengan nilai ini.\n</string>
+    <string name="you_can_also_use_date_yyyy_mm_dd_to_override_the_format_once">Anda juga dapat menggunakan {{date:yyyy-MM-dd}} untuk mengganti format sekali saja.\n</string>
+    <string name="for_more_syntax_refer_to">Untuk sintaks lebih lanjut, lihat </string>
+    <string name="format_reference">referensi format</string>
+    <string name="your_current_syntax_looks_like_this">\nSintaks Anda saat ini terlihat seperti ini: %1$s</string>
+    <string name="time_in_the_template_file_will_be_replaced_with_this_value">{{time}} dalam file templat akan diganti dengan nilai ini.\n</string>
+    <string name="you_can_also_use_time_hh_mm_to_override_the_format_once">Anda juga dapat menggunakan {{time:HH:mm}} untuk mengganti format sekali saja.\n</string>
+    <string name="template_folder_location">Lokasi folder templat</string>
+    <string name="files_in_this_folder_will_be_available_as_templates">File dalam folder ini akan tersedia sebagai templat.</string>
+    <string name="saveAsTemplate">Simpan catatan ini sebagai templat</string>
+    <string name="explore_and_share_community_note_templates">Jelajahi dan Bagikan Templat Catatan dengan Komunitas</string>
+
+    <string name="card">Kartu</string>
+    <string name="ellipsis">Elipsis</string>
+    <string name="clip">Klip</string>
+    <string name="default_size">Normal</string>
+    <string name="title_only">Judul saja</string>
+    <string name="compact">Ringkas</string>
+    <string name="text_overflow">Teks meluap</string>
+    <string name="card_size">Ukuran kartu</string>
+
+    <string name="cowriter">Co-writer</string>
+    <string name="cowriter_description">Akses ke model AI pihak ketiga</string>
+    <string name="model">Model</string>
+    <string name="key">Kunci</string>
+    <string name="test">Uji</string>
+    <string name="set_as_default">Atur sebagai bawaan</string>
+    <string name="describe_the_note_you_want_to_generate">Jelaskan catatan yang ingin Anda buat</string>
+    <string name="rewrite">Tulis ulang</string>
+    <string name="summarize">Rangkum</string>
+    <string name="proofread">Periksa</string>
+    <string name="shorten">Persingkat</string>
+    <string name="elaborate">Perjelas</string>
+
+    <string name="share_as">Bagikan sebagai</string>
+    <string name="file">File</string>
+    <string name="text">Teks</string>
+    <string name="export_as">Ekspor sebagai</string>
+    <string name="data">Data</string>
+    <string name="import_files">Impor file teks</string>
+    <string name="import_files_description">Impor file teks secara batch. Nama file akan digunakan sebagai judul, dan jenis catatan akan terdeteksi otomatis.</string>
+    <string name="backup_description">Cadangkan semua folder dan catatan sebagai file JSON.</string>
+    <string name="restore_description">Pulihkan data dalam file cadangan jenis JSON yang dipilih ke database.</string>
+    <string name="reset_database_description">Kosongkan semua data dalam database (termasuk semua catatan dan folder).</string>
+    <string name="reset">Atur ulang</string>
+    <string name="reset_database">Atur ulang database</string>
+    <string name="reset_database_warning">Mengatur ulang database akan menyebabkan semua catatan dan folder sepenuhnya terhapus dan tidak dapat dipulihkan. Harap putuskan apakah akan melanjutkan?</string>
+    <string name="backup">Cadangan</string>
+    <string name="restore_from_backup">Pulihkan</string>
+    <string name="migrate_from_open_note">Migrasi dari File JSON OpenNote</string>
+
+    <string name="toolbox">Kotak alat</string>
+    <string name="edit_local_file">Edit file lokal</string>
+    <string name="fetch_file_from_url">Ambil file dari URL</string>
+    <string name="drag_drop">Seret &amp; lepas untuk membuka</string>
+    <string name="language">Bahasa</string>
+    <string name="language_description">Pilih bahasa aplikasi</string>
+    <string name="todo_completed_at">Selesai: %1$s</string>
+    <string name="todo_created_at">Dibuat: %1$s</string>
+    <string name="project_tag">Tag Proyek</string>
+    <string name="context_tag">Tag Konteks</string>
+    <string name="completion_mark">Tanda Penyelesaian</string>
+    <string name="priority_mark">Tanda Prioritas</string>
+    <string name="total_tasks">Jumlah Tugas</string>
+    <string name="completed_tasks">Tugas Selesai</string>
+    <string name="pending_tasks">Tugas Tertunda</string>
+    <string name="progress">Kemajuan</string>
+
+    <string name="side_sheet">Lembar sisi</string>
+    <string name="control">Ctrl</string>
+    <string name="undo">Urungkan</string>
+    <string name="redo">Ulangi</string>
+    <string name="bold">Tebal</string>
+    <string name="italic">Miring</string>
+    <string name="underline">Garis bawah</string>
+    <string name="strikethrough">Coret</string>
+    <string name="highlight">Sorot</string>
+    <string name="horizontal_rule">Garis horizontal</string>
+    <string name="mermaid_diagram">Diagram Mermaid</string>
+    <string name="heading">Judul</string>
+    <string name="link">Tautan</string>
+    <string name="code">Kode</string>
+    <string name="quote">Kutipan</string>
+    <string name="math">Matematika</string>
+    <string name="table">Tabel</string>
+    <string name="insert_table">Sisipkan Tabel</string>
+    <string name="indent_increase">Tambah Indentasi</string>
+    <string name="indent_decrease">Kurangi Indentasi</string>
+    <string name="numbered_list">Daftar Bernomor</string>
+    <string name="bulleted_list">Daftar Berpoin</string>
+    <string name="task_list">Daftar Tugas</string>
+    <!-- Snackbar messages -->
+    <plurals name="snackbar_pinned">
+        <item quantity="one">%1$d catatan disematkan</item>
+        <item quantity="other">%1$d catatan disematkan</item>
+    </plurals>
+    <plurals name="snackbar_moved_to_trash">
+        <item quantity="one">%1$d catatan dipindahkan ke sampah</item>
+        <item quantity="other">%1$d catatan dipindahkan ke sampah</item>
+    </plurals>
+    <plurals name="snackbar_deleted_forever">
+        <item quantity="one">%1$d catatan dihapus selamanya</item>
+        <item quantity="other">%1$d catatan dihapus selamanya</item>
+    </plurals>
+    <plurals name="snackbar_restored">
+        <item quantity="one">%1$d catatan dipulihkan</item>
+        <item quantity="other">%1$d catatan dipulihkan</item>
+    </plurals>
+    <string name="snackbar_restored_all">Semua catatan dalam sampah dipulihkan</string>
+    <string name="snackbar_deleted_all">Semua catatan dalam sampah dihapus</string>
+
+    <string name="drawing">Menggambar</string>
+    <string name="white">Putih</string>
+    <string name="black">Hitam</string>
+    <string name="none">Tidak ada</string>
+    <string name="square">Persegi</string>
+    <string name="rule">Aturan</string>
+    <string name="dot">Titik</string>
+    <string name="brush_size">Ukuran kuas</string>
+    <string name="brush_color">Warna kuas</string>
+    <string name="stroke_eraser">Penghapus goresan</string>
+    <string name="area_eraser">Penghapus area</string>
+    <string name="eraser_size">Ukuran penghapus</string>
+    <string name="erase_all_strokes">Hapus semua goresan</string>
+    <string name="reset_canvas">Atur ulang kanvas</string>
+</resources>

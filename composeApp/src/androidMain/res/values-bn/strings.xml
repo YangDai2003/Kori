@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unlock_to_use">Kori ব্যবহার করতে আনলক করুন</string>
+    <string name="dynamic_only_android_12">গতিশীল রঙ</string>
+    <string name="screen_protection">স্ক্রিন সুরক্ষা</string>
+    <string name="screen_protection_detail">এই বৈশিষ্ট্যটি চালু থাকলে, অ্যাপের বিষয়বস্তু ক্যাপচার বা রেকর্ড করা যাবে না এবং ব্যাকগ্রাউন্ড অ্যাপ তালিকায় বিষয়বস্তু প্রদর্শিত হবে না।</string>
+    <string name="biometric">বায়োমেট্রিক্স দিয়ে আনলক করুন</string>
+    <string name="no_password_set">দয়া করে প্রথমে সিস্টেম লক স্ক্রিন পাসওয়ার্ড সেট করুন</string>
+    <string name="view_all_notes">সমস্ত নোট দেখুন</string>
+    <string name="home_widget">হোম স্ক্রিনে উইজেট যোগ করুন</string>
+    <string name="new_plain_text">নতুন সাদামাটা টেক্সট</string>
+    <string name="new_markdown">নতুন মার্কডাউন</string>
+    <string name="new_todo">নতুন টুডু.টেক্সট</string>
+    <string name="new_drawing">নতুন অঙ্কন</string>
+</resources>

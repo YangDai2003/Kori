@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unlock_to_use">Mở khóa để sử dụng Kori</string>
+    <string name="dynamic_only_android_12">Màu động</string>
+    <string name="screen_protection">Bảo vệ màn hình</string>
+    <string name="screen_protection_detail">Khi tính năng này được bật, nội dung ứng dụng không thể được chụp hoặc ghi lại, và nội dung sẽ không hiển thị trong danh sách ứng dụng nền.</string>
+    <string name="biometric">Mở khóa bằng sinh trắc học</string>
+    <string name="no_password_set">Vui lòng đặt mật khẩu màn hình khóa hệ thống trước</string>
+    <string name="view_all_notes">Xem tất cả ghi chú</string>
+    <string name="home_widget">Thêm Tiện ích vào Màn hình Chính</string>
+    <string name="new_plain_text">Văn bản Thuần mới</string>
+    <string name="new_markdown">Markdown mới</string>
+    <string name="new_todo">Todo.txt mới</string>
+    <string name="new_drawing">Bản vẽ mới</string>
+</resources>
