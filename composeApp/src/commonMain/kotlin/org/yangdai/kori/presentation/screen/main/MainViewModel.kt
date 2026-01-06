@@ -460,18 +460,15 @@ class MainViewModel(
             delay(300L)
             runCatching {
                 files.forEachIndexed { index, it ->
-                    val title = it.fileName
-                    val content = it.readText()
                     val modified = it.lastModified().toString()
-                    val noteType = it.suitableNoteType
                     val noteEntity = NoteEntity(
                         id = Uuid.random().toString(),
-                        title = title,
-                        content = content,
+                        title = it.fileName.substringBeforeLast("."),
+                        content = it.readText(),
                         createdAt = modified,
                         updatedAt = modified,
                         folderId = folderId,
-                        noteType = noteType
+                        noteType = it.suitableNoteType
                     )
                     noteRepository.insertNote(noteEntity)
                     _dataActionState.update { it.copy(progress = (index + 1) / files.size.toFloat()) }
