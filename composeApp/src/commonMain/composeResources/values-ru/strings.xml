@@ -1,0 +1,242 @@
+<resources>
+    <string name="title">Заголовок</string>
+    <string name="content">Содержание</string>
+    <string name="delete">Удалить</string>
+    <string name="back">Назад</string>
+    <string name="cancel">Отмена</string>
+    <string name="confirm">Подтвердить</string>
+    <string name="open_navigation_drawer">Открыть меню навигации</string>
+    <string name="exit">Выход</string>
+    <string name="new">Новый</string>
+    <string name="open">Открыть</string>
+    <string name="save">Сохранить</string>
+    <string name="share">Поделиться</string>
+
+    <string name="sort_by">Сортировать по</string>
+    <string name="sort_name_a">Имя файла (А - Я)</string>
+    <string name="sort_name_d">Имя файла (Я - А)</string>
+    <string name="sort_created_a">Время создания (старые - новые)</string>
+    <string name="sort_created_d">Время создания (новые - старые)</string>
+    <string name="sort_modified_a">Время изменения (старые - новые)</string>
+    <string name="sort_modified_d">Время изменения (новые - старые)</string>
+
+    <plurals name="note_count">
+        <item quantity="one">%1$d заметка</item>
+        <item quantity="few">%1$d заметки</item>
+        <item quantity="many">%1$d заметок</item>
+        <item quantity="other">%1$d заметок</item>
+    </plurals>
+    <string name="pin">Закрепить</string>
+    <string name="starred">Со звездочкой</string>
+    <string name="others">Другие</string>
+    <string name="move">Переместить</string>
+    <string name="duplicate">Дублировать</string>
+    <string name="all_notes">Все заметки</string>
+    <string name="templates">Шаблоны</string>
+    <string name="trash">Корзина</string>
+    <string name="folders">Папки</string>
+    <string name="manage_folders">Управление папками</string>
+    <string name="settings">Настройки</string>
+    <string name="restore_all">Восстановить все</string>
+    <string name="delete_all">Удалить все</string>
+    <string name="modify">Изменить</string>
+    <string name="warning">Предупреждение</string>
+    <string name="deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue">Удаление папки также приведет к удалению всех содержащихся в ней заметок, и их невозможно будет восстановить. Продолжить?</string>
+    <string name="restore">Восстановить</string>
+    <string name="app_info">О приложении</string>
+    <string name="version">Версия</string>
+    <string name="guide">Руководство пользователя</string>
+    <string name="privacy_policy">Политика конфиденциальности</string>
+    <string name="share_this_app">Поделиться этим приложением</string>
+    <string name="shareContent">Kori - это современное приложение для заметок с поддержкой Markdown, полностью созданное с помощью Compose Multiplatform.
+Приложение обладает адаптивным дизайном, что делает его подходящим для устройств любого размера.
+Загрузите и попробуйте прямо сейчас:
+- [GitHub](https://github.com/YangDai2003/Kori/releases)
+    </string>
+    <string name="destination_folder">Целевая папка</string>
+    <string name="find">Найти</string>
+    <string name="replace">Заменить</string>
+    <string name="overview">Обзор</string>
+    <string name="outline">Структура</string>
+    <string name="color_picker">Выбор цвета</string>
+    <string name="name">Имя</string>
+    <string name="search">Поиск</string>
+    <string name="search_history">Недавняя история поиска</string>
+    <string name="add_sample_note">Добавить пример заметки</string>
+    <string name="todo">Список дел</string>
+    <string name="done">Выполнено</string>
+    <string name="total">Всего</string>
+
+    <string name="style">Стиль</string>
+    <string name="dark_mode">Режим темы</string>
+    <string name="color_platte">Палитра цветов</string>
+    <string name="create_password">Создайте шестизначный код доступа</string>
+    <string name="enter_again">Пожалуйста, введите код доступа еще раз</string>
+    <string name="lock">Блокировка</string>
+    <string name="password">Пароль</string>
+    <string name="password_description">При холодном запуске приложения пользователю необходимо ввести шестизначный пароль для разблокировки.</string>
+    <string name="security">Безопасность</string>
+    <string name="keep_screen_on">Держать экран включенным</string>
+    <string name="report_a_bug_or_request_a_feature">Сообщить об ошибке или запросить функцию</string>
+    <string name="system_default">Системные настройки</string>
+    <string name="light">Светлый режим</string>
+    <string name="dark">Темный режим</string>
+    <string name="font_size">Размер шрифта</string>
+    <string name="font_size_description">Сделать текст больше или меньше.</string>
+    <string name="font">Шрифт</string>
+
+    <string name="type">Тип</string>
+    <string name="plain_text">Обычный текст</string>
+    <string name="created">Создано</string>
+    <string name="updated">Обновлено</string>
+    <string name="char_count">Символы</string>
+    <string name="word_count">Слова</string>
+    <string name="word_count_without_punctuation">Слова (без знаков препинания)</string>
+    <string name="line_count">Строки</string>
+    <string name="paragraph_count">Абзацы</string>
+
+    <string name="editor">Редактор</string>
+    <string name="default_view_for_note">Вид по умолчанию, в котором открываются заметки.</string>
+    <string name="default_view">Вид по умолчанию</string>
+    <string name="editing_view">Режим редактирования</string>
+    <string name="reading_view">Режим чтения</string>
+    <string name="line_numbers">Номера строк</string>
+    <string name="lint">Проверка</string>
+    <string name="lint_description">Когда включено, формат и синтаксис Markdown и Todo.txt будут проверяться на соответствие спецификации, а ошибки будут отмечаться красными волнистыми линиями.</string>
+
+    <string name="date_format">Формат даты</string>
+    <string name="time_format">Формат времени</string>
+    <string name="date_in_the_template_file_will_be_replaced_with_this_value">{{date}} в файле шаблона будет заменено этим значением.\n</string>
+    <string name="you_can_also_use_date_yyyy_mm_dd_to_override_the_format_once">Вы также можете использовать {{date:yyyy-MM-dd}}, чтобы переопределить формат один раз.\n</string>
+    <string name="for_more_syntax_refer_to">Для получения дополнительной информации о синтаксисе см. </string>
+    <string name="format_reference">справочник по формату</string>
+    <string name="your_current_syntax_looks_like_this">\nВаш текущий синтаксис выглядит так: %1$s</string>
+    <string name="time_in_the_template_file_will_be_replaced_with_this_value">{{time}} в файле шаблона будет заменено этим значением.\n</string>
+    <string name="you_can_also_use_time_hh_mm_to_override_the_format_once">Вы также можете использовать {{time:HH:mm}}, чтобы переопределить формат один раз.\n</string>
+    <string name="template_folder_location">Расположение папки шаблонов</string>
+    <string name="files_in_this_folder_will_be_available_as_templates">Файлы в этой папке будут доступны как шаблоны.</string>
+    <string name="saveAsTemplate">Сохранить эту заметку как шаблон</string>
+    <string name="explore_and_share_community_note_templates">Исследуйте и делитесь шаблонами заметок с сообществом</string>
+
+    <string name="card">Карточка</string>
+    <string name="ellipsis">Многоточие</string>
+    <string name="clip">Клип</string>
+    <string name="default_size">Нормальный</string>
+    <string name="title_only">Только заголовок</string>
+    <string name="compact">Компактный</string>
+    <string name="text_overflow">Переполнение текста</string>
+    <string name="card_size">Размер карточки</string>
+
+    <string name="cowriter">Соавтор</string>
+    <string name="cowriter_description">Доступ к сторонним ИИ-моделям</string>
+    <string name="model">Модель</string>
+    <string name="key">Ключ</string>
+    <string name="test">Тест</string>
+    <string name="set_as_default">Установить по умолчанию</string>
+    <string name="describe_the_note_you_want_to_generate">Опишите заметку, которую вы хотите создать</string>
+    <string name="rewrite">Переписать</string>
+    <string name="summarize">Резюмировать</string>
+    <string name="proofread">Проверить</string>
+    <string name="shorten">Сократить</string>
+    <string name="elaborate">Развернуть</string>
+
+    <string name="share_as">Поделиться как</string>
+    <string name="file">Файл</string>
+    <string name="text">Текст</string>
+    <string name="export_as">Экспортировать как</string>
+    <string name="data">Данные</string>
+    <string name="import_files">Импортировать текстовые файлы</string>
+    <string name="import_files_description">Пакетный импорт текстовых файлов. Имя файла будет использоваться как заголовок, а тип заметки будет определяться автоматически.</string>
+    <string name="backup_description">Резервное копирование всех папок и заметок в виде JSON-файла.</string>
+    <string name="restore_description">Восстановление данных из выбранного резервного файла формата JSON в базу данных.</string>
+    <string name="reset_database_description">Очистить все данные в базе данных (включая все заметки и папки).</string>
+    <string name="reset">Сброс</string>
+    <string name="reset_database">Сброс базы данных</string>
+    <string name="reset_database_warning">Сброс базы данных приведет к полному удалению всех заметок и папок, и их невозможно будет восстановить. Пожалуйста, решите, продолжать ли?</string>
+    <string name="backup">Резервное копирование</string>
+    <string name="restore_from_backup">Восстановление</string>
+    <string name="migrate_from_open_note">Миграция из файла JSON OpenNote</string>
+
+    <string name="toolbox">Инструменты</string>
+    <string name="edit_local_file">Редактировать локальный файл</string>
+    <string name="fetch_file_from_url">Получить файл по URL</string>
+    <string name="drag_drop">Перетащите для открытия</string>
+    <string name="language">Язык</string>
+    <string name="language_description">Выберите язык приложения</string>
+    <string name="todo_completed_at">Выполнено: %1$s</string>
+    <string name="todo_created_at">Создано: %1$s</string>
+    <string name="project_tag">Тег проекта</string>
+    <string name="context_tag">Тег контекста</string>
+    <string name="completion_mark">Метка завершения</string>
+    <string name="priority_mark">Метка приоритета</string>
+    <string name="total_tasks">Всего задач</string>
+    <string name="completed_tasks">Выполненные задачи</string>
+    <string name="pending_tasks">Задачи в ожидании</string>
+    <string name="progress">Прогресс</string>
+
+    <string name="side_sheet">Боковая панель</string>
+    <string name="control">Ctrl</string>
+    <string name="undo">Отменить</string>
+    <string name="redo">Повторить</string>
+    <string name="bold">Жирный</string>
+    <string name="italic">Курсив</string>
+    <string name="underline">Подчеркнутый</string>
+    <string name="strikethrough">Зачеркнутый</string>
+    <string name="highlight">Выделение</string>
+    <string name="horizontal_rule">Горизонтальная линия</string>
+    <string name="mermaid_diagram">Диаграмма Mermaid</string>
+    <string name="heading">Заголовок</string>
+    <string name="link">Ссылка</string>
+    <string name="code">Код</string>
+    <string name="quote">Цитата</string>
+    <string name="math">Формула</string>
+    <string name="table">Таблица</string>
+    <string name="insert_table">Вставить таблицу</string>
+    <string name="indent_increase">Увеличить отступ</string>
+    <string name="indent_decrease">Уменьшить отступ</string>
+    <string name="numbered_list">Нумерованный список</string>
+    <string name="bulleted_list">Маркированный список</string>
+    <string name="task_list">Список задач</string>
+    <!-- Snackbar messages -->
+    <plurals name="snackbar_pinned">
+        <item quantity="one">%1$d заметка закреплена</item>
+        <item quantity="few">%1$d заметки закреплены</item>
+        <item quantity="many">%1$d заметок закреплено</item>
+        <item quantity="other">%1$d заметок закреплено</item>
+    </plurals>
+    <plurals name="snackbar_moved_to_trash">
+        <item quantity="one">%1$d заметка перемещена в корзину</item>
+        <item quantity="few">%1$d заметки перемещены в корзину</item>
+        <item quantity="many">%1$d заметок перемещено в корзину</item>
+        <item quantity="other">%1$d заметок перемещено в корзину</item>
+    </plurals>
+    <plurals name="snackbar_deleted_forever">
+        <item quantity="one">%1$d заметка удалена навсегда</item>
+        <item quantity="few">%1$d заметки удалены навсегда</item>
+        <item quantity="many">%1$d заметок удалено навсегда</item>
+        <item quantity="other">%1$d заметок удалено навсегда</item>
+    </plurals>
+    <plurals name="snackbar_restored">
+        <item quantity="one">%1$d заметка восстановлена</item>
+        <item quantity="few">%1$d заметки восстановлены</item>
+        <item quantity="many">%1$d заметок восстановлено</item>
+        <item quantity="other">%1$d заметок восстановлено</item>
+    </plurals>
+    <string name="snackbar_restored_all">Все заметки в корзине восстановлены</string>
+    <string name="snackbar_deleted_all">Все заметки в корзине удалены</string>
+
+    <string name="drawing">Рисование</string>
+    <string name="white">Белый</string>
+    <string name="black">Черный</string>
+    <string name="none">Нет</string>
+    <string name="square">Квадрат</string>
+    <string name="rule">Линейка</string>
+    <string name="dot">Точка</string>
+    <string name="brush_size">Размер кисти</string>
+    <string name="brush_color">Цвет кисти</string>
+    <string name="stroke_eraser">Ластик для линий</string>
+    <string name="area_eraser">Ластик для области</string>
+    <string name="eraser_size">Размер ластика</string>
+    <string name="erase_all_strokes">Стереть все линии</string>
+    <string name="reset_canvas">Сбросить холст</string>
+</resources>

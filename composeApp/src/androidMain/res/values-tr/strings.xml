@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unlock_to_use">Kori\'yi kullanmak için kilidi açın</string>
+    <string name="dynamic_only_android_12">Dinamik renk</string>
+    <string name="screen_protection">Ekran koruması</string>
+    <string name="screen_protection_detail">Bu özellik açıldığında, uygulama içeriği yakalanamaz veya kaydedilemez ve içerik arka plan uygulama listesinde gösterilmez.</string>
+    <string name="biometric">Biyometrik ile kilidi aç</string>
+    <string name="no_password_set">Lütfen önce sistem kilidi ekranı şifresini ayarlayın</string>
+    <string name="view_all_notes">Tüm notları görüntüle</string>
+    <string name="home_widget">Ana Ekrana Widget Ekleyin</string>
+    <string name="new_plain_text">Yeni Düz Metin</string>
+    <string name="new_markdown">Yeni Markdown</string>
+    <string name="new_todo">Yeni Todo.txt</string>
+    <string name="new_drawing">Yeni Çizim</string>
+</resources>

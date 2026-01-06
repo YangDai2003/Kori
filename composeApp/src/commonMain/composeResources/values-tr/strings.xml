@@ -1,0 +1,232 @@
+<resources>
+    <string name="title">Başlık</string>
+    <string name="content">İçerik</string>
+    <string name="delete">Sil</string>
+    <string name="back">Geri</string>
+    <string name="cancel">İptal</string>
+    <string name="confirm">Onayla</string>
+    <string name="open_navigation_drawer">Gezinme çekmecesini aç</string>
+    <string name="exit">Çıkış</string>
+    <string name="new">Yeni</string>
+    <string name="open">Aç</string>
+    <string name="save">Kaydet</string>
+    <string name="share">Paylaş</string>
+
+    <string name="sort_by">Sıralama ölçütü</string>
+    <string name="sort_name_a">Dosya adı (A - Z)</string>
+    <string name="sort_name_d">Dosya adı (Z - A)</string>
+    <string name="sort_created_a">Oluşturma zamanı (eski - yeni)</string>
+    <string name="sort_created_d">Oluşturma zamanı (yeni - eski)</string>
+    <string name="sort_modified_a">Değiştirme zamanı (eski - yeni)</string>
+    <string name="sort_modified_d">Değiştirme zamanı (yeni - eski)</string>
+
+    <plurals name="note_count">
+        <item quantity="one">%1$d not</item>
+        <item quantity="other">%1$d not</item>
+    </plurals>
+    <string name="pin">Sabitle</string>
+    <string name="starred">Yıldızlı</string>
+    <string name="others">Diğerleri</string>
+    <string name="move">Taşı</string>
+    <string name="duplicate">Çoğalt</string>
+    <string name="all_notes">Tüm notlar</string>
+    <string name="templates">Şablonlar</string>
+    <string name="trash">Çöp kutusu</string>
+    <string name="folders">Klasörler</string>
+    <string name="manage_folders">Klasörleri yönet</string>
+    <string name="settings">Ayarlar</string>
+    <string name="restore_all">Tümünü geri yükle</string>
+    <string name="delete_all">Tümünü sil</string>
+    <string name="modify">Düzenle</string>
+    <string name="warning">Uyarı</string>
+    <string name="deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue">Bir klasörü silmek içerdiği tüm notları da siler ve bunlar geri yüklenemez. Devam etmek istiyor musunuz?</string>
+    <string name="restore">Geri yükle</string>
+    <string name="app_info">Uygulama hakkında</string>
+    <string name="version">Sürüm</string>
+    <string name="guide">Kullanım kılavuzu</string>
+    <string name="privacy_policy">Gizlilik politikası</string>
+    <string name="share_this_app">Bu uygulamayı paylaş</string>
+    <string name="shareContent">Kori, tamamen Compose Multiplatform ile oluşturulmuş modern bir Markdown not defteri uygulamasıdır.
+Uygulama, duyarlı bir tasarıma sahiptir ve tüm boyutlardaki cihazlara uygundur.
+Şimdi indirin ve deneyin:
+- [GitHub](https://github.com/YangDai2003/Kori/releases)
+    </string>
+    <string name="destination_folder">Hedef klasör</string>
+    <string name="find">Bul</string>
+    <string name="replace">Değiştir</string>
+    <string name="overview">Genel bakış</string>
+    <string name="outline">Ana hatlar</string>
+    <string name="color_picker">Renk seçici</string>
+    <string name="name">Ad</string>
+    <string name="search">Ara</string>
+    <string name="search_history">Son arama geçmişi</string>
+    <string name="add_sample_note">Örnek not ekle</string>
+    <string name="todo">Yapılacaklar</string>
+    <string name="done">Tamamlandı</string>
+    <string name="total">Toplam</string>
+
+    <string name="style">Stil</string>
+    <string name="dark_mode">Tema modu</string>
+    <string name="color_platte">Renk paleti</string>
+    <string name="create_password">Altı haneli bir şifre oluşturun</string>
+    <string name="enter_again">Lütfen şifrenizi tekrar girin</string>
+    <string name="lock">Kilitle</string>
+    <string name="password">Şifre</string>
+    <string name="password_description">Uygulama ilk açıldığında, kullanıcının kilidi açmak için altı haneli bir şifre girmesi gerekir.</string>
+    <string name="security">Güvenlik</string>
+    <string name="keep_screen_on">Ekranı açık tut</string>
+    <string name="report_a_bug_or_request_a_feature">Bir hata bildirin veya bir özellik isteyin</string>
+    <string name="system_default">Sistem varsayılanı</string>
+    <string name="light">Açık mod</string>
+    <string name="dark">Koyu mod</string>
+    <string name="font_size">Yazı tipi boyutu</string>
+    <string name="font_size_description">Metni daha büyük veya daha küçük yapın.</string>
+    <string name="font">Yazı tipi</string>
+
+    <string name="type">Tür</string>
+    <string name="plain_text">Düz metin</string>
+    <string name="created">Oluşturuldu</string>
+    <string name="updated">Güncellendi</string>
+    <string name="char_count">Karakter</string>
+    <string name="word_count">Kelime</string>
+    <string name="word_count_without_punctuation">Kelime (noktalama işaretleri hariç)</string>
+    <string name="line_count">Satır</string>
+    <string name="paragraph_count">Paragraf</string>
+
+    <string name="editor">Düzenleyici</string>
+    <string name="default_view_for_note">Notların açıldığı varsayılan görünüm.</string>
+    <string name="default_view">Varsayılan görünüm</string>
+    <string name="editing_view">Düzenleme görünümü</string>
+    <string name="reading_view">Okuma görünümü</string>
+    <string name="line_numbers">Satır numaraları</string>
+    <string name="lint">Lint</string>
+    <string name="lint_description">Etkinleştirildiğinde, Markdown ve Todo.txt formatı ve sözdizimi özelliklerine uyup uymadığı kontrol edilir ve hatalar kırmızı dalgalı çizgilerle işaretlenir.</string>
+
+    <string name="date_format">Tarih formatı</string>
+    <string name="time_format">Saat formatı</string>
+    <string name="date_in_the_template_file_will_be_replaced_with_this_value">Şablon dosyasındaki {{date}} bu değerle değiştirilecektir.\n</string>
+    <string name="you_can_also_use_date_yyyy_mm_dd_to_override_the_format_once">Formatı bir kez geçersiz kılmak için {{date:yyyy-MM-dd}} de kullanabilirsiniz.\n</string>
+    <string name="for_more_syntax_refer_to">Daha fazla sözdizimi için bkz. </string>
+    <string name="format_reference">format referansı</string>
+    <string name="your_current_syntax_looks_like_this">\nMevcut sözdiziminiz şu şekilde: %1$s</string>
+    <string name="time_in_the_template_file_will_be_replaced_with_this_value">Şablon dosyasındaki {{time}} bu değerle değiştirilecektir.\n</string>
+    <string name="you_can_also_use_time_hh_mm_to_override_the_format_once">Formatı bir kez geçersiz kılmak için {{time:HH:mm}} de kullanabilirsiniz.\n</string>
+    <string name="template_folder_location">Şablon klasörü konumu</string>
+    <string name="files_in_this_folder_will_be_available_as_templates">Bu klasördeki dosyalar şablon olarak kullanılabilir.</string>
+    <string name="saveAsTemplate">Bu notu şablon olarak kaydet</string>
+    <string name="explore_and_share_community_note_templates">Not Şablonlarını Keşfedin ve Toplulukla Paylaşın</string>
+
+    <string name="card">Kart</string>
+    <string name="ellipsis">Üç nokta</string>
+    <string name="clip">Kırp</string>
+    <string name="default_size">Normal</string>
+    <string name="title_only">Sadece başlık</string>
+    <string name="compact">Kompakt</string>
+    <string name="text_overflow">Metin taşması</string>
+    <string name="card_size">Kart boyutu</string>
+
+    <string name="cowriter">Yazışma partneri</string>
+    <string name="cowriter_description">Üçüncü taraf yapay zeka modellerine erişim</string>
+    <string name="model">Model</string>
+    <string name="key">Anahtar</string>
+    <string name="test">Test</string>
+    <string name="set_as_default">Varsayılan olarak ayarla</string>
+    <string name="describe_the_note_you_want_to_generate">Oluşturmak istediğiniz notu tanımlayın</string>
+    <string name="rewrite">Yeniden yaz</string>
+    <string name="summarize">Özetle</string>
+    <string name="proofread">Düzeltme yap</string>
+    <string name="shorten">Kısalt</string>
+    <string name="elaborate">Açıkla</string>
+
+    <string name="share_as">Farklı paylaş</string>
+    <string name="file">Dosya</string>
+    <string name="text">Metin</string>
+    <string name="export_as">Farklı dışa aktar</string>
+    <string name="data">Veri</string>
+    <string name="import_files">Metin dosyalarını içe aktar</string>
+    <string name="import_files_description">Toplu metin dosyalarını içe aktar. Dosya adı başlık olarak kullanılacak ve not türü otomatik olarak algılanacaktır.</string>
+    <string name="backup_description">Tüm klasörleri ve notları JSON dosyası olarak yedekleyin.</string>
+    <string name="restore_description">Seçilen JSON türündeki yedekleme dosyasındaki verileri veritabanına geri yükleyin.</string>
+    <string name="reset_database_description">Veritabanındaki tüm verileri temizleyin (tüm notlar ve klasörler dahil).</string>
+    <string name="reset">Sıfırla</string>
+    <string name="reset_database">Veritabanını sıfırla</string>
+    <string name="reset_database_warning">Veritabanını sıfırlamak tüm notları ve klasörleri tamamen siler ve kurtarılamaz. Devam etmek istiyor musunuz?</string>
+    <string name="backup">Yedekle</string>
+    <string name="restore_from_backup">Geri yükle</string>
+    <string name="migrate_from_open_note">OpenNote JSON Dosyasından Geçiş</string>
+
+    <string name="toolbox">Araç kutusu</string>
+    <string name="edit_local_file">Yerel dosyayı düzenle</string>
+    <string name="fetch_file_from_url">URL\'den dosya getir</string>
+    <string name="drag_drop">Açmak için sürükleyip bırakın</string>
+    <string name="language">Dil</string>
+    <string name="language_description">Uygulama dilini seçin</string>
+    <string name="todo_completed_at">Tamamlandı: %1$s</string>
+    <string name="todo_created_at">Oluşturuldu: %1$s</string>
+    <string name="project_tag">Proje Etiketi</string>
+    <string name="context_tag">Bağlam Etiketi</string>
+    <string name="completion_mark">Tamamlama İşareti</string>
+    <string name="priority_mark">Öncelik İşareti</string>
+    <string name="total_tasks">Toplam Görev</string>
+    <string name="completed_tasks">Tamamlanan Görevler</string>
+    <string name="pending_tasks">Bekleyen Görevler</string>
+    <string name="progress">İlerleme</string>
+
+    <string name="side_sheet">Yan sayfa</string>
+    <string name="control">Ctrl</string>
+    <string name="undo">Geri al</string>
+    <string name="redo">Yinele</string>
+    <string name="bold">Kalın</string>
+    <string name="italic">İtalik</string>
+    <string name="underline">Altı çizili</string>
+    <string name="strikethrough">Üstü çizili</string>
+    <string name="highlight">Vurgulama</string>
+    <string name="horizontal_rule">Yatay çizgi</string>
+    <string name="mermaid_diagram">Mermaid diyagramı</string>
+    <string name="heading">Başlık</string>
+    <string name="link">Bağlantı</string>
+    <string name="code">Kod</string>
+    <string name="quote">Alıntı</string>
+    <string name="math">Matematik</string>
+    <string name="table">Tablo</string>
+    <string name="insert_table">Tablo ekle</string>
+    <string name="indent_increase">Girintiyi artır</string>
+    <string name="indent_decrease">Girintiyi azalt</string>
+    <string name="numbered_list">Numaralı liste</string>
+    <string name="bulleted_list">Madde işaretli liste</string>
+    <string name="task_list">Görev listesi</string>
+    <!-- Snackbar messages -->
+    <plurals name="snackbar_pinned">
+        <item quantity="one">%1$d not sabitlendi</item>
+        <item quantity="other">%1$d not sabitlendi</item>
+    </plurals>
+    <plurals name="snackbar_moved_to_trash">
+        <item quantity="one">%1$d not çöp kutusuna taşındı</item>
+        <item quantity="other">%1$d not çöp kutusuna taşındı</item>
+    </plurals>
+    <plurals name="snackbar_deleted_forever">
+        <item quantity="one">%1$d not kalıcı olarak silindi</item>
+        <item quantity="other">%1$d not kalıcı olarak silindi</item>
+    </plurals>
+    <plurals name="snackbar_restored">
+        <item quantity="one">%1$d not geri yüklendi</item>
+        <item quantity="other">%1$d not geri yüklendi</item>
+    </plurals>
+    <string name="snackbar_restored_all">Çöp kutusundaki tüm notlar geri yüklendi</string>
+    <string name="snackbar_deleted_all">Çöp kutusundaki tüm notlar silindi</string>
+
+    <string name="drawing">Çizim</string>
+    <string name="white">Beyaz</string>
+    <string name="black">Siyah</string>
+    <string name="none">Hiçbiri</string>
+    <string name="square">Kare</string>
+    <string name="rule">Kural</string>
+    <string name="dot">Nokta</string>
+    <string name="brush_size">Fırça boyutu</string>
+    <string name="brush_color">Fırça rengi</string>
+    <string name="stroke_eraser">Vuruş silgisi</string>
+    <string name="area_eraser">Alan silgisi</string>
+    <string name="eraser_size">Silgi boyutu</string>
+    <string name="erase_all_strokes">Tüm vuruşları sil</string>
+    <string name="reset_canvas">Tuvali sıfırla</string>
+</resources>

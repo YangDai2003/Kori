@@ -1,0 +1,232 @@
+<resources>
+    <string name="title">शीर्षक</string>
+    <string name="content">सामग्री</string>
+    <string name="delete">हटाएँ</string>
+    <string name="back">वापस</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="confirm">पुष्टि करें</string>
+    <string name="open_navigation_drawer">नेविगेशन ड्रॉवर खोलें</string>
+    <string name="exit">बाहर निकलें</string>
+    <string name="new">नया</string>
+    <string name="open">खोलें</string>
+    <string name="save">सहेजें</string>
+    <string name="share">साझा करें</string>
+
+    <string name="sort_by">इसके अनुसार क्रमबद्ध करें</string>
+    <string name="sort_name_a">फ़ाइल का नाम (A - Z)</string>
+    <string name="sort_name_d">फ़ाइल का नाम (Z - A)</string>
+    <string name="sort_created_a">निर्माण का समय (पुराना - नया)</string>
+    <string name="sort_created_d">निर्माण का समय (नया - पुराना)</string>
+    <string name="sort_modified_a">संशोधन का समय (पुराना - नया)</string>
+    <string name="sort_modified_d">संशोधन का समय (नया - पुराना)</string>
+
+    <plurals name="note_count">
+        <item quantity="one">%1$d नोट</item>
+        <item quantity="other">%1$d नोट</item>
+    </plurals>
+    <string name="pin">पिन करें</string>
+    <string name="starred">तारांकित</string>
+    <string name="others">अन्य</string>
+    <string name="move">स्थानांतरित करें</string>
+    <string name="duplicate">डुप्लिकेट</string>
+    <string name="all_notes">सभी नोट</string>
+    <string name="templates">टेम्पलेट्स</string>
+    <string name="trash">कचरा</string>
+    <string name="folders">फ़ोल्डर्स</string>
+    <string name="manage_folders">फ़ोल्डर्स प्रबंधित करें</string>
+    <string name="settings">सेटिंग्स</string>
+    <string name="restore_all">सभी को पुनर्स्थापित करें</string>
+    <string name="delete_all">सभी को हटाएँ</string>
+    <string name="modify">संशोधित करें</string>
+    <string name="warning">चेतावनी</string>
+    <string name="deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue">फ़ोल्डर को हटाने पर उसमें निहित सभी नोट्स भी हटा दिए जाएंगे और उन्हें पुनर्स्थापित नहीं किया जा सकता है। क्या आप जारी रखना चाहते हैं?</string>
+    <string name="restore">पुनर्स्थापित करें</string>
+    <string name="app_info">ऐप के बारे में</string>
+    <string name="version">संस्करण</string>
+    <string name="guide">उपयोगकर्ता मार्गदर्शिका</string>
+    <string name="privacy_policy">गोपनीयता नीति</string>
+    <string name="share_this_app">इस ऐप को साझा करें</string>
+    <string name="shareContent">Kori एक आधुनिक मार्कडाउन नोटपैड ऐप है जो पूरी तरह से Compose Multiplatform के साथ बनाया गया है।
+ऐप में प्रतिक्रियाशील डिज़ाइन की विशेषता है, जो इसे सभी आकार के उपकरणों के लिए उपयुक्त बनाता है।
+अभी डाउनलोड करें और आज़माएँ:
+- [GitHub](https://github.com/YangDai2003/Kori/releases)
+    </string>
+    <string name="destination_folder">गंतव्य फ़ोल्डर</string>
+    <string name="find">खोजें</string>
+    <string name="replace">बदलें</string>
+    <string name="overview">अवलोकन</string>
+    <string name="outline">रूपरेखा</string>
+    <string name="color_picker">रंग चयनकर्ता</string>
+    <string name="name">नाम</string>
+    <string name="search">खोजें</string>
+    <string name="search_history">हाल का खोज इतिहास</string>
+    <string name="add_sample_note">नमूना नोट जोड़ें</string>
+    <string name="todo">कार्य सूची</string>
+    <string name="done">पूर्ण</string>
+    <string name="total">कुल</string>
+
+    <string name="style">शैली</string>
+    <string name="dark_mode">थीम मोड</string>
+    <string name="color_platte">रंग पैलेट</string>
+    <string name="create_password">छह अंकों का पासकोड बनाएँ</string>
+    <string name="enter_again">कृपया अपना पासकोड दोबारा दर्ज करें</string>
+    <string name="lock">लॉक करें</string>
+    <string name="password">पासवर्ड</string>
+    <string name="password_description">जब ऐप को ठंडा शुरू किया जाता है, तो उपयोगकर्ता को अनलॉक करने के लिए छह अंकों का पासवर्ड दर्ज करना होगा।</string>
+    <string name="security">सुरक्षा</string>
+    <string name="keep_screen_on">स्क्रीन चालू रखें</string>
+    <string name="report_a_bug_or_request_a_feature">कोई बग रिपोर्ट करें या सुविधा का अनुरोध करें</string>
+    <string name="system_default">सिस्टम डिफ़ॉल्ट</string>
+    <string name="light">लाइट मोड</string>
+    <string name="dark">डार्क मोड</string>
+    <string name="font_size">फ़ॉन्ट आकार</string>
+    <string name="font_size_description">पाठ को बड़ा या छोटा करें।</string>
+    <string name="font">फ़ॉन्ट</string>
+
+    <string name="type">प्रकार</string>
+    <string name="plain_text">सादा पाठ</string>
+    <string name="created">बनाया गया</string>
+    <string name="updated">अपडेट किया गया</string>
+    <string name="char_count">वर्ण</string>
+    <string name="word_count">शब्द</string>
+    <string name="word_count_without_punctuation">शब्द (विराम चिह्नों को छोड़कर)</string>
+    <string name="line_count">लाइनें</string>
+    <string name="paragraph_count">अनुच्छेद</string>
+
+    <string name="editor">संपादक</string>
+    <string name="default_view_for_note">डिफ़ॉल्ट दृश्य जिसमें नोट खुलते हैं।</string>
+    <string name="default_view">डिफ़ॉल्ट दृश्य</string>
+    <string name="editing_view">संपादन दृश्य</string>
+    <string name="reading_view">पठन दृश्य</string>
+    <string name="line_numbers">लाइन नंबर</string>
+    <string name="lint">लिंट</string>
+    <string name="lint_description">सक्षम होने पर, मार्कडाउन और टूडू.टेक्स्ट प्रारूप और वाक्यविन्यास की जांच की जाएगी कि क्या वे विनिर्देश के अनुरूप हैं, और त्रुटियों को लाल लहरदार रेखाओं से चिह्नित किया जाएगा।</string>
+
+    <string name="date_format">दिनांक प्रारूप</string>
+    <string name="time_format">समय प्रारूप</string>
+    <string name="date_in_the_template_file_will_be_replaced_with_this_value">टेम्पलेट फ़ाइल में {{date}} को इस मान से बदल दिया जाएगा।\n</string>
+    <string name="you_can_also_use_date_yyyy_mm_dd_to_override_the_format_once">आप एक बार के लिए प्रारूप को ओवरराइड करने के लिए {{date:yyyy-MM-dd}} का भी उपयोग कर सकते हैं।\n</string>
+    <string name="for_more_syntax_refer_to">अधिक सिंटैक्स के लिए, संदर्भ लें </string>
+    <string name="format_reference">प्रारूप संदर्भ</string>
+    <string name="your_current_syntax_looks_like_this">\nआपका वर्तमान सिंटैक्स ऐसा दिखता है: %1$s</string>
+    <string name="time_in_the_template_file_will_be_replaced_with_this_value">टेम्पलेट फ़ाइल में {{time}} को इस मान से बदल दिया जाएगा।\n</string>
+    <string name="you_can_also_use_time_hh_mm_to_override_the_format_once">आप एक बार के लिए प्रारूप को ओवरराइड करने के लिए {{time:HH:mm}} का भी उपयोग कर सकते हैं।\n</string>
+    <string name="template_folder_location">टेम्पलेट फ़ोल्डर स्थान</string>
+    <string name="files_in_this_folder_will_be_available_as_templates">इस फ़ोल्डर में मौजूद फ़ाइलें टेम्पलेट के रूप में उपलब्ध होंगी।</string>
+    <string name="saveAsTemplate">इस नोट को टेम्पलेट के रूप में सहेजें</string>
+    <string name="explore_and_share_community_note_templates">समुदाय के साथ नोट टेम्पलेट्स की खोज करें और साझा करें</string>
+
+    <string name="card">कार्ड</string>
+    <string name="ellipsis">तिरछा बिंदु</string>
+    <string name="clip">क्लिप</string>
+    <string name="default_size">सामान्य</string>
+    <string name="title_only">केवल शीर्षक</string>
+    <string name="compact">कॉम्पैक्ट</string>
+    <string name="text_overflow">पाठ अतिप्रवाह</string>
+    <string name="card_size">कार्ड आकार</string>
+
+    <string name="cowriter">सह-लेखक</string>
+    <string name="cowriter_description">तृतीय-पक्ष एआई मॉडल तक पहुंच</string>
+    <string name="model">मॉडल</string>
+    <string name="key">कुंजी</string>
+    <string name="test">परीक्षण</string>
+    <string name="set_as_default">डिफ़ॉल्ट के रूप में सेट करें</string>
+    <string name="describe_the_note_you_want_to_generate">वह नोट वर्णित करें जिसे आप उत्पन्न करना चाहते हैं</string>
+    <string name="rewrite">फिर से लिखें</string>
+    <string name="summarize">सारांश बनाएं</string>
+    <string name="proofread">प्रूफरीड करें</string>
+    <string name="shorten">छोटा करें</string>
+    <string name="elaborate">विस्तार से बताएं</string>
+
+    <string name="share_as">इस रूप में साझा करें</string>
+    <string name="file">फ़ाइल</string>
+    <string name="text">पाठ</string>
+    <string name="export_as">इस रूप में निर्यात करें</string>
+    <string name="data">डेटा</string>
+    <string name="import_files">पाठ फ़ाइलें आयात करें</string>
+    <string name="import_files_description">बैच में पाठ फ़ाइलें आयात करें। फ़ाइल का नाम शीर्षक के रूप में उपयोग किया जाएगा और नोट प्रकार का पता स्वचालित रूप से चल जाएगा।</string>
+    <string name="backup_description">सभी फ़ोल्डर्स और नोट्स का बैकअप JSON फ़ाइल के रूप में लें।</string>
+    <string name="restore_description">चयनित JSON प्रकार की बैकअप फ़ाइल में मौजूद डेटा को डेटाबेस में पुनर्स्थापित करें।</string>
+    <string name="reset_database_description">डेटाबेस में सभी डेटा साफ़ करें (सभी नोट्स और फ़ोल्डर्स सहित)।</string>
+    <string name="reset">रीसेट करें</string>
+    <string name="reset_database">डेटाबेस रीसेट करें</string>
+    <string name="reset_database_warning">डेटाबेस को रीसेट करने से सभी नोट्स और फ़ोल्डर्स पूरी तरह से हटा दिए जाएंगे और उन्हें पुनर्प्राप्त नहीं किया जा सकता है। कृपया यह तय करें कि क्या जारी रखना है?</string>
+    <string name="backup">बैकअप</string>
+    <string name="restore_from_backup">पुनर्स्थापना</string>
+    <string name="migrate_from_open_note">OpenNote JSON फ़ाइल से माइग्रेट करें</string>
+
+    <string name="toolbox">टूलबॉक्स</string>
+    <string name="edit_local_file">स्थानीय फ़ाइल संपादित करें</string>
+    <string name="fetch_file_from_url">URL से फ़ाइल प्राप्त करें</string>
+    <string name="drag_drop">खोलने के लिए खींचें और छोड़ें</string>
+    <string name="language">भाषा</string>
+    <string name="language_description">ऐप की भाषा चुनें</string>
+    <string name="todo_completed_at">पूर्ण: %1$s</string>
+    <string name="todo_created_at">बनाया गया: %1$s</string>
+    <string name="project_tag">परियोजना टैग</string>
+    <string name="context_tag">संदर्भ टैग</string>
+    <string name="completion_mark">पूर्णता चिह्न</string>
+    <string name="priority_mark">प्राथमिकता चिह्न</string>
+    <string name="total_tasks">कुल कार्य</string>
+    <string name="completed_tasks">पूर्ण कार्य</string>
+    <string name="pending_tasks">लंबित कार्य</string>
+    <string name="progress">प्रगति</string>
+
+    <string name="side_sheet">साइड शीट</string>
+    <string name="control">Ctrl</string>
+    <string name="undo">पूर्ववत करें</string>
+    <string name="redo">फिर से करें</string>
+    <string name="bold">बोल्ड</string>
+    <string name="italic">इटैलिक</string>
+    <string name="underline">रेखांकित</string>
+    <string name="strikethrough">स्ट्राइकथ्रू</string>
+    <string name="highlight">हाइलाइट</string>
+    <string name="horizontal_rule">क्षैतिज रूल</string>
+    <string name="mermaid_diagram">मेरमेड डायग्राम</string>
+    <string name="heading">शीर्षक</string>
+    <string name="link">लिंक</string>
+    <string name="code">कोड</string>
+    <string name="quote">उद्धरण</string>
+    <string name="math">गणित</string>
+    <string name="table">तालिका</string>
+    <string name="insert_table">तालिका डालें</string>
+    <string name="indent_increase">इंडेंट बढ़ाएं</string>
+    <string name="indent_decrease">इंडेंट घटाएं</string>
+    <string name="numbered_list">अंकित सूची</string>
+    <string name="bulleted_list">बुलैट सूची</string>
+    <string name="task_list">कार्य सूची</string>
+    <!-- Snackbar messages -->
+    <plurals name="snackbar_pinned">
+        <item quantity="one">%1$d नोट पिन किया गया</item>
+        <item quantity="other">%1$d नोट पिन किए गए</item>
+    </plurals>
+    <plurals name="snackbar_moved_to_trash">
+        <item quantity="one">%1$d नोट को रद्दी में डाला गया</item>
+        <item quantity="other">%1$d नोट को रद्दी में डाला गया</item>
+    </plurals>
+    <plurals name="snackbar_deleted_forever">
+        <item quantity="one">%1$d नोट स्थायी रूप से हटा दिया गया</item>
+        <item quantity="other">%1$d नोट स्थायी रूप से हटा दिए गए</item>
+    </plurals>
+    <plurals name="snackbar_restored">
+        <item quantity="one">%1$d नोट पुनर्स्थापित किया गया</item>
+        <item quantity="other">%1$d नोट पुनर्स्थापित किए गए</item>
+    </plurals>
+    <string name="snackbar_restored_all">रद्दी में मौजूद सभी नोट पुनर्स्थापित किए गए</string>
+    <string name="snackbar_deleted_all">रद्दी में मौजूद सभी नोट हटा दिए गए</string>
+
+    <string name="drawing">चित्रकारी</string>
+    <string name="white">सफेद</string>
+    <string name="black">काला</string>
+    <string name="none">कोई नहीं</string>
+    <string name="square">वर्ग</string>
+    <string name="rule">नियम</string>
+    <string name="dot">बिंदु</string>
+    <string name="brush_size">ब्रश आकार</string>
+    <string name="brush_color">ब्रश रंग</string>
+    <string name="stroke_eraser">स्ट्रोक इरेज़र</string>
+    <string name="area_eraser">क्षेत्र इरेज़र</string>
+    <string name="eraser_size">इरेज़र आकार</string>
+    <string name="erase_all_strokes">सभी स्ट्रोक मिटाएं</string>
+    <string name="reset_canvas">कैनवास रीसेट करें</string>
+</resources>
