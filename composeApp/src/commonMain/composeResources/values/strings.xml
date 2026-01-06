@@ -47,7 +47,11 @@
     <string name="guide">User guide</string>
     <string name="privacy_policy">Privacy policy</string>
     <string name="share_this_app">Share this app</string>
-    <string name="shareContent">Kori is a modern Markdown notepad app built entirely with Compose Multiplatform.\nThe app boasts a responsive design, making it suitable for devices of all sizes.\nDownload and try it now:\n- [GitHub](https://github.com/YangDai2003/Kori/releases)\n</string>
+    <string name="shareContent">Kori is a modern Markdown notepad app built entirely with Compose Multiplatform.
+The app boasts a responsive design, making it suitable for devices of all sizes.
+Download and try it now:
+- [GitHub](https://github.com/YangDai2003/Kori/releases)
+    </string>
     <string name="destination_folder">Destination folder</string>
     <string name="find">Find</string>
     <string name="replace">Replace</string>
@@ -83,7 +87,7 @@
     <string name="type">Type</string>
     <string name="plain_text">Plain text</string>
     <string name="markdown" translatable="false">Markdown</string>
-    <string name="todo_text">Todo.txt</string>
+    <string name="todo_text" translatable="false">Todo.txt</string>
     <string name="created">Created</string>
     <string name="updated">Updated</string>
     <string name="char_count">Characters</string>

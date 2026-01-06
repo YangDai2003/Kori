@@ -46,7 +46,11 @@
     <string name="guide">使用提示</string>
     <string name="privacy_policy">隱私權政策</string>
     <string name="share_this_app">分享應用程式</string>
-    <string name="shareContent">Kori 是一款現代的跨平台 Markdown 筆記軟體，完全使用 Compose Multiplatform 開發。\n採用響應式設計，適用於各種裝置尺寸。\n立即下載體驗吧：\n- [GitHub](https://github.com/YangDai2003/Kori/releases)\n</string>
+    <string name="shareContent">Kori 是一款現代的跨平台 Markdown 筆記軟體，完全使用 Compose Multiplatform 開發。
+採用響應式設計，適用於各種裝置尺寸。
+立即下載體驗吧：
+- [GitHub](https://github.com/YangDai2003/Kori/releases)
+    </string>
     <string name="destination_folder">移至資料夾</string>
     <string name="find">尋找</string>
     <string name="replace">取代</string>

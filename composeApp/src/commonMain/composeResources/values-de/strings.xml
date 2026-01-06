@@ -46,7 +46,11 @@
     <string name="guide">Benutzerhandbuch</string>
     <string name="privacy_policy">Datenschutzhinweise</string>
     <string name="share_this_app">Teile diese App</string>
-    <string name="shareContent">Kori ist eine moderne Markdown-Notizen-App, die vollständig mit Compose Multiplatform entwickelt wurde.\nDie App verfügt über ein responsives Design, das sie für Geräte jeder Größe geeignet macht.\nLade sie jetzt herunter und probiere sie aus:\n- [GitHub](https://github.com/YangDai2003/Kori/releases)\n</string>
+    <string name="shareContent">Kori ist eine moderne Markdown-Notizen-App, die vollständig mit Compose Multiplatform entwickelt wurde.
+Die App verfügt über ein responsives Design, das sie für Geräte jeder Größe geeignet macht.
+Lade sie jetzt herunter und probiere sie aus:
+- [GitHub](https://github.com/YangDai2003/Kori/releases)
+    </string>
     <string name="destination_folder">Zielordner</string>
     <string name="find">Finden</string>
     <string name="replace">Ersetzen</string>
