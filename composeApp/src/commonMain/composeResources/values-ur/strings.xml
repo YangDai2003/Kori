@@ -1,0 +1,232 @@
+<resources>
+    <string name="title">عنوان</string>
+    <string name="content">مواد</string>
+    <string name="delete">حذف کریں</string>
+    <string name="back">واپس</string>
+    <string name="cancel">منسوخ کریں</string>
+    <string name="confirm">تصدیق کریں</string>
+    <string name="open_navigation_drawer">نیویگیشن دراز کھولیں</string>
+    <string name="exit">باہر نکلیں</string>
+    <string name="new">نیا</string>
+    <string name="open">کھولیں</string>
+    <string name="save">محفوظ کریں</string>
+    <string name="share">شیئر کریں</string>
+
+    <string name="sort_by">چھانٹیں بذریعہ</string>
+    <string name="sort_name_a">فائل کا نام (ا - ی)</string>
+    <string name="sort_name_d">فائل کا نام (ی - ا)</string>
+    <string name="sort_created_a">تخلیق کا وقت (پرانا - نیا)</string>
+    <string name="sort_created_d">تخلیق کا وقت (نیا - پرانا)</string>
+    <string name="sort_modified_a">تبدیلی کا وقت (پرانا - نیا)</string>
+    <string name="sort_modified_d">تبدیلی کا وقت (نیا - پرانا)</string>
+
+    <plurals name="note_count">
+        <item quantity="one">%1$d نوٹ</item>
+        <item quantity="other">%1$d نوٹس</item>
+    </plurals>
+    <string name="pin">پن کریں</string>
+    <string name="starred">ستارہ دار</string>
+    <string name="others">دیگر</string>
+    <string name="move">منتقل کریں</string>
+    <string name="duplicate">نقل</string>
+    <string name="all_notes">تمام نوٹس</string>
+    <string name="templates">ٹیمپلیٹس</string>
+    <string name="trash">ردی</string>
+    <string name="folders">فولڈرز</string>
+    <string name="manage_folders">فولڈرز کا نظم کریں</string>
+    <string name="settings">ترتیبات</string>
+    <string name="restore_all">تمام بحال کریں</string>
+    <string name="delete_all">تمام حذف کریں</string>
+    <string name="modify">تبدیل کریں</string>
+    <string name="warning">انتباہ</string>
+    <string name="deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue">ایک فولڈر کو حذف کرنے سے اس کے تمام نوٹس بھی حذف ہو جائیں گے اور ان کی بحالی ممکن نہیں ہو گی۔ کیا آپ جاری رکھنا چاہتے ہیں؟</string>
+    <string name="restore">بحال کریں</string>
+    <string name="app_info">ایپ کے بارے میں</string>
+    <string name="version">ورژن</string>
+    <string name="guide">صارف ہدایات</string>
+    <string name="privacy_policy">رازداری کی پالیسی</string>
+    <string name="share_this_app">یہ ایپ شیئر کریں</string>
+    <string name="shareContent">Kori ایک جدید مارک ڈاؤن نوٹ پیڈ ایپ ہے جو کمپوز ملٹی پلیٹ فارم کے ساتھ مکمل طور پر تیار کی گئی ہے۔
+ایپ کے پاس ایک جوابی ڈیزائن ہے، جو اسے تمام سائز کے آلات کے لیے مناسب بناتا ہے۔
+ابھی ڈاؤن لوڈ کریں اور آزمائیں:
+- [GitHub](https://github.com/YangDai2003/Kori/releases)
+    </string>
+    <string name="destination_folder">منزل کا فولڈر</string>
+    <string name="find">تلاش کریں</string>
+    <string name="replace">بدلیں</string>
+    <string name="overview">جائزہ</string>
+    <string name="outline">آؤٹ لائن</string>
+    <string name="color_picker">رنگ منتخب کرنے والا</string>
+    <string name="name">نام</string>
+    <string name="search">تلاش</string>
+    <string name="search_history">حالیہ تلاش کی سرگزشت</string>
+    <string name="add_sample_note">نمونہ نوٹ شامل کریں</string>
+    <string name="todo">کرنا ہے</string>
+    <string name="done">مکمل</string>
+    <string name="total">کل</string>
+
+    <string name="style">انداز</string>
+    <string name="dark_mode">تھیم موڈ</string>
+    <string name="color_platte">رنگ پیلیٹ</string>
+    <string name="create_password">چھ ہندسوں کا پاس کوڈ بنائیں</string>
+    <string name="enter_again">براہ کرم اپنا پاس کوڈ دوبارہ درج کریں</string>
+    <string name="lock">لاک کریں</string>
+    <string name="password">پاس ورڈ</string>
+    <string name="password_description">جب ایپ کو سردی سے شروع کیا جاتا ہے، تو صارف کو ان لاک کرنے کے لیے چھ ہندسوں کا پاس ورڈ درج کرنے کی ضرورت ہوتی ہے۔</string>
+    <string name="security">سیکورٹی</string>
+    <string name="keep_screen_on">اسکرین آن رکھیں</string>
+    <string name="report_a_bug_or_request_a_feature">بگ کی اطلاع دیں یا خصوصیت کی درخواست کریں</string>
+    <string name="system_default">سسٹم ڈیفالٹ</string>
+    <string name="light">ہلکا موڈ</string>
+    <string name="dark">تاریک موڈ</string>
+    <string name="font_size">فونٹ سائز</string>
+    <string name="font_size_description">متن کو بڑا یا چھوٹا کریں۔</string>
+    <string name="font">فونٹ</string>
+
+    <string name="type">قسم</string>
+    <string name="plain_text">سادہ متن</string>
+    <string name="created">تخلیق کردہ</string>
+    <string name="updated">تازہ کاری شدہ</string>
+    <string name="char_count">حروف</string>
+    <string name="word_count">الفاظ</string>
+    <string name="word_count_without_punctuation">الفاظ (نقطہ انجام کو چھوڑ کر)</string>
+    <string name="line_count">لکیریں</string>
+    <string name="paragraph_count">پیراگراف</string>
+
+    <string name="editor">ایڈیٹر</string>
+    <string name="default_view_for_note">ڈیفالٹ ویو جس میں نوٹس کھولے جاتے ہیں۔</string>
+    <string name="default_view">ڈیفالٹ ویو</string>
+    <string name="editing_view">ترمیم ویو</string>
+    <string name="reading_view">پڑھنے کا ویو</string>
+    <string name="line_numbers">لکیر نمبر</string>
+    <string name="lint">لِنٹ</string>
+    <string name="lint_description">فعال ہونے پر، مارک ڈاؤن اور ٹوڈو.ٹیکسٹ کے فارمیٹ اور نحو کی جانچ کی جائے گی کہ کیا وہ تفصیل کے مطابق ہیں، اور غلطیوں کو لال لہر دار لکیروں سے نشان زد کیا جائے گا۔</string>
+
+    <string name="date_format">تاریخ کی شکل</string>
+    <string name="time_format">وقت کی شکل</string>
+    <string name="date_in_the_template_file_will_be_replaced_with_this_value">ٹیمپلیٹ فائل میں {{date}} کو اس قیمت کے ساتھ تبدیل کر دیا جائے گا۔\n</string>
+    <string name="you_can_also_use_date_yyyy_mm_dd_to_override_the_format_once">آپ ایک بار شکل کو نظرانداز کرنے کے لیے {{date:yyyy-MM-dd}} کا بھی استعمال کر سکتے ہیں۔\n</string>
+    <string name="for_more_syntax_refer_to">مزید نحو کے لیے، ملاحظہ کریں </string>
+    <string name="format_reference">فارمیٹ حوالہ</string>
+    <string name="your_current_syntax_looks_like_this">\nآپ کا موجودہ نحو اس طرح نظر آتا ہے: %1$s</string>
+    <string name="time_in_the_template_file_will_be_replaced_with_this_value">ٹیمپلیٹ فائل میں {{time}} کو اس قیمت کے ساتھ تبدیل کر دیا جائے گا۔\n</string>
+    <string name="you_can_also_use_time_hh_mm_to_override_the_format_once">آپ ایک بار شکل کو نظرانداز کرنے کے لیے {{time:HH:mm}} کا بھی استعمال کر سکتے ہیں۔\n</string>
+    <string name="template_folder_location">ٹیمپلیٹ فولڈر کا مقام</string>
+    <string name="files_in_this_folder_will_be_available_as_templates">اس فولڈر میں موجود فائلوں کو ٹیمپلیٹ کے طور پر دستیاب ہوگا۔</string>
+    <string name="saveAsTemplate">اس نوٹ کو ٹیمپلیٹ کے طور پر محفوظ کریں</string>
+    <string name="explore_and_share_community_note_templates">کمیونٹی کے نوٹ ٹیمپلیٹس کو دریافت کریں اور شیئر کریں</string>
+
+    <string name="card">کارڈ</string>
+    <string name="ellipsis">تھوڑا سا</string>
+    <string name="clip">کلپ</string>
+    <string name="default_size">نارمل</string>
+    <string name="title_only">صرف عنوان</string>
+    <string name="compact">کمپیکٹ</string>
+    <string name="text_overflow">متن میں اضافہ</string>
+    <string name="card_size">کارڈ کا سائز</string>
+
+    <string name="cowriter">ہم نویس</string>
+    <string name="cowriter_description">تیسری پارٹی اے آئی ماڈلز تک رسائی</string>
+    <string name="model">ماڈل</string>
+    <string name="key">کلید</string>
+    <string name="test">ٹیسٹ</string>
+    <string name="set_as_default">ڈیفالٹ کے طور پر سیٹ کریں</string>
+    <string name="describe_the_note_you_want_to_generate">وہ نوٹ بیان کریں جو آپ تیار کرنا چاہتے ہیں</string>
+    <string name="rewrite">دوبارہ لکھیں</string>
+    <string name="summarize">خلاصہ کریں</string>
+    <string name="proofread">پروف ریڈ کریں</string>
+    <string name="shorten">چھوٹا کریں</string>
+    <string name="elaborate">تفصیل سے بیان کریں</string>
+
+    <string name="share_as">بطور شیئر کریں</string>
+    <string name="file">فائل</string>
+    <string name="text">متن</string>
+    <string name="export_as">برآمد کریں بطور</string>
+    <string name="data">ڈیٹا</string>
+    <string name="import_files">متن کی فائلوں کو درآمد کریں</string>
+    <string name="import_files_description">متن کی فائلوں کو بیچ میں درآمد کریں۔ فائل کا نام عنوان کے طور پر استعمال ہوگا، اور نوٹ کی قسم خودکار طور پر پتہ لگائی جائے گی۔</string>
+    <string name="backup_description">تمام فولڈرز اور نوٹس کو JSON فائل کے طور پر بیک اپ لیں۔</string>
+    <string name="restore_description">منتخب کردہ JSON قسم کی بیک اپ فائل میں موجود ڈیٹا کو ڈیٹا بیس میں بحال کریں۔</string>
+    <string name="reset_database_description">ڈیٹا بیس میں موجود تمام ڈیٹا کو صاف کریں (تمام نوٹس اور فولڈرز سمیت)۔</string>
+    <string name="reset">ری سیٹ کریں</string>
+    <string name="reset_database">ڈیٹا بیس ری سیٹ کریں</string>
+    <string name="reset_database_warning">ڈیٹا بیس کو ری سیٹ کرنے سے تمام نوٹس اور فولڈرز مکمل طور پر حذف ہو جائیں گے اور ان کی بحالی ممکن نہیں ہو گی۔ براہ کرم فیصلہ کریں کہ کیا جاری رکھنا ہے؟</string>
+    <string name="backup">بیک اپ</string>
+    <string name="restore_from_backup">بحال کریں</string>
+    <string name="migrate_from_open_note">OpenNote JSON فائل سے منتقل کریں</string>
+
+    <string name="toolbox">اوزار باکس</string>
+    <string name="edit_local_file">مقامی فائل میں ترمیم کریں</string>
+    <string name="fetch_file_from_url">یو آر ایل سے فائل حاصل کریں</string>
+    <string name="drag_drop">کھولنے کے لیے ڈریگ اور ڈراپ کریں</string>
+    <string name="language">زبان</string>
+    <string name="language_description">ایپ کی زبان منتخب کریں</string>
+    <string name="todo_completed_at">مکمل ہوا: %1$s</string>
+    <string name="todo_created_at">تخلیق ہوا: %1$s</string>
+    <string name="project_tag">پروجیکٹ ٹیگ</string>
+    <string name="context_tag">سیاق ٹیگ</string>
+    <string name="completion_mark">تکمیل کا نشان</string>
+    <string name="priority_mark">ترجیح کا نشان</string>
+    <string name="total_tasks">کل کام</string>
+    <string name="completed_tasks">مکمل شدہ کام</string>
+    <string name="pending_tasks">زیر التواء کام</string>
+    <string name="progress">پیشرفت</string>
+
+    <string name="side_sheet">سائڈ شیٹ</string>
+    <string name="control">Ctrl</string>
+    <string name="undo">واپس</string>
+    <string name="redo">دوبارہ کریں</string>
+    <string name="bold">موٹا</string>
+    <string name="italic">ترچھا</string>
+    <string name="underline">نیچے لکیر</string>
+    <string name="strikethrough">اوپر سے لکیر</string>
+    <string name="highlight">ہائی لائٹ</string>
+    <string name="horizontal_rule">افقی اصول</string>
+    <string name="mermaid_diagram">مرمیڈ ڈائیاگرام</string>
+    <string name="heading">ہیڈنگ</string>
+    <string name="link">لنک</string>
+    <string name="code">کوڈ</string>
+    <string name="quote">حوالہ</string>
+    <string name="math">ریاضی</string>
+    <string name="table">میز</string>
+    <string name="insert_table">میز داخل کریں</string>
+    <string name="indent_increase">انڈینٹ بڑھائیں</string>
+    <string name="indent_decrease">انڈینٹ کم کریں</string>
+    <string name="numbered_list">نمبر والی فہرست</string>
+    <string name="bulleted_list">نقطہ والی فہرست</string>
+    <string name="task_list">کام کی فہرست</string>
+    <!-- Snackbar messages -->
+    <plurals name="snackbar_pinned">
+        <item quantity="one">%1$d نوٹ پن کیا گیا</item>
+        <item quantity="other">%1$d نوٹس پن کیے گئے</item>
+    </plurals>
+    <plurals name="snackbar_moved_to_trash">
+        <item quantity="one">%1$d نوٹ کو ردی میں منتقل کر دیا گیا</item>
+        <item quantity="other">%1$d نوٹس کو ردی میں منتقل کر دیا گیا</item>
+    </plurals>
+    <plurals name="snackbar_deleted_forever">
+        <item quantity="one">%1$d نوٹ ہمیشہ کے لیے حذف کر دیا گیا</item>
+        <item quantity="other">%1$d نوٹس ہمیشہ کے لیے حذف کر دیے گئے</item>
+    </plurals>
+    <plurals name="snackbar_restored">
+        <item quantity="one">%1$d نوٹ بحال کر دیا گیا</item>
+        <item quantity="other">%1$d نوٹس بحال کر دیے گئے</item>
+    </plurals>
+    <string name="snackbar_restored_all">ردی میں موجود تمام نوٹس بحال کر دیے گئے</string>
+    <string name="snackbar_deleted_all">ردی میں موجود تمام نوٹس حذف کر دیے گئے</string>
+
+    <string name="drawing">ڈرائنگ</string>
+    <string name="white">سفید</string>
+    <string name="black">سیاہ</string>
+    <string name="none">کوئی نہیں</string>
+    <string name="square">مربع</string>
+    <string name="rule">اصول</string>
+    <string name="dot">نقطہ</string>
+    <string name="brush_size">برش کا سائز</string>
+    <string name="brush_color">برش کا رنگ</string>
+    <string name="stroke_eraser">سٹروک مٹانے والا</string>
+    <string name="area_eraser">علاقہ مٹانے والا</string>
+    <string name="eraser_size">مٹانے والے کا سائز</string>
+    <string name="erase_all_strokes">تمام سٹروکس مٹا دیں</string>
+    <string name="reset_canvas">کینوس ری سیٹ کریں</string>
+</resources>

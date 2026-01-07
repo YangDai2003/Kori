@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unlock_to_use">فتح القفل لاستخدام Kori</string>
+    <string name="dynamic_only_android_12">اللون الديناميكي</string>
+    <string name="screen_protection">حماية الشاشة</string>
+    <string name="screen_protection_detail">عند تشغيل هذه الميزة، لا يمكن التقاط محتوى التطبيق أو تسجيله، ولن يظهر المحتوى في قائمة التطبيقات في الخلفية.</string>
+    <string name="biometric">فتح القفل باستخدام الميزات البيومترية</string>
+    <string name="no_password_set">يرجى تعيين كلمة مرور شاشة القفل للنظام أولاً</string>
+    <string name="view_all_notes">عرض جميع الملاحظات</string>
+    <string name="home_widget">إضافة أداة إلى الشاشة الرئيسية</string>
+    <string name="new_plain_text">نص عادي جديد</string>
+    <string name="new_markdown">ماركداون جديد</string>
+    <string name="new_todo">Todo.txt جديد</string>
+    <string name="new_drawing">رسم جديد</string>
+</resources>

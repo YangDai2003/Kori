@@ -1,0 +1,252 @@
+<resources>
+    <string name="title">العنوان</string>
+    <string name="content">المحتوى</string>
+    <string name="delete">حذف</string>
+    <string name="back">رجوع</string>
+    <string name="cancel">إلغاء</string>
+    <string name="confirm">تأكيد</string>
+    <string name="open_navigation_drawer">فتح درج التنقل</string>
+    <string name="exit">خروج</string>
+    <string name="new">جديد</string>
+    <string name="open">فتح</string>
+    <string name="save">حفظ</string>
+    <string name="share">مشاركة</string>
+
+    <string name="sort_by">فرز حسب</string>
+    <string name="sort_name_a">اسم الملف (أ - ي)</string>
+    <string name="sort_name_d">اسم الملف (ي - أ)</string>
+    <string name="sort_created_a">وقت الإنشاء (قديم - جديد)</string>
+    <string name="sort_created_d">وقت الإنشاء (جديد - قديم)</string>
+    <string name="sort_modified_a">وقت التعديل (قديم - جديد)</string>
+    <string name="sort_modified_d">وقت التعديل (جديد - قديم)</string>
+
+    <plurals name="note_count">
+        <item quantity="zero">لا توجد ملاحظات</item>
+        <item quantity="one">ملاحظة واحدة</item>
+        <item quantity="two">ملاحظتان</item>
+        <item quantity="few">%1$d ملاحظات</item>
+        <item quantity="many">%1$d ملاحظة</item>
+        <item quantity="other">%1$d ملاحظة</item>
+    </plurals>
+    <string name="pin">تثبيت</string>
+    <string name="starred">تم التصفيح بنجمة</string>
+    <string name="others">آخرون</string>
+    <string name="move">نقل</string>
+    <string name="duplicate">تكرار</string>
+    <string name="all_notes">جميع الملاحظات</string>
+    <string name="templates">القوالب</string>
+    <string name="trash">سلة المهملات</string>
+    <string name="folders">المجلدات</string>
+    <string name="manage_folders">إدارة المجلدات</string>
+    <string name="settings">الإعدادات</string>
+    <string name="restore_all">استعادة الكل</string>
+    <string name="delete_all">حذف الكل</string>
+    <string name="modify">تعديل</string>
+    <string name="warning">تحذير</string>
+    <string name="deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue">سيؤدي حذف مجلد إلى حذف جميع الملاحظات التي يحتويها والتي لا يمكن استعادتها. هل تريد المتابعة؟</string>
+    <string name="restore">استعادة</string>
+    <string name="app_info">حول التطبيق</string>
+    <string name="version">الإصدار</string>
+    <string name="guide">دليل المستخدم</string>
+    <string name="privacy_policy">سياسة الخصوصية</string>
+    <string name="share_this_app">مشاركة هذا التطبيق</string>
+    <string name="shareContent">Kori هو تطبيق مفكرة ماركداون حديث تم إنشاؤه بالكامل باستخدام Compose Multiplatform.
+يتميز التطبيق بتصميم متجاوب، مما يجعله مناسبًا للأجهزة من جميع الأحجام.
+قم بتنزيله وتجربته الآن:
+- [GitHub](https://github.com/YangDai2003/Kori/releases)
+    </string>
+    <string name="destination_folder">مجلد الوجهة</string>
+    <string name="find">بحث</string>
+    <string name="replace">استبدال</string>
+    <string name="overview">نظرة عامة</string>
+    <string name="outline">الخطوط العريضة</string>
+    <string name="color_picker">منتقي الألوان</string>
+    <string name="name">الاسم</string>
+    <string name="search">بحث</string>
+    <string name="search_history">سجل البحث الأخير</string>
+    <string name="add_sample_note">إضافة ملاحظة نموذجية</string>
+    <string name="todo">مهام</string>
+    <string name="done">منتهي</string>
+    <string name="total">المجموع</string>
+
+    <string name="style">النمط</string>
+    <string name="dark_mode">وضع السمة</string>
+    <string name="color_platte">لوحة الألوان</string>
+    <string name="create_password">إنشاء رمز مرور مكون من ستة أرقام</string>
+    <string name="enter_again">الرجاء إدخال رمز المرور مرة أخرى</string>
+    <string name="lock">قفل</string>
+    <string name="password">كلمة المرور</string>
+    <string name="password_description">عند بدء تشغيل التطبيق، يحتاج المستخدم إلى إدخال كلمة مرور مكونة من ستة أرقام لإلغاء القفل.</string>
+    <string name="security">الأمان</string>
+    <string name="keep_screen_on">الحفاظ على تشغيل الشاشة</string>
+    <string name="report_a_bug_or_request_a_feature">الإبلاغ عن خطأ أو طلب ميزة</string>
+    <string name="system_default">النظام الافتراضي</string>
+    <string name="light">الوضع الفاتح</string>
+    <string name="dark">الوضع الداكن</string>
+    <string name="font_size">حجم الخط</string>
+    <string name="font_size_description">تكبير أو تصغير النص.</string>
+    <string name="font">الخط</string>
+
+    <string name="type">النوع</string>
+    <string name="plain_text">نص عادي</string>
+    <string name="created">تم الإنشاء</string>
+    <string name="updated">تم التحديث</string>
+    <string name="char_count">الأحرف</string>
+    <string name="word_count">الكلمات</string>
+    <string name="word_count_without_punctuation">الكلمات (باستثناء علامات الترقيم)</string>
+    <string name="line_count">الأسطر</string>
+    <string name="paragraph_count">الفقرات</string>
+
+    <string name="editor">المحرر</string>
+    <string name="default_view_for_note">العرض الافتراضي الذي تُفتح فيه الملاحظات.</string>
+    <string name="default_view">العرض الافتراضي</string>
+    <string name="editing_view">عرض التحرير</string>
+    <string name="reading_view">عرض القراءة</string>
+    <string name="line_numbers">أرقام الأسطر</string>
+    <string name="lint">التدقيق</string>
+    <string name="lint_description">عند التمكين، سيتم التحقق من تنسيق ومصطلحات ماركداون وTodo.txt لمعرفة ما إذا كانت تتوافق مع المواصفات، وسيتم وضع علامة على الأخطاء بخطوط حمراء متعرجة.</string>
+
+    <string name="date_format">تنسيق التاريخ</string>
+    <string name="time_format">تنسيق الوقت</string>
+    <string name="date_in_the_template_file_will_be_replaced_with_this_value">سيتم استبدال {{date}} في ملف القالب بهذه القيمة.\n</string>
+    <string name="you_can_also_use_date_yyyy_mm_dd_to_override_the_format_once">يمكنك أيضًا استخدام {{date:yyyy-MM-dd}} لتجاوز التنسيق مرة واحدة.\n</string>
+    <string name="for_more_syntax_refer_to">لمزيد من الصيغ، راجع </string>
+    <string name="format_reference">مرجع التنسيق</string>
+    <string name="your_current_syntax_looks_like_this">\nتبدو صيغتك الحالية مثل هذه: %1$s</string>
+    <string name="time_in_the_template_file_will_be_replaced_with_this_value">سيتم استبدال {{time}} في ملف القالب بهذه القيمة.\n</string>
+    <string name="you_can_also_use_time_hh_mm_to_override_the_format_once">يمكنك أيضًا استخدام {{time:HH:mm}} لتجاوز التنسيق مرة واحدة.\n</string>
+    <string name="template_folder_location">موقع مجلد القوالب</string>
+    <string name="files_in_this_folder_will_be_available_as_templates">ستكون الملفات الموجودة في هذا المجلد متاحة كقوالب.</string>
+    <string name="saveAsTemplate">حفظ هذه الملاحظة كقالب</string>
+    <string name="explore_and_share_community_note_templates">استكشف وشارك قوالب الملاحظات مع المجتمع</string>
+
+    <string name="card">البطاقة</string>
+    <string name="ellipsis">الحذف</string>
+    <string name="clip">المقطع</string>
+    <string name="default_size">عادي</string>
+    <string name="title_only">العنوان فقط</string>
+    <string name="compact">مدمج</string>
+    <string name="text_overflow">فيض النص</string>
+    <string name="card_size">حجم البطاقة</string>
+
+    <string name="cowriter">الكاتب المساعد</string>
+    <string name="cowriter_description">الوصول إلى نماذج الذكاء الاصطناعي من جهات خارجية</string>
+    <string name="model">النموذج</string>
+    <string name="key">المفتاح</string>
+    <string name="test">اختبار</string>
+    <string name="set_as_default">تعيين كافتراضي</string>
+    <string name="describe_the_note_you_want_to_generate">وصف الملاحظة التي ترغب في إنشائها</string>
+    <string name="rewrite">إعادة الكتابة</string>
+    <string name="summarize">تلخيص</string>
+    <string name="proofread">تدقيق</string>
+    <string name="shorten">اختصار</string>
+    <string name="elaborate">توسيع</string>
+
+    <string name="share_as">مشاركة كـ</string>
+    <string name="file">ملف</string>
+    <string name="text">نص</string>
+    <string name="export_as">تصدير كـ</string>
+    <string name="data">البيانات</string>
+    <string name="import_files">استيراد ملفات نصية</string>
+    <string name="import_files_description">استيراد ملفات نصية بشكل مجمّع. سيتم استخدام اسم الملف كعنوان، وسيتم اكتشاف نوع الملاحظة تلقائيًا.</string>
+    <string name="backup_description">نسخ جميع المجلدات والملاحظات احتياطيًا كملف JSON.</string>
+    <string name="restore_description">استعادة البيانات في ملف النسخ الاحتياطي المحدد من نوع JSON إلى قاعدة البيانات.</string>
+    <string name="reset_database_description">مسح جميع البيانات في قاعدة البيانات (بما في ذلك جميع الملاحظات والمجلدات).</string>
+    <string name="reset">إعادة تعيين</string>
+    <string name="reset_database">إعادة تعيين قاعدة البيانات</string>
+    <string name="reset_database_warning">ستؤدي إعادة تعيين قاعدة البيانات إلى حذف جميع الملاحظات والمجلدات بالكامل ولا يمكن استعادتها. يرجى تحديد ما إذا كنت ترغب في المتابعة؟</string>
+    <string name="backup">النسخ الاحتياطي</string>
+    <string name="restore_from_backup">استعادة</string>
+    <string name="migrate_from_open_note">ترحيل من ملف OpenNote JSON</string>
+
+    <string name="toolbox">صندوق الأدوات</string>
+    <string name="edit_local_file">تحرير ملف محلي</string>
+    <string name="fetch_file_from_url">جلب ملف من الرابط</string>
+    <string name="drag_drop">اسحب وأفلت للفتح</string>
+    <string name="language">اللغة</string>
+    <string name="language_description">اختيار لغة التطبيق</string>
+    <string name="todo_completed_at">منتهي: %1$s</string>
+    <string name="todo_created_at">تم الإنشاء: %1$s</string>
+    <string name="project_tag">وسم المشروع</string>
+    <string name="context_tag">وسم السياق</string>
+    <string name="completion_mark">علامة الإنجاز</string>
+    <string name="priority_mark">علامة الأولوية</string>
+    <string name="total_tasks">إجمالي المهام</string>
+    <string name="completed_tasks">المهام المنتهية</string>
+    <string name="pending_tasks">المهام المعلقة</string>
+    <string name="progress">التقدم</string>
+
+    <string name="side_sheet">الورقة الجانبية</string>
+    <string name="control">Ctrl</string>
+    <string name="undo">تراجع</string>
+    <string name="redo">إعادة</string>
+    <string name="bold">عريض</string>
+    <string name="italic">مائل</string>
+    <string name="underline">تسطير</string>
+    <string name="strikethrough">يتوسطه خط</string>
+    <string name="highlight">تظليل</string>
+    <string name="horizontal_rule">قاعدة أفقية</string>
+    <string name="mermaid_diagram">مخطط ميرمايد</string>
+    <string name="heading">عنوان</string>
+    <string name="link">رابط</string>
+    <string name="code">رمز</string>
+    <string name="quote">اقتباس</string>
+    <string name="math">رياضيات</string>
+    <string name="table">جدول</string>
+    <string name="insert_table">إدراج جدول</string>
+    <string name="indent_increase">زيادة المسافة البادئة</string>
+    <string name="indent_decrease">تقليل المسافة البادئة</string>
+    <string name="numbered_list">قائمة مرقمة</string>
+    <string name="bulleted_list">قائمة نقطية</string>
+    <string name="task_list">قائمة المهام</string>
+    <!-- Snackbar messages -->
+    <plurals name="snackbar_pinned">
+        <item quantity="zero">لا توجد ملاحظات مثبتة</item>
+        <item quantity="one">تم تثبيت ملاحظة واحدة</item>
+        <item quantity="two">تم تثبيت ملاحظتين</item>
+        <item quantity="few">تم تثبيت %1$d ملاحظات</item>
+        <item quantity="many">تم تثبيت %1$d ملاحظة</item>
+        <item quantity="other">تم تثبيت %1$d ملاحظة</item>
+    </plurals>
+    <plurals name="snackbar_moved_to_trash">
+        <item quantity="zero">لا توجد ملاحظات تم نقلها إلى سلة المهملات</item>
+        <item quantity="one">تم نقل ملاحظة واحدة إلى سلة المهملات</item>
+        <item quantity="two">تم نقل ملاحظتين إلى سلة المهملات</item>
+        <item quantity="few">تم نقل %1$d ملاحظات إلى سلة المهملات</item>
+        <item quantity="many">تم نقل %1$d ملاحظة إلى سلة المهملات</item>
+        <item quantity="other">تم نقل %1$d ملاحظة إلى سلة المهملات</item>
+    </plurals>
+    <plurals name="snackbar_deleted_forever">
+        <item quantity="zero">لا توجد ملاحظات محذوفة إلى الأبد</item>
+        <item quantity="one">تم حذف ملاحظة واحدة إلى الأبد</item>
+        <item quantity="two">تم حذف ملاحظتين إلى الأبد</item>
+        <item quantity="few">تم حذف %1$d ملاحظات إلى الأبد</item>
+        <item quantity="many">تم حذف %1$d ملاحظة إلى الأبد</item>
+        <item quantity="other">تم حذف %1$d ملاحظة إلى الأبد</item>
+    </plurals>
+    <plurals name="snackbar_restored">
+        <item quantity="zero">لا توجد ملاحظات مستعادة</item>
+        <item quantity="one">تم استعادة ملاحظة واحدة</item>
+        <item quantity="two">تم استعادة ملاحظتين</item>
+        <item quantity="few">تم استعادة %1$d ملاحظات</item>
+        <item quantity="many">تم استعادة %1$d ملاحظة</item>
+        <item quantity="other">تم استعادة %1$d ملاحظة</item>
+    </plurals>
+    <string name="snackbar_restored_all">تم استعادة جميع الملاحظات في سلة المهملات</string>
+    <string name="snackbar_deleted_all">تم حذف جميع الملاحظات في سلة المهملات</string>
+
+    <string name="drawing">رسم</string>
+    <string name="white">أبيض</string>
+    <string name="black">أسود</string>
+    <string name="none">لا شيء</string>
+    <string name="square">مربع</string>
+    <string name="rule">قاعدة</string>
+    <string name="dot">نقطة</string>
+    <string name="brush_size">حجم الفرشاة</string>
+    <string name="brush_color">لون الفرشاة</string>
+    <string name="stroke_eraser">ممحاة الخط</string>
+    <string name="area_eraser">ممحاة المنطقة</string>
+    <string name="eraser_size">حجم الممحاة</string>
+    <string name="erase_all_strokes">مسح جميع الخطوط</string>
+    <string name="reset_canvas">إعادة تعيين اللوحة</string>
+</resources>

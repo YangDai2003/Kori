@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unlock_to_use">Kori استعمال کرنے کے لیے ان لاک کریں</string>
+    <string name="dynamic_only_android_12">متحرک رنگ</string>
+    <string name="screen_protection">اسکرین کی حفاظت</string>
+    <string name="screen_protection_detail">جب یہ خصوصیت آن ہوتی ہے، تو ایپ کا مواد کیپچر یا ریکارڈ نہیں کیا جا سکتا، اور مواد بیک گراؤنڈ ایپ کی فہرست میں ظاہر نہیں ہوگا۔</string>
+    <string name="biometric">بائیو میٹرکس کے ساتھ ان لاک کریں</string>
+    <string name="no_password_set">براہ کرم پہلے سسٹم لاک اسکرین پاس ورڈ سیٹ کریں</string>
+    <string name="view_all_notes">تمام نوٹس دیکھیں</string>
+    <string name="home_widget">ہوم اسکرین میں ویجیٹ شامل کریں</string>
+    <string name="new_plain_text">نیا سادہ متن</string>
+    <string name="new_markdown">نیا مارک ڈاؤن</string>
+    <string name="new_todo">نیا ٹوڈو.ٹیکسٹ</string>
+    <string name="new_drawing">نیا ڈرائنگ</string>
+</resources>
