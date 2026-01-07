@@ -3,6 +3,7 @@ package org.yangdai.kori.presentation.component.dialog
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -112,6 +113,17 @@ private fun TableGridSelector(
             .pointerInput(Unit) {
                 detectDragGestures { change, _ ->
                     val offset = change.position
+                    val row = ((offset.y) / (cellSizePx + cellSpacingPx)).toInt() + 1
+                    val col = ((offset.x) / (cellSizePx + cellSpacingPx)).toInt() + 1
+                    if (row in 1..maxGridSize && col in 1..maxGridSize) {
+                        currentRows = row.fastCoerceIn(3, maxGridSize)
+                        currentCols = col.fastCoerceIn(2, maxGridSize)
+                        onSelectionChange(currentRows, currentCols)
+                    }
+                }
+            }
+            .pointerInput(Unit) {
+                detectTapGestures { offset ->
                     val row = ((offset.y) / (cellSizePx + cellSpacingPx)).toInt() + 1
                     val col = ((offset.x) / (cellSizePx + cellSpacingPx)).toInt() + 1
                     if (row in 1..maxGridSize && col in 1..maxGridSize) {
