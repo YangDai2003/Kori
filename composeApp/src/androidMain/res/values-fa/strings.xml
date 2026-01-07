@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unlock_to_use">برای استفاده از Kori قفل را باز کنید</string>
+    <string name="dynamic_only_android_12">رنگ پویا</string>
+    <string name="screen_protection">محافظت از صفحه نمایش</string>
+    <string name="screen_protection_detail">هنگام روشن بودن این ویژگی، محتوای برنامه نمی‌تواند ضبط یا ثبت شود و محتوا در فهرست برنامه‌های پس‌زمینه نمایش داده نخواهد شد.</string>
+    <string name="biometric">باز کردن قفل با اثرانگشت</string>
+    <string name="no_password_set">لطفاً ابتدا رمز عبور صفحه قفل سیستم را تنظیم کنید</string>
+    <string name="view_all_notes">مشاهده تمام یادداشت‌ها</string>
+    <string name="home_widget">افزودن ابزارک به صفحه نخست</string>
+    <string name="new_plain_text">متن ساده جدید</string>
+    <string name="new_markdown">مارک‌داون جدید</string>
+    <string name="new_todo">Todo.txt جدید</string>
+    <string name="new_drawing">طراحی جدید</string>
+</resources>

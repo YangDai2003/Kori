@@ -1,0 +1,242 @@
+<resources>
+    <string name="title">Tytuł</string>
+    <string name="content">Zawartość</string>
+    <string name="delete">Usuń</string>
+    <string name="back">Wstecz</string>
+    <string name="cancel">Anuluj</string>
+    <string name="confirm">Potwierdź</string>
+    <string name="open_navigation_drawer">Otwórz panel nawigacyjny</string>
+    <string name="exit">Wyjdź</string>
+    <string name="new">Nowy</string>
+    <string name="open">Otwórz</string>
+    <string name="save">Zapisz</string>
+    <string name="share">Udostępnij</string>
+
+    <string name="sort_by">Sortuj według</string>
+    <string name="sort_name_a">Nazwa pliku (A - Z)</string>
+    <string name="sort_name_d">Nazwa pliku (Z - A)</string>
+    <string name="sort_created_a">Czas utworzenia (stare - nowe)</string>
+    <string name="sort_created_d">Czas utworzenia (nowe - stare)</string>
+    <string name="sort_modified_a">Czas modyfikacji (stare - nowe)</string>
+    <string name="sort_modified_d">Czas modyfikacji (nowe - stare)</string>
+
+    <plurals name="note_count">
+        <item quantity="one">%1$d notatka</item>
+        <item quantity="few">%1$d notatki</item>
+        <item quantity="many">%1$d notatek</item>
+        <item quantity="other">%1$d notatek</item>
+    </plurals>
+    <string name="pin">Przypnij</string>
+    <string name="starred">Oznaczone gwiazdką</string>
+    <string name="others">Inne</string>
+    <string name="move">Przenieś</string>
+    <string name="duplicate">Duplikuj</string>
+    <string name="all_notes">Wszystkie notatki</string>
+    <string name="templates">Szablony</string>
+    <string name="trash">Kosz</string>
+    <string name="folders">Foldery</string>
+    <string name="manage_folders">Zarządzaj folderami</string>
+    <string name="settings">Ustawienia</string>
+    <string name="restore_all">Przywróć wszystko</string>
+    <string name="delete_all">Usuń wszystko</string>
+    <string name="modify">Modyfikuj</string>
+    <string name="warning">Ostrzeżenie</string>
+    <string name="deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue">Usunięcie folderu spowoduje również usunięcie wszystkich zawartych w nim notatek, których nie będzie można przywrócić. Czy chcesz kontynuować?</string>
+    <string name="restore">Przywróć</string>
+    <string name="app_info">O aplikacji</string>
+    <string name="version">Wersja</string>
+    <string name="guide">Podręcznik użytkownika</string>
+    <string name="privacy_policy">Polityka prywatności</string>
+    <string name="share_this_app">Udostępnij tę aplikację</string>
+    <string name="shareContent">Kori to nowoczesna aplikacja notatnika Markdown zbudowana w całości przy użyciu Compose Multiplatform.
+Aplikacja ma responsywny design, co czyni ją odpowiednią dla urządzeń o dowolnym rozmiarze.
+Pobierz i wypróbuj już teraz:
+- [GitHub](https://github.com/YangDai2003/Kori/releases)
+    </string>
+    <string name="destination_folder">Folder docelowy</string>
+    <string name="find">Znajdź</string>
+    <string name="replace">Zamień</string>
+    <string name="overview">Przegląd</string>
+    <string name="outline">Zarys</string>
+    <string name="color_picker">Selektor kolorów</string>
+    <string name="name">Nazwa</string>
+    <string name="search">Szukaj</string>
+    <string name="search_history">Ostatnia historia wyszukiwania</string>
+    <string name="add_sample_note">Dodaj przykładową notatkę</string>
+    <string name="todo">Do zrobienia</string>
+    <string name="done">Gotowe</string>
+    <string name="total">Razem</string>
+
+    <string name="style">Styl</string>
+    <string name="dark_mode">Tryb motywu</string>
+    <string name="color_platte">Paleta kolorów</string>
+    <string name="create_password">Utwórz sześciocyfrowy kod</string>
+    <string name="enter_again">Wprowadź ponownie swój kod</string>
+    <string name="lock">Zablokuj</string>
+    <string name="password">Hasło</string>
+    <string name="password_description">Podczas uruchamiania aplikacji użytkownik musi wprowadzić sześciocyfrowe hasło, aby ją odblokować.</string>
+    <string name="security">Bezpieczeństwo</string>
+    <string name="keep_screen_on">Pozostaw ekran włączony</string>
+    <string name="report_a_bug_or_request_a_feature">Zgłoś błąd lub poproś o funkcję</string>
+    <string name="system_default">Domyślne systemowe</string>
+    <string name="light">Tryb jasny</string>
+    <string name="dark">Tryb ciemny</string>
+    <string name="font_size">Rozmiar czcionki</string>
+    <string name="font_size_description">Zwiększ lub zmniejsz tekst.</string>
+    <string name="font">Czcionka</string>
+
+    <string name="type">Typ</string>
+    <string name="plain_text">Zwykły tekst</string>
+    <string name="created">Utworzono</string>
+    <string name="updated">Zaktualizowano</string>
+    <string name="char_count">Znaki</string>
+    <string name="word_count">Słowa</string>
+    <string name="word_count_without_punctuation">Słowa (bez interpunkcji)</string>
+    <string name="line_count">Wiersze</string>
+    <string name="paragraph_count">Akapity</string>
+
+    <string name="editor">Edytor</string>
+    <string name="default_view_for_note">Domyślny widok, w którym otwierane są notatki.</string>
+    <string name="default_view">Domyślny widok</string>
+    <string name="editing_view">Widok edycji</string>
+    <string name="reading_view">Widok odczytu</string>
+    <string name="line_numbers">Numery wierszy</string>
+    <string name="lint">Sprawdzanie</string>
+    <string name="lint_description">Po włączeniu format i składnia Markdown oraz Todo.txt będą sprawdzane pod kątem zgodności ze specyfikacją, a błędy będą oznaczane czerwonymi falistymi liniami.</string>
+
+    <string name="date_format">Format daty</string>
+    <string name="time_format">Format czasu</string>
+    <string name="date_in_the_template_file_will_be_replaced_with_this_value">{{date}} w pliku szablonu zostanie zastąpione tą wartością.\n</string>
+    <string name="you_can_also_use_date_yyyy_mm_dd_to_override_the_format_once">Możesz również użyć {{date:yyyy-MM-dd}}, aby jednorazowo zastąpić format.\n</string>
+    <string name="for_more_syntax_refer_to">Aby uzyskać więcej informacji o składni, zobacz </string>
+    <string name="format_reference">odniesienie do formatu</string>
+    <string name="your_current_syntax_looks_like_this">\nTwoja obecna składnia wygląda tak: %1$s</string>
+    <string name="time_in_the_template_file_will_be_replaced_with_this_value">{{time}} w pliku szablonu zostanie zastąpione tą wartością.\n</string>
+    <string name="you_can_also_use_time_hh_mm_to_override_the_format_once">Możesz również użyć {{time:HH:mm}}, aby jednorazowo zastąpić format.\n</string>
+    <string name="template_folder_location">Lokalizacja folderu szablonów</string>
+    <string name="files_in_this_folder_will_be_available_as_templates">Pliki w tym folderze będą dostępne jako szablony.</string>
+    <string name="saveAsTemplate">Zapisz tę notatkę jako szablon</string>
+    <string name="explore_and_share_community_note_templates">Eksploruj i udostępniaj szablony notatek społeczności</string>
+
+    <string name="card">Karta</string>
+    <string name="ellipsis">Wielokropek</string>
+    <string name="clip">Klip</string>
+    <string name="default_size">Normalny</string>
+    <string name="title_only">Tylko tytuł</string>
+    <string name="compact">Kompaktowy</string>
+    <string name="text_overflow">Przepełnienie tekstu</string>
+    <string name="card_size">Rozmiar karty</string>
+
+    <string name="cowriter">Współpracownik</string>
+    <string name="cowriter_description">Dostęp do modeli sztucznej inteligencji innych firm</string>
+    <string name="model">Model</string>
+    <string name="key">Klucz</string>
+    <string name="test">Test</string>
+    <string name="set_as_default">Ustaw jako domyślne</string>
+    <string name="describe_the_note_you_want_to_generate">Opisz notatkę, którą chcesz wygenerować</string>
+    <string name="rewrite">Przepisz</string>
+    <string name="summarize">Podsumuj</string>
+    <string name="proofread">Korekta</string>
+    <string name="shorten">Skróć</string>
+    <string name="elaborate">Rozwiń</string>
+
+    <string name="share_as">Udostępnij jako</string>
+    <string name="file">Plik</string>
+    <string name="text">Tekst</string>
+    <string name="export_as">Eksportuj jako</string>
+    <string name="data">Dane</string>
+    <string name="import_files">Importuj pliki tekstowe</string>
+    <string name="import_files_description">Zbiorcze importowanie plików tekstowych. Nazwa pliku zostanie użyta jako tytuł, a typ notatki zostanie automatycznie wykryty.</string>
+    <string name="backup_description">Utwórz kopię zapasową wszystkich folderów i notatek jako plik JSON.</string>
+    <string name="restore_description">Przywróć dane z wybranego pliku kopii zapasowej w formacie JSON do bazy danych.</string>
+    <string name="reset_database_description">Wyczyść wszystkie dane w bazie danych (w tym wszystkie notatki i foldery).</string>
+    <string name="reset">Resetuj</string>
+    <string name="reset_database">Resetuj bazę danych</string>
+    <string name="reset_database_warning">Zresetowanie bazy danych spowoduje całkowite usunięcie wszystkich notatek i folderów, których nie będzie można odzyskać. Czy chcesz kontynuować?</string>
+    <string name="backup">Kopia zapasowa</string>
+    <string name="restore_from_backup">Przywróć</string>
+    <string name="migrate_from_open_note">Migruj z pliku JSON OpenNote</string>
+
+    <string name="toolbox">Zestaw narzędzi</string>
+    <string name="edit_local_file">Edytuj plik lokalny</string>
+    <string name="fetch_file_from_url">Pobierz plik z adresu URL</string>
+    <string name="drag_drop">Przeciągnij i upuść, aby otworzyć</string>
+    <string name="language">Język</string>
+    <string name="language_description">Wybierz język aplikacji</string>
+    <string name="todo_completed_at">Ukończono: %1$s</string>
+    <string name="todo_created_at">Utworzono: %1$s</string>
+    <string name="project_tag">Etykieta projektu</string>
+    <string name="context_tag">Etykieta kontekstu</string>
+    <string name="completion_mark">Znak ukończenia</string>
+    <string name="priority_mark">Znak priorytetu</string>
+    <string name="total_tasks">Wszystkie zadania</string>
+    <string name="completed_tasks">Ukończone zadania</string>
+    <string name="pending_tasks">Oczekujące zadania</string>
+    <string name="progress">Postęp</string>
+
+    <string name="side_sheet">Boczny arkusz</string>
+    <string name="control">Ctrl</string>
+    <string name="undo">Cofnij</string>
+    <string name="redo">Ponów</string>
+    <string name="bold">Pogrubienie</string>
+    <string name="italic">Kursywa</string>
+    <string name="underline">Podkreślenie</string>
+    <string name="strikethrough">Przekreślenie</string>
+    <string name="highlight">Wyróżnienie</string>
+    <string name="horizontal_rule">Linia pozioma</string>
+    <string name="mermaid_diagram">Diagram Mermaid</string>
+    <string name="heading">Nagłówek</string>
+    <string name="link">Link</string>
+    <string name="code">Kod</string>
+    <string name="quote">Cytat</string>
+    <string name="math">Matematyka</string>
+    <string name="table">Tabela</string>
+    <string name="insert_table">Wstaw tabelę</string>
+    <string name="indent_increase">Zwiększ wcięcie</string>
+    <string name="indent_decrease">Zmniejsz wcięcie</string>
+    <string name="numbered_list">Lista numerowana</string>
+    <string name="bulleted_list">Lista wypunktowana</string>
+    <string name="task_list">Lista zadań</string>
+    <!-- Snackbar messages -->
+    <plurals name="snackbar_pinned">
+        <item quantity="one">%1$d notatka przypięta</item>
+        <item quantity="few">%1$d notatki przypięte</item>
+        <item quantity="many">%1$d notatek przypiętych</item>
+        <item quantity="other">%1$d notatek przypiętych</item>
+    </plurals>
+    <plurals name="snackbar_moved_to_trash">
+        <item quantity="one">%1$d notatka przeniesiona do kosza</item>
+        <item quantity="few">%1$d notatki przeniesione do kosza</item>
+        <item quantity="many">%1$d notatek przeniesionych do kosza</item>
+        <item quantity="other">%1$d notatek przeniesionych do kosza</item>
+    </plurals>
+    <plurals name="snackbar_deleted_forever">
+        <item quantity="one">%1$d notatka trwale usunięta</item>
+        <item quantity="few">%1$d notatki trwale usunięte</item>
+        <item quantity="many">%1$d notatek trwale usuniętych</item>
+        <item quantity="other">%1$d notatek trwale usuniętych</item>
+    </plurals>
+    <plurals name="snackbar_restored">
+        <item quantity="one">%1$d notatka przywrócona</item>
+        <item quantity="few">%1$d notatki przywrócone</item>
+        <item quantity="many">%1$d notatek przywróconych</item>
+        <item quantity="other">%1$d notatek przywróconych</item>
+    </plurals>
+    <string name="snackbar_restored_all">Wszystkie notatki w koszu zostały przywrócone</string>
+    <string name="snackbar_deleted_all">Wszystkie notatki w koszu zostały usunięte</string>
+
+    <string name="drawing">Rysowanie</string>
+    <string name="white">Biały</string>
+    <string name="black">Czarny</string>
+    <string name="none">Brak</string>
+    <string name="square">Kwadrat</string>
+    <string name="rule">Linijka</string>
+    <string name="dot">Kropka</string>
+    <string name="brush_size">Rozmiar pędzla</string>
+    <string name="brush_color">Kolor pędzla</string>
+    <string name="stroke_eraser">Gumka do linii</string>
+    <string name="area_eraser">Gumka do obszaru</string>
+    <string name="eraser_size">Rozmiar gumki</string>
+    <string name="erase_all_strokes">Wymaż wszystkie linie</string>
+    <string name="reset_canvas">Zresetuj płótno</string>
+</resources>

@@ -1,0 +1,232 @@
+<resources>
+    <string name="title">Titolo</string>
+    <string name="content">Contenuto</string>
+    <string name="delete">Elimina</string>
+    <string name="back">Indietro</string>
+    <string name="cancel">Annulla</string>
+    <string name="confirm">Conferma</string>
+    <string name="open_navigation_drawer">Apri il cassetto di navigazione</string>
+    <string name="exit">Esci</string>
+    <string name="new">Nuovo</string>
+    <string name="open">Apri</string>
+    <string name="save">Salva</string>
+    <string name="share">Condividi</string>
+
+    <string name="sort_by">Ordina per</string>
+    <string name="sort_name_a">Nome file (A - Z)</string>
+    <string name="sort_name_d">Nome file (Z - A)</string>
+    <string name="sort_created_a">Data di creazione (vecchio - nuovo)</string>
+    <string name="sort_created_d">Data di creazione (nuovo - vecchio)</string>
+    <string name="sort_modified_a">Data di modifica (vecchio - nuovo)</string>
+    <string name="sort_modified_d">Data di modifica (nuovo - vecchio)</string>
+
+    <plurals name="note_count">
+        <item quantity="one">%1$d nota</item>
+        <item quantity="other">%1$d note</item>
+    </plurals>
+    <string name="pin">Fissa</string>
+    <string name="starred">Con stella</string>
+    <string name="others">Altri</string>
+    <string name="move">Sposta</string>
+    <string name="duplicate">Duplica</string>
+    <string name="all_notes">Tutte le note</string>
+    <string name="templates">Modelli</string>
+    <string name="trash">Cestino</string>
+    <string name="folders">Cartelle</string>
+    <string name="manage_folders">Gestisci cartelle</string>
+    <string name="settings">Impostazioni</string>
+    <string name="restore_all">Ripristina tutto</string>
+    <string name="delete_all">Elimina tutto</string>
+    <string name="modify">Modifica</string>
+    <string name="warning">Avviso</string>
+    <string name="deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue">L\'eliminazione di una cartella comporterà anche l\'eliminazione di tutte le note in essa contenute e non potranno essere ripristinate. Vuoi continuare?</string>
+    <string name="restore">Ripristina</string>
+    <string name="app_info">Informazioni sull\'app</string>
+    <string name="version">Versione</string>
+    <string name="guide">Guida utente</string>
+    <string name="privacy_policy">Informativa sulla privacy</string>
+    <string name="share_this_app">Condividi questa app</string>
+    <string name="shareContent">Kori è una moderna app per appunti Markdown creata interamente con Compose Multiplatform.
+L\'app vanta un design reattivo, rendendola adatta per dispositivi di tutte le dimensioni.
+Scaricala e provala ora:
+- [GitHub](https://github.com/YangDai2003/Kori/releases)
+    </string>
+    <string name="destination_folder">Cartella di destinazione</string>
+    <string name="find">Trova</string>
+    <string name="replace">Sostituisci</string>
+    <string name="overview">Panoramica</string>
+    <string name="outline">Contorno</string>
+    <string name="color_picker">Selettore di colore</string>
+    <string name="name">Nome</string>
+    <string name="search">Cerca</string>
+    <string name="search_history">Cronologia delle ricerche recenti</string>
+    <string name="add_sample_note">Aggiungi nota di esempio</string>
+    <string name="todo">Da fare</string>
+    <string name="done">Fatto</string>
+    <string name="total">Totale</string>
+
+    <string name="style">Stile</string>
+    <string name="dark_mode">Modalità tema</string>
+    <string name="color_platte">Tavolozza dei colori</string>
+    <string name="create_password">Crea un codice a sei cifre</string>
+    <string name="enter_again">Inserisci nuovamente il tuo codice</string>
+    <string name="lock">Blocca</string>
+    <string name="password">Password</string>
+    <string name="password_description">Quando l\'app viene avviata, l\'utente deve inserire una password di sei cifre per sbloccarla.</string>
+    <string name="security">Sicurezza</string>
+    <string name="keep_screen_on">Mantieni lo schermo acceso</string>
+    <string name="report_a_bug_or_request_a_feature">Segnala un bug o richiedi una funzionalità</string>
+    <string name="system_default">Predefinito di sistema</string>
+    <string name="light">Modalità chiara</string>
+    <string name="dark">Modalità scura</string>
+    <string name="font_size">Dimensione carattere</string>
+    <string name="font_size_description">Rendi il testo più grande o più piccolo.</string>
+    <string name="font">Carattere</string>
+
+    <string name="type">Tipo</string>
+    <string name="plain_text">Testo semplice</string>
+    <string name="created">Creato</string>
+    <string name="updated">Aggiornato</string>
+    <string name="char_count">Caratteri</string>
+    <string name="word_count">Parole</string>
+    <string name="word_count_without_punctuation">Parole (escluse le punteggiature)</string>
+    <string name="line_count">Linee</string>
+    <string name="paragraph_count">Paragrafi</string>
+
+    <string name="editor">Editor</string>
+    <string name="default_view_for_note">La vista predefinita in cui vengono aperte le note.</string>
+    <string name="default_view">Vista predefinita</string>
+    <string name="editing_view">Vista di modifica</string>
+    <string name="reading_view">Vista di lettura</string>
+    <string name="line_numbers">Numeri di riga</string>
+    <string name="lint">Controllo</string>
+    <string name="lint_description">Quando abilitato, il formato e la sintassi di Markdown e Todo.txt verranno controllati per verificare la conformità alle specifiche e gli errori saranno segnalati con linee rosse ondulate.</string>
+
+    <string name="date_format">Formato data</string>
+    <string name="time_format">Formato ora</string>
+    <string name="date_in_the_template_file_will_be_replaced_with_this_value">{{date}} nel file modello verrà sostituito con questo valore.\n</string>
+    <string name="you_can_also_use_date_yyyy_mm_dd_to_override_the_format_once">Puoi anche usare {{date:yyyy-MM-dd}} per sovrascrivere il formato una volta.\n</string>
+    <string name="for_more_syntax_refer_to">Per ulteriore sintassi, fare riferimento a </string>
+    <string name="format_reference">riferimento al formato</string>
+    <string name="your_current_syntax_looks_like_this">\nLa tua sintassi attuale appare così: %1$s</string>
+    <string name="time_in_the_template_file_will_be_replaced_with_this_value">{{time}} nel file modello verrà sostituito con questo valore.\n</string>
+    <string name="you_can_also_use_time_hh_mm_to_override_the_format_once">Puoi anche usare {{time:HH:mm}} per sovrascrivere il formato una volta.\n</string>
+    <string name="template_folder_location">Posizione cartella modelli</string>
+    <string name="files_in_this_folder_will_be_available_as_templates">I file in questa cartella saranno disponibili come modelli.</string>
+    <string name="saveAsTemplate">Salva questa nota come modello</string>
+    <string name="explore_and_share_community_note_templates">Esplora e condividi modelli di note con la comunità</string>
+
+    <string name="card">Scheda</string>
+    <string name="ellipsis">Puntini di sospensione</string>
+    <string name="clip">Clip</string>
+    <string name="default_size">Normale</string>
+    <string name="title_only">Solo titolo</string>
+    <string name="compact">Compatto</string>
+    <string name="text_overflow">Sovrabbondanza di testo</string>
+    <string name="card_size">Dimensione scheda</string>
+
+    <string name="cowriter">Co-scrittore</string>
+    <string name="cowriter_description">Accesso ai modelli di intelligenza artificiale di terze parti</string>
+    <string name="model">Modello</string>
+    <string name="key">Chiave</string>
+    <string name="test">Test</string>
+    <string name="set_as_default">Imposta come predefinito</string>
+    <string name="describe_the_note_you_want_to_generate">Descrivi la nota che vuoi generare</string>
+    <string name="rewrite">Riscrivi</string>
+    <string name="summarize">Riassumi</string>
+    <string name="proofread">Correggi</string>
+    <string name="shorten">Accorcia</string>
+    <string name="elaborate">Espandi</string>
+
+    <string name="share_as">Condividi come</string>
+    <string name="file">File</string>
+    <string name="text">Testo</string>
+    <string name="export_as">Esporta come</string>
+    <string name="data">Dati</string>
+    <string name="import_files">Importa file di testo</string>
+    <string name="import_files_description">Importa file di testo in batch. Il nome del file verrà utilizzato come titolo e il tipo di nota verrà rilevato automaticamente.</string>
+    <string name="backup_description">Esegui il backup di tutte le cartelle e le note come file JSON.</string>
+    <string name="restore_description">Ripristina i dati nel file di backup selezionato in formato JSON nel database.</string>
+    <string name="reset_database_description">Cancella tutti i dati nel database (inclusi tutte le note e le cartelle).</string>
+    <string name="reset">Ripristina</string>
+    <string name="reset_database">Ripristina database</string>
+    <string name="reset_database_warning">Il ripristino del database comporterà l\'eliminazione completa di tutte le note e le cartelle e non potranno essere recuperate. Si prega di decidere se continuare?</string>
+    <string name="backup">Backup</string>
+    <string name="restore_from_backup">Ripristina</string>
+    <string name="migrate_from_open_note">Migra da file JSON OpenNote</string>
+
+    <string name="toolbox">Casella degli attrezzi</string>
+    <string name="edit_local_file">Modifica file locale</string>
+    <string name="fetch_file_from_url">Recupera file dall\'URL</string>
+    <string name="drag_drop">Trascina e rilascia per aprire</string>
+    <string name="language">Lingua</string>
+    <string name="language_description">Scegli la lingua dell\'app</string>
+    <string name="todo_completed_at">Completato: %1$s</string>
+    <string name="todo_created_at">Creato: %1$s</string>
+    <string name="project_tag">Tag del progetto</string>
+    <string name="context_tag">Tag del contesto</string>
+    <string name="completion_mark">Segno di completamento</string>
+    <string name="priority_mark">Segno di priorità</string>
+    <string name="total_tasks">Compiti totali</string>
+    <string name="completed_tasks">Compiti completati</string>
+    <string name="pending_tasks">Compiti in sospeso</string>
+    <string name="progress">Progresso</string>
+
+    <string name="side_sheet">Foglio laterale</string>
+    <string name="control">Ctrl</string>
+    <string name="undo">Annulla</string>
+    <string name="redo">Ripeti</string>
+    <string name="bold">Grassetto</string>
+    <string name="italic">Corsivo</string>
+    <string name="underline">Sottolineato</string>
+    <string name="strikethrough">Barrato</string>
+    <string name="highlight">Evidenzia</string>
+    <string name="horizontal_rule">Riga orizzontale</string>
+    <string name="mermaid_diagram">Diagramma Mermaid</string>
+    <string name="heading">Intestazione</string>
+    <string name="link">Collegamento</string>
+    <string name="code">Codice</string>
+    <string name="quote">Citazione</string>
+    <string name="math">Matematica</string>
+    <string name="table">Tabella</string>
+    <string name="insert_table">Inserisci tabella</string>
+    <string name="indent_increase">Aumenta rientro</string>
+    <string name="indent_decrease">Riduci rientro</string>
+    <string name="numbered_list">Elenco numerato</string>
+    <string name="bulleted_list">Elenco puntato</string>
+    <string name="task_list">Elenco compiti</string>
+    <!-- Snackbar messages -->
+    <plurals name="snackbar_pinned">
+        <item quantity="one">%1$d nota fissata</item>
+        <item quantity="other">%1$d note fissate</item>
+    </plurals>
+    <plurals name="snackbar_moved_to_trash">
+        <item quantity="one">%1$d nota spostata nel cestino</item>
+        <item quantity="other">%1$d note spostate nel cestino</item>
+    </plurals>
+    <plurals name="snackbar_deleted_forever">
+        <item quantity="one">%1$d nota eliminata per sempre</item>
+        <item quantity="other">%1$d note eliminate per sempre</item>
+    </plurals>
+    <plurals name="snackbar_restored">
+        <item quantity="one">%1$d nota ripristinata</item>
+        <item quantity="other">%1$d note ripristinate</item>
+    </plurals>
+    <string name="snackbar_restored_all">Tutte le note nel cestino sono state ripristinate</string>
+    <string name="snackbar_deleted_all">Tutte le note nel cestino sono state eliminate</string>
+
+    <string name="drawing">Disegno</string>
+    <string name="white">Bianco</string>
+    <string name="black">Nero</string>
+    <string name="none">Nessuno</string>
+    <string name="square">Quadrato</string>
+    <string name="rule">Regola</string>
+    <string name="dot">Punto</string>
+    <string name="brush_size">Dimensione pennello</string>
+    <string name="brush_color">Colore pennello</string>
+    <string name="stroke_eraser">Cancella tratto</string>
+    <string name="area_eraser">Cancella area</string>
+    <string name="eraser_size">Dimensione cancellino</string>
+    <string name="erase_all_strokes">Cancella tutti i tratti</string>
+    <string name="reset_canvas">Ripristina canvas</string>
+</resources>

@@ -1,0 +1,232 @@
+<resources>
+    <string name="title">عنوان</string>
+    <string name="content">محتوا</string>
+    <string name="delete">حذف</string>
+    <string name="back">بازگشت</string>
+    <string name="cancel">لغو</string>
+    <string name="confirm">تایید</string>
+    <string name="open_navigation_drawer">باز کردن کشو ناوبری</string>
+    <string name="exit">خروج</string>
+    <string name="new">جدید</string>
+    <string name="open">باز کردن</string>
+    <string name="save">ذخیره</string>
+    <string name="share">اشتراک گذاری</string>
+
+    <string name="sort_by">مرتب سازی بر اساس</string>
+    <string name="sort_name_a">نام فایل (الف - ی)</string>
+    <string name="sort_name_d">نام فایل (ی - الف)</string>
+    <string name="sort_created_a">زمان ایجاد (قدیمی - جدید)</string>
+    <string name="sort_created_d">زمان ایجاد (جدید - قدیمی)</string>
+    <string name="sort_modified_a">زمان اصلاح (قدیمی - جدید)</string>
+    <string name="sort_modified_d">زمان اصلاح (جدید - قدیمی)</string>
+
+    <plurals name="note_count">
+        <item quantity="one">%1$d یادداشت</item>
+        <item quantity="other">%1$d یادداشت</item>
+    </plurals>
+    <string name="pin">سنجاق کردن</string>
+    <string name="starred">ستاره دار</string>
+    <string name="others">دیگران</string>
+    <string name="move">انتقال</string>
+    <string name="duplicate">تکثیر</string>
+    <string name="all_notes">همه یادداشت‌ها</string>
+    <string name="templates">الگوها</string>
+    <string name="trash">سطل زباله</string>
+    <string name="folders">پوشه‌ها</string>
+    <string name="manage_folders">مدیریت پوشه‌ها</string>
+    <string name="settings">تنظیمات</string>
+    <string name="restore_all">بازیابی همه</string>
+    <string name="delete_all">حذف همه</string>
+    <string name="modify">اصلاح</string>
+    <string name="warning">هشدار</string>
+    <string name="deleting_a_folder_will_also_delete_all_the_notes_it_contains_and_they_cannot_be_restored_do_you_want_to_continue">حذف یک پوشه منجر به حذف تمام یادداشت‌های موجود در آن می‌شود و آنها قابل بازیابی نخواهند بود. آیا می‌خواهید ادامه دهید؟</string>
+    <string name="restore">بازیابی</string>
+    <string name="app_info">درباره برنامه</string>
+    <string name="version">نسخه</string>
+    <string name="guide">راهنمای کاربر</string>
+    <string name="privacy_policy">سیاست حفظ حریم خصوصی</string>
+    <string name="share_this_app">به اشتراک گذاری این برنامه</string>
+    <string name="shareContent">Kori یک برنامه یادداشت مدرن مارک‌داون است که کاملاً با Compose Multiplatform ساخته شده است.
+این برنامه دارای یک طراحی واکنش‌گرا است که آن را برای دستگاه‌هایی با هر اندازه مناسب می‌کند.
+همین الان دانلود و امتحان کنید:
+- [GitHub](https://github.com/YangDai2003/Kori/releases)
+    </string>
+    <string name="destination_folder">پوشه مقصد</string>
+    <string name="find">یافتن</string>
+    <string name="replace">جایگزینی</string>
+    <string name="overview">نمای کلی</string>
+    <string name="outline">چارچوب</string>
+    <string name="color_picker">انتخاب‌کننده رنگ</string>
+    <string name="name">نام</string>
+    <string name="search">جستجو</string>
+    <string name="search_history">تاریخچه جستجوهای اخیر</string>
+    <string name="add_sample_note">افزودن یادداشت نمونه</string>
+    <string name="todo">کارها</string>
+    <string name="done">انجام شده</string>
+    <string name="total">کل</string>
+
+    <string name="style">سبک</string>
+    <string name="dark_mode">حالت تم</string>
+    <string name="color_platte">پالت رنگ</string>
+    <string name="create_password">ایجاد یک رمز عبور شش رقمی</string>
+    <string name="enter_again">لطفاً مجدداً رمز عبور خود را وارد کنید</string>
+    <string name="lock">قفل</string>
+    <string name="password">رمز عبور</string>
+    <string name="password_description">هنگام راه‌اندازی سرد برنامه، کاربر باید یک رمز عبور شش رقمی برای باز کردن قفل وارد کند.</string>
+    <string name="security">امنیت</string>
+    <string name="keep_screen_on">روشن نگه داشتن صفحه نمایش</string>
+    <string name="report_a_bug_or_request_a_feature">گزارش یک اشکال یا درخواست یک ویژگی</string>
+    <string name="system_default">پیش‌فرض سیستم</string>
+    <string name="light">حالت روشن</string>
+    <string name="dark">حالت تاریک</string>
+    <string name="font_size">اندازه قلم</string>
+    <string name="font_size_description">متن را بزرگتر یا کوچکتر کنید.</string>
+    <string name="font">قلم</string>
+
+    <string name="type">نوع</string>
+    <string name="plain_text">متن ساده</string>
+    <string name="created">ایجاد شده</string>
+    <string name="updated">به‌روزرسانی شده</string>
+    <string name="char_count">نویسه‌ها</string>
+    <string name="word_count">کلمات</string>
+    <string name="word_count_without_punctuation">کلمات (بدون علائم نگارشی)</string>
+    <string name="line_count">خطوط</string>
+    <string name="paragraph_count">پاراگراف‌ها</string>
+
+    <string name="editor">ویرایشگر</string>
+    <string name="default_view_for_note">نمای پیش‌فرضی که یادداشت‌ها در آن باز می‌شوند.</string>
+    <string name="default_view">نمای پیش‌فرض</string>
+    <string name="editing_view">نمای ویرایش</string>
+    <string name="reading_view">نمای خواندن</string>
+    <string name="line_numbers">شماره خطوط</string>
+    <string name="lint">بررسی</string>
+    <string name="lint_description">هنگام فعال بودن، فرمت و نحو مارک‌داون و Todo.txt بررسی می‌شود تا ببیند آیا مطابق مشخصات است یا نه، و خطاها با خطوط موج‌دار قرمز علامت‌گذاری می‌شوند.</string>
+
+    <string name="date_format">فرمت تاریخ</string>
+    <string name="time_format">فرمت زمان</string>
+    <string name="date_in_the_template_file_will_be_replaced_with_this_value">{{date}} در فایل الگو با این مقدار جایگزین می‌شود.\n</string>
+    <string name="you_can_also_use_date_yyyy_mm_dd_to_override_the_format_once">شما همچنین می‌توانید از {{date:yyyy-MM-dd}} برای یک بار لغو فرمت استفاده کنید.\n</string>
+    <string name="for_more_syntax_refer_to">برای نحو بیشتر، مراجعه کنید به </string>
+    <string name="format_reference">مرجع فرمت</string>
+    <string name="your_current_syntax_looks_like_this">\nنحو فعلی شما شبیه این است: %1$s</string>
+    <string name="time_in_the_template_file_will_be_replaced_with_this_value">{{time}} در فایل الگو با این مقدار جایگزین می‌شود.\n</string>
+    <string name="you_can_also_use_time_hh_mm_to_override_the_format_once">شما همچنین می‌توانید از {{time:HH:mm}} برای یک بار لغو فرمت استفاده کنید.\n</string>
+    <string name="template_folder_location">مکان پوشه الگو</string>
+    <string name="files_in_this_folder_will_be_available_as_templates">فایل‌های این پوشه به عنوان الگو در دسترس خواهند بود.</string>
+    <string name="saveAsTemplate">ذخیره این یادداشت به عنوان الگو</string>
+    <string name="explore_and_share_community_note_templates">کشف و اشتراک‌گذاری الگوهای یادداشت با جامعه</string>
+
+    <string name="card">کارت</string>
+    <string name="ellipsis">سه نقطه</string>
+    <string name="clip">کلیپ</string>
+    <string name="default_size">معمولی</string>
+    <string name="title_only">فقط عنوان</string>
+    <string name="compact">فشرده</string>
+    <string name="text_overflow">سرریز متن</string>
+    <string name="card_size">اندازه کارت</string>
+
+    <string name="cowriter">نویسنده همکار</string>
+    <string name="cowriter_description">دسترسی به مدل‌های هوش مصنوعی شخص ثالث</string>
+    <string name="model">مدل</string>
+    <string name="key">کلید</string>
+    <string name="test">تست</string>
+    <string name="set_as_default">تنظیم به عنوان پیش‌فرض</string>
+    <string name="describe_the_note_you_want_to_generate">یادداشتی را که می‌خواهید ایجاد کنید توصیف کنید</string>
+    <string name="rewrite">بازنویسی</string>
+    <string name="summarize">خلاصه‌سازی</string>
+    <string name="proofread">بازبینی</string>
+    <string name="shorten">کوتاه کردن</string>
+    <string name="elaborate">تشریح</string>
+
+    <string name="share_as">اشتراک‌گذاری به صورت</string>
+    <string name="file">فایل</string>
+    <string name="text">متن</string>
+    <string name="export_as">صادرات به صورت</string>
+    <string name="data">داده</string>
+    <string name="import_files">وارد کردن فایل‌های متنی</string>
+    <string name="import_files_description">وارد کردن دسته‌ای فایل‌های متنی. نام فایل به عنوان عنوان استفاده می‌شود و نوع یادداشت به صورت خودکار شناسایی می‌شود.</string>
+    <string name="backup_description">پشتیبان‌گیری از تمام پوشه‌ها و یادداشت‌ها به صورت فایل JSON.</string>
+    <string name="restore_description">بازیابی داده‌های موجود در فایل پشتیبان JSON انتخاب شده در پایگاه داده.</string>
+    <string name="reset_database_description">پاک کردن تمام داده‌ها در پایگاه داده (شامل تمام یادداشت‌ها و پوشه‌ها).</string>
+    <string name="reset">بازنشانی</string>
+    <string name="reset_database">بازنشانی پایگاه داده</string>
+    <string name="reset_database_warning">بازنشانی پایگاه داده منجر به حذف کامل تمام یادداشت‌ها و پوشه‌ها می‌شود و قابل بازیابی نخواهند بود. لطفاً تصمیم بگیرید که آیا می‌خواهید ادامه دهید؟</string>
+    <string name="backup">پشتیبان</string>
+    <string name="restore_from_backup">بازیابی</string>
+    <string name="migrate_from_open_note">مهاجرت از فایل JSON OpenNote</string>
+
+    <string name="toolbox">جعبه ابزار</string>
+    <string name="edit_local_file">ویرایش فایل محلی</string>
+    <string name="fetch_file_from_url">دریافت فایل از URL</string>
+    <string name="drag_drop">برای باز کردن بکشید و رها کنید</string>
+    <string name="language">زبان</string>
+    <string name="language_description">انتخاب زبان برنامه</string>
+    <string name="todo_completed_at">تکمیل شده: %1$s</string>
+    <string name="todo_created_at">ایجاد شده: %1$s</string>
+    <string name="project_tag">برچسب پروژه</string>
+    <string name="context_tag">برچسب زمینه</string>
+    <string name="completion_mark">نشان تکمیل</string>
+    <string name="priority_mark">نشان اولویت</string>
+    <string name="total_tasks">کل کارها</string>
+    <string name="completed_tasks">کارهای تکمیل شده</string>
+    <string name="pending_tasks">کارهای در انتظار</string>
+    <string name="progress">پیشرفت</string>
+
+    <string name="side_sheet">برگه کناری</string>
+    <string name="control">Ctrl</string>
+    <string name="undo">واگرد</string>
+    <string name="redo">از نو</string>
+    <string name="bold">ضخیم</string>
+    <string name="italic">کج</string>
+    <string name="underline">زیرخط</string>
+    <string name="strikethrough">خط خورده</string>
+    <string name="highlight">برجسته</string>
+    <string name="horizontal_rule">خط افقی</string>
+    <string name="mermaid_diagram">نمودار مرمرید</string>
+    <string name="heading">سرصفحه</string>
+    <string name="link">پیوند</string>
+    <string name="code">کد</string>
+    <string name="quote">نقل قول</string>
+    <string name="math">ریاضی</string>
+    <string name="table">جدول</string>
+    <string name="insert_table">درج جدول</string>
+    <string name="indent_increase">افزایش تورفتگی</string>
+    <string name="indent_decrease">کاهش تورفتگی</string>
+    <string name="numbered_list">لیست شماره‌دار</string>
+    <string name="bulleted_list">لیست گلوله‌ای</string>
+    <string name="task_list">لیست کارها</string>
+    <!-- Snackbar messages -->
+    <plurals name="snackbar_pinned">
+        <item quantity="one">%1$d یادداشت سنجاق شد</item>
+        <item quantity="other">%1$d یادداشت سنجاق شد</item>
+    </plurals>
+    <plurals name="snackbar_moved_to_trash">
+        <item quantity="one">%1$d یادداشت به سطل زباله منتقل شد</item>
+        <item quantity="other">%1$d یادداشت به سطل زباله منتقل شد</item>
+    </plurals>
+    <plurals name="snackbar_deleted_forever">
+        <item quantity="one">%1$d یادداشت برای همیشه حذف شد</item>
+        <item quantity="other">%1$d یادداشت برای همیشه حذف شد</item>
+    </plurals>
+    <plurals name="snackbar_restored">
+        <item quantity="one">%1$d یادداشت بازیابی شد</item>
+        <item quantity="other">%1$d یادداشت بازیابی شد</item>
+    </plurals>
+    <string name="snackbar_restored_all">همه یادداشت‌های سطل زباله بازیابی شدند</string>
+    <string name="snackbar_deleted_all">همه یادداشت‌های سطل زباله حذف شدند</string>
+
+    <string name="drawing">طراحی</string>
+    <string name="white">سفید</string>
+    <string name="black">سیاه</string>
+    <string name="none">هیچ</string>
+    <string name="square">مربع</string>
+    <string name="rule">قانون</string>
+    <string name="dot">نقطه</string>
+    <string name="brush_size">اندازه قلم</string>
+    <string name="brush_color">رنگ قلم</string>
+    <string name="stroke_eraser">پاک‌کننده خط</string>
+    <string name="area_eraser">پاک‌کننده ناحیه</string>
+    <string name="eraser_size">اندازه پاک‌کن</string>
+    <string name="erase_all_strokes">پاک کردن تمام خطوط</string>
+    <string name="reset_canvas">بازنشانی بوم</string>
+</resources>

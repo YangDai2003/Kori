@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unlock_to_use">Odblokuj, aby użyć Kori</string>
+    <string name="dynamic_only_android_12">Dynamiczny kolor</string>
+    <string name="screen_protection">Ochrona ekranu</string>
+    <string name="screen_protection_detail">Gdy ta funkcja jest włączona, zawartość aplikacji nie może być przechwytywana ani rejestrowana, a zawartość nie będzie wyświetlana na liście aplikacji w tle.</string>
+    <string name="biometric">Odblokuj za pomocą biometrii</string>
+    <string name="no_password_set">Najpierw ustaw hasło blokady ekranu systemu</string>
+    <string name="view_all_notes">Wyświetl wszystkie notatki</string>
+    <string name="home_widget">Dodaj widżet do ekranu głównego</string>
+    <string name="new_plain_text">Nowy tekst prosty</string>
+    <string name="new_markdown">Nowy Markdown</string>
+    <string name="new_todo">Nowy Todo.txt</string>
+    <string name="new_drawing">Nowy rysunek</string>
+</resources>
