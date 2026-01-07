@@ -40,7 +40,9 @@ import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.control
@@ -76,6 +78,7 @@ fun ColumnScope.AdaptiveEditorViewer(
             val interactionSource = remember { MutableInteractionSource() }
             var editorWeight by remember { mutableFloatStateOf(defaultEditorWeight) }
             val containerWidth = LocalWindowInfo.current.containerSize.width
+            val layoutDirection = LocalLayoutDirection.current
 
             val anchorPoints =
                 rememberSaveable { listOf(0f, 0.2f, 1f / 3f, 0.5f, 2f / 3f, 0.8f, 1f) }
@@ -114,11 +117,12 @@ fun ColumnScope.AdaptiveEditorViewer(
                     modifier = Modifier
                         .sizeIn(maxWidth = 12.dp, minWidth = 4.dp)
                         .draggable(
-                            interactionSource = interactionSource,
                             state = rememberDraggableState { delta ->
                                 editorWeight = (editorWeight + delta / containerWidth)
                             },
                             orientation = Orientation.Horizontal,
+                            interactionSource = interactionSource,
+                            reverseDirection = layoutDirection == LayoutDirection.Rtl,
                             onDragStopped = {
                                 val closestAnchor = anchorPoints.minBy { abs(it - editorWeight) }
                                 editorWeight = closestAnchor

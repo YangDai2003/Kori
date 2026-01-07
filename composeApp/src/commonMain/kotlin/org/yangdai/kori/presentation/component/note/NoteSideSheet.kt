@@ -84,6 +84,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import kmark.MarkdownElementTypes
@@ -250,6 +251,7 @@ fun NoteSideSheet(
                         orientation = Orientation.Horizontal,
                         state = dragState,
                         enabled = !isExiting,
+                        reverseDirection = layoutDirection == LayoutDirection.Rtl,
                         onDragStopped = { velocity ->
                             val shouldClose = if (abs(velocity) < 100) {
                                 offsetX.value > drawerWidthPx / 2
@@ -542,11 +544,15 @@ private fun HeaderItem(
 
                     // 根据深度，循环绘制每一层级的垂直对齐线
                     for (i in 0 until depth) {
-                        val lineX = i * indentPerLevel + iconCenterOffset
+                        val startX = if (layoutDirection == LayoutDirection.Ltr) {
+                            i * indentPerLevel + iconCenterOffset
+                        } else {
+                            size.width - (i * indentPerLevel + iconCenterOffset)
+                        }
                         drawLine(
                             color = outlineColor,
-                            start = Offset(lineX, 0f),
-                            end = Offset(lineX, size.height), // 线条高度为当前 Row 的高度
+                            start = Offset(startX, 0f),
+                            end = Offset(startX, size.height), // 线条高度为当前 Row 的高度
                             cap = StrokeCap.Round
                         )
                     }
