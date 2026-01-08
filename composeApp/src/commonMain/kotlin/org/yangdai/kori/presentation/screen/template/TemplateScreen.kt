@@ -23,7 +23,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -94,12 +93,6 @@ fun TemplateScreen(
     val editorState by viewModel.editorState.collectAsStateWithLifecycle()
     val showAI by viewModel.showAI.collectAsStateWithLifecycle()
     val isGenerating by viewModel.isGenerating.collectAsStateWithLifecycle()
-
-    DisposableEffect(Unit) {
-        onDispose {
-            viewModel.saveOrUpdateNote()
-        }
-    }
 
     LaunchedEffect(Unit) {
         viewModel.uiEventFlow.collect { event ->

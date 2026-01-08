@@ -26,6 +26,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -55,7 +57,6 @@ class FileViewModel(
     // 笔记状态
     val titleState = TextFieldState()
     val contentState = TextFieldState()
-    private val contentSnapshotFlow = snapshotFlow { contentState.text }
     private val _uiEventChannel = Channel<UiEvent>()
     val uiEventFlow = _uiEventChannel.receiveAsFlow()
     private val _fileEditingState = MutableStateFlow(FileEditingState())
@@ -63,7 +64,7 @@ class FileViewModel(
     private val _initialContent = MutableStateFlow("")
     val needSave = combine(
         _initialContent,
-        contentSnapshotFlow
+        snapshotFlow { contentState.text }
     ) { initial, current -> initial != current.toString() }
         .stateIn(
             viewModelScope,
@@ -184,7 +185,7 @@ class FileViewModel(
     val showAI = combine(
         connectivityObserver.observe(),
         dataStoreRepository.booleanFlow(Constants.Preferences.IS_AI_ENABLED),
-        snapshotFlow { _fileEditingState.value.fileType }
+        _fileEditingState.map { it.fileType }.distinctUntilChanged()
     ) { status, isAiEnabled, noteType ->
         status == ConnectivityObserver.Status.Connected && isAiEnabled && noteType != NoteType.Drawing
     }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
