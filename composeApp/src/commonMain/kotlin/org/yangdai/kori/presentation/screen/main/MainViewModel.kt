@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -58,6 +59,7 @@ import org.yangdai.kori.presentation.screen.settings.decryptBackupDataWithCompat
 import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.util.SampleMarkdownNote
 import org.yangdai.kori.presentation.util.SampleTodoNote
+import kotlin.collections.map
 import kotlin.io.encoding.Base64
 import kotlin.math.round
 import kotlin.time.Clock
@@ -489,17 +491,19 @@ class MainViewModel(
             _dataActionState.value = DataActionState(infinite = true, progress = 0f)
             delay(300L)
             runCatching {
-                val notes = (noteRepository.getAllNotes().firstOrNull() ?: emptyList()).map {
-                    it.copy(
-                        title = Base64.encode(it.title.encodeToByteArray()),
-                        content = Base64.encode(it.content.encodeToByteArray())
-                    )
+                val notes = async {
+                    (noteRepository.getAllNotes().firstOrNull() ?: emptyList()).map { note ->
+                        note.copy(
+                            title = Base64.encode(note.title.encodeToByteArray()),
+                            content = Base64.encode(note.content.encodeToByteArray())
+                        )
+                    }
                 }
-                val folders = folderRepository.getFoldersWithNoteCounts()
-                    .firstOrNull()
-                    ?.map { it.folder }
-                    ?: emptyList()
-                val backupData = BackupData(notes, folders)
+                val folders = async {
+                    (folderRepository.getFoldersWithNoteCounts().firstOrNull() ?: emptyList())
+                        .map { it.folder }
+                }
+                val backupData = BackupData(notes.await(), folders.await())
                 val jsonString = Json.encodeToString(backupData)
                 _dataActionState.update { it.copy(progress = 1f) }
                 delay(300L)
