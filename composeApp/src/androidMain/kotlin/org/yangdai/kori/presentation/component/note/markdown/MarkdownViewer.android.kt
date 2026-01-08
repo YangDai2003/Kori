@@ -138,7 +138,6 @@ actual fun MarkdownViewer(
         val currentWebView = webView ?: return@LaunchedEffect
         val currentClient = wvClient ?: return@LaunchedEffect
         if (currentClient.pageLoaded.value) {
-            println("page loaded")
             snapshotFlow { textFieldState.text }
                 .debounce(200L)
                 .mapLatest { markdownText ->

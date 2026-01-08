@@ -236,7 +236,7 @@ class NoteViewModel(
 
     private val saveScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    private fun saveOrUpdateNote() {
+    fun saveOrUpdateNote() {
         if (_noteEditingState.value.isDeleted) return
         val newNote = NoteEntity(
             id = _noteEditingState.value.id,
@@ -250,20 +250,20 @@ class NoteViewModel(
         )
         saveScope.launch {
             if (oNote.id.isEmpty()) {
-                if (newNote.title.isNotBlank() || newNote.content.isNotBlank())
+                if (newNote.title.isNotBlank() || newNote.content.isNotBlank()) {
                     noteRepository.insertNote(newNote)
+                    oNote = newNote
+                }
             } else {
                 if (oNote.title != newNote.title || oNote.content != newNote.content ||
                     oNote.folderId != newNote.folderId || oNote.noteType != newNote.noteType ||
                     oNote.isPinned != newNote.isPinned
-                ) noteRepository.updateNote(newNote)
+                ) {
+                    noteRepository.updateNote(newNote)
+                    oNote = newNote
+                }
             }
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        saveOrUpdateNote()
     }
 
     /*----*/

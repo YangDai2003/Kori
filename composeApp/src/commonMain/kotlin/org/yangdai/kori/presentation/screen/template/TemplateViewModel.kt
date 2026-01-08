@@ -147,7 +147,7 @@ class TemplateViewModel(
 
     private val saveScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    private fun saveOrUpdateNote() {
+    fun saveOrUpdateNote() {
         if (_templateEditingState.value.isDeleted) return
         val newNote = NoteEntity(
             id = _templateEditingState.value.id,
@@ -162,20 +162,24 @@ class TemplateViewModel(
             if (oNote.id.isEmpty()) {
                 if (newNote.title.isNotBlank() || newNote.content.isNotBlank()) {
                     val title = newNote.title
-                        .ifBlank { "Template_${Clock.System.now().toEpochMilliseconds()}" }
+                        .ifBlank {
+                            val defaultTitle =
+                                "Template_${Clock.System.now().toEpochMilliseconds()}"
+                            titleState.setTextAndPlaceCursorAtEnd(defaultTitle)
+                            defaultTitle
+                        }
                     noteRepository.insertNote(newNote.copy(title = title))
+                    oNote = newNote.copy(title = title)
                 }
             } else {
                 if (oNote.title != newNote.title || oNote.content != newNote.content ||
                     oNote.noteType != newNote.noteType
-                ) noteRepository.updateNote(newNote)
+                ) {
+                    noteRepository.updateNote(newNote)
+                    oNote = newNote
+                }
             }
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        saveOrUpdateNote()
     }
 
     /*----*/
