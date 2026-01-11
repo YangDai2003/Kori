@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -93,109 +94,97 @@ fun DiffText(
 
         Row(modifier = Modifier.fillMaxSize()) {
             // 原始文本列
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 4.dp)
-            ) {
-                items(diffResult.oldTextItems) { item ->
-                    val backgroundColor = when (item.type) {
-                        DiffType.REMOVED -> removedColor
-                        else -> Color.Transparent
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(backgroundColor)
-                            .padding(horizontal = 8.dp, vertical = 2.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // 只有当左侧有内容时才显示行号
-                        if (item.content.isNotEmpty() || item.type == DiffType.REMOVED) {
-                            Text(
-                                text = "${item.originalLineIndex + 1}", // 使用原始行号
-                                modifier = Modifier
-                                    .padding(end = 8.dp)
-                                    .align(Alignment.Top),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        } else {
-                            // 当左侧无内容时，显示空白占位符以保持对齐
-                            Text(
-                                text = "",
-                                modifier = Modifier
-                                    .padding(end = 8.dp)
-                                    .align(Alignment.Top),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+            SelectionContainer(Modifier.weight(1f).padding(end = 4.dp)) {
+                LazyColumn {
+                    items(diffResult.oldTextItems) { item ->
+                        val backgroundColor = when (item.type) {
+                            DiffType.REMOVED -> removedColor
+                            else -> Color.Transparent
                         }
 
-                        // 显示高亮文本，突出显示删除的部分
-                        HighlightedText(
-                            fullText = item.content,
-                            highlightRanges = item.highlightRanges,
-                            highlightColor = removedCharColor, // 使用较深的红色进行字符级高亮
+                        Row(
                             modifier = Modifier
-                                .weight(1f)
-                                .horizontalScroll(rememberScrollState())
-                        )
+                                .fillMaxWidth()
+                                .background(backgroundColor)
+                                .padding(horizontal = 8.dp, vertical = 2.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // 只有当左侧有内容时才显示行号
+                            if (item.content.isNotEmpty() || item.type == DiffType.REMOVED) {
+                                Text(
+                                    text = "${item.originalLineIndex + 1}", // 使用原始行号
+                                    modifier = Modifier.padding(end = 8.dp),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            } else {
+                                // 当左侧无内容时，显示空白占位符以保持对齐
+                                Text(
+                                    text = "",
+                                    modifier = Modifier.padding(end = 8.dp),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+
+                            // 显示高亮文本，突出显示删除的部分
+                            HighlightedText(
+                                fullText = item.content,
+                                highlightRanges = item.highlightRanges,
+                                highlightColor = removedCharColor, // 使用较深的红色进行字符级高亮
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .horizontalScroll(rememberScrollState())
+                            )
+                        }
                     }
                 }
             }
 
             // 新文本列
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 4.dp)
-            ) {
-                items(diffResult.newTextItems) { item ->
-                    val backgroundColor = when (item.type) {
-                        DiffType.ADDED -> addedColor
-                        else -> Color.Transparent
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(backgroundColor)
-                            .padding(horizontal = 8.dp, vertical = 2.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // 只有当右侧有内容时才显示行号
-                        if (item.content.isNotEmpty() || item.type == DiffType.ADDED) {
-                            Text(
-                                text = "${item.originalLineIndex + 1}", // 使用原始行号
-                                modifier = Modifier
-                                    .padding(end = 8.dp)
-                                    .align(Alignment.Top),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        } else {
-                            // 当右侧无内容时，显示空白占位符以保持对齐
-                            Text(
-                                text = "",
-                                modifier = Modifier
-                                    .padding(end = 8.dp)
-                                    .align(Alignment.Top),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+            SelectionContainer(Modifier.weight(1f).padding(start = 4.dp)) {
+                LazyColumn {
+                    items(diffResult.newTextItems) { item ->
+                        val backgroundColor = when (item.type) {
+                            DiffType.ADDED -> addedColor
+                            else -> Color.Transparent
                         }
 
-                        // 显示高亮文本，突出显示新增的部分
-                        HighlightedText(
-                            fullText = item.content,
-                            highlightRanges = item.highlightRanges,
-                            highlightColor = addedCharColor, // 使用较深的绿色进行字符级高亮
+                        Row(
                             modifier = Modifier
-                                .weight(1f)
-                                .horizontalScroll(rememberScrollState())
-                        )
+                                .fillMaxWidth()
+                                .background(backgroundColor)
+                                .padding(horizontal = 8.dp, vertical = 2.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // 只有当右侧有内容时才显示行号
+                            if (item.content.isNotEmpty() || item.type == DiffType.ADDED) {
+                                Text(
+                                    text = "${item.originalLineIndex + 1}", // 使用原始行号
+                                    modifier = Modifier.padding(end = 8.dp),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            } else {
+                                // 当右侧无内容时，显示空白占位符以保持对齐
+                                Text(
+                                    text = "",
+                                    modifier = Modifier.padding(end = 8.dp),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+
+                            // 显示高亮文本，突出显示新增的部分
+                            HighlightedText(
+                                fullText = item.content,
+                                highlightRanges = item.highlightRanges,
+                                highlightColor = addedCharColor, // 使用较深的绿色进行字符级高亮
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .horizontalScroll(rememberScrollState())
+                            )
+                        }
                     }
                 }
             }
