@@ -26,7 +26,7 @@ import kotlin.time.ExperimentalTime
     ]
 )
 data class SnapshotEntity @OptIn(ExperimentalTime::class) constructor(
-    @PrimaryKey(autoGenerate = true) val id: Long, // Auto-generated primary key
+    @PrimaryKey(autoGenerate = true) val id: Long = 0, // Auto-generated primary key
     @ColumnInfo(name = "note_id")
     val noteId: String, // References the note this snapshot belongs to
     val title: String = "",
