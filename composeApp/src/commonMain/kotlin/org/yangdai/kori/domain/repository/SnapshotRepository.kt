@@ -10,5 +10,5 @@ interface SnapshotRepository {
     suspend fun deleteAllSnapshots()
     suspend fun getSnapshotById(id: String): SnapshotEntity?
     fun getSnapshotsByNoteIdFlow(noteId: String): Flow<List<SnapshotEntity>>
-    suspend fun saveSnapshotForNote(noteId: String, title: String, content: String)
+    suspend fun saveNewSnapshotForNote(noteId: String, content: String)
 }

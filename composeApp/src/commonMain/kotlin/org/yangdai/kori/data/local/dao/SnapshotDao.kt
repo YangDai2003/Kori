@@ -19,6 +19,9 @@ interface SnapshotDao {
     @Query("SELECT * FROM snapshots WHERE id = :id")
     suspend fun getSnapshotById(id: String): SnapshotEntity?
 
+    @Query("SELECT * FROM snapshots WHERE note_id = :noteId ORDER BY created_at DESC LIMIT 1")
+    suspend fun getLastSnapshotByNoteId(noteId: String): SnapshotEntity?
+
     @Query("DELETE FROM snapshots WHERE id = :id")
     suspend fun deleteSnapshotById(id: Long)
 

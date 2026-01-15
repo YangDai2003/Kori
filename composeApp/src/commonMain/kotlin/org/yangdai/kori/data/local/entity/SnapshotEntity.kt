@@ -29,7 +29,6 @@ data class SnapshotEntity @OptIn(ExperimentalTime::class) constructor(
     @PrimaryKey(autoGenerate = true) val id: Long = 0, // Auto-generated primary key
     @ColumnInfo(name = "note_id")
     val noteId: String, // References the note this snapshot belongs to
-    val title: String = "",
     val content: String = "",
     @ColumnInfo(name = "created_at")
     val createdAt: Long = Clock.System.now().toEpochMilliseconds()
