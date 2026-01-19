@@ -492,16 +492,19 @@ class MainViewModel(
             delay(300L)
             runCatching {
                 val notes = async {
-                    (noteRepository.getAllNotes().firstOrNull() ?: emptyList()).map { note ->
-                        note.copy(
-                            title = Base64.encode(note.title.encodeToByteArray()),
-                            content = Base64.encode(note.content.encodeToByteArray())
-                        )
-                    }
+                    (noteRepository.getAllNotes().firstOrNull() ?: emptyList())
+                        .map {
+                            it.copy(
+                                title = Base64.encode(it.title.encodeToByteArray()),
+                                content = Base64.encode(it.content.encodeToByteArray())
+                            )
+                        }
                 }
                 val folders = async {
                     (folderRepository.getFoldersWithNoteCounts().firstOrNull() ?: emptyList())
-                        .map { it.folder }
+                        .map {
+                            it.folder.copy(name = Base64.encode(it.folder.name.encodeToByteArray()))
+                        }
                 }
                 val backupData = BackupData(notes.await(), folders.await())
                 val jsonString = Json.encodeToString(backupData)
@@ -526,14 +529,26 @@ class MainViewModel(
             delay(300L)
             runCatching {
                 val backupData = Json.decodeFromString<BackupData>(json)
-                folderRepository.insertFolders(backupData.folders)
-                val decodedNotes = backupData.notes.map {
-                    it.copy(
-                        title = Base64.decode(it.title).decodeToString(),
-                        content = Base64.decode(it.content).decodeToString()
-                    )
-                }
-                noteRepository.insertNotes(decodedNotes)
+                folderRepository.insertFolders(
+                    backupData.folders.map {
+                        it.copy(
+                            name =
+                                try {
+                                    Base64.decode(it.name).decodeToString()
+                                } catch (_: Exception) {
+                                    it.name
+                                }
+                        )
+                    }
+                )
+                noteRepository.insertNotes(
+                    backupData.notes.map {
+                        it.copy(
+                            title = Base64.decode(it.title).decodeToString(),
+                            content = Base64.decode(it.content).decodeToString()
+                        )
+                    }
+                )
                 _dataActionState.update { it.copy(progress = 1f) }
             }.onSuccess {
                 delay(1500L)

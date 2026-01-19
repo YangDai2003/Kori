@@ -36,6 +36,7 @@ import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
+import org.yangdai.kori.domain.repository.SnapshotRepository
 import org.yangdai.kori.domain.sort.FolderSortType
 import org.yangdai.kori.presentation.component.note.AIAssistEvent
 import org.yangdai.kori.presentation.navigation.Screen
@@ -54,6 +55,7 @@ class NoteViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val folderRepository: FolderRepository,
     private val noteRepository: NoteRepository,
+    private val snapshotRepository: SnapshotRepository,
     private val dataStoreRepository: DataStoreRepository,
     connectivityObserver: ConnectivityObserver,
 ) : ViewModel() {
@@ -125,6 +127,15 @@ class NoteViewModel(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), TemplatePaneState())
 
     val templates = noteRepository.getAllTemplates().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000L),
+        initialValue = emptyList()
+    )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val snapshots = _noteEditingState.flatMapLatest { noteEditingState ->
+        snapshotRepository.getSnapshotsByNoteIdFlow(noteEditingState.id)
+    }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000L),
         initialValue = emptyList()
