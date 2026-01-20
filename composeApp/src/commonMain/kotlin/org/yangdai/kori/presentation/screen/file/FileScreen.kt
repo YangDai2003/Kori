@@ -294,7 +294,7 @@ fun FileScreen(
             }
         },
         drawerContent = {
-            val formattedUpdated = remember(editingState.updatedAt) {
+            val formattedUpdated = rememberSaveable(editingState.updatedAt) {
                 if (editingState.updatedAt.isBlank()) ""
                 else formatInstant(Instant.parse(editingState.updatedAt))
             }

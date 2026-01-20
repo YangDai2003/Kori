@@ -325,7 +325,7 @@ fun TemplateScreen(
             }
         },
         drawerContent = {
-            val formattedCreated = remember(editingState.createdAt) {
+            val formattedCreated = rememberSaveable(editingState.createdAt) {
                 if (editingState.createdAt.isBlank()) ""
                 else formatInstant(Instant.parse(editingState.createdAt))
             }
@@ -333,7 +333,7 @@ fun TemplateScreen(
                 key = stringResource(Res.string.created),
                 value = formattedCreated
             )
-            val formattedUpdated = remember(editingState.updatedAt) {
+            val formattedUpdated = rememberSaveable(editingState.updatedAt) {
                 if (editingState.updatedAt.isBlank()) ""
                 else formatInstant(Instant.parse(editingState.updatedAt))
             }
