@@ -279,33 +279,9 @@ fun NoteSideSheet(
                 ) {
                     var isAllExpanded by rememberSaveable { mutableStateOf(true) }
 
-                    var outline by remember {
-                        mutableStateOf(HeaderNode("", 0, IntRange.EMPTY))
-                    }
-
-                    LaunchedEffect(text, noteType) {
-                        withContext(Dispatchers.Default) {
-                            val root = HeaderNode("", 0, IntRange.EMPTY)
-                            // 只有 Markdown 才有大纲
-                            if (noteType != NoteType.MARKDOWN || text.isBlank()) {
-                                outline = root
-                                return@withContext
-                            }
-                            val tree = MarkdownDefaults.parser.buildMarkdownTreeFromString(text)
-                            val propertiesLineRange = text.getPropertiesLineRange()
-                            try {
-                                val headerStack = mutableListOf(root)
-                                findHeadersRecursive(
-                                    tree,
-                                    text,
-                                    headerStack,
-                                    propertiesLineRange
-                                )
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            }
-                            outline = root
-                        }
+                    val outline by produceState(HeaderNode(), text, noteType) {
+                        value =
+                            if (noteType == NoteType.MARKDOWN) HeaderNode.fromText(text) else HeaderNode()
                     }
 
                     Row {
@@ -406,7 +382,7 @@ fun NoteSideSheet(
                             }
 
                             // ... 大纲部分 (outline) ...
-                            if (outline.children.isNotEmpty() && noteType == NoteType.MARKDOWN)
+                            if (outline.children.isNotEmpty()) {
                                 item(contentType = "Divider") {
                                     HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
                                     Row(
@@ -432,7 +408,6 @@ fun NoteSideSheet(
                                     }
                                 }
 
-                            if (outline.children.isNotEmpty() && noteType == NoteType.MARKDOWN)
                                 items(outline.children) { header ->
                                     HeaderItem(
                                         header = header,
@@ -441,6 +416,7 @@ fun NoteSideSheet(
                                         parentExpanded = isAllExpanded
                                     )
                                 }
+                            }
                         }
                         Spacer(Modifier.fillMaxHeight().width(paddingWidth))
                     }
@@ -457,46 +433,67 @@ fun NoteSideSheet(
 
 @Stable
 private data class HeaderNode(
-    val title: String,
-    val level: Int,
-    val range: IntRange,
+    val title: String = "",
+    val level: Int = 0,
+    val range: IntRange = IntRange.EMPTY,
     val children: MutableList<HeaderNode> = mutableListOf()
-)
-
-@Composable
-fun NoteSideSheetItem(
-    key: String,
-    value: String
-) = Row(
-    modifier = Modifier.fillMaxWidth(),
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.Start
 ) {
-
-    val annotatedString = buildAnnotatedString {
-        withStyle(
-            SpanStyle(
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        ) {
-            append("$key：")
-        }
-        withStyle(
-            SpanStyle(
-                fontWeight = FontWeight.Normal,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        ) {
-            append(value)
+    companion object {
+        suspend fun fromText(text: String): HeaderNode {
+            return if (text.isBlank()) HeaderNode("", 0, IntRange.EMPTY)
+            else withContext(Dispatchers.Default) {
+                val root = HeaderNode("", 0, IntRange.EMPTY)
+                val tree = MarkdownDefaults.parser.buildMarkdownTreeFromString(text)
+                val propertiesLineRange = text.getPropertiesLineRange()
+                try {
+                    val headerStack = mutableListOf(root)
+                    findHeadersRecursive(
+                        tree,
+                        text,
+                        headerStack,
+                        propertiesLineRange
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                root
+            }
         }
     }
-
-    Text(
-        text = annotatedString,
-        style = MaterialTheme.typography.bodyLarge
-    )
 }
+
+@Composable
+fun NoteSideSheetItem(key: String, value: String) =
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
+    ) {
+
+        val annotatedString = buildAnnotatedString {
+            withStyle(
+                SpanStyle(
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            ) {
+                append("$key：")
+            }
+            withStyle(
+                SpanStyle(
+                    fontWeight = FontWeight.Normal,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            ) {
+                append(value)
+            }
+        }
+
+        Text(
+            text = annotatedString,
+            style = MaterialTheme.typography.bodyLarge
+        )
+    }
 
 @Composable
 private fun HeaderItem(
