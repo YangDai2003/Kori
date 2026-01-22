@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.OutputTransformation
+import androidx.compose.foundation.text.input.TextFieldDecorator
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.MaterialTheme
@@ -266,28 +267,31 @@ fun Editor(
                     imeAction = ImeAction.None
                 ),
                 outputTransformation = outputTransformation,
-                decorator = { innerTextField ->
-                    Box(
-                        modifier = Modifier
-                            .clipToBounds()
-                            .editorDrawing(
-                                searchPaths = searchPaths,
-                                currentRangeIndex = currentRangeIndex,
-                                lintPaths = lintPaths,
-                                scrollState = scrollState
-                            )
-                    ) {
-                        if (textFieldState.text.isEmpty()) {
-                            Text(
-                                text = stringResource(Res.string.content),
-                                style = MaterialTheme.typography.bodyLarge.copy(
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                        alpha = 0.6f
+                decorator = object : TextFieldDecorator {
+                    @Composable
+                    override fun Decoration(innerTextField: @Composable (() -> Unit)) {
+                        Box(
+                            modifier = Modifier
+                                .clipToBounds()
+                                .editorDrawing(
+                                    searchPaths = searchPaths,
+                                    currentRangeIndex = currentRangeIndex,
+                                    lintPaths = lintPaths,
+                                    scrollState = scrollState
+                                )
+                        ) {
+                            if (textFieldState.text.isEmpty()) {
+                                Text(
+                                    text = stringResource(Res.string.content),
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                            alpha = 0.6f
+                                        )
                                     )
                                 )
-                            )
+                            }
+                            innerTextField()
                         }
-                        innerTextField()
                     }
                 }
             )

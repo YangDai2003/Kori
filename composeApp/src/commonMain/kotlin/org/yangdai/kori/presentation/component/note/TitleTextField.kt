@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldDecorator
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -63,25 +64,28 @@ fun TitleTextField(
         onKeyboardAction = { onDone() },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         interactionSource = interactionSource,
-        decorator = { innerTextField ->
-            TextFieldDefaults.DecorationBox(
-                value = state.text.toString(),
-                innerTextField = innerTextField,
-                enabled = true,
-                singleLine = true,
-                visualTransformation = VisualTransformation.None,
-                interactionSource = interactionSource,
-                placeholder = {
-                    Text(
-                        text = stringResource(Res.string.title),
-                        style = MaterialTheme.typography.headlineSmallEmphasized.copy(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+        decorator = object : TextFieldDecorator {
+            @Composable
+            override fun Decoration(innerTextField: @Composable (() -> Unit)) {
+                TextFieldDefaults.DecorationBox(
+                    value = state.text.toString(),
+                    innerTextField = innerTextField,
+                    enabled = true,
+                    singleLine = true,
+                    visualTransformation = VisualTransformation.None,
+                    interactionSource = interactionSource,
+                    placeholder = {
+                        Text(
+                            text = stringResource(Res.string.title),
+                            style = MaterialTheme.typography.headlineSmallEmphasized.copy(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                            )
                         )
-                    )
-                },
-                contentPadding = PaddingValues(0.dp),
-                container = {}
-            )
+                    },
+                    contentPadding = PaddingValues(0.dp),
+                    container = {}
+                )
+            }
         }
     )
 

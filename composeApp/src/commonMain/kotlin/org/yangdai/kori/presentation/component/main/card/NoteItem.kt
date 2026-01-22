@@ -28,7 +28,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -129,7 +128,6 @@ fun LazyStaggeredGridItemScope.NoteItem(
                         NoteType.PLAIN_TEXT -> buildPlainTextAnnotatedString(content)
                         NoteType.MARKDOWN -> buildMarkdownAnnotatedString(content)
                         NoteType.TODO -> buildTodoAnnotatedString(content)
-                        else -> AnnotatedString("")
                     },
                     style = MaterialTheme.typography.bodyMedium.copy(color = LocalContentColor.current),
                     maxLines = if (noteItemProperties.cardSize == CardSize.DEFAULT) 8 else 3,
