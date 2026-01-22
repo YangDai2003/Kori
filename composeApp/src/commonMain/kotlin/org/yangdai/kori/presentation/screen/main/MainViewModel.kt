@@ -41,6 +41,7 @@ import org.yangdai.kori.data.local.entity.defaultFolderColor
 import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
+import org.yangdai.kori.domain.repository.SnapshotRepository
 import org.yangdai.kori.domain.sort.FolderSortType
 import org.yangdai.kori.domain.sort.NoteSortType
 import org.yangdai.kori.presentation.screen.settings.AiPaneState
@@ -71,6 +72,7 @@ import kotlin.uuid.Uuid
 class MainViewModel(
     private val folderRepository: FolderRepository,
     private val noteRepository: NoteRepository,
+    private val snapshotRepository: SnapshotRepository,
     private val dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
 
@@ -442,6 +444,7 @@ class MainViewModel(
             _dataActionState.value = DataActionState(infinite = true, progress = 0f)
             delay(300L) // 等待进度弹窗出现
             runCatching {
+                snapshotRepository.deleteAllSnapshots()
                 noteRepository.deleteAllNotes()
                 folderRepository.deleteAllFolders()
             }.onSuccess {
