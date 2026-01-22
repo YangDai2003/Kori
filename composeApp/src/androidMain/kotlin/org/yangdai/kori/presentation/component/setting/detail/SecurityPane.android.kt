@@ -136,6 +136,9 @@ actual fun SecurityPane(mainViewModel: MainViewModel) {
                 title = stringResource(R.string.biometric),
                 icon = Icons.Outlined.Fingerprint,
                 trailingContent = {
+                    val toastStr = stringResource(R.string.no_password_set)
+                    val keyguardManager =
+                        context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
                     Switch(
                         checked = securityPaneState.isBiometricEnabled,
                         onCheckedChange = { checked ->
@@ -143,20 +146,14 @@ actual fun SecurityPane(mainViewModel: MainViewModel) {
                                 hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOn)
                             else
                                 hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOff)
-                            val keyguardManager =
-                                context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-                            if (keyguardManager.isKeyguardSecure) {
-                                mainViewModel.putPreferenceValue(
-                                    Constants.Preferences.IS_BIOMETRIC_ENABLED,
-                                    checked
-                                )
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.no_password_set),
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
+                            if (keyguardManager.isKeyguardSecure)
+                                mainViewModel
+                                    .putPreferenceValue(
+                                        Constants.Preferences.IS_BIOMETRIC_ENABLED,
+                                        checked
+                                    )
+                            else
+                                Toast.makeText(context, toastStr, Toast.LENGTH_LONG).show()
                         }
                     )
                 }

@@ -131,8 +131,7 @@ private fun ApplicationWindow(
 
                 else -> false
             }
-        }
-        false
+        } else false
     },
     init = { window ->
         with(window.rootPane) {

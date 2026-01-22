@@ -27,13 +27,14 @@ import java.util.Date
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
+import androidx.compose.ui.res.stringResource
 
 @Composable
 actual fun Modifier.clickToShareText(text: String): Modifier {
     val context = LocalContext.current
     val sendIntent = Intent(Intent.ACTION_SEND).apply {
         type = "text/plain"
-        putExtra(Intent.EXTRA_TITLE, context.getString(R.string.app_name))
+        putExtra(Intent.EXTRA_TITLE, stringResource(R.string.app_name))
         putExtra(Intent.EXTRA_TEXT, text)
     }
     return clickable {

@@ -320,6 +320,7 @@ fun InkScreen(
                                 drawState.undoActions.add(drawState.actions.last())
                                 drawState.actions.removeAt(drawState.actions.lastIndex)
                             }
+                            true
                         }
 
                         Key.Y -> {
@@ -327,12 +328,12 @@ fun InkScreen(
                                 drawState.actions.add(drawState.undoActions.last())
                                 drawState.undoActions.removeAt(drawState.undoActions.lastIndex)
                             }
+                            true
                         }
 
                         else -> false
                     }
-                }
-                false
+                } else false
             },
         topBar = {
             val topBarPadding = LocalTopAppBarPadding.current
