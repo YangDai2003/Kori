@@ -172,6 +172,7 @@ Baixe e experimente agora:
     <string name="pending_tasks">Tarefas Pendentes</string>
     <string name="progress">Progresso</string>
 
+    <string name="snapshots">Capturas</string>
     <string name="side_sheet">Folha lateral</string>
     <string name="control">Ctrl</string>
     <string name="undo">Desfazer</string>

@@ -172,6 +172,7 @@ Téléchargez et essayez maintenant :
     <string name="pending_tasks">Tâches en attente</string>
     <string name="progress">Progression</string>
 
+    <string name="snapshots">Instantanés</string>
     <string name="side_sheet">Panneau latéral</string>
     <string name="control">Ctrl</string>
     <string name="undo">Annuler</string>

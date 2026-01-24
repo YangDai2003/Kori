@@ -35,6 +35,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ManageHistory
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.UnfoldLess
 import androidx.compose.material.icons.outlined.UnfoldMore
@@ -104,6 +105,7 @@ import kori.composeapp.generated.resources.plain_text
 import kori.composeapp.generated.resources.progress
 import kori.composeapp.generated.resources.right_panel_close
 import kori.composeapp.generated.resources.settings
+import kori.composeapp.generated.resources.snapshots
 import kori.composeapp.generated.resources.todo_text
 import kori.composeapp.generated.resources.total_tasks
 import kori.composeapp.generated.resources.type
@@ -137,7 +139,8 @@ fun NoteSideSheet(
     onHeaderClick: (IntRange) -> Unit,
     navigateTo: (Screen) -> Unit,
     actionContent: @Composable ColumnScope.() -> Unit,
-    drawerContent: @Composable ColumnScope.() -> Unit
+    drawerContent: @Composable ColumnScope.() -> Unit,
+    openSnapshots: (() -> Unit)? = null
 ) {
     if (isDrawerOpen) {
         val scope = rememberCoroutineScope()
@@ -303,6 +306,12 @@ fun NoteSideSheet(
                                     )
 
                                     Row(verticalAlignment = Alignment.CenterVertically) {
+                                        if (openSnapshots != null)
+                                            TooltipIconButton(
+                                                hint = stringResource(Res.string.snapshots),
+                                                icon = Icons.Outlined.ManageHistory,
+                                                onClick = openSnapshots
+                                            )
                                         TooltipIconButton(
                                             hint = stringResource(Res.string.settings),
                                             icon = Icons.Outlined.Settings,

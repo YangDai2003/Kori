@@ -129,6 +129,7 @@ fun NoteScreen(
     val editorState by viewModel.editorState.collectAsStateWithLifecycle()
     val showAI by viewModel.showAI.collectAsStateWithLifecycle()
     val isGenerating by viewModel.isGenerating.collectAsStateWithLifecycle()
+    val snapshots by viewModel.snapshots.collectAsStateWithLifecycle()
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner, viewModel) {
@@ -181,6 +182,7 @@ fun NoteScreen(
     var showShareDialog by remember { mutableStateOf(false) }
     var showExportDialog by remember { mutableStateOf(false) }
     var showTemplatesBottomSheet by remember { mutableStateOf(false) }
+    var showSnapshots by remember { mutableStateOf(false) }
     val printTrigger = remember { mutableStateOf(false) }
     val cachedImageBitmap = remember { mutableStateOf<ImageBitmap?>(null) }
     val isWideScreen = rememberIsScreenWidthExpanded()
@@ -465,7 +467,8 @@ fun NoteScreen(
                 key = stringResource(Res.string.updated),
                 value = formattedUpdated
             )
-        }
+        },
+        openSnapshots = { showSnapshots = true }
     )
 
     if (showNoteTypeDialog) {

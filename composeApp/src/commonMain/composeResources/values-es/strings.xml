@@ -172,6 +172,7 @@ Descargue y pruebe ahora:
     <string name="pending_tasks">Tareas pendientes</string>
     <string name="progress">Progreso</string>
 
+    <string name="snapshots">Instantáneas</string>
     <string name="side_sheet">Panel lateral</string>
     <string name="control">Ctrl</string>
     <string name="undo">Deshacer</string>

@@ -172,6 +172,7 @@ Tải về và dùng thử ngay:
     <string name="pending_tasks">Nhiệm vụ Đang chờ</string>
     <string name="progress">Tiến độ</string>
 
+    <string name="snapshots">Ảnh chụp</string>
     <string name="side_sheet">Bảng phụ</string>
     <string name="control">Ctrl</string>
     <string name="undo">Hoàn tác</string>

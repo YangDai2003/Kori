@@ -172,6 +172,7 @@
     <string name="pending_tasks">保留タスク数</string>
     <string name="progress">進捗</string>
 
+    <string name="snapshots">スナップショット</string>
     <string name="side_sheet">サイドシート</string>
     <string name="control">Ctrl</string>
     <string name="undo">元に戻す</string>

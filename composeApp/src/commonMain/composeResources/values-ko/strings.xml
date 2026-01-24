@@ -172,6 +172,7 @@
     <string name="pending_tasks">대기 중인 작업 수</string>
     <string name="progress">진행 상황</string>
 
+    <string name="snapshots">스냅샷</string>
     <string name="side_sheet">사이드 시트</string>
     <string name="control">Ctrl</string>
     <string name="undo">실행 취소</string>

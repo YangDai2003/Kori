@@ -175,6 +175,7 @@ Download and try it now:
     <string name="pending_tasks">Pending Tasks</string>
     <string name="progress">Progress</string>
 
+    <string name="snapshots">Snapshots</string>
     <string name="side_sheet">Side Sheet</string>
     <string name="control">Ctrl</string>
     <string name="undo">Undo</string>

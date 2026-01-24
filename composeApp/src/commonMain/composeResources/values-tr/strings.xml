@@ -172,6 +172,7 @@ Uygulama, duyarlı bir tasarıma sahiptir ve tüm boyutlardaki cihazlara uygundu
     <string name="pending_tasks">Bekleyen Görevler</string>
     <string name="progress">İlerleme</string>
 
+    <string name="snapshots">Anlık Görüntüler</string>
     <string name="side_sheet">Yan sayfa</string>
     <string name="control">Ctrl</string>
     <string name="undo">Geri al</string>
