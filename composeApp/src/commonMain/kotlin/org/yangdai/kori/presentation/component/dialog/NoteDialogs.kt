@@ -222,56 +222,54 @@ fun NoteTypeDialog(
     oNoteType: NoteType,
     onDismissRequest: () -> Unit,
     onNoteTypeSelected: (NoteType) -> Unit
-) {
-    var selectedNoteType by remember { mutableStateOf(oNoteType) }
-    DialogWithoutButtons(
-        onDismissRequest = onDismissRequest,
-        title = { Text(stringResource(Res.string.type)) },
-        content = {
-            Column(modifier = Modifier.fillMaxWidth().selectableGroup()) {
-                NoteType.entries.filter { it != NoteType.Drawing }.forEach { noteType ->
-                    Row(
-                        modifier = Modifier
-                            .padding(top = 8.dp)
-                            .fillMaxWidth()
-                            .clip(MaterialTheme.shapes.medium)
-                            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                            .selectable(
-                                selected = (selectedNoteType == noteType),
-                                role = Role.RadioButton,
-                                onClick = {
-                                    selectedNoteType = noteType
-                                    onNoteTypeSelected(noteType)
-                                    onDismissRequest()
-                                }
-                            ),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        val typeName = when (noteType) {
-                            NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
-                            NoteType.MARKDOWN -> stringResource(Res.string.markdown)
-                            NoteType.TODO -> stringResource(Res.string.todo_text)
-                            NoteType.Drawing -> stringResource(Res.string.drawing)
-                        }
-                        Text(
-                            typeName,
-                            modifier = Modifier.minimumInteractiveComponentSize()
-                                .padding(horizontal = 16.dp)
-                                .padding(vertical = 4.dp),
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        RadioButton(
-                            modifier = Modifier.padding(end = 16.dp),
+) = DialogWithoutButtons(
+    onDismissRequest = onDismissRequest,
+    title = { Text(stringResource(Res.string.type)) },
+    content = {
+        var selectedNoteType by remember { mutableStateOf(oNoteType) }
+        Column(modifier = Modifier.fillMaxWidth().selectableGroup()) {
+            NoteType.entries.filter { it != NoteType.Drawing }.forEach { noteType ->
+                Row(
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .fillMaxWidth()
+                        .clip(MaterialTheme.shapes.medium)
+                        .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                        .selectable(
                             selected = (selectedNoteType == noteType),
-                            onClick = null
-                        )
+                            role = Role.RadioButton,
+                            onClick = {
+                                selectedNoteType = noteType
+                                onNoteTypeSelected(noteType)
+                                onDismissRequest()
+                            }
+                        ),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    val typeName = when (noteType) {
+                        NoteType.PLAIN_TEXT -> stringResource(Res.string.plain_text)
+                        NoteType.MARKDOWN -> stringResource(Res.string.markdown)
+                        NoteType.TODO -> stringResource(Res.string.todo_text)
+                        NoteType.Drawing -> stringResource(Res.string.drawing)
                     }
+                    Text(
+                        typeName,
+                        modifier = Modifier.minimumInteractiveComponentSize()
+                            .padding(horizontal = 16.dp)
+                            .padding(vertical = 4.dp),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    RadioButton(
+                        modifier = Modifier.padding(end = 16.dp),
+                        selected = (selectedNoteType == noteType),
+                        onClick = null
+                    )
                 }
             }
         }
-    )
-}
+    }
+)
 
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)

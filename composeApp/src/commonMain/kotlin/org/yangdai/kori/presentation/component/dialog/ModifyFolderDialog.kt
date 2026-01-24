@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package org.yangdai.kori.presentation.component.dialog
 
 import androidx.compose.animation.AnimatedContent
@@ -18,6 +20,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -31,6 +34,7 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Circle
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.outlined.Colorize
 import androidx.compose.material.icons.outlined.FolderDelete
 import androidx.compose.material.icons.outlined.Star
@@ -38,14 +42,18 @@ import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -65,8 +73,15 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import kolor.AlphaSlider
+import kolor.BrightnessSlider
+import kolor.ColorEnvelope
+import kolor.HsvColorPicker
+import kolor.rememberColorPickerController
 import kori.composeapp.generated.resources.Res
+import kori.composeapp.generated.resources.color_picker
 import kori.composeapp.generated.resources.modify
 import kori.composeapp.generated.resources.name
 import kotlinx.coroutines.launch
@@ -75,11 +90,9 @@ import org.yangdai.kori.data.local.entity.FolderEntity
 import org.yangdai.kori.data.local.entity.defaultFolderColor
 import org.yangdai.kori.data.local.entity.folderColorOptions
 import org.yangdai.kori.presentation.component.HorizontalScrollbar
+import org.yangdai.kori.presentation.util.toHexColor
 
-@OptIn(
-    ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class,
-    ExperimentalMaterial3ExpressiveApi::class
-)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SharedTransitionScope.ModifyFolderDialog(
     folder: FolderEntity?,
@@ -302,7 +315,6 @@ fun SharedTransitionScope.ModifyFolderDialog(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun OutlinedCircle(
     color: Color,
@@ -320,7 +332,6 @@ private fun OutlinedCircle(
     )
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun OutlinedCustomCircle(
     color: Color,
@@ -342,7 +353,6 @@ private fun OutlinedCustomCircle(
     )
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun OutlinedTextCircle(
     selected: Boolean,
@@ -358,4 +368,97 @@ private fun OutlinedTextCircle(
         tint = MaterialTheme.colorScheme.primary
     )
     Text("A", color = MaterialTheme.colorScheme.onPrimary)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ColorPickerBottomSheet(
+    oColor: Color,
+    sheetState: SheetState,
+    onDismissRequest: () -> Unit,
+    onConfirm: (Int) -> Unit
+) {
+    var color by remember { mutableStateOf(oColor) }
+    val controller = rememberColorPickerController().apply {
+        wheelColor = MaterialTheme.colorScheme.outlineVariant
+    }
+
+    ModalBottomSheet(
+        sheetState = sheetState,
+        sheetGesturesEnabled = false,
+        dragHandle = {
+            Box(Modifier.fillMaxWidth()) {
+                Text(
+                    modifier = Modifier.padding(start = 16.dp).align(Alignment.CenterStart),
+                    style = MaterialTheme.typography.titleLarge,
+                    text = stringResource(Res.string.color_picker)
+                )
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Light,
+                    text = color.toArgb().toHexColor(),
+                    color = color
+                )
+                val haptic = LocalHapticFeedback.current
+                FilledIconButton(
+                    modifier = Modifier.padding(end = 4.dp, top = 4.dp)
+                        .align(Alignment.CenterEnd)
+                        .minimumInteractiveComponentSize()
+                        .size(
+                            IconButtonDefaults.extraSmallContainerSize(
+                                IconButtonDefaults.IconButtonWidthOption.Uniform
+                            )
+                        ),
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                        onConfirm(color.toArgb())
+                    }
+                ) {
+                    Icon(
+                        Icons.Default.Done,
+                        contentDescription = null,
+                        modifier = Modifier.size(IconButtonDefaults.extraSmallIconSize)
+                    )
+                }
+            }
+        },
+        onDismissRequest = onDismissRequest
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+
+            HsvColorPicker(
+                modifier = Modifier.fillMaxWidth(0.7f).height(320.dp),
+                controller = controller,
+                onColorChanged = { colorEnvelope: ColorEnvelope ->
+                    color = colorEnvelope.color // ARGB color value.
+                },
+                initialColor = oColor
+            )
+
+            AlphaSlider(
+                modifier = Modifier.fillMaxWidth(0.75f).height(32.dp),
+                borderRadius = 16.dp,
+                borderSize = 0.dp,
+                borderColor = Color.Transparent,
+                wheelColor = MaterialTheme.colorScheme.outlineVariant,
+                controller = controller,
+                initialColor = oColor
+            )
+
+            BrightnessSlider(
+                modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth(0.75f).height(32.dp),
+                borderRadius = 16.dp,
+                borderSize = 0.dp,
+                borderColor = Color.Transparent,
+                wheelColor = MaterialTheme.colorScheme.outlineVariant,
+                controller = controller,
+                initialColor = oColor
+            )
+        }
+    }
 }
