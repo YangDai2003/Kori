@@ -20,6 +20,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.util.fastForEach
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -97,7 +98,7 @@ fun ConfettiEffect(
                 componentWidth = size.width.toFloat()
             }
     ) {
-        particles.forEach { particle ->
+        particles.fastForEach { particle ->
             // 使用 rotate 来实现旋转效果
             withTransform({
                 rotate(

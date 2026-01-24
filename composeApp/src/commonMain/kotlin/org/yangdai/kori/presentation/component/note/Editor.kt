@@ -49,6 +49,8 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastForEachIndexed
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.content
 import kotlinx.coroutines.Dispatchers
@@ -371,7 +373,7 @@ private fun Modifier.editorDrawing(
             val currentScroll = scrollState.value.toFloat()
             withTransform({ translate(top = -currentScroll) }) {
                 // 绘制搜索高亮
-                searchPaths.forEachIndexed { index, path ->
+                searchPaths.fastForEachIndexed { index, path ->
                     drawPath(path, highlightBgColor, 0.5f)
                     val borderColor =
                         if (index == currentRangeIndex) currentHighlightBorderColor
@@ -379,7 +381,7 @@ private fun Modifier.editorDrawing(
                     drawPath(path, borderColor, style = Stroke(1.sp.toPx()))
                 }
                 // 绘制波浪线
-                lintPaths.forEach {
+                lintPaths.fastForEach {
                     drawWavyUnderlineOptimized(it, phase)
                 }
             }

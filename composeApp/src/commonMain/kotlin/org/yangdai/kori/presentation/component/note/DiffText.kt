@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.max
@@ -237,7 +238,7 @@ private fun HighlightedText(
     val annotatedString = buildAnnotatedString {
         append(fullText)
 
-        highlightRanges.forEach { range ->
+        highlightRanges.fastForEach { range ->
             addStyle(
                 style = SpanStyle(background = highlightColor),
                 start = range.first,

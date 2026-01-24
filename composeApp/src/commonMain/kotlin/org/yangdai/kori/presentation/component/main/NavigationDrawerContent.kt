@@ -56,6 +56,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.all_notes
 import kori.composeapp.generated.resources.app_name
@@ -324,7 +325,7 @@ fun NavigationDrawerContent(
 
     AnimatedVisibility(isFoldersExpended) {
         Column {
-            drawerState.foldersWithNoteCounts.forEach { folderWithNoteCount ->
+            drawerState.foldersWithNoteCounts.fastForEach { folderWithNoteCount ->
                 key(folderWithNoteCount.folder.id) {
                     FolderDrawerItem(
                         iconTint = if (folderWithNoteCount.folder.colorValue == defaultFolderColor) MaterialTheme.colorScheme.primary
