@@ -71,7 +71,11 @@ fun Page(
         verticalItemSpacing = 8.dp,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(notes, key = { it.id }) { note ->
+        items(
+            notes,
+            key = { it.id },
+            contentType = { it.noteType }
+        ) { note ->
             NoteItem(
                 keyword = keyword,
                 note = note,

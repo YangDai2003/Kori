@@ -93,6 +93,7 @@ import org.yangdai.kori.presentation.component.dialog.ExportDialog
 import org.yangdai.kori.presentation.component.dialog.FoldersDialog
 import org.yangdai.kori.presentation.component.dialog.NoteTypeDialog
 import org.yangdai.kori.presentation.component.dialog.ShareDialog
+import org.yangdai.kori.presentation.component.dialog.SnapshotsDialog
 import org.yangdai.kori.presentation.component.dialog.TemplatesBottomSheet
 import org.yangdai.kori.presentation.component.note.AIAssist
 import org.yangdai.kori.presentation.component.note.AdaptiveActionRow
@@ -505,6 +506,20 @@ fun NoteScreen(
                 updatedAt = editingState.updatedAt
             ),
             onDismissRequest = { showExportDialog = false }
+        )
+    }
+
+    if (showSnapshots) {
+        SnapshotsDialog(
+            snapshots = snapshots,
+            currentContent = viewModel.contentState.text.toString(),
+            onDismissRequest = { showSnapshots = false },
+            onRestoreSnapshot = { snapshot ->
+                viewModel.contentState.setTextAndPlaceCursorAtEnd(snapshot.content)
+                showSnapshots = false
+            },
+            onDeleteSnapshot = { snapshot -> viewModel.deleteSnapshot(snapshot) },
+            onClearSnapshots = { viewModel.clearSnapshots() }
         )
     }
 }

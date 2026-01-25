@@ -33,6 +33,7 @@ import kotlinx.coroutines.launch
 import org.yangdai.kori.data.local.dao.FolderDao
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
+import org.yangdai.kori.data.local.entity.SnapshotEntity
 import org.yangdai.kori.domain.repository.DataStoreRepository
 import org.yangdai.kori.domain.repository.FolderRepository
 import org.yangdai.kori.domain.repository.NoteRepository
@@ -274,6 +275,28 @@ class NoteViewModel(
                     oNote = newNote
                 }
             }
+        }
+    }
+
+    fun deleteSnapshot(snapshot: SnapshotEntity) {
+        viewModelScope.launch {
+            snapshotRepository.deleteSnapshot(snapshot)
+        }
+    }
+
+    fun clearSnapshots() {
+        viewModelScope.launch {
+            snapshotRepository.deleteSnapshotsByNoteId(_noteEditingState.value.id)
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        CoroutineScope(Dispatchers.IO).launch {
+            snapshotRepository.saveNewSnapshotForNote(
+                noteId = _noteEditingState.value.id,
+                content = contentState.text.toString()
+            )
         }
     }
 
