@@ -14,6 +14,8 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.CleaningServices
 import androidx.compose.material.icons.outlined.Difference
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonGroupDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -49,7 +51,9 @@ import kori.composeapp.generated.resources.restore
 import kotlinx.coroutines.delay
 import kotlinx.datetime.Instant
 import org.jetbrains.compose.resources.stringResource
+import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.data.local.entity.SnapshotEntity
+import org.yangdai.kori.isDesktop
 import org.yangdai.kori.presentation.component.note.DiffText
 import org.yangdai.kori.presentation.util.formatNumber
 
@@ -79,6 +83,7 @@ fun SnapshotsDialog(
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SnapshotsDialogContent(
     snapshots: List<SnapshotEntity>,
@@ -96,7 +101,11 @@ private fun SnapshotsDialogContent(
     if (snapshots.isNotEmpty()) {
         var selectedTabIndex by remember { mutableStateOf(0) }
         Row(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+            modifier = Modifier.fillMaxWidth()
+                .padding(
+                    bottom = 16.dp,
+                    top = if (currentPlatformInfo.isDesktop()) 48.dp else 0.dp
+                ),
             verticalAlignment = Alignment.CenterVertically
         ) {
             OutlinedIconButton(
@@ -184,11 +193,12 @@ private fun SnapshotsDialogContent(
             Icon(imageVector = Icons.Outlined.Difference, contentDescription = "Difference")
             Text(": ${formatNumber(diffResult)}", modifier = Modifier.padding(end = 16.dp))
             TextButton(
-                modifier = Modifier.padding(end = 8.dp),
+                modifier = Modifier.padding(end = 4.dp),
                 colors = ButtonDefaults.textButtonColors(
                     containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f),
                     contentColor = MaterialTheme.colorScheme.onErrorContainer
                 ),
+                shape = ButtonGroupDefaults.connectedLeadingButtonShape,
                 onClick = {
                     onDeleteSnapshot(snapshots[selectedTabIndex])
                     selectedTabIndex = 0
@@ -201,6 +211,7 @@ private fun SnapshotsDialogContent(
                     containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ),
+                shape = ButtonGroupDefaults.connectedTrailingButtonShape,
                 onClick = { onRestoreSnapshot(snapshots[selectedTabIndex]) }
             ) {
                 Text(stringResource(Res.string.restore))

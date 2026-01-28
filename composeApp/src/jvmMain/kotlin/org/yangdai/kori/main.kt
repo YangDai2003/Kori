@@ -31,6 +31,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.Tray
@@ -114,7 +115,7 @@ private fun ApplicationWindow(
     visible: Boolean,
     onCloseRequest: () -> Unit,
     navHostController: NavHostController,
-    state: WindowState = rememberWindowState()
+    state: WindowState = rememberWindowState(size = DpSize(960.dp, 640.dp))
 ) = SwingWindow(
     onCloseRequest = onCloseRequest,
     state = state,
