@@ -108,7 +108,12 @@ fun DiffText(
         diffResult = withContext(Dispatchers.Default) {
             calculateTwoWayDiff(oldText, text)
         }
-        onDiffResult(diffResult?.newTextItems?.size?.minus(text.lines().size)?.let { abs(it) } ?: 0)
+        onDiffResult(diffResult?.let {
+            max(
+                abs(it.newTextItems.size - text.lines().size),
+                abs(it.oldTextItems.size - oldText.lines().size)
+            )
+        } ?: 0)
     }
 
     Box(modifier = modifier, contentAlignment = Alignment.Center) {

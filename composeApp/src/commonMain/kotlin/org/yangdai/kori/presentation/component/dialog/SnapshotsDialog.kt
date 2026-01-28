@@ -188,7 +188,10 @@ private fun SnapshotsDialogContent(
                     containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f),
                     contentColor = MaterialTheme.colorScheme.onErrorContainer
                 ),
-                onClick = { onDeleteSnapshot(snapshots[selectedTabIndex]) }
+                onClick = {
+                    onDeleteSnapshot(snapshots[selectedTabIndex])
+                    selectedTabIndex = 0
+                }
             ) {
                 Text(stringResource(Res.string.delete))
             }
@@ -197,10 +200,7 @@ private fun SnapshotsDialogContent(
                     containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ),
-                onClick = {
-                    onRestoreSnapshot(snapshots[selectedTabIndex])
-                    onDismissRequest()
-                }
+                onClick = { onRestoreSnapshot(snapshots[selectedTabIndex]) }
             ) {
                 Text(stringResource(Res.string.restore))
             }
