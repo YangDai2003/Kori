@@ -51,6 +51,7 @@ import kotlinx.datetime.Instant
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.data.local.entity.SnapshotEntity
 import org.yangdai.kori.presentation.component.note.DiffText
+import org.yangdai.kori.presentation.util.formatNumber
 
 @Composable
 fun SnapshotsDialog(
@@ -181,7 +182,7 @@ private fun SnapshotsDialogContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(imageVector = Icons.Outlined.Difference, contentDescription = "Difference")
-            Text(": $diffResult", modifier = Modifier.padding(end = 16.dp))
+            Text(": ${formatNumber(diffResult)}", modifier = Modifier.padding(end = 16.dp))
             TextButton(
                 modifier = Modifier.padding(end = 8.dp),
                 colors = ButtonDefaults.textButtonColors(
