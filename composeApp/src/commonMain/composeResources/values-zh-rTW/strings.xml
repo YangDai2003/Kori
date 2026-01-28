@@ -172,6 +172,7 @@
     <string name="pending_tasks">待辦任務</string>
     <string name="progress">進度</string>
 
+    <string name="no_snapshots">沒有快照</string>
     <string name="snapshots">快照</string>
     <string name="side_sheet">側邊欄</string>
     <string name="control">Ctrl</string>

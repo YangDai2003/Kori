@@ -172,6 +172,7 @@ Unduh dan coba sekarang:
     <string name="pending_tasks">Tugas Tertunda</string>
     <string name="progress">Kemajuan</string>
 
+    <string name="no_snapshots">Tidak ada cuplikan</string>
     <string name="snapshots">Cuplikan</string>
     <string name="side_sheet">Lembar sisi</string>
     <string name="control">Ctrl</string>

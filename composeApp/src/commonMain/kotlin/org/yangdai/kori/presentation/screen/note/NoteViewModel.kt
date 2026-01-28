@@ -272,6 +272,10 @@ class NoteViewModel(
                     oNote.isPinned != newNote.isPinned
                 ) {
                     noteRepository.updateNote(newNote)
+                    snapshotRepository.saveNewSnapshotForNote(
+                        noteId = oNote.id,
+                        content = oNote.content
+                    )
                     oNote = newNote
                 }
             }
@@ -287,16 +291,6 @@ class NoteViewModel(
     fun clearSnapshots() {
         viewModelScope.launch {
             snapshotRepository.deleteSnapshotsByNoteId(_noteEditingState.value.id)
-        }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        CoroutineScope(Dispatchers.IO).launch {
-            snapshotRepository.saveNewSnapshotForNote(
-                noteId = _noteEditingState.value.id,
-                content = contentState.text.toString()
-            )
         }
     }
 

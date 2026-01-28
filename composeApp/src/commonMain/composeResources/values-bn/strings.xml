@@ -172,6 +172,7 @@
     <string name="pending_tasks">মুলতুবি কাজ</string>
     <string name="progress">অগ্রগতি</string>
 
+    <string name="no_snapshots">কোনো স্ন্যাপশট নেই</string>
     <string name="snapshots">স্ন্যাপশট</string>
     <string name="side_sheet">সাইড শিট</string>
     <string name="control">Ctrl</string>

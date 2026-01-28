@@ -101,7 +101,7 @@ fun TemplatesBottomSheet(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = null,
+                            contentDescription = "Close",
                             modifier = Modifier.size(IconButtonDefaults.extraSmallIconSize)
                         )
                     }
@@ -211,7 +211,7 @@ fun TemplatesBottomSheet(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = null,
+                            contentDescription = "Close",
                             modifier = Modifier.size(IconButtonDefaults.extraSmallIconSize)
                         )
                     }

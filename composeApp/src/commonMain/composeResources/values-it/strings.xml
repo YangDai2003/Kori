@@ -172,6 +172,7 @@ Scaricala e provala ora:
     <string name="pending_tasks">Compiti in sospeso</string>
     <string name="progress">Progresso</string>
 
+    <string name="no_snapshots">Nessuna istantanea</string>
     <string name="snapshots">Istantanee</string>
     <string name="side_sheet">Foglio laterale</string>
     <string name="control">Ctrl</string>

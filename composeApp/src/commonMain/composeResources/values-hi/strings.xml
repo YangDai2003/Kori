@@ -172,6 +172,7 @@
     <string name="pending_tasks">लंबित कार्य</string>
     <string name="progress">प्रगति</string>
 
+    <string name="no_snapshots">कोई स्नैपशॉट नहीं</string>
     <string name="snapshots">स्नैपशॉट</string>
     <string name="side_sheet">साइड शीट</string>
     <string name="control">Ctrl</string>

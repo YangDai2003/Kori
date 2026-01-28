@@ -176,6 +176,7 @@
     <string name="pending_tasks">المهام المعلقة</string>
     <string name="progress">التقدم</string>
 
+    <string name="no_snapshots">لا توجد لقطات</string>
     <string name="snapshots">لقطات</string>
     <string name="side_sheet">الورقة الجانبية</string>
     <string name="control">Ctrl</string>

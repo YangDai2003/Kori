@@ -220,10 +220,7 @@ fun MainScreenContent(
                                 }
                             }
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = null
-                            )
+                            Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
                         }
                     else
                         TooltipIconButton(
@@ -282,7 +279,7 @@ fun MainScreenContent(
                                 ),
                                 onClick = { selectedNotes.clear() }
                             ) {
-                                Icon(Icons.Default.Close, contentDescription = null)
+                                Icon(Icons.Default.Close, contentDescription = "Close")
                             }
                         },
                         actions = {

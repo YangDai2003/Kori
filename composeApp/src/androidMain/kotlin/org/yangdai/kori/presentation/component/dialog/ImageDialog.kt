@@ -255,10 +255,7 @@ fun ImageViewerDialog(imageUrl: String, onDismissRequest: () -> Unit) {
                     .align(Alignment.TopStart)
                     .padding(start = 16.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Close"
-                )
+                Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
             }
         }
     }

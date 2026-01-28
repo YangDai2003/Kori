@@ -252,10 +252,7 @@ fun SettingsScreen(mainViewModel: MainViewModel, navigateUp: () -> Unit) {
                     shape = dialogShape,
                     onClick = { isVisible = false }
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = null
-                    )
+                    Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
                 }
             }
         }

@@ -3,24 +3,29 @@ package org.yangdai.kori.presentation.component.note
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
@@ -52,6 +58,7 @@ private fun DiffTextPreview() {
                 We are testing the diff functionality.
                 这是中文行
                 This line is completely new.
+                
                 Another line.
                 """.trimIndent(),
             oldText = """
@@ -63,6 +70,7 @@ private fun DiffTextPreview() {
                 Some different content.
                 ddd
                 这是中文行
+                
                 Another line.
                 """.trimIndent(),
             modifier = Modifier.padding(16.dp)
@@ -85,11 +93,13 @@ private fun DiffTextPreview() {
 fun DiffText(
     text: String,
     oldText: String,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     addedColor: Color = Color(0x4D90EE90), // 较淡的绿色，用于整行新增
     removedColor: Color = Color(0x4DC86767), // 较淡的红色，用于整行删除
     addedCharColor: Color = Color(0xFFA6CFB3), // 较深的绿色，用于字符级高亮
     removedCharColor: Color = Color(0xFFFF8A8A), // 较深的红色，用于字符级高亮
-    modifier: Modifier = Modifier
+    onDiffResult: (Int) -> Unit = {}
 ) {
     var diffResult by remember(text, oldText) { mutableStateOf<TwoWayDiffResult?>(null) }
 
@@ -98,16 +108,36 @@ fun DiffText(
         diffResult = withContext(Dispatchers.Default) {
             calculateTwoWayDiff(oldText, text)
         }
+        onDiffResult(diffResult?.newTextItems?.size?.minus(text.lines().size)?.let { abs(it) } ?: 0)
     }
 
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         if (diffResult == null) {
             CircularProgressIndicator()
         } else {
+
+            val state1 = rememberLazyListState()
+            val state2 = rememberLazyListState()
+
+            // 同步两个LazyColumn的滚动位置
+            LaunchedEffect(state1) {
+                snapshotFlow { state1.firstVisibleItemIndex to state1.firstVisibleItemScrollOffset }
+                    .collect { (index, offset) ->
+                        state2.requestScrollToItem(index, offset)
+                    }
+            }
+
+            LaunchedEffect(state2) {
+                snapshotFlow { state2.firstVisibleItemIndex to state2.firstVisibleItemScrollOffset }
+                    .collect { (index, offset) ->
+                        state1.requestScrollToItem(index, offset)
+                    }
+            }
+
             Row(modifier = Modifier.fillMaxSize()) {
                 // 原始文本列
                 SelectionContainer(Modifier.weight(1f).padding(end = 4.dp)) {
-                    LazyColumn {
+                    LazyColumn(state = state1, contentPadding = contentPadding) {
                         items(diffResult?.oldTextItems ?: emptyList()) { item ->
                             val backgroundColor = when (item.type) {
                                 DiffType.REMOVED -> removedColor
@@ -121,18 +151,10 @@ fun DiffText(
                                     .padding(horizontal = 8.dp, vertical = 2.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                // 只有当左侧有内容时才显示行号
-                                if (item.content.isNotEmpty() || item.type == DiffType.REMOVED) {
+                                DisableSelection {
                                     Text(
-                                        text = "${item.originalLineIndex + 1}", // 使用原始行号
-                                        modifier = Modifier.padding(end = 8.dp),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                } else {
-                                    // 当左侧无内容时，显示空白占位符以保持对齐
-                                    Text(
-                                        text = "",
+                                        text = if (item.originalLineIndex != -1)
+                                            "${item.originalLineIndex + 1}" else "",
                                         modifier = Modifier.padding(end = 8.dp),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -152,10 +174,10 @@ fun DiffText(
                         }
                     }
                 }
-
+                VerticalDivider(Modifier.padding(contentPadding))
                 // 新文本列
                 SelectionContainer(Modifier.weight(1f).padding(start = 4.dp)) {
-                    LazyColumn {
+                    LazyColumn(state = state2, contentPadding = contentPadding) {
                         items(diffResult?.newTextItems ?: emptyList()) { item ->
                             val backgroundColor = when (item.type) {
                                 DiffType.ADDED -> addedColor
@@ -169,18 +191,10 @@ fun DiffText(
                                     .padding(horizontal = 8.dp, vertical = 2.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                // 只有当右侧有内容时才显示行号
-                                if (item.content.isNotEmpty() || item.type == DiffType.ADDED) {
+                                DisableSelection {
                                     Text(
-                                        text = "${item.originalLineIndex + 1}", // 使用原始行号
-                                        modifier = Modifier.padding(end = 8.dp),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                } else {
-                                    // 当右侧无内容时，显示空白占位符以保持对齐
-                                    Text(
-                                        text = "",
+                                        text = if (item.originalLineIndex != -1)
+                                            "${item.originalLineIndex + 1}" else "",
                                         modifier = Modifier.padding(end = 8.dp),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
