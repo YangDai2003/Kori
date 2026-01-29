@@ -12,6 +12,10 @@
 #   public *;
 #}
 
+-keepclassmembers class org.yangdai.kori.presentation.component.note.markdown.**$* {
+    @android.webkit.JavascriptInterface <methods>;
+}
+
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
 #-keepattributes SourceFile,LineNumberTable
