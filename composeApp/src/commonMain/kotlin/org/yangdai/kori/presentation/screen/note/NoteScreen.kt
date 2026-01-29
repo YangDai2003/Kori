@@ -22,6 +22,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.EditNote
+import androidx.compose.material.icons.filled.PictureInPicture
 import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
@@ -114,6 +115,7 @@ import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.util.formatInstant
+import org.yangdai.kori.presentation.util.isFloatingWindowEnabled
 import org.yangdai.kori.presentation.util.rememberIsScreenWidthExpanded
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -252,6 +254,13 @@ fun NoteScreen(
                             icon = if (isSearching) Icons.Default.SearchOff
                             else Icons.Default.Search,
                             onClick = { isSearching = !isSearching }
+                        )
+
+                    // Todo 实现笔记悬浮窗功能
+                    if (isReadView && isFloatingWindowEnabled)
+                        TooltipIconButton(
+                            icon = Icons.Default.PictureInPicture,
+                            onClick = {}
                         )
 
                     TooltipIconButton(
