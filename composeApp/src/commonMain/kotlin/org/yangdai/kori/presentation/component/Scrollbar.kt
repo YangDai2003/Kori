@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.max
+import kotlin.math.roundToInt
 
 @Composable
 expect fun VerticalScrollbar(modifier: Modifier, state: LazyGridState)
@@ -135,7 +136,7 @@ fun Scrollbar(
                 .align(Alignment.TopCenter)
                 .width(width)
                 .height(with(density) { thumbHeightPx.toDp() })
-                .offset { IntOffset(x = 0, y = thumbOffsetYPx.toInt()) }
+                .offset { IntOffset(x = 0, y = thumbOffsetYPx.roundToInt()) }
                 .background(
                     color = thumbColor.copy(alpha = alpha),
                     shape = RoundedCornerShape(width / 2)
