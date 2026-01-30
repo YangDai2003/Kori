@@ -271,10 +271,11 @@ class NoteViewModel(
                     oNote.isPinned != newNote.isPinned
                 ) {
                     noteRepository.updateNote(newNote)
-                    snapshotRepository.saveNewSnapshotForNote(
-                        noteId = oNote.id,
-                        content = oNote.content
-                    )
+                    if (oNote.content != newNote.content)
+                        snapshotRepository.saveNewSnapshotForNote(
+                            noteId = oNote.id,
+                            content = oNote.content
+                        )
                     oNote = newNote
                 }
             }
