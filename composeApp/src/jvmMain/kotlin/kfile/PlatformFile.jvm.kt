@@ -1,5 +1,7 @@
 package kfile
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -22,14 +24,25 @@ actual val PlatformFile.extension: String
     get() = file.extension
 
 actual suspend fun PlatformFile.readText(): String {
-    return if (file.canRead()) file.readText() else ""
+    return if (file.canRead())
+        withContext(Dispatchers.IO) {
+            file.readText()
+        }
+    else ""
 }
 
 actual suspend fun PlatformFile.writeText(text: String) {
-    if (file.exists() && file.canWrite()) file.writeText(text)
+    if (file.exists() && file.canWrite())
+        withContext(Dispatchers.IO) {
+            file.writeText(text)
+        }
 }
 
-actual suspend fun PlatformFile.delete(): Boolean = file.delete()
+actual suspend fun PlatformFile.delete(): Boolean {
+    return withContext(Dispatchers.IO) {
+        file.delete()
+    }
+}
 
 @OptIn(ExperimentalTime::class)
 actual fun PlatformFile.lastModified(): Instant {

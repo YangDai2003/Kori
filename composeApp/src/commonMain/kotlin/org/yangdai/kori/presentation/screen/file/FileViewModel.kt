@@ -1,6 +1,5 @@
 package org.yangdai.kori.presentation.screen.file
 
-import ai.koog.utils.io.SuitableForIO
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -19,8 +18,6 @@ import kfile.writeText
 import knet.ConnectivityObserver
 import knet.ai.AI
 import knet.ai.GenerationResult
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -73,7 +70,7 @@ class FileViewModel(
         )
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             if (!platformFile.exists()) {
                 _uiEventChannel.send(UiEvent.NavigateUp)
                 return@launch
@@ -140,7 +137,7 @@ class FileViewModel(
     }
 
     fun saveFile() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             val content = contentState.text.toString()
             platformFile.writeText(content)
             _initialContent.value = content
@@ -148,7 +145,7 @@ class FileViewModel(
     }
 
     fun deleteFile() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             if (platformFile.delete()) _uiEventChannel.send(UiEvent.NavigateUp)
         }
     }
@@ -194,21 +191,16 @@ class FileViewModel(
     val isGenerating = _isGenerating.asStateFlow()
 
     fun onAIAssistEvent(event: AIAssistEvent) {
-        viewModelScope.launch(Dispatchers.SuitableForIO) {
+        viewModelScope.launch {
             _isGenerating.update { true }
             val selection = contentState.selection
             val selectedText = contentState.text.substring(selection)
-            val defaultProviderId = dataStoreRepository.getString(
-                Constants.Preferences.AI_PROVIDER,
-                AI.providers.keys.first()
-            )
-            val llmProvider = AI.providers[defaultProviderId] ?: AI.providers.values.first()
-            val llmConfig = getLLMConfig(llmProvider, dataStoreRepository)
+            val llmConfig = dataStoreRepository.getLLMConfig()
             val response = AI.executePrompt(
-                lLMProvider = llmProvider,
-                baseUrl = llmConfig.first,
-                model = llmConfig.second,
-                apiKey = llmConfig.third,
+                lLMProvider = llmConfig.provider,
+                baseUrl = llmConfig.baseUrl,
+                model = llmConfig.model,
+                apiKey = llmConfig.apiKey,
                 userInput = when (event) {
                     AIAssistEvent.Rewrite -> AI.EventPrompt.REWRITE + "\n" + selectedText
                     AIAssistEvent.Summarize -> AI.EventPrompt.SUMMARIZE + "\n" + selectedText

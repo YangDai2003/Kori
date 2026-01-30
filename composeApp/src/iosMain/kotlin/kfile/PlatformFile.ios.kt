@@ -1,6 +1,9 @@
 package kfile
 
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.withContext
 import platform.Foundation.NSDate
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSString
@@ -38,18 +41,24 @@ actual val PlatformFile.extension: String
 
 @OptIn(ExperimentalForeignApi::class)
 actual suspend fun PlatformFile.readText(): String {
-    return NSString.stringWithContentsOfURL(url, NSUTF8StringEncoding, null) ?: ""
+    return withContext(Dispatchers.IO) {
+        NSString.stringWithContentsOfURL(url, NSUTF8StringEncoding, null) ?: ""
+    }
 }
 
 @Suppress("CAST_NEVER_SUCCEEDS")
 @OptIn(ExperimentalForeignApi::class)
 actual suspend fun PlatformFile.writeText(text: String) {
-    (text as NSString).writeToURL(url, true, NSUTF8StringEncoding, null)
+    withContext(Dispatchers.IO) {
+        (text as NSString).writeToURL(url, true, NSUTF8StringEncoding, null)
+    }
 }
 
 @OptIn(ExperimentalForeignApi::class)
 actual suspend fun PlatformFile.delete(): Boolean {
-    return NSFileManager.defaultManager.removeItemAtURL(url, null)
+    return withContext(Dispatchers.IO) {
+        NSFileManager.defaultManager.removeItemAtURL(url, null)
+    }
 }
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalTime::class)

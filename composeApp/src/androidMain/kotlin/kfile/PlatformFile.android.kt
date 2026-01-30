@@ -3,6 +3,8 @@ package kfile
 import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -30,24 +32,32 @@ actual val PlatformFile.extension: String
 
 actual suspend fun PlatformFile.readText(): String {
     return if (documentFile.canRead()) {
-        context.contentResolver.openInputStream(uri)?.use { inputStream ->
-            inputStream.bufferedReader().use { reader ->
-                reader.readText()
-            }
-        } ?: ""
+        withContext(Dispatchers.IO) {
+            context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                inputStream.bufferedReader().use { reader ->
+                    reader.readText()
+                }
+            } ?: ""
+        }
     } else ""
 }
 
 actual suspend fun PlatformFile.writeText(text: String) {
     if (documentFile.exists() && documentFile.canWrite())
-        context.contentResolver.openOutputStream(uri, "wt")?.use { outputStream ->
-            outputStream.bufferedWriter().use { writer ->
-                writer.write(text)
+        withContext(Dispatchers.IO) {
+            context.contentResolver.openOutputStream(uri, "wt")?.use { outputStream ->
+                outputStream.bufferedWriter().use { writer ->
+                    writer.write(text)
+                }
             }
         }
 }
 
-actual suspend fun PlatformFile.delete(): Boolean = documentFile.delete()
+actual suspend fun PlatformFile.delete(): Boolean {
+    return withContext(Dispatchers.IO) {
+        documentFile.delete()
+    }
+}
 
 @OptIn(ExperimentalTime::class)
 actual fun PlatformFile.lastModified(): Instant {

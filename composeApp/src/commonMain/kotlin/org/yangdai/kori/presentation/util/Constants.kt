@@ -1,6 +1,7 @@
 package org.yangdai.kori.presentation.util
 
 import ai.koog.prompt.llm.LLMProvider
+import knet.ai.AI
 import knet.ai.providers.LMStudio
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -72,71 +73,70 @@ object Constants {
         const val MISTRAL_BASE_URL = "mistral_base_url"
         const val MISTRAL_MODEL = "mistral_model"
 
-        // LLM Config: Base URL, Model, API Key
-        suspend fun getLLMConfig(
-            llmProvider: LLMProvider,
-            dataStoreRepository: DataStoreRepository
-        ): Triple<String, String, String> {
+        data class LLMConfig(
+            val baseUrl: String,
+            val model: String,
+            val apiKey: String,
+            val provider: LLMProvider
+        )
+
+        suspend fun DataStoreRepository.getLLMConfig(): LLMConfig {
             return withContext(Dispatchers.IO) {
-                when (llmProvider) {
-                    LLMProvider.Google -> {
-                        val baseUrl = dataStoreRepository.getString(GEMINI_BASE_URL)
-                        val model = dataStoreRepository.getString(GEMINI_MODEL)
-                        val apiKey = dataStoreRepository.getString(GEMINI_API_KEY)
-                        Triple(baseUrl, model, apiKey)
-                    }
+                val defaultProviderId =
+                    getString(Preferences.AI_PROVIDER, AI.providers.keys.first())
+                val provider = AI.providers[defaultProviderId] ?: AI.providers.values.first()
+                val (baseUrl, model, apiKey) = when (provider) {
+                    LLMProvider.Google -> Triple(
+                        getString(GEMINI_BASE_URL),
+                        getString(GEMINI_MODEL),
+                        getString(GEMINI_API_KEY)
+                    )
 
-                    LLMProvider.OpenAI -> {
-                        val baseUrl = dataStoreRepository.getString(OPENAI_BASE_URL)
-                        val model = dataStoreRepository.getString(OPENAI_MODEL)
-                        val apiKey = dataStoreRepository.getString(OPENAI_API_KEY)
-                        Triple(baseUrl, model, apiKey)
-                    }
+                    LLMProvider.OpenAI -> Triple(
+                        getString(OPENAI_BASE_URL),
+                        getString(OPENAI_MODEL),
+                        getString(OPENAI_API_KEY)
+                    )
 
-                    LLMProvider.Anthropic -> {
-                        val baseUrl = dataStoreRepository.getString(ANTHROPIC_BASE_URL)
-                        val model = dataStoreRepository.getString(ANTHROPIC_MODEL)
-                        val apiKey = dataStoreRepository.getString(ANTHROPIC_API_KEY)
-                        Triple(baseUrl, model, apiKey)
-                    }
+                    LLMProvider.Anthropic -> Triple(
+                        getString(ANTHROPIC_BASE_URL),
+                        getString(ANTHROPIC_MODEL),
+                        getString(ANTHROPIC_API_KEY)
+                    )
 
-                    LLMProvider.DeepSeek -> {
-                        val baseUrl = dataStoreRepository.getString(DEEPSEEK_BASE_URL)
-                        val model = dataStoreRepository.getString(DEEPSEEK_MODEL)
-                        val apiKey = dataStoreRepository.getString(DEEPSEEK_API_KEY)
-                        Triple(baseUrl, model, apiKey)
-                    }
+                    LLMProvider.DeepSeek -> Triple(
+                        getString(DEEPSEEK_BASE_URL),
+                        getString(DEEPSEEK_MODEL),
+                        getString(DEEPSEEK_API_KEY)
+                    )
 
-                    LLMProvider.Alibaba -> {
-                        val baseUrl = dataStoreRepository.getString(ALIBABA_BASE_URL)
-                        val model = dataStoreRepository.getString(ALIBABA_MODEL)
-                        val apiKey = dataStoreRepository.getString(ALIBABA_API_KEY)
-                        Triple(baseUrl, model, apiKey)
-                    }
+                    LLMProvider.Alibaba -> Triple(
+                        getString(ALIBABA_BASE_URL),
+                        getString(ALIBABA_MODEL),
+                        getString(ALIBABA_API_KEY)
+                    )
 
-                    LLMProvider.MistralAI -> {
-                        val baseUrl = dataStoreRepository.getString(MISTRAL_BASE_URL)
-                        val model = dataStoreRepository.getString(MISTRAL_MODEL)
-                        val apiKey = dataStoreRepository.getString(MISTRAL_API_KEY)
-                        Triple(baseUrl, model, apiKey)
-                    }
+                    LLMProvider.MistralAI -> Triple(
+                        getString(MISTRAL_BASE_URL),
+                        getString(MISTRAL_MODEL),
+                        getString(MISTRAL_API_KEY)
+                    )
 
-                    LLMProvider.Ollama -> {
-                        val baseUrl = dataStoreRepository.getString(OLLAMA_BASE_URL)
-                        val model = dataStoreRepository.getString(OLLAMA_MODEL)
-                        Triple(baseUrl, model, "")
-                    }
+                    LLMProvider.Ollama -> Triple(
+                        getString(OLLAMA_BASE_URL),
+                        getString(OLLAMA_MODEL),
+                        ""
+                    )
 
-                    LMStudio -> {
-                        val baseUrl = dataStoreRepository.getString(LM_STUDIO_BASE_URL)
-                        val model = dataStoreRepository.getString(LM_STUDIO_MODEL)
-                        Triple(baseUrl, model, "")
-                    }
+                    LMStudio -> Triple(
+                        getString(LM_STUDIO_BASE_URL),
+                        getString(LM_STUDIO_MODEL),
+                        ""
+                    )
 
-                    else -> {
-                        Triple("", "", "")
-                    }
+                    else -> Triple("", "", "")
                 }
+                LLMConfig(baseUrl, model, apiKey, provider)
             }
         }
     }
