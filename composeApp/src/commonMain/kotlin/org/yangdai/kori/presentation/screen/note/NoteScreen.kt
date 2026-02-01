@@ -112,6 +112,7 @@ import org.yangdai.kori.presentation.component.note.drawing.DrawingViewer
 import org.yangdai.kori.presentation.component.note.drawing.InkScreen
 import org.yangdai.kori.presentation.component.note.drawing.rememberDrawState
 import org.yangdai.kori.presentation.component.note.rememberFindAndReplaceState
+import org.yangdai.kori.presentation.component.note.template.TemplateProcessor
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.util.formatInstant
@@ -391,11 +392,22 @@ fun NoteScreen(
         )
     }
 
-    TemplatesBottomSheet(
-        showTemplatesBottomSheet = showTemplatesBottomSheet,
-        onDismissRequest = { showTemplatesBottomSheet = false },
-        viewModel = viewModel
-    )
+    if (showTemplatesBottomSheet) {
+        val formatterState by viewModel.formatterState.collectAsStateWithLifecycle()
+        val templates by viewModel.templates.collectAsStateWithLifecycle()
+        TemplatesBottomSheet(
+            onDismissRequest = { showTemplatesBottomSheet = false },
+            templates = templates,
+            onTemplateClick = { template ->
+                val templateText = TemplateProcessor(
+                    formatterState.dateFormatter,
+                    formatterState.timeFormatter,
+                ).process(template.content)
+                viewModel.contentState.edit { appendLine(templateText) }
+            },
+            onSaveButtonClick = { viewModel.saveNoteAsTemplate() }
+        )
+    }
 
     NoteSideSheet(
         isDrawerOpen = isSideSheetOpen,
