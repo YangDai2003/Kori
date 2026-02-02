@@ -1,6 +1,5 @@
 package kolor
 
-import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
 /**
@@ -10,7 +9,6 @@ import androidx.compose.ui.graphics.Color
  * @param hexCode Color hex code, which represents [color] value.
  * @param fromUser Represents this event is triggered by user or not.
  */
-@Immutable
 data class ColorEnvelope(
     val color: Color,
     val hexCode: String,

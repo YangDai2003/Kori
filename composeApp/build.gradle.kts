@@ -226,6 +226,11 @@ for more information
     }
 }
 
+composeCompiler {
+    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+    metricsDestination = layout.buildDirectory.dir("compose_compiler")
+}
+
 dependencies {
     debugImplementation(libs.ui.tooling)
     add("kspAndroid", libs.androidx.room.compiler)

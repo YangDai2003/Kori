@@ -3,7 +3,6 @@ package org.yangdai.kori.presentation.screen.settings
 import ai.koog.prompt.llm.LLMProvider
 import androidx.compose.runtime.Immutable
 
-@Immutable
 data class StylePaneState(
     val theme: AppTheme = AppTheme.SYSTEM,
     val color: AppColor = AppColor.DYNAMIC,
@@ -11,7 +10,6 @@ data class StylePaneState(
     val fontSize: Float = 1f
 )
 
-@Immutable
 data class SecurityPaneState(
     val isScreenProtected: Boolean = false,
     val password: String = "",
@@ -20,7 +18,6 @@ data class SecurityPaneState(
     val keepScreenOn: Boolean = false
 )
 
-@Immutable
 data class EditorPaneState(
     val isLineNumberVisible: Boolean = false,
     val isLintingEnabled: Boolean = false,
@@ -28,13 +25,11 @@ data class EditorPaneState(
     val editorWeight: Float = 0.5f
 )
 
-@Immutable
 data class TemplatePaneState(
     val dateFormatter: String = "",
     val timeFormatter: String = ""
 )
 
-@Immutable
 data class CardPaneState(
     val cardSize: CardSize = CardSize.DEFAULT,
     val clipOverflow: Boolean = false

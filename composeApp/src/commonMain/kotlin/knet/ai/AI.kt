@@ -35,12 +35,8 @@ import knet.ai.providers.OpenAI
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-@Serializable
 sealed class GenerationResult {
-    @Serializable
     data class Success(val text: String) : GenerationResult()
-
-    @Serializable
     data class Error(val errorMessage: String) : GenerationResult()
 }
 

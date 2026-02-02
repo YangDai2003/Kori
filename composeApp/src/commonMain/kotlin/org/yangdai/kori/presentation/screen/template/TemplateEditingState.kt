@@ -1,9 +1,7 @@
 package org.yangdai.kori.presentation.screen.template
 
-import androidx.compose.runtime.Immutable
 import org.yangdai.kori.data.local.entity.NoteType
 
-@Immutable
 data class TemplateEditingState(
     val id: String = "",
     val createdAt: String = "",
