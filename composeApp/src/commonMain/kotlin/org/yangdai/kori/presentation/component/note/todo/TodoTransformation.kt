@@ -136,11 +136,11 @@ object TodoFormat {
     val dateRegex = Regex("""(?<=^|\s)(\d{4}-\d{2}-\d{2})(?=\s|$)""")
 
     // context: @xxx
-    val contextRegex = Regex("""(?:^|\s)(@\S+)""")
+    val contextRegex = Regex("""(?:^|\s)(@[\w\p{L}\p{N}\u4e00-\u9fff]+)""")
 
     // project: +xxx
-    val projectRegex = Regex("""(?:^|\s)(\+\S+)""")
+    val projectRegex = Regex("""(?:^|\s)(\+[\w\p{L}\p{N}\u4e00-\u9fff]+)""")
 
     // 元数据: key:value
-    val metaRegex = Regex("""(?:^|\s)([^\s:]+:[^\s:]+)""")
+    val metaRegex = Regex("""(?:^|\s)([\w\p{L}\p{N}\u4e00-\u9fff]+:[\w\p{L}\p{N}\u4e00-\u9fff]+)""")
 }

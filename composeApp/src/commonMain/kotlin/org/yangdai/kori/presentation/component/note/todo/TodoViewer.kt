@@ -3,9 +3,9 @@ package org.yangdai.kori.presentation.component.note.todo
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,8 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.delete
@@ -29,7 +29,9 @@ import androidx.compose.material.icons.outlined.FilterAlt
 import androidx.compose.material.icons.outlined.FilterAltOff
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -55,6 +57,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -204,7 +207,10 @@ object TodoDefaults {
         }
 }
 
-@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+@OptIn(
+    FlowPreview::class, ExperimentalCoroutinesApi::class,
+    ExperimentalMaterial3ExpressiveApi::class
+)
 @Composable
 fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
     var undoneItems by remember { mutableStateOf(listOf<TodoItem>()) }
@@ -353,13 +359,18 @@ fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
         Box(contentAlignment = Alignment.Center) {
             HorizontalDivider()
             IconButton(
+                modifier = Modifier.size(
+                    IconButtonDefaults.extraSmallContainerSize(
+                        widthOption = IconButtonDefaults.IconButtonWidthOption.Uniform
+                    )
+                ),
                 colors = IconButtonDefaults.iconButtonColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
                 onClick = { showFilters = !showFilters }
             ) {
                 Icon(
-                    imageVector = if (showFilters) Icons.Outlined.FilterAlt else Icons.Outlined.FilterAltOff,
+                    imageVector = if (showFilters) Icons.Outlined.FilterAltOff else Icons.Outlined.FilterAlt,
                     contentDescription = null
                 )
             }
@@ -440,81 +451,76 @@ private fun TodoFilterChips(
     activeMetadata: MutableList<String>,
     onContextClick: (String) -> Unit,
     onProjectClick: (String) -> Unit,
-    onMetadataClick: (String) -> Unit
+    onMetadataClick: (String) -> Unit,
+    contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp)
 ) {
     if (availableContexts.isEmpty() && availableProjects.isEmpty() && availableMetadata.isEmpty()) {
         return
     }
 
-    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+    Column(Modifier.fillMaxWidth()) {
         // Context chips
         if (availableContexts.isNotEmpty()) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Contexts:",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(end = 4.dp)
-                )
-                Row(Modifier.horizontalScroll(rememberScrollState())) {
-                    availableContexts.forEach { context ->
-                        FilterChip(
-                            selected = activeContexts.contains(context),
-                            onClick = { onContextClick(context) },
-                            label = { Text(context, maxLines = 1) },
-                            modifier = Modifier.padding(end = 4.dp)
-                        )
-                    }
+            LazyRow(contentPadding = contentPadding) {
+                items(availableContexts.toList()) { context ->
+                    FilterChip(
+                        selected = activeContexts.contains(context),
+                        onClick = { onContextClick(context) },
+                        label = { Text(context, maxLines = 1) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = Color(0xFF009688).copy(alpha = 0.1f)
+                        ),
+                        border = FilterChipDefaults.filterChipBorder(
+                            enabled = true,
+                            selected = true,
+                            selectedBorderColor = Color(0xFF009688)
+                        ),
+                        modifier = Modifier.padding(horizontal = 2.dp)
+                    )
                 }
             }
         }
 
         // Project chips
         if (availableProjects.isNotEmpty()) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Projects:",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(end = 4.dp)
-                )
-                Row(Modifier.horizontalScroll(rememberScrollState())) {
-                    availableProjects.forEach { project ->
-                        FilterChip(
-                            selected = activeProjects.contains(project),
-                            onClick = { onProjectClick(project) },
-                            label = { Text(project, maxLines = 1) },
-                            modifier = Modifier.padding(end = 4.dp)
-                        )
-                    }
+            LazyRow(contentPadding = contentPadding) {
+                items(availableProjects.toList()) { project ->
+                    FilterChip(
+                        selected = activeProjects.contains(project),
+                        onClick = { onProjectClick(project) },
+                        label = { Text(project, maxLines = 1) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = Color(0xFFEC407A).copy(alpha = 0.1f)
+                        ),
+                        border = FilterChipDefaults.filterChipBorder(
+                            enabled = true,
+                            selected = true,
+                            selectedBorderColor = Color(0xFFEC407A)
+                        ),
+                        modifier = Modifier.padding(horizontal = 2.dp)
+                    )
                 }
             }
         }
 
         // Metadata chips
         if (availableMetadata.isNotEmpty()) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Metadata:",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(end = 4.dp)
-                )
-                Row(Modifier.horizontalScroll(rememberScrollState())) {
-                    availableMetadata.forEach { metadata ->
-                        FilterChip(
-                            selected = activeMetadata.contains(metadata),
-                            onClick = { onMetadataClick(metadata) },
-                            label = { Text(metadata, maxLines = 1) },
-                            modifier = Modifier.padding(end = 4.dp)
-                        )
-                    }
+            LazyRow(contentPadding = contentPadding) {
+                items(availableMetadata.toList()) { metadata ->
+                    FilterChip(
+                        selected = activeMetadata.contains(metadata),
+                        onClick = { onMetadataClick(metadata) },
+                        label = { Text(metadata, maxLines = 1) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = Color(0xFF8E24AA).copy(alpha = 0.1f)
+                        ),
+                        border = FilterChipDefaults.filterChipBorder(
+                            enabled = true,
+                            selected = true,
+                            selectedBorderColor = Color(0xFF8E24AA)
+                        ),
+                        modifier = Modifier.padding(horizontal = 2.dp)
+                    )
                 }
             }
         }
