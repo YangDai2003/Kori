@@ -2,6 +2,7 @@ package org.yangdai.kori.presentation.component.note.plaintext
 
 import androidx.compose.foundation.text.input.OutputTransformation
 import androidx.compose.foundation.text.input.TextFieldBuffer
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.style.TextDecoration
 import org.yangdai.kori.presentation.theme.linkColor
@@ -9,8 +10,8 @@ import org.yangdai.kori.presentation.theme.linkColor
 class PlainTextTransformation : OutputTransformation {
     override fun TextFieldBuffer.transformOutput() {
         listOf(
-            Patterns.AUTOLINK_EMAIL_ADDRESS,
-            Patterns.AUTOLINK_WEB_URL
+            TextFormat.AUTOLINK_EMAIL_ADDRESS,
+            TextFormat.AUTOLINK_WEB_URL
         ).forEach { regex ->
             regex.findAll(this.originalText).forEach { matchResult ->
                 addStyle(
@@ -23,8 +24,8 @@ class PlainTextTransformation : OutputTransformation {
     }
 }
 
-@Suppress("SpellCheckingInspection")
-object Patterns {
+@Immutable
+object TextFormat {
 
     /**
      * Regular expression to match all IANA top-level domains.

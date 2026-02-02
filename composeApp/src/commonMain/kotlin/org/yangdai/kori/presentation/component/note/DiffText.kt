@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -230,6 +231,7 @@ enum class DiffType {
 }
 
 // 表示差异项目
+@Stable
 data class DiffItem(
     val content: String,
     val type: DiffType,
@@ -238,6 +240,7 @@ data class DiffItem(
 )
 
 // 存储两个文本的差异结果
+@Stable
 data class TwoWayDiffResult(
     val oldTextItems: List<DiffItem>,
     val newTextItems: List<DiffItem>

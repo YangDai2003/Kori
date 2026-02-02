@@ -2,6 +2,7 @@ package org.yangdai.kori.presentation.component.note.todo
 
 import androidx.compose.foundation.text.input.OutputTransformation
 import androidx.compose.foundation.text.input.TextFieldBuffer
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -77,6 +78,7 @@ class TodoTransformation : OutputTransformation {
     }
 }
 
+@Immutable
 object TodoFormat {
     // A-Z颜色表
     val priorityColors = listOf(

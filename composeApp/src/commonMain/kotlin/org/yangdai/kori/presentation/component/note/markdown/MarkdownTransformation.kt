@@ -2,6 +2,7 @@ package org.yangdai.kori.presentation.component.note.markdown
 
 import androidx.compose.foundation.text.input.OutputTransformation
 import androidx.compose.foundation.text.input.TextFieldBuffer
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -259,6 +260,7 @@ class MarkdownTransformation : OutputTransformation {
     }
 }
 
+@Immutable
 object MarkdownFormat {
     val headingStyles = listOf(
         SpanStyle(fontWeight = FontWeight.Black, fontSynthesis = FontSynthesis.Weight), // H1
