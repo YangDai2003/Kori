@@ -350,10 +350,9 @@ fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
             )
         }
 
-        Box {
+        Box(contentAlignment = Alignment.Center) {
             HorizontalDivider()
             IconButton(
-                modifier = Modifier.align(Alignment.Center),
                 colors = IconButtonDefaults.iconButtonColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),

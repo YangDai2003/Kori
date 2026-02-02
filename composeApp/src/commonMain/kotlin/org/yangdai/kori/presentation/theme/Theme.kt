@@ -1,7 +1,6 @@
 package org.yangdai.kori.presentation.theme
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -43,9 +42,11 @@ private fun Color.darken(factor: Float): Color = lerp(this, Color.Black, factor)
  * 为颜色方案中的单个颜色创建动画
  */
 @Composable
-private fun animateColor(
-    targetValue: Color, animationSpec: AnimationSpec<Color> = tween(COLOR_ANIMATION_DURATION)
-): Color = animateColorAsState(targetValue = targetValue, animationSpec = animationSpec).value
+private fun animateColor(targetValue: Color): Color =
+    animateColorAsState(
+        targetValue = targetValue,
+        animationSpec = tween(COLOR_ANIMATION_DURATION)
+    ).value
 
 /**
  * 为颜色方案创建平滑过渡动画

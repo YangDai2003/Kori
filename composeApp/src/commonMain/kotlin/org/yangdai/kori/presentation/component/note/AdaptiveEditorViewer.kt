@@ -174,43 +174,33 @@ fun AdaptiveEditor(
     headerRange: IntRange?,
     findAndReplaceState: FindAndReplaceState,
     onScroll: (firstVisibleCharPositon: Int) -> Unit
-) {
-    val textFieldModifier = remember(noteType, textFieldState) {
+) = Editor(
+    modifier = modifier,
+    textFieldModifier = when (noteType) {
+        NoteType.MARKDOWN -> Modifier.markdownKeyEvents(textFieldState)
+        else -> Modifier
+    },
+    textFieldState = textFieldState,
+    scrollState = scrollState,
+    findAndReplaceState = findAndReplaceState,
+    readOnly = readOnly,
+    isLineNumberVisible = isLineNumberVisible,
+    lint = if (isLintingEnabled) {
         when (noteType) {
-            NoteType.MARKDOWN -> Modifier.markdownKeyEvents(textFieldState)
-            else -> Modifier
-        }
-    }
-
-    val lint = remember(noteType, isLintingEnabled) {
-        if (isLintingEnabled) {
-            when (noteType) {
-                NoteType.MARKDOWN -> MarkdownLint()
-                NoteType.TODO -> TodoLint()
-                else -> null
-            }
-        } else null
-    }
-
-    Editor(
-        modifier = modifier,
-        textFieldModifier = textFieldModifier,
-        textFieldState = textFieldState,
-        scrollState = scrollState,
-        findAndReplaceState = findAndReplaceState,
-        readOnly = readOnly,
-        isLineNumberVisible = isLineNumberVisible,
-        lint = lint,
-        headerRange = headerRange,
-        outputTransformation = when (noteType) {
-            NoteType.MARKDOWN -> MarkdownTransformation()
-            NoteType.TODO -> TodoTransformation()
-            NoteType.PLAIN_TEXT -> PlainTextTransformation()
+            NoteType.MARKDOWN -> MarkdownLint()
+            NoteType.TODO -> TodoLint()
             else -> null
-        },
-        onScroll = onScroll
-    )
-}
+        }
+    } else null,
+    headerRange = headerRange,
+    outputTransformation = when (noteType) {
+        NoteType.MARKDOWN -> MarkdownTransformation()
+        NoteType.TODO -> TodoTransformation()
+        NoteType.PLAIN_TEXT -> PlainTextTransformation()
+        else -> null
+    },
+    onScroll = onScroll
+)
 
 @Composable
 fun AdaptiveViewer(

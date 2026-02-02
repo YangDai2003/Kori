@@ -255,7 +255,7 @@ fun Editor(
                         end = 16.dp
                     )
                     .fillMaxSize()
-                    .dragAndDropText(textFieldState)
+                    .dragAndDropText { textFieldState.edit { addInNewLine(it) } }
                     .then(textFieldModifier),
                 scrollState = scrollState,
                 readOnly = readOnly,
