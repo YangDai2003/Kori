@@ -61,7 +61,7 @@ fun FoldersDialog(
 
     AlertDialog(
         modifier = Modifier.widthIn(max = DialogMaxWidth),
-        shape = dialogShape(),
+        shape = DialogShape,
         title = { Text(hint) },
         text = {
             Column {

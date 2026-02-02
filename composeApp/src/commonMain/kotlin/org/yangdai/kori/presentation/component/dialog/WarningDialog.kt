@@ -33,7 +33,7 @@ fun WarningDialog(
     modifier = Modifier.widthIn(max = DialogMaxWidth),
     title = { Text(stringResource(Res.string.warning)) },
     text = { Text(message) },
-    shape = dialogShape(),
+    shape = DialogShape,
     onDismissRequest = onDismissRequest,
     confirmButton = {
         val haptic = LocalHapticFeedback.current

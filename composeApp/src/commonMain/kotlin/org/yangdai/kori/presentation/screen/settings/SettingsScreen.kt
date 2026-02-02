@@ -62,7 +62,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.OS
 import org.yangdai.kori.currentPlatformInfo
-import org.yangdai.kori.presentation.component.dialog.dialogShape
+import org.yangdai.kori.presentation.component.dialog.DialogShape
 import org.yangdai.kori.presentation.component.setting.SettingsDetailPane
 import org.yangdai.kori.presentation.component.setting.SettingsListPane
 import org.yangdai.kori.presentation.screen.main.MainViewModel
@@ -126,7 +126,7 @@ fun SettingsScreen(mainViewModel: MainViewModel, navigateUp: () -> Unit) {
             maxHeight >= WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND.dp -> 0.95f
             else -> 1f
         }
-        val dialogShape = dialogShape()
+        val dialogShape = DialogShape
         Box(
             modifier = Modifier
                 .fillMaxWidth(fillMaxWidthFraction)

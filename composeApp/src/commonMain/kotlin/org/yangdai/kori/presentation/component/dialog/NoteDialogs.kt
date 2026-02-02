@@ -149,7 +149,7 @@ private fun DialogWithoutButtons(
         ) {
             Surface(
                 modifier = Modifier.padding(horizontal = 16.dp).widthIn(max = 320.dp),
-                shape = dialogShape(),
+                shape = DialogShape,
                 color = AlertDialogDefaults.containerColor
             ) {
                 Column(Modifier.padding(24.dp)) {

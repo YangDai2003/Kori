@@ -14,5 +14,5 @@ expect fun ConfirmButton(colors: ButtonColors = ButtonDefaults.buttonColors(), o
 @Composable
 expect fun DismissButton(onClick: () -> Unit)
 
-@Composable
-expect fun dialogShape(): Shape
+@get:Composable
+expect val DialogShape: Shape

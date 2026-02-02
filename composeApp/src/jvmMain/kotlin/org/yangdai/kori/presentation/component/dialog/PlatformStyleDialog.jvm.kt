@@ -24,5 +24,6 @@ actual fun DismissButton(onClick: () -> Unit) =
         Text(stringResource(Res.string.cancel))
     }
 
-@Composable
-actual fun dialogShape(): Shape = MaterialTheme.shapes.medium
+actual val DialogShape: Shape
+    @Composable
+    get() = MaterialTheme.shapes.medium

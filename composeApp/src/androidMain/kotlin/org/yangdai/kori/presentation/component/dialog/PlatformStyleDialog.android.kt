@@ -20,5 +20,6 @@ actual fun ConfirmButton(colors: ButtonColors, onClick: () -> Unit) =
 actual fun DismissButton(onClick: () -> Unit) =
     TextButton(onClick) { Text(stringResource(Res.string.cancel)) }
 
-@Composable
-actual fun dialogShape(): Shape = AlertDialogDefaults.shape
+actual val DialogShape: Shape
+    @Composable
+    get() = AlertDialogDefaults.shape

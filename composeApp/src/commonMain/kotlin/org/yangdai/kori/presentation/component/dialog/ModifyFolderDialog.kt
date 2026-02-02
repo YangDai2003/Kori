@@ -146,13 +146,13 @@ fun SharedTransitionScope.ModifyFolderDialog(
                     .sharedBounds(
                         sharedContentState = rememberSharedContentState(key = "${targetState.id}-bounds"),
                         animatedVisibilityScope = this@AnimatedContent,
-                        clipInOverlayDuringTransition = OverlayClip(dialogShape())
+                        clipInOverlayDuringTransition = OverlayClip(DialogShape)
                     )
                     .background(
                         color = AlertDialogDefaults.containerColor,
-                        shape = dialogShape()
+                        shape = DialogShape
                     )
-                    .clip(dialogShape())
+                    .clip(DialogShape)
                     .padding(horizontal = 24.dp)
                     .padding(bottom = 24.dp, top = 16.dp)
             ) {

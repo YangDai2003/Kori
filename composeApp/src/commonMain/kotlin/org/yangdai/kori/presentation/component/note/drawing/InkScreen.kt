@@ -114,7 +114,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.LocalTopAppBarPadding
 import org.yangdai.kori.presentation.component.dialog.DismissButton
-import org.yangdai.kori.presentation.component.dialog.dialogShape
+import org.yangdai.kori.presentation.component.dialog.DialogShape
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
@@ -605,7 +605,7 @@ fun InkScreen(
     if (showDialog) {
         imageBitmap.value?.let {
             AlertDialog(
-                shape = dialogShape(),
+                shape = DialogShape,
                 onDismissRequest = { showDialog = false },
                 text = {
                     Image(

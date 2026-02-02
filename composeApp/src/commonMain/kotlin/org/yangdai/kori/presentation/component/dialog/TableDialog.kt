@@ -66,7 +66,7 @@ fun TableDialog(
         confirmButton = { ConfirmButton { onConfirm(selectedRows, selectedColumns) } },
         dismissButton = { DismissButton(onDismissRequest) },
         title = { Text(stringResource(Res.string.insert_table)) },
-        shape = dialogShape(),
+        shape = DialogShape,
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
