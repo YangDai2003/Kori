@@ -1,9 +1,11 @@
 package org.yangdai.kori.presentation.screen.settings
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 import org.yangdai.kori.data.local.entity.FolderEntity
 import org.yangdai.kori.data.local.entity.NoteEntity
 
+@Immutable
 @Serializable
 data class BackupData(
     val notes: List<NoteEntity>,
@@ -66,6 +68,7 @@ data class OFolderEntity(
     val color: Int? = null
 )
 
+@Immutable
 @Serializable
 data class OpenNoteBackupData(
     val notes: List<ONoteEntity>,

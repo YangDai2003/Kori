@@ -182,15 +182,6 @@ fun AdaptiveEditor(
         }
     }
 
-    val outputTransformation = remember(noteType) {
-        when (noteType) {
-            NoteType.MARKDOWN -> MarkdownTransformation()
-            NoteType.TODO -> TodoTransformation()
-            NoteType.PLAIN_TEXT -> PlainTextTransformation()
-            else -> null
-        }
-    }
-
     val lint = remember(noteType, isLintingEnabled) {
         if (isLintingEnabled) {
             when (noteType) {
@@ -211,7 +202,12 @@ fun AdaptiveEditor(
         isLineNumberVisible = isLineNumberVisible,
         lint = lint,
         headerRange = headerRange,
-        outputTransformation = outputTransformation,
+        outputTransformation = when (noteType) {
+            NoteType.MARKDOWN -> MarkdownTransformation()
+            NoteType.TODO -> TodoTransformation()
+            NoteType.PLAIN_TEXT -> PlainTextTransformation()
+            else -> null
+        },
         onScroll = onScroll
     )
 }
