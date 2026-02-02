@@ -1,7 +1,9 @@
 package org.yangdai.kori.presentation.component.note.todo
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.delete
@@ -22,9 +25,15 @@ import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.outlined.FilterAlt
+import androidx.compose.material.icons.outlined.FilterAltOff
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
@@ -33,7 +42,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -42,7 +53,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -60,6 +70,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
+import org.yangdai.kori.presentation.component.note.todo.TodoDefaults.extractFilters
 import org.yangdai.kori.presentation.component.note.todo.TodoDefaults.processTodo
 import org.yangdai.kori.presentation.component.note.todo.TodoFormat.contextRegex
 import org.yangdai.kori.presentation.component.note.todo.TodoFormat.contextStyle
@@ -154,6 +165,39 @@ object TodoDefaults {
 
             undoneSorted to doneSorted
         }
+
+    // Extract all unique contexts, projects, and metadata from text content
+    suspend fun extractFilters(content: CharSequence): Triple<Set<String>, Set<String>, Set<String>> =
+        withContext(Dispatchers.Default) {
+            val contexts = mutableSetOf<String>()
+            val projects = mutableSetOf<String>()
+            val metadata = mutableSetOf<String>()
+
+            content.lines().forEach { line ->
+                val trimmedLine = line.trim()
+                if (trimmedLine.isNotEmpty()) {
+                    // Extract contexts (@xxx)
+                    contextRegex.findAll(trimmedLine).forEach { match ->
+                        contexts.add(match.groupValues[1].trim())
+                    }
+
+                    // Extract projects (+xxx)
+                    projectRegex.findAll(trimmedLine).forEach { match ->
+                        projects.add(match.groupValues[1].trim())
+                    }
+
+                    // Extract metadata (key:value)
+                    metaRegex.findAll(trimmedLine).forEach { match ->
+                        val value = match.groupValues[1].trim()
+                        if (!value.startsWith("@") && !value.startsWith("+")) {
+                            metadata.add(value)
+                        }
+                    }
+                }
+            }
+
+            Triple(contexts, projects, metadata)
+        }
 }
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
@@ -162,75 +206,313 @@ fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
     var undoneItems by remember { mutableStateOf(listOf<TodoItem>()) }
     var doneItems by remember { mutableStateOf(listOf<TodoItem>()) }
 
-    LaunchedEffect(Unit) {
-        snapshotFlow { textFieldState.text }.debounce(100L)
-            .mapLatest { processTodo(it) }
+    // Available filters
+    var availableContexts by remember { mutableStateOf(emptySet<String>()) }
+    var availableProjects by remember { mutableStateOf(emptySet<String>()) }
+    var availableMetadata by remember { mutableStateOf(emptySet<String>()) }
+
+    // Active filters
+    val activeContexts = remember { mutableStateListOf<String>() }
+    val activeProjects = remember { mutableStateListOf<String>() }
+    val activeMetadata = remember { mutableStateListOf<String>() }
+
+    LaunchedEffect(textFieldState) {
+        snapshotFlow { textFieldState.text }.debounce(200L)
+            .mapLatest { text ->
+                val (undone, done) = processTodo(text)
+                val (contexts, projects, metadata) = extractFilters(text)
+                Pair(Pair(undone, done), Triple(contexts, projects, metadata))
+            }
             .flowOn(Dispatchers.Default)
-            .collect { (undone, done) ->
+            .collect { (todoData, filterData) ->
+                val (undone, done) = todoData
+                val (contexts, projects, metadata) = filterData
+
                 undoneItems = undone
                 doneItems = done
+                availableContexts = contexts
+                availableProjects = projects
+                availableMetadata = metadata
             }
     }
 
-    LazyColumn(modifier.clipToBounds()) {
-        // 待办
-        if (undoneItems.isNotEmpty()) {
-            stickyHeader(key = "Header Todo") {
-                Surface {
-                    Text(
-                        stringResource(Res.string.todo),
-                        color = MaterialTheme.colorScheme.secondary,
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.fillParentMaxWidth()
-                            .padding(bottom = 8.dp, start = 16.dp, top = 4.dp)
-                    )
-                }
-            }
-            items(undoneItems, key = { it.toString() }) { item ->
-                SwipeableCard(
-                    modifier = Modifier.animateItem().fillParentMaxWidth()
-                        .padding(horizontal = 16.dp).padding(bottom = 8.dp),
-                    todoItem = item,
-                    onDelete = {
-                        val end = (it.range.last + 1).coerceAtMost(textFieldState.text.length)
-                        val nextCharIsNewline = textFieldState.text.getOrNull(end) == '\n'
-                        val deleteUntil = if (nextCharIsNewline) end + 1 else end
-                        textFieldState.edit { delete(it.range.first, deleteUntil) }
-                    },
-                    toggleDoneState = {
-                        textFieldState.edit { toggleLineStart("x ", it.range.first) }
+    // Apply filters to items
+    val filteredUndoneItems by derivedStateOf {
+        if (activeContexts.isEmpty() && activeProjects.isEmpty() && activeMetadata.isEmpty()) {
+            undoneItems
+        } else {
+            undoneItems.filter { item ->
+                // Context filter: if active contexts exist, item must contain at least one
+                val contextMatch = if (activeContexts.isEmpty()) {
+                    true
+                } else {
+                    activeContexts.any { context ->
+                        contextRegex.findAll(item.content).any { it.value.trim() == context }
                     }
+                }
+
+                // Project filter: if active projects exist, item must contain at least one
+                val projectMatch = if (activeProjects.isEmpty()) {
+                    true
+                } else {
+                    activeProjects.any { project ->
+                        projectRegex.findAll(item.content).any { it.value.trim() == project }
+                    }
+                }
+
+                // Metadata filter: if active metadata exist, item must contain at least one
+                val metadataMatch = if (activeMetadata.isEmpty()) {
+                    true
+                } else {
+                    activeMetadata.any { metadata ->
+                        metaRegex.findAll(item.content).any { it.value.trim() == metadata }
+                    }
+                }
+
+                contextMatch && projectMatch && metadataMatch
+            }
+        }
+    }
+
+    val filteredDoneItems by derivedStateOf {
+        if (activeContexts.isEmpty() && activeProjects.isEmpty() && activeMetadata.isEmpty()) {
+            doneItems
+        } else {
+            doneItems.filter { item ->
+                // Context filter: if active contexts exist, item must contain at least one
+                val contextMatch = if (activeContexts.isEmpty()) {
+                    true
+                } else {
+                    activeContexts.any { context ->
+                        contextRegex.findAll(item.content).any { it.value.trim() == context }
+                    }
+                }
+
+                // Project filter: if active projects exist, item must contain at least one
+                val projectMatch = if (activeProjects.isEmpty()) {
+                    true
+                } else {
+                    activeProjects.any { project ->
+                        projectRegex.findAll(item.content).any { it.value.trim() == project }
+                    }
+                }
+
+                // Metadata filter: if active metadata exist, item must contain at least one
+                val metadataMatch = if (activeMetadata.isEmpty()) {
+                    true
+                } else {
+                    activeMetadata.any { metadata ->
+                        metaRegex.findAll(item.content).any { it.value.trim() == metadata }
+                    }
+                }
+
+                contextMatch && projectMatch && metadataMatch
+            }
+        }
+    }
+
+    var showFilters by remember { mutableStateOf(false) }
+
+    Column(modifier) {
+        AnimatedVisibility(showFilters) {   // Filter chips section
+            TodoFilterChips(
+                availableContexts = availableContexts,
+                availableProjects = availableProjects,
+                availableMetadata = availableMetadata,
+                activeContexts = activeContexts,
+                activeProjects = activeProjects,
+                activeMetadata = activeMetadata,
+                onContextClick = { context ->
+                    if (activeContexts.contains(context)) {
+                        activeContexts.remove(context)
+                    } else {
+                        activeContexts.add(context)
+                    }
+                },
+                onProjectClick = { project ->
+                    if (activeProjects.contains(project)) {
+                        activeProjects.remove(project)
+                    } else {
+                        activeProjects.add(project)
+                    }
+                },
+                onMetadataClick = { metadata ->
+                    if (activeMetadata.contains(metadata)) {
+                        activeMetadata.remove(metadata)
+                    } else {
+                        activeMetadata.add(metadata)
+                    }
+                }
+            )
+        }
+
+        Box {
+            HorizontalDivider()
+            IconButton(
+                modifier = Modifier.align(Alignment.Center),
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                onClick = { showFilters = !showFilters }
+            ) {
+                Icon(
+                    imageVector = if (showFilters) Icons.Outlined.FilterAlt else Icons.Outlined.FilterAltOff,
+                    contentDescription = null
                 )
             }
         }
-        // 已完成
-        if (doneItems.isNotEmpty()) {
-            stickyHeader(key = "Header Done") {
-                Surface {
-                    Text(
-                        stringResource(Res.string.done),
-                        color = MaterialTheme.colorScheme.secondary,
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.fillParentMaxWidth()
-                            .padding(bottom = 8.dp, start = 16.dp)
+
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            // 待办
+            if (filteredUndoneItems.isNotEmpty()) {
+                stickyHeader(key = "Header Todo") {
+                    Surface {
+                        Text(
+                            stringResource(Res.string.todo),
+                            color = MaterialTheme.colorScheme.secondary,
+                            style = MaterialTheme.typography.labelMedium,
+                            modifier = Modifier.fillParentMaxWidth()
+                                .padding(bottom = 8.dp, start = 16.dp, top = 4.dp)
+                        )
+                    }
+                }
+                items(filteredUndoneItems, key = { it.hashCode() }) { item ->
+                    SwipeableCard(
+                        modifier = Modifier.animateItem().fillParentMaxWidth()
+                            .padding(horizontal = 16.dp).padding(bottom = 8.dp),
+                        todoItem = item,
+                        onDelete = {
+                            val end = (it.range.last + 1).coerceAtMost(textFieldState.text.length)
+                            val nextCharIsNewline = textFieldState.text.getOrNull(end) == '\n'
+                            val deleteUntil = if (nextCharIsNewline) end + 1 else end
+                            textFieldState.edit { delete(it.range.first, deleteUntil) }
+                        },
+                        toggleDoneState = {
+                            textFieldState.edit { toggleLineStart("x ", it.range.first) }
+                        }
                     )
                 }
             }
-            items(doneItems, key = { it.toString() }) { item ->
-                SwipeableCard(
-                    modifier = Modifier.animateItem().fillParentMaxWidth()
-                        .padding(horizontal = 16.dp).padding(bottom = 8.dp),
-                    todoItem = item,
-                    onDelete = {
-                        val end = (it.range.last + 1).coerceAtMost(textFieldState.text.length)
-                        val nextCharIsNewline = textFieldState.text.getOrNull(end) == '\n'
-                        val deleteUntil = if (nextCharIsNewline) end + 1 else end
-                        textFieldState.edit { delete(it.range.first, deleteUntil) }
-                    },
-                    toggleDoneState = {
-                        textFieldState.edit { toggleLineStart("x ", it.range.first) }
+            // 已完成
+            if (filteredDoneItems.isNotEmpty()) {
+                stickyHeader(key = "Header Done") {
+                    Surface {
+                        Text(
+                            stringResource(Res.string.done),
+                            color = MaterialTheme.colorScheme.secondary,
+                            style = MaterialTheme.typography.labelMedium,
+                            modifier = Modifier.fillParentMaxWidth()
+                                .padding(bottom = 8.dp, start = 16.dp)
+                        )
                     }
+                }
+                items(filteredDoneItems, key = { it.hashCode() }) { item ->
+                    SwipeableCard(
+                        modifier = Modifier.animateItem().fillParentMaxWidth()
+                            .padding(horizontal = 16.dp).padding(bottom = 8.dp),
+                        todoItem = item,
+                        onDelete = {
+                            val end = (it.range.last + 1).coerceAtMost(textFieldState.text.length)
+                            val nextCharIsNewline = textFieldState.text.getOrNull(end) == '\n'
+                            val deleteUntil = if (nextCharIsNewline) end + 1 else end
+                            textFieldState.edit { delete(it.range.first, deleteUntil) }
+                        },
+                        toggleDoneState = {
+                            textFieldState.edit { toggleLineStart("x ", it.range.first) }
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TodoFilterChips(
+    availableContexts: Set<String>,
+    availableProjects: Set<String>,
+    availableMetadata: Set<String>,
+    activeContexts: MutableList<String>,
+    activeProjects: MutableList<String>,
+    activeMetadata: MutableList<String>,
+    onContextClick: (String) -> Unit,
+    onProjectClick: (String) -> Unit,
+    onMetadataClick: (String) -> Unit
+) {
+    if (availableContexts.isEmpty() && availableProjects.isEmpty() && availableMetadata.isEmpty()) {
+        return
+    }
+
+    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+        // Context chips
+        if (availableContexts.isNotEmpty()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Contexts:",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(end = 4.dp)
                 )
+                Row(Modifier.horizontalScroll(rememberScrollState())) {
+                    availableContexts.forEach { context ->
+                        FilterChip(
+                            selected = activeContexts.contains(context),
+                            onClick = { onContextClick(context) },
+                            label = { Text(context, maxLines = 1) },
+                            modifier = Modifier.padding(end = 4.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+        // Project chips
+        if (availableProjects.isNotEmpty()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Projects:",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(end = 4.dp)
+                )
+                Row(Modifier.horizontalScroll(rememberScrollState())) {
+                    availableProjects.forEach { project ->
+                        FilterChip(
+                            selected = activeProjects.contains(project),
+                            onClick = { onProjectClick(project) },
+                            label = { Text(project, maxLines = 1) },
+                            modifier = Modifier.padding(end = 4.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+        // Metadata chips
+        if (availableMetadata.isNotEmpty()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Metadata:",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(end = 4.dp)
+                )
+                Row(Modifier.horizontalScroll(rememberScrollState())) {
+                    availableMetadata.forEach { metadata ->
+                        FilterChip(
+                            selected = activeMetadata.contains(metadata),
+                            onClick = { onMetadataClick(metadata) },
+                            label = { Text(metadata, maxLines = 1) },
+                            modifier = Modifier.padding(end = 4.dp)
+                        )
+                    }
+                }
             }
         }
     }
