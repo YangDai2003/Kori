@@ -38,7 +38,11 @@ fun buildTodoAnnotatedString(text: String) =
                     val priEnd = priMatch.range.last + 1
                     val idx = priMatch.groupValues[1][0] - 'A'
                     if (idx in 0..25) {
-                        addStyle(TodoFormat.priorityStyles[idx], lineStart, lineStart + priEnd)
+                        addStyle(
+                            TodoFormat.priorityStyle.copy(TodoFormat.priorityColors[idx]),
+                            lineStart,
+                            lineStart + priEnd
+                        )
                     }
                 }
                 // 创建日期: YYYY-MM-DD

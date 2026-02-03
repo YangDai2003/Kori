@@ -17,6 +17,7 @@ import kmark.flavours.gfm.GFMElementTypes
 import kmark.flavours.gfm.GFMFlavourDescriptor
 import kmark.flavours.gfm.GFMTokenTypes
 import kmark.parser.MarkdownParser
+import kotlinx.collections.immutable.persistentListOf
 import org.yangdai.kori.presentation.theme.linkColor
 
 class MarkdownTransformation : OutputTransformation {
@@ -262,7 +263,7 @@ class MarkdownTransformation : OutputTransformation {
 
 @Immutable
 object MarkdownFormat {
-    val headingStyles = listOf(
+    val headingStyles = persistentListOf(
         SpanStyle(fontWeight = FontWeight.Black, fontSynthesis = FontSynthesis.Weight), // H1
         SpanStyle(fontWeight = FontWeight.ExtraBold, fontSynthesis = FontSynthesis.Weight), // H2
         SpanStyle(fontWeight = FontWeight.Bold, fontSynthesis = FontSynthesis.Weight), // H3
