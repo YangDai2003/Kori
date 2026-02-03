@@ -1,7 +1,9 @@
 package knet.ai.providers
 
 import ai.koog.prompt.executor.clients.mistralai.MistralAIModels
+import androidx.compose.runtime.Stable
 
+@Stable
 object Mistral {
     val mistralModelMap = mapOf(
         MistralAIModels.Chat.MistralMedium31.id to MistralAIModels.Chat.MistralMedium31,

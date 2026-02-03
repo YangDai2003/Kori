@@ -1,7 +1,9 @@
 package knet.ai.providers
 
 import ai.koog.prompt.executor.clients.openai.OpenAIModels
+import androidx.compose.runtime.Stable
 
+@Stable
 object OpenAI {
     val openAIModelMap = mapOf(
         OpenAIModels.Chat.GPT4o.id to OpenAIModels.Chat.GPT4o,

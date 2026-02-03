@@ -1,7 +1,9 @@
 package knet.ai.providers
 
 import ai.koog.prompt.llm.OllamaModels
+import androidx.compose.runtime.Stable
 
+@Stable
 object Ollama {
     val ollamaModelMap = mapOf(
         OllamaModels.Meta.LLAMA_3_2_3B.id to OllamaModels.Meta.LLAMA_3_2_3B,

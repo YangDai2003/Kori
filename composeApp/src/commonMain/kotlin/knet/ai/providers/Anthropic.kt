@@ -1,7 +1,9 @@
 package knet.ai.providers
 
 import ai.koog.prompt.executor.clients.anthropic.AnthropicModels
+import androidx.compose.runtime.Stable
 
+@Stable
 object Anthropic {
     val anthropicModelMap = mapOf(
         AnthropicModels.Opus_3.id to AnthropicModels.Opus_3,
