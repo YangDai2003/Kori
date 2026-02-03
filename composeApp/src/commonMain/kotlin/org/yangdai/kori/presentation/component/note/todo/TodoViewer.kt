@@ -43,7 +43,6 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -97,7 +96,7 @@ data class TodoItem(
     val range: IntRange // 原文本中的范围
 )
 
-@Immutable
+@Stable
 object TodoDefaults {
     private val PRIORITY_REGEX = Regex("""^\((?<priority>[A-Z])\) """)
     private val DATE_REGEX = Regex("""(?<=^|\s)(?<date>\d{4}-\d{2}-\d{2})(?=\s|$)""")

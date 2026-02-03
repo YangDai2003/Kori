@@ -36,7 +36,7 @@ import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -80,7 +80,7 @@ import org.yangdai.kori.presentation.navigation.Screen
 /**
  * 抽屉状态数据类，用于统一管理抽屉中需要显示的所有数据
  */
-@Immutable
+@Stable
 data class DrawerState(
     val allNotesCount: Int = 0,
     val templatesCount: Int = 0,
