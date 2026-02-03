@@ -241,8 +241,8 @@ fun Editor(
     Row(modifier) {
         if (isLineNumberVisible) {
             EditorLineNumbers(
-                currentLinesProvider = { currentLines },
                 actualLinePositions = actualLinePositions,
+                currentLinesProvider = { currentLines },
                 scrollProvider = { scrollState.value }
             )
             VerticalDivider()
