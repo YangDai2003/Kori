@@ -40,7 +40,7 @@ expect fun formatNumber(int: Int): String
 
 expect fun clipEntryOf(string: String): ClipEntry
 
-expect fun shouldShowLanguageSetting(): Boolean
+expect val showLanguageSetting: Boolean
 
 @Composable
 expect fun Modifier.clickToLanguageSetting(): Modifier

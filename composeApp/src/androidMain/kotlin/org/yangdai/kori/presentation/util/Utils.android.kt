@@ -231,9 +231,7 @@ private fun Intent.parseActionViewEdit(context: Context): SharedContent {
     return SharedContent(title, text, type, uri = writableUri)
 }
 
-actual fun shouldShowLanguageSetting(): Boolean {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-}
+actual val showLanguageSetting: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
 
 @SuppressLint("InlinedApi")
 @Composable

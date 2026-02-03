@@ -99,7 +99,7 @@ actual fun Modifier.clickToShareFile(noteEntity: NoteEntity): Modifier {
     }
 }
 
-actual fun shouldShowLanguageSetting() = true
+actual val showLanguageSetting = true
 
 @Composable
 actual fun Modifier.clickToLanguageSetting(): Modifier {

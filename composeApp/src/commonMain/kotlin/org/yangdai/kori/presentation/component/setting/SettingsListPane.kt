@@ -47,7 +47,7 @@ import kori.composeapp.generated.resources.text_overflow
 import kori.composeapp.generated.resources.time_format
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.util.clickToLanguageSetting
-import org.yangdai.kori.presentation.util.shouldShowLanguageSetting
+import org.yangdai.kori.presentation.util.showLanguageSetting
 
 @Composable
 fun SettingsListPane(
@@ -93,7 +93,7 @@ fun SettingsListPane(
             }
         )
     )
-    if (shouldShowLanguageSetting())
+    if (showLanguageSetting)
         ListPaneSection(
             items = listOf {
                 ListPaneItem(
