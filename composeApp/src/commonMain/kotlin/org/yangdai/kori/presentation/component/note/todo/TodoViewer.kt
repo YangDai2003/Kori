@@ -252,31 +252,22 @@ fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
         } else {
             undoneItems.filter { item ->
                 // Context filter: if active contexts exist, item must contain at least one
-                val contextMatch = if (activeContexts.isEmpty()) {
-                    true
-                } else {
+                val contextMatch = if (activeContexts.isEmpty()) true else
                     activeContexts.any { context ->
                         contextRegex.findAll(item.content).any { it.value.trim() == context }
                     }
-                }
 
                 // Project filter: if active projects exist, item must contain at least one
-                val projectMatch = if (activeProjects.isEmpty()) {
-                    true
-                } else {
+                val projectMatch = if (activeProjects.isEmpty()) true else
                     activeProjects.any { project ->
                         projectRegex.findAll(item.content).any { it.value.trim() == project }
                     }
-                }
 
                 // Metadata filter: if active metadata exist, item must contain at least one
-                val metadataMatch = if (activeMetadata.isEmpty()) {
-                    true
-                } else {
+                val metadataMatch = if (activeMetadata.isEmpty()) true else
                     activeMetadata.any { metadata ->
                         metaRegex.findAll(item.content).any { it.value.trim() == metadata }
                     }
-                }
 
                 contextMatch && projectMatch && metadataMatch
             }
@@ -289,31 +280,22 @@ fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
         } else {
             doneItems.filter { item ->
                 // Context filter: if active contexts exist, item must contain at least one
-                val contextMatch = if (activeContexts.isEmpty()) {
-                    true
-                } else {
+                val contextMatch = if (activeContexts.isEmpty()) true else
                     activeContexts.any { context ->
                         contextRegex.findAll(item.content).any { it.value.trim() == context }
                     }
-                }
 
                 // Project filter: if active projects exist, item must contain at least one
-                val projectMatch = if (activeProjects.isEmpty()) {
-                    true
-                } else {
+                val projectMatch = if (activeProjects.isEmpty()) true else
                     activeProjects.any { project ->
                         projectRegex.findAll(item.content).any { it.value.trim() == project }
                     }
-                }
 
                 // Metadata filter: if active metadata exist, item must contain at least one
-                val metadataMatch = if (activeMetadata.isEmpty()) {
-                    true
-                } else {
+                val metadataMatch = if (activeMetadata.isEmpty()) true else
                     activeMetadata.any { metadata ->
                         metaRegex.findAll(item.content).any { it.value.trim() == metadata }
                     }
-                }
 
                 contextMatch && projectMatch && metadataMatch
             }
@@ -323,58 +305,6 @@ fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
     var showFilters by remember { mutableStateOf(false) }
 
     Column(modifier) {
-        AnimatedVisibility(showFilters) {   // Filter chips section
-            TodoFilterChips(
-                availableContexts = availableContexts,
-                availableProjects = availableProjects,
-                availableMetadata = availableMetadata,
-                activeContexts = activeContexts,
-                activeProjects = activeProjects,
-                activeMetadata = activeMetadata,
-                onContextClick = { context ->
-                    if (activeContexts.contains(context)) {
-                        activeContexts.remove(context)
-                    } else {
-                        activeContexts.add(context)
-                    }
-                },
-                onProjectClick = { project ->
-                    if (activeProjects.contains(project)) {
-                        activeProjects.remove(project)
-                    } else {
-                        activeProjects.add(project)
-                    }
-                },
-                onMetadataClick = { metadata ->
-                    if (activeMetadata.contains(metadata)) {
-                        activeMetadata.remove(metadata)
-                    } else {
-                        activeMetadata.add(metadata)
-                    }
-                }
-            )
-        }
-
-        Box(contentAlignment = Alignment.Center) {
-            HorizontalDivider()
-            IconButton(
-                modifier = Modifier.size(
-                    IconButtonDefaults.extraSmallContainerSize(
-                        widthOption = IconButtonDefaults.IconButtonWidthOption.Uniform
-                    )
-                ),
-                colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                ),
-                onClick = { showFilters = !showFilters }
-            ) {
-                Icon(
-                    imageVector = if (showFilters) Icons.Outlined.FilterAltOff else Icons.Outlined.FilterAlt,
-                    contentDescription = null
-                )
-            }
-        }
-
         LazyColumn(modifier = Modifier.weight(1f)) {
             // 待办
             if (filteredUndoneItems.isNotEmpty()) {
@@ -436,6 +366,58 @@ fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
                     )
                 }
             }
+        }
+
+        Box(contentAlignment = Alignment.Center) {
+            HorizontalDivider()
+            IconButton(
+                modifier = Modifier.size(
+                    IconButtonDefaults.extraSmallContainerSize(
+                        widthOption = IconButtonDefaults.IconButtonWidthOption.Uniform
+                    )
+                ),
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                onClick = { showFilters = !showFilters }
+            ) {
+                Icon(
+                    imageVector = if (showFilters) Icons.Outlined.FilterAltOff else Icons.Outlined.FilterAlt,
+                    contentDescription = null
+                )
+            }
+        }
+
+        AnimatedVisibility(showFilters) {   // Filter chips section
+            TodoFilterChips(
+                availableContexts = availableContexts,
+                availableProjects = availableProjects,
+                availableMetadata = availableMetadata,
+                activeContexts = activeContexts,
+                activeProjects = activeProjects,
+                activeMetadata = activeMetadata,
+                onContextClick = { context ->
+                    if (activeContexts.contains(context)) {
+                        activeContexts.remove(context)
+                    } else {
+                        activeContexts.add(context)
+                    }
+                },
+                onProjectClick = { project ->
+                    if (activeProjects.contains(project)) {
+                        activeProjects.remove(project)
+                    } else {
+                        activeProjects.add(project)
+                    }
+                },
+                onMetadataClick = { metadata ->
+                    if (activeMetadata.contains(metadata)) {
+                        activeMetadata.remove(metadata)
+                    } else {
+                        activeMetadata.add(metadata)
+                    }
+                }
+            )
         }
     }
 }
