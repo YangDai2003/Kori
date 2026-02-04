@@ -251,7 +251,7 @@ fun Editor(
             BasicTextField(
                 modifier = Modifier
                     .padding(
-                        start = if (isLineNumberVisible) 4.dp else 16.dp,
+                        start = if (isLineNumberVisible) 2.dp else 16.dp,
                         end = 16.dp
                     )
                     .fillMaxSize()
