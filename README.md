@@ -100,7 +100,7 @@ Kori is packed with features designed to enhance your productivity and creativit
 
 ## 🌎 Translations
 
-Currently supports Chinese, English and German.
+Currently supports (Simplified and Traditional) Chinese, English, German, Spanish, French, Japanese, Korean, Portuguese, Turkish, Russian, Hindi, Indonesian, Vietnamese, Bengali, Arabic, Urdu, Persian, Italian, Polish.
 
 ## 💡 How to Use Kori with Markdown, LaTeX Math, and Mermaid Diagrams?
 
