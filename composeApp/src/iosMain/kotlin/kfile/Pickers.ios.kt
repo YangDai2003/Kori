@@ -289,7 +289,6 @@ actual fun JsonPicker(launch: Boolean, onJsonPicked: (String?) -> Unit) {
     }
 }
 
-@OptIn(ExperimentalTime::class)
 @Composable
 actual fun ImagesPicker(
     noteId: String,
@@ -361,7 +360,6 @@ actual fun ImagesPicker(
     )
 }
 
-@OptIn(ExperimentalTime::class)
 @Composable
 actual fun VideoPicker(
     noteId: String,
@@ -447,7 +445,6 @@ actual fun VideoPicker(
     )
 }
 
-@OptIn(ExperimentalTime::class)
 @Composable
 actual fun AudioPicker(
     noteId: String,

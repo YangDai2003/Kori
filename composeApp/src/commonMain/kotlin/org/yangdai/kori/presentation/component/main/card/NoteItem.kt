@@ -44,7 +44,6 @@ import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.screen.settings.CardSize
 import org.yangdai.kori.presentation.util.formatInstant
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 data class NoteItemProperties(
@@ -53,7 +52,6 @@ data class NoteItemProperties(
     val clipOverflow: Boolean = false
 )
 
-@OptIn(ExperimentalTime::class)
 @Composable
 fun LazyStaggeredGridItemScope.NoteItem(
     keyword: String,

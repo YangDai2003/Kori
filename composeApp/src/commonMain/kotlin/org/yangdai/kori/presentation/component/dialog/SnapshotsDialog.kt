@@ -49,13 +49,13 @@ import kori.composeapp.generated.resources.delete_all
 import kori.composeapp.generated.resources.no_snapshots
 import kori.composeapp.generated.resources.restore
 import kotlinx.coroutines.delay
-import kotlinx.datetime.Instant
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.currentPlatformInfo
 import org.yangdai.kori.data.local.entity.SnapshotEntity
 import org.yangdai.kori.isDesktop
 import org.yangdai.kori.presentation.component.note.DiffText
 import org.yangdai.kori.presentation.util.formatNumber
+import kotlin.time.Instant
 
 @Composable
 fun SnapshotsDialog(

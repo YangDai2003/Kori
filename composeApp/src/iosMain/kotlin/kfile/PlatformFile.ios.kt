@@ -14,7 +14,6 @@ import platform.Foundation.stringWithContentsOfURL
 import platform.Foundation.timeIntervalSince1970
 import platform.Foundation.writeToURL
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 actual class PlatformFile(val url: NSURL)
@@ -61,7 +60,7 @@ actual suspend fun PlatformFile.delete(): Boolean {
     }
 }
 
-@OptIn(ExperimentalForeignApi::class, ExperimentalTime::class)
+@OptIn(ExperimentalForeignApi::class)
 actual fun PlatformFile.lastModified(): Instant {
     val path = url.path ?: return Clock.System.now()
     val attributes = NSFileManager.defaultManager.attributesOfItemAtPath(path, null)
@@ -69,7 +68,6 @@ actual fun PlatformFile.lastModified(): Instant {
     return nsDate.toInstant()
 }
 
-@OptIn(ExperimentalTime::class)
 private fun NSDate.toInstant(): Instant {
     val secs = timeIntervalSince1970()
     val fullSeconds = secs.toLong()

@@ -6,7 +6,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipEntry
 import androidx.window.core.layout.WindowSizeClass
 import org.yangdai.kori.data.local.entity.NoteEntity
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @Composable
@@ -33,7 +32,6 @@ expect fun Modifier.clickToShareText(text: String): Modifier
 @Composable
 expect fun Modifier.clickToShareFile(noteEntity: NoteEntity): Modifier
 
-@OptIn(ExperimentalTime::class)
 expect fun formatInstant(instant: Instant): String
 
 expect fun formatNumber(int: Int): String

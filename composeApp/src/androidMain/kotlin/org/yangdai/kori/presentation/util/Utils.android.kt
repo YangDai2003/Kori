@@ -16,6 +16,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.FileProvider
 import androidx.documentfile.provider.DocumentFile
 import kfile.normalizeFileName
@@ -24,10 +25,8 @@ import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
 import java.io.File
 import java.util.Date
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
-import androidx.compose.ui.res.stringResource
 
 @Composable
 actual fun Modifier.clickToShareText(text: String): Modifier {
@@ -48,7 +47,6 @@ private val dateTimeFormatter by lazy {
     DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
 }
 
-@OptIn(ExperimentalTime::class)
 actual fun formatInstant(instant: Instant): String {
     return try {
         val date = Date.from(instant.toJavaInstant())

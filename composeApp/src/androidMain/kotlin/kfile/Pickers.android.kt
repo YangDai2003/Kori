@@ -20,7 +20,6 @@ import org.yangdai.kori.presentation.component.dialog.ExportType
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 @Composable
 actual fun PlatformFilePicker(onFileSelected: (PlatformFile?) -> Unit) {
@@ -94,7 +93,6 @@ actual fun PlatformFilesPicker(launch: Boolean, onFilesSelected: (List<PlatformF
     }
 }
 
-@OptIn(ExperimentalTime::class)
 @Composable
 actual fun JsonExporter(launch: Boolean, json: String?, onJsonSaved: (Boolean) -> Unit) {
     val context = LocalContext.current.applicationContext

@@ -6,7 +6,6 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 @Entity(
     tableName = "snapshots",
@@ -25,7 +24,7 @@ import kotlin.time.ExperimentalTime
         )
     ]
 )
-data class SnapshotEntity @OptIn(ExperimentalTime::class) constructor(
+data class SnapshotEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0, // Auto-generated primary key
     @ColumnInfo(name = "note_id")
     val noteId: String, // References the note this snapshot belongs to

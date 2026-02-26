@@ -11,7 +11,6 @@ import java.awt.datatransfer.StringSelection
 import java.text.DateFormat
 import java.text.NumberFormat
 import java.util.Date
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
 
@@ -26,7 +25,6 @@ private val dateTimeFormatter by lazy {
     DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
 }
 
-@OptIn(ExperimentalTime::class)
 actual fun formatInstant(instant: Instant): String {
     return try {
         val date = Date.from(instant.toJavaInstant())

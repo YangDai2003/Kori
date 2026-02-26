@@ -4,12 +4,12 @@ import androidx.compose.foundation.text.input.TextFieldBuffer
 import androidx.compose.foundation.text.input.delete
 import androidx.compose.foundation.text.input.insert
 import androidx.compose.ui.text.TextRange
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.todayIn
+import kotlin.time.Clock
 
 private fun TextFieldBuffer.inlineWrap(
     startWrappedString: String,
@@ -291,8 +291,7 @@ fun TextFieldBuffer.bulletList() {
 
         // 逐行在第一个非空格字符之前插入 "- "
         val transformedText = selectedText
-            .lineSequence()
-            .map { line ->
+            .lineSequence().joinToString("\n") { line ->
                 // 找到当前行第一个非空格字符下标
                 val index = line.indexOfFirst { !it.isWhitespace() }
                 if (index >= 0) {
@@ -304,7 +303,6 @@ fun TextFieldBuffer.bulletList() {
                     line
                 }
             }
-            .joinToString("\n")
 
         // 用处理后的文本替换原选中区域
         replace(start, end, transformedText)
@@ -338,8 +336,7 @@ fun TextFieldBuffer.numberedList() {
         val counters = mutableListOf<Int>()
 
         val transformedText = selectedText
-            .lineSequence()
-            .map { line ->
+            .lineSequence().joinToString("\n") { line ->
                 // 获取本行缩进级别
                 val indentLevel = getIndentLevel(line)
                 // 如果当前 counters 大小不够，则补充到对应级别
@@ -363,7 +360,6 @@ fun TextFieldBuffer.numberedList() {
                     line
                 }
             }
-            .joinToString("\n")
 
         replace(start, end, transformedText)
         selection = TextRange(start, start + transformedText.length)
@@ -379,8 +375,7 @@ fun TextFieldBuffer.taskList() {
         val selectedText = asCharSequence().substring(start, end)
 
         val transformedText = selectedText
-            .lineSequence()
-            .map { line ->
+            .lineSequence().joinToString("\n") { line ->
                 val index = line.indexOfFirst { !it.isWhitespace() }
                 if (index >= 0) {
                     val prefix = line.take(index)
@@ -390,7 +385,6 @@ fun TextFieldBuffer.taskList() {
                     line
                 }
             }
-            .joinToString("\n")
 
         replace(start, end, transformedText)
         selection = TextRange(start, start + transformedText.length)

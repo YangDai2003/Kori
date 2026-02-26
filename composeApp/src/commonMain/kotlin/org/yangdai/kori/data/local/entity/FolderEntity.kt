@@ -13,7 +13,6 @@ import org.yangdai.kori.presentation.theme.Purple
 import org.yangdai.kori.presentation.theme.Red
 import org.yangdai.kori.presentation.theme.Yellow
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 @Serializable
 @Entity(
@@ -23,7 +22,7 @@ import kotlin.time.ExperimentalTime
         Index(value = ["created_at"]) // 为 created_at 添加索引
     ]
 )
-data class FolderEntity @OptIn(ExperimentalTime::class) constructor(
+data class FolderEntity(
     @PrimaryKey
     val id: String = "", // 使用 UUID 字符串表示
     @ColumnInfo(name = "name")

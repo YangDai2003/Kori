@@ -6,7 +6,6 @@ import androidx.documentfile.provider.DocumentFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 actual class PlatformFile(
@@ -59,7 +58,6 @@ actual suspend fun PlatformFile.delete(): Boolean {
     }
 }
 
-@OptIn(ExperimentalTime::class)
 actual fun PlatformFile.lastModified(): Instant {
     val milliSeconds = documentFile.lastModified()
     if (milliSeconds == 0L) return Clock.System.now()

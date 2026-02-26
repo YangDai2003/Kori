@@ -13,7 +13,6 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 private val allowedExtensions = listOf("txt", "md", "markdown", "html", "htm")
 
@@ -93,7 +92,6 @@ actual fun PlatformFilesPicker(launch: Boolean, onFilesSelected: (List<PlatformF
     onFilesSelected(selectedFiles)
 }
 
-@OptIn(ExperimentalTime::class)
 @Composable
 actual fun JsonExporter(launch: Boolean, json: String?, onJsonSaved: (Boolean) -> Unit) {
     if (!launch) return

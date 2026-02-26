@@ -34,7 +34,6 @@ import platform.UIKit.UIApplication
 import platform.UIKit.UIApplicationOpenSettingsURLString
 import platform.UIKit.UIColor
 import platform.UIKit.UIImage
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @Composable
@@ -52,9 +51,8 @@ private val dateTimeFormatter by lazy {
     }
 }
 
-@OptIn(ExperimentalTime::class)
 actual fun formatInstant(instant: Instant): String {
-    val instant = kotlinx.datetime.Instant.fromEpochMilliseconds(instant.toEpochMilliseconds())
+    val instant = Instant.fromEpochMilliseconds(instant.toEpochMilliseconds())
     return dateTimeFormatter.stringFromDate(instant.toNSDate())
 }
 

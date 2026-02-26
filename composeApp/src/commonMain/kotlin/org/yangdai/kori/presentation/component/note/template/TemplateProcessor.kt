@@ -1,6 +1,5 @@
 package org.yangdai.kori.presentation.component.note.template
 
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
@@ -8,6 +7,7 @@ import kotlinx.datetime.format
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
 
 class TemplateProcessor(
     defaultDateFormat: String = "yyyy-MM-dd",
@@ -27,8 +27,7 @@ class TemplateProcessor(
     fun process(content: String): String {
         if (content.isBlank()) return content
 
-        val localeDateTime =
-            Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+        val localeDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         val localDate = localeDateTime.date
         val localTime = localeDateTime.time
 

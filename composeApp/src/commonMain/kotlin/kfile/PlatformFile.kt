@@ -2,7 +2,6 @@ package kfile
 
 import org.yangdai.kori.data.local.entity.NoteType
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 expect class PlatformFile
@@ -23,10 +22,8 @@ expect suspend fun PlatformFile.writeText(text: String)
 
 expect suspend fun PlatformFile.delete(): Boolean
 
-@OptIn(ExperimentalTime::class)
 expect fun PlatformFile.lastModified(): Instant
 
-@OptIn(ExperimentalTime::class)
 fun String.normalizeFileName(): String = this.trim().replace(Regex("[\\\\/:*?\"<>|]"), "_")
     .ifBlank { "file_${Clock.System.now().toEpochMilliseconds()}" }
 

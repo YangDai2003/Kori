@@ -64,7 +64,6 @@ import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.util.SampleMarkdownNote
 import org.yangdai.kori.presentation.util.SampleTodoNote
 import org.yangdai.kori.presentation.util.formatInstant
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -190,7 +189,6 @@ val sampleNotes = listOf(
     )
 )
 
-@OptIn(ExperimentalTime::class)
 @Composable
 private fun LazyItemScope.NoteItem(
     note: NoteEntity,
