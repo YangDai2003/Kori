@@ -158,7 +158,7 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
                             selected = type == NoteType.MARKDOWN,
                             shapes = MenuDefaults.itemShape(0, 2),
                             text = { Text(stringResource(Res.string.markdown)) },
-                            checkedLeadingIcon = { Icon(Icons.Filled.Check, null) },
+                            selectedLeadingIcon = { Icon(Icons.Filled.Check, null) },
                             onClick = {
                                 type = NoteType.MARKDOWN
                                 checked = false
@@ -168,7 +168,7 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
                             selected = type == NoteType.TODO,
                             shapes = MenuDefaults.itemShape(1, 2),
                             text = { Text(stringResource(Res.string.todo_text)) },
-                            checkedLeadingIcon = { Icon(Icons.Filled.Check, null) },
+                            selectedLeadingIcon = { Icon(Icons.Filled.Check, null) },
                             onClick = {
                                 type = NoteType.TODO
                                 checked = false

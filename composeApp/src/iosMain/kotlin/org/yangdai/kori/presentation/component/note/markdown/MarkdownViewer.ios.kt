@@ -205,7 +205,7 @@ private class LocalFileSchemeHandler : NSObject(), WKURLSchemeHandlerProtocol {
         // 从 URL 中提取文件名 (去除 scheme 和 "://")
         val pathComponent = url.resourceSpecifier // 通常是 scheme 后面的部分
 
-        if (pathComponent == null || pathComponent.isBlank()) {
+        if (pathComponent.isNullOrBlank()) {
             startURLSchemeTask.didFailWithError(
                 NSError.errorWithDomain(
                     "LocalFileSchemeHandlerError",

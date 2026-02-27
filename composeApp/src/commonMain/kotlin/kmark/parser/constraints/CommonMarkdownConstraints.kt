@@ -145,7 +145,7 @@ open class CommonMarkdownConstraints protected constructor(
                     val bonusForTheBlockquote = if (hasKMoreSpaces(1)) 1 else 0
                     result = create(result, bqIndent + bonusForTheBlockquote, BQ_CHAR, true, offset)
                 }
-                for (index in oldIndexPrev until indexPrev) {
+                for (index in oldIndexPrev..indexPrev) {
                     val deltaIndent = indents[index] -
                             if (index == 0)
                                 0

@@ -342,7 +342,7 @@ private fun ModelTextField(
                     text = { Text(option) },
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                     selected = modelOptions.toList()[index] == value,
-                    checkedLeadingIcon = { Icon(Icons.Filled.Check, null) },
+                    selectedLeadingIcon = { Icon(Icons.Filled.Check, null) },
                     onClick = {
                         onValueChange(option)
                         expanded = false
@@ -395,7 +395,7 @@ private fun DynamicModelTextField(
                     text = { Text(option) },
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                     selected = modelOptions.toList()[index] == value,
-                    checkedLeadingIcon = { Icon(Icons.Filled.Check, null) },
+                    selectedLeadingIcon = { Icon(Icons.Filled.Check, null) },
                     onClick = {
                         onValueChange(option)
                         expanded = false

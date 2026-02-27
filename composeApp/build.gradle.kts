@@ -67,7 +67,7 @@ kotlin {
             implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
             implementation(libs.components.resources)
             implementation(libs.ui.tooling.preview)
-            implementation("org.jetbrains.compose.material3:material3:1.11.0-alpha01")
+            implementation("org.jetbrains.compose.material3:material3:1.11.0-alpha03")
             implementation("org.jetbrains.androidx.window:window-core:1.5.1")
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)

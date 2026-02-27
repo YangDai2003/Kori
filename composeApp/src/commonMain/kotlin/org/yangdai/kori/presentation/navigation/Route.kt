@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import org.yangdai.kori.data.local.entity.NoteType
 
 @Serializable
-sealed class Screen() {
+sealed class Screen {
     @Serializable
     data object Main : Screen()
 
