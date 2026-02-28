@@ -158,12 +158,12 @@ fun Modifier.markdownKeyEvents(textFieldState: TextFieldState): Modifier =
                         // 安全地获取当前行的内容
                         val currentLineStart = currentText.lastIndexOf(
                             '\n',
-                            (selection.start - 1).coerceIn(0, currentText.length)
+                            (selection.min - 1).coerceIn(0, currentText.length)
                         ).let {
                             if (it == -1) 0 else it + 1
                         }
                         val currentLineEnd =
-                            currentText.indexOf('\n', selection.start).let {
+                            currentText.indexOf('\n', selection.min).let {
                                 if (it == -1) currentText.length else it
                             }
 
@@ -184,7 +184,7 @@ fun Modifier.markdownKeyEvents(textFieldState: TextFieldState): Modifier =
                             currentLine.takeWhile { it.isWhitespace() }
 
                         // 处理空列表项
-                        if (selection.start == currentLineEnd &&
+                        if (selection.min == currentLineEnd &&
                             (trimmedLine == "- [ ]" || trimmedLine == "-" || trimmedLine == "*" || trimmedLine == "+"
                                     || trimmedLine.matches(Regex("^\\d+\\.$")) || trimmedLine.matches(
                                 Regex("^\\d+\\)$")
