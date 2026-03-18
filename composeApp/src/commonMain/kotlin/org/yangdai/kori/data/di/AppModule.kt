@@ -1,6 +1,5 @@
 package org.yangdai.kori.data.di
 
-import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
@@ -23,7 +22,8 @@ import org.yangdai.kori.presentation.screen.template.TemplateViewModel
 
 expect fun platformModule(): Module
 
-fun appModule() = module {
+val appModule = module {
+    includes(platformModule())
     single<DataStoreRepository> { DataStoreRepositoryImpl(get()) }
     single<FolderRepository> { FolderRepositoryImpl(get<AppDatabase>().folderDao()) }
     single<NoteRepository> { NoteRepositoryImpl(get<AppDatabase>().noteDao()) }
@@ -35,16 +35,9 @@ fun appModule() = module {
     viewModelOf(::FileViewModel)
 }
 
-object KoinInitializer {
-    fun init(appDeclaration: KoinAppDeclaration = {}): KoinApplication {
-        return startKoin {
-            appDeclaration()
-            modules(
-                listOf(
-                    platformModule(),
-                    appModule()
-                )
-            )
-        }
+fun initKoin(config: KoinAppDeclaration? = null) {
+    startKoin {
+        config?.invoke(this)
+        modules(appModule)
     }
 }

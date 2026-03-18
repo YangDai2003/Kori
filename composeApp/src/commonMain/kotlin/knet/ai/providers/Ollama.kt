@@ -1,6 +1,6 @@
 package knet.ai.providers
 
-import ai.koog.prompt.llm.OllamaModels
+import ai.koog.prompt.executor.ollama.client.OllamaModels
 import androidx.compose.runtime.Stable
 
 @Stable

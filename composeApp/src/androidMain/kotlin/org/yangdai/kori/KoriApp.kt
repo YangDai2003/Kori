@@ -7,13 +7,13 @@ import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.core.net.toUri
 import org.koin.android.ext.koin.androidContext
-import org.yangdai.kori.data.di.KoinInitializer
+import org.yangdai.kori.data.di.initKoin
 import org.yangdai.kori.presentation.util.Constants
 
 class KoriApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        KoinInitializer.init {
+        initKoin {
             androidContext(this@KoriApp)
         }
 

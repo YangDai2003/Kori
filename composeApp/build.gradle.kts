@@ -92,6 +92,7 @@ kotlin {
 
             implementation(libs.coil.compose)
             implementation(libs.koog.agents)
+            implementation(libs.kotlinx.datetime)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

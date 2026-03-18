@@ -60,7 +60,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.skiko.currentSystemTheme
 import org.jetbrains.skiko.disableTitleBar
 import org.koin.compose.viewmodel.koinViewModel
-import org.yangdai.kori.data.di.KoinInitializer
+import org.yangdai.kori.data.di.initKoin
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.component.LocalTopAppBarPadding
 import org.yangdai.kori.presentation.component.dialog.ProgressDialog
@@ -79,7 +79,7 @@ import java.awt.Dimension
 fun main() {
     System.setProperty("compose.interop.blending", "true")
     System.setProperty("compose.swing.render.on.graphics", "true")
-    KoinInitializer.init()
+    initKoin()
     try {
         Desktop.getDesktop().setOpenURIHandler { event ->
             ExternalUriHandler.onNewUri(event.uri.toString())
