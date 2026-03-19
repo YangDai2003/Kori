@@ -14,7 +14,7 @@ import ai.koog.prompt.executor.clients.mistralai.MistralAIClientSettings
 import ai.koog.prompt.executor.clients.mistralai.MistralAILLMClient
 import ai.koog.prompt.executor.clients.openai.OpenAIClientSettings
 import ai.koog.prompt.executor.clients.openai.OpenAILLMClient
-import ai.koog.prompt.executor.llms.SingleLLMPromptExecutor
+import ai.koog.prompt.executor.llms.MultiLLMPromptExecutor
 import ai.koog.prompt.executor.ollama.client.OllamaClient
 import ai.koog.prompt.llm.LLMCapability
 import ai.koog.prompt.llm.LLMProvider
@@ -307,8 +307,11 @@ object AI {
         return try {
             val systemPrompt = SystemPrompt.SYSTEM + "\n" + systemPrompt
             val (client, llmModel) = getClientAndModel(lLMProvider, model, apiKey, baseUrl)
-            val agent =
-                AIAgent(SingleLLMPromptExecutor(client), llmModel, systemPrompt = systemPrompt)
+            val agent = AIAgent(
+                promptExecutor = MultiLLMPromptExecutor(client),
+                llmModel = llmModel,
+                systemPrompt = systemPrompt
+            )
             val result = agent.run(userInput)
             GenerationResult.Success(result)
         } catch (e: Exception) {
@@ -327,7 +330,7 @@ object AI {
     ): GenerationResult {
         return try {
             val (client, llmModel) = getClientAndModel(lLMProvider, model, apiKey, baseUrl)
-            val agent = AIAgent(SingleLLMPromptExecutor(client), llmModel)
+            val agent = AIAgent(MultiLLMPromptExecutor(client), llmModel)
             val result = agent.run("Hi")
             GenerationResult.Success(result)
         } catch (e: Exception) {

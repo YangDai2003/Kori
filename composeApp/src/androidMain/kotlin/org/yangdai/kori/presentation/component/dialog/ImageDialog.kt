@@ -269,9 +269,9 @@ private fun ImageViewer(imageBitmap: ImageBitmap) {
     var imageSize by remember { mutableStateOf(IntSize.Zero) }
     var containerSize by remember { mutableStateOf(IntSize.Zero) }
 
-    val state = rememberTransformableState { zoomChange, offsetChange, rotationChange ->
+    val state = rememberTransformableState { _, zoomChange, panChange, rotationChange ->
         scale = (scale * zoomChange).coerceIn(1f, 3f)
-        val adjustedOffset = offsetChange * scale
+        val adjustedOffset = panChange * scale
         val maxX = (imageSize.width * scale - containerSize.width) / 2
         val maxY = (imageSize.height * scale - containerSize.height) / 2
         offset = Offset(
