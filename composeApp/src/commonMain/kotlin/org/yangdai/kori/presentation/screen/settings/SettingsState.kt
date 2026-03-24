@@ -22,7 +22,8 @@ data class EditorPaneState(
     val isLineNumberVisible: Boolean = false,
     val isLintingEnabled: Boolean = false,
     val isDefaultReadingView: Boolean = false,
-    val editorWeight: Float = 0.5f
+    val editorWeight: Float = 0.5f,
+    val isSyntaxHighlightingEnabled: Boolean = false
 )
 
 data class TemplatePaneState(

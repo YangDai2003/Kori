@@ -92,6 +92,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastRoundToInt
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.area_eraser
 import kori.composeapp.generated.resources.black
@@ -113,9 +114,8 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.LocalTopAppBarPadding
-import org.yangdai.kori.presentation.component.dialog.DismissButton
 import org.yangdai.kori.presentation.component.dialog.DialogShape
-import kotlin.math.roundToInt
+import org.yangdai.kori.presentation.component.dialog.DismissButton
 import kotlin.random.Random
 
 private val lightBrandColor1 = Color(0xFFAECBFA)
@@ -651,7 +651,7 @@ private fun BrushStylusPane(widthState: MutableState<Float>, colorState: Mutable
                     imageVector = Icons.Default.Remove, contentDescription = "reduce"
                 )
                 Text(
-                    "${widthState.value.roundToInt()}",
+                    "${widthState.value.fastRoundToInt()}",
                     style = MaterialTheme.typography.labelMedium
                 )
                 Icon(
@@ -666,9 +666,7 @@ private fun BrushStylusPane(widthState: MutableState<Float>, colorState: Mutable
         Slider(
             modifier = Modifier.fillMaxWidth().height(24.dp),
             value = widthState.value,
-            onValueChange = {
-                widthState.value = it.roundToInt().toFloat()
-            },
+            onValueChange = { widthState.value = it.fastRoundToInt().toFloat() },
             valueRange = 1f..100f,
             steps = 99,
             interactionSource = interactionSource,
@@ -804,7 +802,7 @@ private fun EraserStylusPane(
                 }, imageVector = Icons.Default.Remove, contentDescription = "reduce"
             )
             Text(
-                "${state.eraserStrokeWidth.value.roundToInt()}",
+                "${state.eraserStrokeWidth.value.fastRoundToInt()}",
                 style = MaterialTheme.typography.labelMedium
             )
             Icon(
@@ -819,9 +817,7 @@ private fun EraserStylusPane(
     Slider(
         modifier = Modifier.height(24.dp),
         value = state.eraserStrokeWidth.value,
-        onValueChange = {
-            state.eraserStrokeWidth.value = it.roundToInt().toFloat()
-        },
+        onValueChange = { state.eraserStrokeWidth.value = it.fastRoundToInt().toFloat() },
         valueRange = 1f..100f,
         steps = 99,
         interactionSource = interactionSource,

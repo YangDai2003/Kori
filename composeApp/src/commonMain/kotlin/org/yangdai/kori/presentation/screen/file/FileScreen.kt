@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
@@ -16,7 +15,6 @@ import androidx.compose.material.icons.outlined.Print
 import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.SwapHorizontalCircle
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -74,10 +72,8 @@ import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.util.formatInstant
 import org.yangdai.kori.presentation.util.rememberIsScreenWidthExpanded
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun FileScreen(
     viewModel: FileViewModel,
@@ -96,7 +92,6 @@ fun FileScreen(
         }
     }
 
-    val pagerState = rememberPagerState { 2 }
     val coroutineScope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
     var isReadView by rememberSaveable { mutableStateOf(false) }
@@ -113,7 +108,6 @@ fun FileScreen(
     LaunchedEffect(isReadView) {
         focusManager.clearFocus()
         isSearching = false
-        pagerState.animateScrollToPage(if (isReadView) 1 else 0)
     }
 
     EditorScaffold(
@@ -207,7 +201,7 @@ fun FileScreen(
             var firstVisibleCharPosition by remember { mutableIntStateOf(0) }
             AdaptiveEditorViewer(
                 showDualPane = rememberIsScreenWidthExpanded(),
-                pagerState = pagerState,
+                isReadView = isReadView,
                 defaultEditorWeight = editorState.editorWeight,
                 onEditorWeightChanged = { viewModel.changeDefaultEditorWeight(it) },
                 editor = { modifier ->
@@ -219,6 +213,7 @@ fun FileScreen(
                         readOnly = isReadView,
                         isLineNumberVisible = editorState.isLineNumberVisible,
                         isLintingEnabled = editorState.isLintingEnabled,
+                        isSyntaxHighlightingEnabled = editorState.isSyntaxHighlightingEnabled,
                         headerRange = selectedHeader,
                         findAndReplaceState = findAndReplaceState,
                         onScroll = { firstVisibleCharPosition = it }

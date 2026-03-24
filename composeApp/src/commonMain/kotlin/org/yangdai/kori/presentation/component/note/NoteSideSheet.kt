@@ -88,6 +88,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
+import androidx.compose.ui.util.fastRoundToInt
 import kmark.MarkdownElementTypes
 import kmark.ast.ASTNode
 import kmark.ast.getTextInNode
@@ -124,7 +125,6 @@ import org.yangdai.kori.presentation.component.note.markdown.Properties.getPrope
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.util.formatNumber
 import kotlin.math.abs
-import kotlin.math.roundToInt
 
 private val SheetWidth = 320.dp
 private val ActionWidth = 48.dp
@@ -229,7 +229,7 @@ fun NoteSideSheet(
                         bottom = systemBarsPadding.calculateBottomPadding()
                     )
                     .align(Alignment.CenterEnd)
-                    .offset { IntOffset(x = offsetX.value.roundToInt(), y = 0) },
+                    .offset { IntOffset(x = offsetX.value.fastRoundToInt(), y = 0) },
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.Top
             ) {

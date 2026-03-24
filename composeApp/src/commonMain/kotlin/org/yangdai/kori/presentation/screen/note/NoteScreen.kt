@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
@@ -32,7 +31,6 @@ import androidx.compose.material.icons.outlined.Print
 import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.SwapHorizontalCircle
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -118,10 +116,8 @@ import org.yangdai.kori.presentation.navigation.UiEvent
 import org.yangdai.kori.presentation.util.formatInstant
 import org.yangdai.kori.presentation.util.isFloatingWindowEnabled
 import org.yangdai.kori.presentation.util.rememberIsScreenWidthExpanded
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun NoteScreen(
     viewModel: NoteViewModel = koinViewModel(),
@@ -175,7 +171,6 @@ fun NoteScreen(
 
     val coroutineScope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
-    val pagerState = rememberPagerState { 2 }
     var isSideSheetOpen by rememberSaveable { mutableStateOf(false) }
     var showFolderDialog by remember { mutableStateOf(false) }
     var isSearching by remember { mutableStateOf(false) }
@@ -195,7 +190,6 @@ fun NoteScreen(
     LaunchedEffect(isReadView) {
         focusManager.clearFocus()
         isSearching = false
-        pagerState.animateScrollToPage(if (isReadView) 1 else 0)
     }
 
     EditorScaffold(
@@ -326,7 +320,7 @@ fun NoteScreen(
             var firstVisibleCharPosition by remember { mutableIntStateOf(0) }
             AdaptiveEditorViewer(
                 showDualPane = isWideScreen,
-                pagerState = pagerState,
+                isReadView = isReadView,
                 defaultEditorWeight = editorState.editorWeight,
                 onEditorWeightChanged = { viewModel.changeDefaultEditorWeight(it) },
                 editor = { modifier ->
@@ -338,6 +332,7 @@ fun NoteScreen(
                         readOnly = isReadView,
                         isLineNumberVisible = editorState.isLineNumberVisible,
                         isLintingEnabled = editorState.isLintingEnabled,
+                        isSyntaxHighlightingEnabled = editorState.isSyntaxHighlightingEnabled,
                         headerRange = selectedHeader,
                         findAndReplaceState = findAndReplaceState,
                         onScroll = { firstVisibleCharPosition = it }

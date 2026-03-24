@@ -27,6 +27,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.util.fastRoundToInt
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.webkit.WebViewAssetLoader
@@ -46,7 +47,6 @@ import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.pr
 import org.yangdai.kori.presentation.theme.AppConfig
 import org.yangdai.kori.presentation.util.toHexColor
 import java.io.File
-import kotlin.math.roundToInt
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @SuppressLint("SetJavaScriptEnabled")
@@ -70,7 +70,7 @@ actual fun MarkdownViewer(
             .replace(Placeholders.LINK_COLOR, styles.hexLinkColor)
             .replace(Placeholders.BORDER_COLOR, styles.hexBorderColor)
             .replace(Placeholders.COLOR_SCHEME, if (appConfig.darkMode) "dark" else "light")
-            .replace(Placeholders.FONT_SCALE, "${(appConfig.fontScale * 100).roundToInt()}%")
+            .replace(Placeholders.FONT_SCALE, "${(appConfig.fontScale * 100).fastRoundToInt()}%")
     }
     var webView by remember { mutableStateOf<WebView?>(null) }
     var wvClient by remember { mutableStateOf<WVClient?>(null) }

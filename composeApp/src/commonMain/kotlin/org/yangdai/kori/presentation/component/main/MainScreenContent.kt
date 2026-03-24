@@ -99,6 +99,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastRoundToInt
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.all_notes
@@ -143,7 +144,6 @@ import org.yangdai.kori.presentation.component.main.card.NoteItemProperties
 import org.yangdai.kori.presentation.navigation.Screen
 import org.yangdai.kori.presentation.screen.main.MainViewModel
 import org.yangdai.kori.presentation.util.rememberIsScreenWidthExpanded
-import kotlin.math.roundToInt
 
 data class Digit(val digitChar: Char, val fullNumber: Int, val place: Int) {
     override fun equals(other: Any?): Boolean {
@@ -555,7 +555,7 @@ fun MainScreenContent(
                 Snackbar(
                     snackbarData,
                     modifier = Modifier
-                        .offset { IntOffset(0, offsetY.roundToInt()) }
+                        .offset { IntOffset(0, offsetY.fastRoundToInt()) }
                         .pointerInput(Unit) {
                             detectVerticalDragGestures(
                                 onDragEnd = {

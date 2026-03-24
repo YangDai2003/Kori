@@ -42,9 +42,9 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastRoundToInt
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
-import kotlin.math.roundToInt
 
 interface FloatingToolbarScope {
     @Composable
@@ -88,7 +88,7 @@ private class FloatingToolbarScopeImpl(
             }
 
             if (showPopup.value) {
-                val offset = with(density) { 56.dp.toPx().roundToInt() }
+                val offset = with(density) { 56.dp.toPx().fastRoundToInt() }
                 val popupAlignment: Alignment
                 val popupOffset: IntOffset
 
@@ -194,7 +194,7 @@ fun BoxWithConstraintsScope.FloatingToolbar(
             .align(alignment)
             .padding(innerPadding)
             .padding(if (alignment == Alignment.TopCenter) 0.dp else 16.dp)
-            .offset { IntOffset(offset.x.roundToInt(), offset.y.roundToInt()) }
+            .offset { IntOffset(offset.x.fastRoundToInt(), offset.y.fastRoundToInt()) }
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDragEnd = {

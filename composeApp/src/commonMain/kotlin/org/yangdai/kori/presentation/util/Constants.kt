@@ -31,6 +31,7 @@ object Constants {
         const val IS_LINTING_ENABLED = "is_markdown_lint_enabled"
         const val IS_DEFAULT_READING_VIEW = "is_default_reading_view"
         const val EDITOR_WEIGHT = "default_editor_weight"
+        const val SYNTAX_HIGHLIGHTING = "syntax_highlighting"
 
         const val DATE_FORMATTER = "date_formatter"
         const val TIME_FORMATTER = "time_formatter"

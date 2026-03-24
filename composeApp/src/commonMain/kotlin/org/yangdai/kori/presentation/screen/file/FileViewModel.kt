@@ -40,11 +40,10 @@ import org.yangdai.kori.presentation.screen.settings.TemplatePaneState
 import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.util.Constants.LLMConfig.getLLMConfig
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalTime::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 class FileViewModel(
     private val platformFile: PlatformFile,
     private val noteRepository: NoteRepository,
@@ -111,13 +110,15 @@ class FileViewModel(
         dataStoreRepository.booleanFlow(Constants.Preferences.SHOW_LINE_NUMBER),
         dataStoreRepository.booleanFlow(Constants.Preferences.IS_LINTING_ENABLED),
         dataStoreRepository.booleanFlow(Constants.Preferences.IS_DEFAULT_READING_VIEW),
-        dataStoreRepository.floatFlow(Constants.Preferences.EDITOR_WEIGHT, 0.5f)
-    ) { showLineNumber, isLintingEnabled, isDefaultReadingView, editorWeight ->
+        dataStoreRepository.floatFlow(Constants.Preferences.EDITOR_WEIGHT, 0.5f),
+        dataStoreRepository.booleanFlow(Constants.Preferences.SYNTAX_HIGHLIGHTING, true)
+    ) { showLineNumber, isLintingEnabled, isDefaultReadingView, editorWeight, isSyntaxHighlightingEnabled ->
         EditorPaneState(
             isLineNumberVisible = showLineNumber,
             isLintingEnabled = isLintingEnabled,
             isDefaultReadingView = isDefaultReadingView,
-            editorWeight = editorWeight
+            editorWeight = editorWeight,
+            isSyntaxHighlightingEnabled = isSyntaxHighlightingEnabled
         )
     }.stateIn(
         viewModelScope,

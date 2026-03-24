@@ -11,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
+import androidx.compose.material.icons.automirrored.outlined.Rtt
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.FormatListNumbered
 import androidx.compose.material.icons.outlined.Spellcheck
@@ -104,6 +105,27 @@ fun EditorPane(mainViewModel: MainViewModel) {
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOff)
                         mainViewModel.putPreferenceValue(
                             Constants.Preferences.SHOW_LINE_NUMBER,
+                            checked
+                        )
+                    }
+                )
+            }
+        )
+
+        DetailPaneItem(
+            modifier = Modifier.padding(bottom = 8.dp),
+            title = "Syntax Highlight", // TODO:  translate
+            icon = Icons.AutoMirrored.Outlined.Rtt,
+            trailingContent = {
+                Switch(
+                    checked = editorPaneState.isSyntaxHighlightingEnabled,
+                    onCheckedChange = { checked ->
+                        if (checked)
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOn)
+                        else
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOff)
+                        mainViewModel.putPreferenceValue(
+                            Constants.Preferences.SYNTAX_HIGHLIGHTING,
                             checked
                         )
                     }

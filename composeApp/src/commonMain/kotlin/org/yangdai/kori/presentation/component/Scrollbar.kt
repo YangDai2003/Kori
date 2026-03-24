@@ -35,10 +35,10 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastRoundToInt
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.max
-import kotlin.math.roundToInt
 
 @Composable
 expect fun VerticalScrollbar(modifier: Modifier, state: LazyGridState)
@@ -123,20 +123,22 @@ fun Scrollbar(
         // 计算滑块可以移动的总距离
         val thumbTravelDistancePx = containerHeightPx - thumbHeightPx
 
-        // 根据当前的滚动位置计算滑块的Y轴偏移量
-        val thumbOffsetYPx = if (state.maxValue > 0) {
-            (state.value.toFloat() / state.maxValue) * thumbTravelDistancePx
-        } else {
-            0f
-        }
-
         // --- 滑块 (Thumb) ---
         Box(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .width(width)
                 .height(with(density) { thumbHeightPx.toDp() })
-                .offset { IntOffset(x = 0, y = thumbOffsetYPx.roundToInt()) }
+                .offset { // 根据当前的滚动位置计算滑块的Y轴偏移量
+                    IntOffset(
+                        x = 0,
+                        y = (if (state.maxValue > 0) {
+                            (state.value.toFloat() / state.maxValue) * thumbTravelDistancePx
+                        } else {
+                            0f
+                        }).fastRoundToInt()
+                    )
+                }
                 .background(
                     color = thumbColor.copy(alpha = alpha),
                     shape = RoundedCornerShape(width / 2)

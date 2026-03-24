@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.util.fastRoundToInt
 import androidx.compose.ui.viewinterop.UIKitView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kori.composeapp.generated.resources.Res
@@ -54,7 +55,6 @@ import platform.WebKit.WKWebView
 import platform.WebKit.WKWebViewConfiguration
 import platform.WebKit.javaScriptEnabled
 import platform.darwin.NSObject
-import kotlin.math.roundToInt
 
 internal const val IOS_CUSTOM_SCHEME = "note-files"
 
@@ -77,7 +77,7 @@ private fun String.processHtml(styles: MarkdownStyles, appConfig: AppConfig) = t
     .replace(Placeholders.LINK_COLOR, styles.hexLinkColor)
     .replace(Placeholders.BORDER_COLOR, styles.hexBorderColor)
     .replace(Placeholders.COLOR_SCHEME, if (appConfig.darkMode) "dark" else "light")
-    .replace(Placeholders.FONT_SCALE, "${(appConfig.fontScale * 100).roundToInt()}%")
+    .replace(Placeholders.FONT_SCALE, "${(appConfig.fontScale * 100).fastRoundToInt()}%")
     .replace("{{MERMAID}}", StaticUris.MERMAID)
     .replace("{{KATEX}}", StaticUris.KATEX)
     .replace("{{KATEX-CSS}}", StaticUris.KATEX_CSS)

@@ -60,11 +60,9 @@ import org.yangdai.kori.presentation.screen.settings.decryptBackupDataWithCompat
 import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.util.SampleMarkdownNote
 import org.yangdai.kori.presentation.util.SampleTodoNote
-import kotlin.collections.map
 import kotlin.io.encoding.Base64
 import kotlin.math.round
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -233,7 +231,7 @@ class MainViewModel(
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
+    @OptIn(ExperimentalUuidApi::class)
     fun duplicateNotes(noteIds: Set<String>) {
         viewModelScope.launch {
             noteIds.forEach { noteId ->
@@ -368,12 +366,14 @@ class MainViewModel(
     val editorPaneState = combine(
         dataStoreRepository.booleanFlow(Constants.Preferences.SHOW_LINE_NUMBER),
         dataStoreRepository.booleanFlow(Constants.Preferences.IS_LINTING_ENABLED),
-        dataStoreRepository.booleanFlow(Constants.Preferences.IS_DEFAULT_READING_VIEW)
-    ) { showLineNumber, isLintingEnabled, isDefaultReadingView ->
+        dataStoreRepository.booleanFlow(Constants.Preferences.IS_DEFAULT_READING_VIEW),
+        dataStoreRepository.booleanFlow(Constants.Preferences.SYNTAX_HIGHLIGHTING, true)
+    ) { showLineNumber, isLintingEnabled, isDefaultReadingView, syntaxHighlighting ->
         EditorPaneState(
             isLineNumberVisible = showLineNumber,
             isLintingEnabled = isLintingEnabled,
-            isDefaultReadingView = isDefaultReadingView
+            isDefaultReadingView = isDefaultReadingView,
+            isSyntaxHighlightingEnabled = syntaxHighlighting
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), EditorPaneState())
 
@@ -457,7 +457,7 @@ class MainViewModel(
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
+    @OptIn(ExperimentalUuidApi::class)
     fun importFiles(files: List<PlatformFile>, folderId: String?) {
         dataActionJob?.cancel()
         dataActionJob = viewModelScope.launch(Dispatchers.IO) {
@@ -562,7 +562,7 @@ class MainViewModel(
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
+    @OptIn(ExperimentalUuidApi::class)
     fun restoreFromOpenNoteJson(json: String) {
         dataActionJob?.cancel()
         dataActionJob = viewModelScope.launch(Dispatchers.IO) {

@@ -37,7 +37,6 @@ import platform.UniformTypeIdentifiers.UTTypeVideo
 import platform.darwin.NSObject
 import kotlin.coroutines.resume
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 @Composable
 actual fun PlatformFilePicker(onFileSelected: (PlatformFile?) -> Unit) {
@@ -188,7 +187,7 @@ actual fun PlatformFilesPicker(launch: Boolean, onFilesSelected: (List<PlatformF
 }
 
 @Suppress("CAST_NEVER_SUCCEEDS")
-@OptIn(ExperimentalForeignApi::class, ExperimentalTime::class)
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 actual fun JsonExporter(launch: Boolean, json: String?, onJsonSaved: (Boolean) -> Unit) {
     val currentUIViewController = LocalUIViewController.current
@@ -485,7 +484,7 @@ actual fun AudioPicker(
     )
 }
 
-@OptIn(ExperimentalForeignApi::class, ExperimentalTime::class)
+@OptIn(ExperimentalForeignApi::class)
 private fun processAndCopyMediaFile(
     noteId: String,
     sourceURL: NSURL,

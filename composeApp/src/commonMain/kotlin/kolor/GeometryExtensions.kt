@@ -2,11 +2,11 @@ package kolor
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.util.fastRoundToInt
 import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.min
-import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.sqrt
 
@@ -19,7 +19,7 @@ internal fun Float.toDegrees() = this * TO_DEGREES
 // These exist for Size but not IntSize
 internal val IntSize.center get() = Offset(width * 0.5f, height * 0.5f)
 internal operator fun IntSize.times(scale: Float) =
-    IntSize((width * scale).roundToInt(), (height * scale).roundToInt())
+    IntSize((width * scale).fastRoundToInt(), (height * scale).fastRoundToInt())
 
 // New extensions
 internal val IntSize.radius get() = min(width, height) * 0.5f

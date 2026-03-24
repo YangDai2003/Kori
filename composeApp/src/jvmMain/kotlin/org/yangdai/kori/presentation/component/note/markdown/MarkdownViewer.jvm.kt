@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingPanel
+import androidx.compose.ui.util.fastRoundToInt
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import javafx.application.Platform
 import javafx.concurrent.Worker
@@ -39,7 +40,6 @@ import java.awt.Desktop
 import java.awt.event.MouseEvent
 import java.awt.event.MouseWheelEvent
 import java.net.URI
-import kotlin.math.roundToInt
 
 val jfxPanel = InteropPanel()
 
@@ -62,7 +62,7 @@ private fun String.processHtml(styles: MarkdownStyles, appConfig: AppConfig) = t
     .replace(Placeholders.LINK_COLOR, styles.hexLinkColor)
     .replace(Placeholders.BORDER_COLOR, styles.hexBorderColor)
     .replace(Placeholders.COLOR_SCHEME, if (appConfig.darkMode) "dark" else "light")
-    .replace(Placeholders.FONT_SCALE, "${(appConfig.fontScale * 100).roundToInt()}%")
+    .replace(Placeholders.FONT_SCALE, "${(appConfig.fontScale * 100).fastRoundToInt()}%")
     .replace("{{MERMAID}}", StaticUris.MERMAID)
     .replace("{{KATEX}}", StaticUris.KATEX)
     .replace("{{KATEX-CSS}}", StaticUris.KATEX_CSS)

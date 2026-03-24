@@ -1,6 +1,5 @@
 package org.yangdai.kori.presentation.component
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
@@ -32,7 +31,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.OS
 import org.yangdai.kori.currentPlatformInfo
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TooltipIconButton(
     icon: ImageVector,
@@ -71,7 +69,6 @@ fun TooltipIconButton(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TooltipIconButton(
     icon: Painter,
