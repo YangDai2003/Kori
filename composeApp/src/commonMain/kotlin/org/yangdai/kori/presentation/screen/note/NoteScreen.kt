@@ -297,15 +297,19 @@ fun NoteScreen(
             AnimatedVisibility(isSearching) {
                 FindAndReplaceField(findAndReplaceState)
             }
-        } else
+        } else {
             AnimatedContent(isSearching) { targetState ->
                 if (targetState) FindAndReplaceField(findAndReplaceState)
-                else
-                    TitleTextField(
-                        state = viewModel.titleState,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
-                    )
+                else {
+                    if (!isReadView || viewModel.titleState.text.isNotEmpty()) {
+                        TitleTextField(
+                            state = viewModel.titleState,
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                        )
+                    }
+                }
             }
+        }
 
         if (editingState.noteType == NoteType.Drawing) {
             DrawingViewer(
