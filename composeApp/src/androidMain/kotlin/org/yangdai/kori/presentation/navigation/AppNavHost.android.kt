@@ -30,7 +30,7 @@ import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.util.parseSharedContent
 
 @Composable
-actual fun AppNavHost(
+actual fun AppNavHostCore(
     modifier: Modifier,
     mainViewModel: MainViewModel,
     navHostController: NavHostController
@@ -38,18 +38,10 @@ actual fun AppNavHost(
     modifier = modifier,
     navController = navHostController,
     startDestination = Screen.Main,
-    enterTransition = {
-        sharedAxisXIn(initialOffsetX = { (it * INITIAL_OFFSET_FACTOR).toInt() })
-    },
-    exitTransition = {
-        sharedAxisXOut(targetOffsetX = { -(it * INITIAL_OFFSET_FACTOR).toInt() })
-    },
-    popEnterTransition = {
-        sharedAxisXIn(initialOffsetX = { -(it * INITIAL_OFFSET_FACTOR).toInt() })
-    },
-    popExitTransition = {
-        sharedAxisXOut(targetOffsetX = { (it * INITIAL_OFFSET_FACTOR).toInt() })
-    }
+    enterTransition = { sharedAxisXIn(initialOffsetX = { (it * INITIAL_OFFSET_FACTOR).toInt() }) },
+    exitTransition = { sharedAxisXOut(targetOffsetX = { -(it * INITIAL_OFFSET_FACTOR).toInt() }) },
+    popEnterTransition = { sharedAxisXIn(initialOffsetX = { -(it * INITIAL_OFFSET_FACTOR).toInt() }) },
+    popExitTransition = { sharedAxisXOut(targetOffsetX = { (it * INITIAL_OFFSET_FACTOR).toInt() }) }
 ) {
     composable<Screen.Main> {
         MainScreen(mainViewModel) { screen ->

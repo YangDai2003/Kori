@@ -1,13 +1,11 @@
 package org.yangdai.kori
 
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.DarkDefaultContextMenuRepresentation
 import androidx.compose.foundation.LightDefaultContextMenuRepresentation
 import androidx.compose.foundation.LocalContextMenuRepresentation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -22,15 +20,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingWindow
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
-import androidx.compose.ui.semantics.hideFromAccessibility
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ApplicationScope
@@ -63,7 +58,6 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.yangdai.kori.data.di.initKoin
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.presentation.component.LocalTopAppBarPadding
-import org.yangdai.kori.presentation.component.dialog.ProgressDialog
 import org.yangdai.kori.presentation.component.login.NumberLockScreen
 import org.yangdai.kori.presentation.navigation.AppNavHost
 import org.yangdai.kori.presentation.navigation.Screen
@@ -150,7 +144,6 @@ private fun ApplicationWindow(
     val mainViewModel: MainViewModel = koinViewModel<MainViewModel>()
     val stylePaneState by mainViewModel.stylePaneState.collectAsStateWithLifecycle()
     val securityPaneState by mainViewModel.securityPaneState.collectAsStateWithLifecycle()
-    val dataActionState by mainViewModel.dataActionState.collectAsStateWithLifecycle()
     val isUnlocked by AppLockManager.isUnlocked.collectAsStateWithLifecycle()
     val isSystemInDarkTheme by produceState(initialValue = currentSystemTheme == org.jetbrains.skiko.SystemTheme.DARK) {
         while (true) {
@@ -188,54 +181,43 @@ private fun ApplicationWindow(
             amoledMode = stylePaneState.isAppInAmoledMode,
             fontScale = stylePaneState.fontSize
         ) {
-            Surface {
-                val showPassScreen by remember {
-                    derivedStateOf {
-                        (securityPaneState.password.isNotEmpty() && !isUnlocked) ||
-                                securityPaneState.isCreatingPass
-                    }
+            val showPassScreen by remember {
+                derivedStateOf {
+                    (securityPaneState.password.isNotEmpty() && !isUnlocked) ||
+                            securityPaneState.isCreatingPass
                 }
-                val blur by animateDpAsState(targetValue = if (showPassScreen) 16.dp else 0.dp)
-                val semanticsModifier =
-                    if (showPassScreen) Modifier.semantics(mergeDescendants = true) { hideFromAccessibility() }
-                    else Modifier
-                AppNavHost(
-                    modifier = Modifier
-                        .blur(blur)
-                        .then(semanticsModifier),
-                    mainViewModel = mainViewModel,
-                    navHostController = navHostController
+            }
+            AppNavHost(
+                mainViewModel = mainViewModel,
+                showPassScreen = showPassScreen,
+                navHostController = navHostController
+            )
+            if (showPassScreen) {
+                NumberLockScreen(
+                    modifier = Modifier.background(
+                        MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.25f)
+                    ),
+                    storedPassword = securityPaneState.password,
+                    isCreatingPassword = securityPaneState.isCreatingPass,
+                    onCreatingCanceled = {
+                        mainViewModel.putPreferenceValue(
+                            Constants.Preferences.IS_CREATING_PASSWORD,
+                            false
+                        )
+                    },
+                    onPassCreated = {
+                        mainViewModel.putPreferenceValue(
+                            Constants.Preferences.PASSWORD,
+                            it
+                        )
+                        mainViewModel.putPreferenceValue(
+                            Constants.Preferences.IS_CREATING_PASSWORD,
+                            false
+                        )
+                        AppLockManager.unlock()
+                    },
+                    onAuthenticated = { AppLockManager.unlock() }
                 )
-                ProgressDialog(dataActionState) {
-                    mainViewModel.cancelDataAction()
-                }
-                if (showPassScreen) {
-                    NumberLockScreen(
-                        modifier = Modifier.background(
-                            MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.25f)
-                        ),
-                        storedPassword = securityPaneState.password,
-                        isCreatingPassword = securityPaneState.isCreatingPass,
-                        onCreatingCanceled = {
-                            mainViewModel.putPreferenceValue(
-                                Constants.Preferences.IS_CREATING_PASSWORD,
-                                false
-                            )
-                        },
-                        onPassCreated = {
-                            mainViewModel.putPreferenceValue(
-                                Constants.Preferences.PASSWORD,
-                                it
-                            )
-                            mainViewModel.putPreferenceValue(
-                                Constants.Preferences.IS_CREATING_PASSWORD,
-                                false
-                            )
-                            AppLockManager.unlock()
-                        },
-                        onAuthenticated = { AppLockManager.unlock() }
-                    )
-                }
             }
         }
     }

@@ -29,7 +29,7 @@ import platform.Foundation.NSURL
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-actual fun AppNavHost(
+actual fun AppNavHostCore(
     modifier: Modifier,
     mainViewModel: MainViewModel,
     navHostController: NavHostController
