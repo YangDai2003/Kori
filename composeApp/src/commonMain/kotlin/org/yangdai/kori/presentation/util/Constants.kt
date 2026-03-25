@@ -15,6 +15,7 @@ object Constants {
         const val FOLDER_SORT_TYPE = "folder_sort_type"
         const val NOTE_SORT_TYPE = "note_sort_type"
         const val SEARCH_HISTORY = "search_history"
+        const val RECENT_FILES = "recent_files"
 
         const val APP_THEME = "app_theme"
         const val APP_COLOR = "app_color"

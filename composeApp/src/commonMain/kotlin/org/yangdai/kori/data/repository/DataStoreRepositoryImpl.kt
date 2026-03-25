@@ -120,4 +120,13 @@ class DataStoreRepositoryImpl(private val dataStore: DataStore<Preferences>) : D
             }.first()
         }
     }
+
+    override fun getStringSet(key: String, defaultValue: Set<String>): Set<String> {
+        val preferencesKey = stringSetPreferencesKey(key)
+        return runBlocking {
+            dataStore.data.map { preferences ->
+                preferences[preferencesKey] ?: defaultValue
+            }.first()
+        }
+    }
 }

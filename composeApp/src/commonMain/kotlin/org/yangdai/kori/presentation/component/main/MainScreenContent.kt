@@ -678,12 +678,17 @@ fun MainScreenContent(
 
                     4 -> {
                         val scope = rememberCoroutineScope()
-                        ToolboxPage(navigateToScreen) {
-                            scope.launch {
-                                val id = viewModel.addSampleNote(it)
-                                navigateToScreen(Screen.Note(id))
-                            }
-                        }
+                        val recentFiles by viewModel.recentFiles.collectAsStateWithLifecycle()
+                        ToolboxPage(
+                            navigateToScreen = navigateToScreen,
+                            addSampleNote = { noteType ->
+                                scope.launch {
+                                    val id = viewModel.addSampleNote(noteType)
+                                    navigateToScreen(Screen.Note(id))
+                                }
+                            },
+                            recentFiles = recentFiles
+                        )
                     }
                 }
             }

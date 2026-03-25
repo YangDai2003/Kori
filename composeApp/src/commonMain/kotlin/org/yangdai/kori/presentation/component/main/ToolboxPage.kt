@@ -2,9 +2,10 @@ package org.yangdai.kori.presentation.component.main
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -21,6 +22,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.NoteAdd
 import androidx.compose.material.icons.automirrored.outlined.ArrowRight
+import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.ButtonDefaults
@@ -28,10 +30,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
@@ -50,6 +54,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import kfile.PlatformFile
@@ -68,7 +73,11 @@ import org.yangdai.kori.presentation.navigation.Screen
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) -> Unit) {
+fun ToolboxPage(
+    navigateToScreen: (Screen) -> Unit,
+    addSampleNote: (NoteType) -> Unit,
+    recentFiles: List<String> = emptyList()
+) {
 
     var showFilePickerDialog by remember { mutableStateOf(false) }
     var showDropTarget by remember { mutableStateOf(false) }
@@ -178,30 +187,66 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
                 }
             )
 
-            ListItem(
+            Column(
                 modifier = Modifier.padding(bottom = 8.dp).clip(CardDefaults.shape)
-                    .clickable { showFilePickerDialog = true },
-                colors = ListItemDefaults.colors(containerColor = CardDefaults.elevatedCardColors().containerColor),
-                headlineContent = { Text(stringResource(Res.string.edit_local_file)) },
-                trailingContent = {
-                    if (currentPlatformInfo.isDesktop())
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            VerticalDivider(Modifier.height(40.dp).padding(end = 8.dp))
-                            IconButton(onClick = { showDropTarget = !showDropTarget }) {
+                    .background(CardDefaults.elevatedCardColors().containerColor)
+            ) {
+                ListItem(
+                    onClick = { showFilePickerDialog = true },
+                    colors = ListItemDefaults.colors(containerColor = CardDefaults.elevatedCardColors().containerColor),
+                    content = { Text(stringResource(Res.string.edit_local_file)) },
+                    trailingContent = {
+                        if (currentPlatformInfo.isDesktop())
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                VerticalDivider(Modifier.height(40.dp).padding(end = 8.dp))
+                                IconButton(onClick = { showDropTarget = !showDropTarget }) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Outlined.ArrowRight,
+                                        modifier = Modifier.rotate(degrees),
+                                        contentDescription = null
+                                    )
+                                }
+                            }
+                        else
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Outlined.ArrowRight,
+                                contentDescription = null
+                            )
+                    }
+                )
+                // 显示最近访问的文件
+                if (recentFiles.isNotEmpty()) {
+                    HorizontalDivider(Modifier.padding(bottom = 8.dp))
+                    recentFiles.forEach { item ->
+                        // 解析存储的格式："路径 | 文件名"
+                        val parts = item.split(" | ")
+                        val path = parts.firstOrNull() ?: item
+                        val fileName =
+                            parts.lastOrNull()?.substringAfterLast('/')?.substringAfterLast('\\')
+                                ?: item
+                        ListItem(
+                            modifier = Modifier.padding(bottom = 4.dp, start = 8.dp, end = 8.dp)
+                                .clip(MaterialTheme.shapes.small),
+                            onClick = { navigateToScreen(Screen.File(path)) },
+                            content = {
+                                Text(
+                                    fileName,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            },
+                            contentPadding = PaddingValues(horizontal = 8.dp),
+                            trailingContent = {
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.ArrowRight,
-                                    modifier = Modifier.rotate(degrees),
+                                    imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
                                     contentDescription = null
                                 )
                             }
-                        }
-                    else
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.ArrowRight,
-                            contentDescription = null
                         )
+                    }
+                    Spacer(Modifier.height(4.dp))
                 }
-            )
+            }
 
             AnimatedVisibility(showDropTarget) {
                 DropTarget { navigateToScreen(Screen.File(it.path)) }
@@ -213,11 +258,12 @@ fun ToolboxPage(navigateToScreen: (Screen) -> Unit, addSampleNote: (NoteType) ->
         }
     }
 
-    if (showFilePickerDialog)
+    if (showFilePickerDialog) {
         PlatformFilePicker { pickedFile ->
             showFilePickerDialog = false
             pickedFile?.let { navigateToScreen(Screen.File(it.path)) }
         }
+    }
 }
 
 @Composable

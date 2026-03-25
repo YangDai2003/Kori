@@ -1,11 +1,11 @@
 package org.yangdai.kori.presentation.component.main
 
 import android.os.Build
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowRight
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 import org.yangdai.kori.R
 import org.yangdai.kori.presentation.glance.MyAppWidgetReceiver
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 actual fun WidgetListItem() {
     val context = LocalContext.current
@@ -39,14 +40,14 @@ actual fun WidgetListItem() {
     ListItem(
         modifier = Modifier
             .padding(bottom = 8.dp)
-            .clip(CardDefaults.shape)
-            .clickable {
-                scope.launch {
-                    manager.requestPinGlanceAppWidget(MyAppWidgetReceiver::class.java)
-                }
-            },
+            .clip(CardDefaults.shape),
+        onClick = {
+            scope.launch {
+                manager.requestPinGlanceAppWidget(MyAppWidgetReceiver::class.java)
+            }
+        },
         colors = ListItemDefaults.colors(containerColor = CardDefaults.elevatedCardColors().containerColor),
-        headlineContent = { Text(stringResource(R.string.home_widget)) },
+        content = { Text(stringResource(R.string.home_widget)) },
         trailingContent = {
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.ArrowRight,

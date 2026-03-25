@@ -12,6 +12,7 @@ import kfile.delete
 import kfile.exists
 import kfile.fileName
 import kfile.lastModified
+import kfile.path
 import kfile.readText
 import kfile.suitableNoteType
 import kfile.writeText
@@ -87,6 +88,8 @@ class FileViewModel(
             _fileEditingState.update {
                 it.copy(updatedAt = updatedAt, fileType = noteType)
             }
+            // 保存最近访问的文件
+            saveRecentFile(platformFile.path, platformFile.fileName)
         }
     }
 
@@ -135,6 +138,20 @@ class FileViewModel(
         viewModelScope.launch {
             dataStoreRepository.putFloat(Constants.Preferences.EDITOR_WEIGHT, weight)
         }
+    }
+
+    private suspend fun saveRecentFile(path: String, fileName: String) {
+        val recentFiles = dataStoreRepository.getStringSet(Constants.Preferences.RECENT_FILES)
+            .toMutableList()
+        // 移除已存在的路径（如果有的话），确保它会被添加到最前面
+        recentFiles.removeAll { it.startsWith("$path | ") }
+        // 添加到列表开头，格式为 "路径 | 文件名"
+        recentFiles.add(0, "$path | $fileName")
+        // 只保留最近 5 条记录
+        if (recentFiles.size > 5) {
+            recentFiles.removeAt(recentFiles.lastIndex)
+        }
+        dataStoreRepository.putStringSet(Constants.Preferences.RECENT_FILES, recentFiles.toSet())
     }
 
     fun saveFile() {

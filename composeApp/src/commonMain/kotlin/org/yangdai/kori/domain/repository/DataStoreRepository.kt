@@ -19,4 +19,5 @@ interface DataStoreRepository {
     fun getBoolean(key: String, defaultValue: Boolean = false): Boolean
     fun getInt(key: String, defaultValue: Int): Int
     fun getFloat(key: String, defaultValue: Float): Float
+    fun getStringSet(key: String, defaultValue: Set<String> = emptySet()): Set<String>
 }

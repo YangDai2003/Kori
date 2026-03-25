@@ -100,6 +100,11 @@ class MainViewModel(
     val templateNotesCount = noteRepository.getTemplatesCount()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), 0)
 
+    // 获取最近访问的文件列表
+    val recentFiles = dataStoreRepository.stringSetFlow(Constants.Preferences.RECENT_FILES)
+        .map { it.toList() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyList())
+
     // 排序相关
     var noteSortType by mutableStateOf(NoteSortType.UPDATE_TIME_DESC)
         private set
