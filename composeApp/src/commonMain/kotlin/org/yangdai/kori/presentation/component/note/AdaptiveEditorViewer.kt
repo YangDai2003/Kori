@@ -31,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isCtrlPressed
@@ -81,14 +80,14 @@ fun ColumnScope.AdaptiveEditorViewer(
                 val currentAnchorIndex = anchorPoints.indexOf(editorWeight)
                 when (it.key) {
                     Key.DirectionLeft -> {
-                        if (currentAnchorIndex > 0) editorWeight =
-                            anchorPoints[currentAnchorIndex - 1]
+                        if (currentAnchorIndex > 0)
+                            editorWeight = anchorPoints[currentAnchorIndex - 1]
                         true
                     }
 
                     Key.DirectionRight -> {
-                        if (currentAnchorIndex < anchorPoints.lastIndex) editorWeight =
-                            anchorPoints[currentAnchorIndex + 1]
+                        if (currentAnchorIndex < anchorPoints.lastIndex)
+                            editorWeight = anchorPoints[currentAnchorIndex + 1]
                         true
                     }
 
@@ -118,22 +117,14 @@ fun ColumnScope.AdaptiveEditorViewer(
                 if (showEditor) {
                     editor(
                         Modifier.layoutId("editor").fillMaxSize()
-                            .visible(!showDualPane && pageOffset < 0.5f)
-                            .focusProperties {
-                                canFocus =
-                                    if (showDualPane) editorWeight > 0.1f else pageOffset < 0.5f
-                            }
+                            .visible(showDualPane || pageOffset < 0.5f)
                     )
                 }
 
                 if (showViewer) {
                     viewer(
                         Modifier.layoutId("viewer").fillMaxSize()
-                            .visible(!showDualPane && pageOffset > 0.5f)
-                            .focusProperties {
-                                canFocus =
-                                    if (showDualPane) editorWeight < 0.9f else pageOffset > 0.5f
-                            }
+                            .visible(showDualPane || pageOffset > 0.5f)
                     )
                 }
 
