@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.visible
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
@@ -115,15 +116,25 @@ fun ColumnScope.AdaptiveEditorViewer(
                 val showViewer = !showDualPane || editorWeight < 0.9f
 
                 if (showEditor) {
-                    editor(Modifier.layoutId("editor").fillMaxSize().focusProperties {
-                        canFocus = if (showDualPane) editorWeight > 0.1f else pageOffset < 0.5f
-                    })
+                    editor(
+                        Modifier.layoutId("editor").fillMaxSize()
+                            .visible(!showDualPane && pageOffset < 0.5f)
+                            .focusProperties {
+                                canFocus =
+                                    if (showDualPane) editorWeight > 0.1f else pageOffset < 0.5f
+                            }
+                    )
                 }
 
                 if (showViewer) {
-                    viewer(Modifier.layoutId("viewer").fillMaxSize().focusProperties {
-                        canFocus = if (showDualPane) editorWeight < 0.9f else pageOffset > 0.5f
-                    })
+                    viewer(
+                        Modifier.layoutId("viewer").fillMaxSize()
+                            .visible(!showDualPane && pageOffset > 0.5f)
+                            .focusProperties {
+                                canFocus =
+                                    if (showDualPane) editorWeight < 0.9f else pageOffset > 0.5f
+                            }
+                    )
                 }
 
                 if (showDualPane) {
