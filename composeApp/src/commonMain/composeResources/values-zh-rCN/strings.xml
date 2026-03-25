@@ -99,6 +99,7 @@
     <string name="editing_view">编辑视图</string>
     <string name="reading_view">阅读视图</string>
     <string name="line_numbers">行号</string>
+    <string name="syntax_highlighting">语法高亮</string>
     <string name="lint">规范检查</string>
     <string name="lint_description">开启后，将检测 Markdown 和 Todo.txt 的文本格式和语法是否符合规范，错误会被红色波浪线标记。</string>
 

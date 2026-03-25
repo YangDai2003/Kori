@@ -36,6 +36,7 @@ import kori.composeapp.generated.resources.line_numbers
 import kori.composeapp.generated.resources.lint
 import kori.composeapp.generated.resources.lint_description
 import kori.composeapp.generated.resources.reading_view
+import kori.composeapp.generated.resources.syntax_highlighting
 import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.SegmentText
 import org.yangdai.kori.presentation.component.SegmentedControl
@@ -114,7 +115,7 @@ fun EditorPane(mainViewModel: MainViewModel) {
 
         DetailPaneItem(
             modifier = Modifier.padding(bottom = 8.dp),
-            title = "Syntax Highlight", // TODO:  translate
+            title = stringResource(Res.string.syntax_highlighting),
             icon = Icons.AutoMirrored.Outlined.Rtt,
             trailingContent = {
                 Switch(

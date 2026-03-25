@@ -99,6 +99,7 @@ Uygulama, duyarlı bir tasarıma sahiptir ve tüm boyutlardaki cihazlara uygundu
     <string name="editing_view">Düzenleme görünümü</string>
     <string name="reading_view">Okuma görünümü</string>
     <string name="line_numbers">Satır numaraları</string>
+    <string name="syntax_highlighting">Sözdizimi vurgulama</string>
     <string name="lint">Lint</string>
     <string name="lint_description">Etkinleştirildiğinde, Markdown ve Todo.txt formatı ve sözdizimi özelliklerine uyup uymadığı kontrol edilir ve hatalar kırmızı dalgalı çizgilerle işaretlenir.</string>
 

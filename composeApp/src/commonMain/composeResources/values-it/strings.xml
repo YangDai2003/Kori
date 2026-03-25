@@ -99,6 +99,7 @@ Scaricala e provala ora:
     <string name="editing_view">Vista di modifica</string>
     <string name="reading_view">Vista di lettura</string>
     <string name="line_numbers">Numeri di riga</string>
+    <string name="syntax_highlighting">Evidenziazione sintassi</string>
     <string name="lint">Controllo</string>
     <string name="lint_description">Quando abilitato, il formato e la sintassi di Markdown e Todo.txt verranno controllati per verificare la conformità alle specifiche e gli errori saranno segnalati con linee rosse ondulate.</string>
 

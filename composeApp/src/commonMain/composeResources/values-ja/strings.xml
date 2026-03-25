@@ -99,6 +99,7 @@
     <string name="editing_view">編集ビュー</string>
     <string name="reading_view">閲覧ビュー</string>
     <string name="line_numbers">行番号</string>
+    <string name="syntax_highlighting">構文強調表示</string>
     <string name="lint">Lint</string>
     <string name="lint_description">有効にすると、MarkdownおよびTodo.txtの形式と構文が仕様に準拠しているかチェックされ、エラーは赤い波線でマークされます。</string>
 

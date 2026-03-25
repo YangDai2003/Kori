@@ -99,6 +99,7 @@
     <string name="editing_view">편집 보기</string>
     <string name="reading_view">읽기 보기</string>
     <string name="line_numbers">줄 번호</string>
+    <string name="syntax_highlighting">문법 강조</string>
     <string name="lint">Lint</string>
     <string name="lint_description">활성화된 경우, Markdown 및 Todo.txt 형식과 구문이 사양에 부합하는지 확인하고 오류는 빨간색 물결선으로 표시됩니다.</string>
 

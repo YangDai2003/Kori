@@ -99,6 +99,7 @@
     <string name="editing_view">সম্পাদনা ভিউ</string>
     <string name="reading_view">পড়ার ভিউ</string>
     <string name="line_numbers">লাইন নম্বর</string>
+    <string name="syntax_highlighting">সিনট্যাক্স হাইলাইটিং</string>
     <string name="lint">লিন্ট</string>
     <string name="lint_description">সক্ষম করলে, মার্কডাউন এবং টুডু.টেক্সট ফর্ম্যাট এবং সিনট্যাক্স স্পেসিফিকেশনের সাথে মেলে কিনা তা পরীক্ষা করা হবে এবং ত্রুটিগুলো লাল তরঙ্গাকার রেখা দিয়ে চিহ্নিত করা হবে।</string>
 

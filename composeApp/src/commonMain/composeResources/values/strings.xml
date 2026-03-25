@@ -102,6 +102,7 @@ Download and try it now:
     <string name="editing_view">Editing view</string>
     <string name="reading_view">Reading view</string>
     <string name="line_numbers">Line numbers</string>
+    <string name="syntax_highlighting">Syntax highlighting</string>
     <string name="lint">Lint</string>
     <string name="lint_description">When enabled, the Markdown and Todo.txt format and syntax will be checked to see if they meet the specification, and errors will be marked with red wavy lines.</string>
 

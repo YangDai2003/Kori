@@ -99,6 +99,7 @@ Téléchargez et essayez maintenant :
     <string name="editing_view">Vue d\'édition</string>
     <string name="reading_view">Vue de lecture</string>
     <string name="line_numbers">Numéros de ligne</string>
+    <string name="syntax_highlighting">Coloration syntaxique</string>
     <string name="lint">Vérification</string>
     <string name="lint_description">Lorsqu\'elle est activée, la vérification vérifie si le format et la syntaxe Markdown et Todo.txt respectent les spécifications, et les erreurs sont marquées avec des lignes rouges ondulées.</string>
 

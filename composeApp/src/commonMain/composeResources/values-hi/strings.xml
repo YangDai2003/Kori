@@ -99,6 +99,7 @@
     <string name="editing_view">संपादन दृश्य</string>
     <string name="reading_view">पठन दृश्य</string>
     <string name="line_numbers">लाइन नंबर</string>
+    <string name="syntax_highlighting">सिंटैक्स हाइलाइटिंग</string>
     <string name="lint">लिंट</string>
     <string name="lint_description">सक्षम होने पर, मार्कडाउन और टूडू.टेक्स्ट प्रारूप और वाक्यविन्यास की जांच की जाएगी कि क्या वे विनिर्देश के अनुरूप हैं, और त्रुटियों को लाल लहरदार रेखाओं से चिह्नित किया जाएगा।</string>
 

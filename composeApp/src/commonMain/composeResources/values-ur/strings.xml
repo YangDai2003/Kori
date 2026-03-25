@@ -99,6 +99,7 @@
     <string name="editing_view">ترمیم ویو</string>
     <string name="reading_view">پڑھنے کا ویو</string>
     <string name="line_numbers">لکیر نمبر</string>
+    <string name="syntax_highlighting">نحو کی نمایاں کاری</string>
     <string name="lint">لِنٹ</string>
     <string name="lint_description">فعال ہونے پر، مارک ڈاؤن اور ٹوڈو.ٹیکسٹ کے فارمیٹ اور نحو کی جانچ کی جائے گی کہ کیا وہ تفصیل کے مطابق ہیں، اور غلطیوں کو لال لہر دار لکیروں سے نشان زد کیا جائے گا۔</string>
 

@@ -99,6 +99,7 @@ Lade sie jetzt herunter und probiere sie aus:
     <string name="editing_view">Bearbeitungs-Ansicht</string>
     <string name="reading_view">Lese-Ansicht</string>
     <string name="line_numbers">Zeilennummern</string>
+    <string name="syntax_highlighting">Syntaxhervorhebung</string>
     <string name="lint">Lint</string>
     <string name="lint_description">Wenn aktiviert, werden das Markdown und Todo.txt Format und die Syntax auf die Einhaltung der Spezifikation überprüft und Fehler mit roten Wellenlinien markiert.</string>
 

@@ -99,6 +99,7 @@ Tải về và dùng thử ngay:
     <string name="editing_view">Chế độ xem khi chỉnh sửa</string>
     <string name="reading_view">Chế độ xem khi đọc</string>
     <string name="line_numbers">Số dòng</string>
+    <string name="syntax_highlighting">Tô sáng cú pháp</string>
     <string name="lint">Kiểm tra</string>
     <string name="lint_description">Khi được bật, định dạng và cú pháp Markdown và Todo.txt sẽ được kiểm tra để xem có đáp ứng đặc tả hay không, và các lỗi sẽ được đánh dấu bằng các đường gạch sóng đỏ.</string>
 

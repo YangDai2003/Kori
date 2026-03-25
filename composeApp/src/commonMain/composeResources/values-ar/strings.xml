@@ -103,6 +103,7 @@
     <string name="editing_view">عرض التحرير</string>
     <string name="reading_view">عرض القراءة</string>
     <string name="line_numbers">أرقام الأسطر</string>
+    <string name="syntax_highlighting">تمييز الصيغة</string>
     <string name="lint">التدقيق</string>
     <string name="lint_description">عند التمكين، سيتم التحقق من تنسيق ومصطلحات ماركداون وTodo.txt لمعرفة ما إذا كانت تتوافق مع المواصفات، وسيتم وضع علامة على الأخطاء بخطوط حمراء متعرجة.</string>
 

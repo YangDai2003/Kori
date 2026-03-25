@@ -101,6 +101,7 @@ Pobierz i wypróbuj już teraz:
     <string name="editing_view">Widok edycji</string>
     <string name="reading_view">Widok odczytu</string>
     <string name="line_numbers">Numery wierszy</string>
+    <string name="syntax_highlighting">Wyróżnianie składni</string>
     <string name="lint">Sprawdzanie</string>
     <string name="lint_description">Po włączeniu format i składnia Markdown oraz Todo.txt będą sprawdzane pod kątem zgodności ze specyfikacją, a błędy będą oznaczane czerwonymi falistymi liniami.</string>
 

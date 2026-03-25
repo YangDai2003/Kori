@@ -99,6 +99,7 @@ Descargue y pruebe ahora:
     <string name="editing_view">Vista de edición</string>
     <string name="reading_view">Vista de lectura</string>
     <string name="line_numbers">Números de línea</string>
+    <string name="syntax_highlighting">Resaltado de sintaxis</string>
     <string name="lint">Revisión</string>
     <string name="lint_description">Cuando está habilitado, se verificará si el formato y la sintaxis de Markdown y Todo.txt cumplen con la especificación, y los errores se marcarán con líneas onduladas rojas.</string>
 

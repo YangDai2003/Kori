@@ -99,6 +99,7 @@ Baixe e experimente agora:
     <string name="editing_view">Visualização de edição</string>
     <string name="reading_view">Visualização de leitura</string>
     <string name="line_numbers">Números de linha</string>
+    <string name="syntax_highlighting">Realce de sintaxe</string>
     <string name="lint">Lint</string>
     <string name="lint_description">Quando ativado, o formato e a sintaxe do Markdown e Todo.txt serão verificados para ver se estão de acordo com as especificações, e os erros serão marcados com linhas vermelhas onduladas.</string>
 

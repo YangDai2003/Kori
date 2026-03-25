@@ -101,6 +101,7 @@
     <string name="editing_view">Режим редактирования</string>
     <string name="reading_view">Режим чтения</string>
     <string name="line_numbers">Номера строк</string>
+    <string name="syntax_highlighting">Подсветка синтаксиса</string>
     <string name="lint">Проверка</string>
     <string name="lint_description">Когда включено, формат и синтаксис Markdown и Todo.txt будут проверяться на соответствие спецификации, а ошибки будут отмечаться красными волнистыми линиями.</string>
 

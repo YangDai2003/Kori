@@ -99,6 +99,7 @@
     <string name="editing_view">نمای ویرایش</string>
     <string name="reading_view">نمای خواندن</string>
     <string name="line_numbers">شماره خطوط</string>
+    <string name="syntax_highlighting">برجسته‌سازی نحو</string>
     <string name="lint">بررسی</string>
     <string name="lint_description">هنگام فعال بودن، فرمت و نحو مارک‌داون و Todo.txt بررسی می‌شود تا ببیند آیا مطابق مشخصات است یا نه، و خطاها با خطوط موج‌دار قرمز علامت‌گذاری می‌شوند.</string>
 

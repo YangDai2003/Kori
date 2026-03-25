@@ -99,6 +99,7 @@ Unduh dan coba sekarang:
     <string name="editing_view">Tampilan pengeditan</string>
     <string name="reading_view">Tampilan pembacaan</string>
     <string name="line_numbers">Nomor baris</string>
+    <string name="syntax_highlighting">Penyorotan sintaksis</string>
     <string name="lint">Lint</string>
     <string name="lint_description">Saat diaktifkan, format dan sintaks Markdown serta Todo.txt akan diperiksa untuk memastikan sesuai spesifikasi, dan kesalahan akan ditandai dengan garis bergelombang merah.</string>
 
