@@ -12,4 +12,7 @@
     <string name="new_markdown">Yeni Markdown</string>
     <string name="new_todo">Yeni Todo.txt</string>
     <string name="new_drawing">Yeni Çizim</string>
+    <string name="widget_config_title">Widget Yapılandırması</string>
+    <string name="widget_font_size">Yazı Tipi Boyutu</string>
+    <string name="widget_max_lines">Not başına maks satır</string>
 </resources>

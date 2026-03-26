@@ -12,4 +12,7 @@
     <string name="new_markdown">新增 Markdown</string>
     <string name="new_todo">新增 Todo.txt</string>
     <string name="new_drawing">新增繪圖</string>
+    <string name="widget_config_title">小工具設定</string>
+    <string name="widget_font_size">字型大小</string>
+    <string name="widget_max_lines">每則筆記最大行數</string>
 </resources>

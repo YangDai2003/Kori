@@ -12,4 +12,7 @@
     <string name="new_markdown">নতুন মার্কডাউন</string>
     <string name="new_todo">নতুন টুডু.টেক্সট</string>
     <string name="new_drawing">নতুন অঙ্কন</string>
+    <string name="widget_config_title">উইজেট কনফিগারেশন</string>
+    <string name="widget_font_size">ফন্টের আকার</string>
+    <string name="widget_max_lines">প্রতি নোটে সর্বোচ্চ লাইন</string>
 </resources>

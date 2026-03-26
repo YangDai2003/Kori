@@ -12,4 +12,7 @@
     <string name="new_markdown">새 마크다운</string>
     <string name="new_todo">새 Todo.txt</string>
     <string name="new_drawing">새 그리기</string>
+    <string name="widget_config_title">위젯 설정</string>
+    <string name="widget_font_size">글꼴 크기</string>
+    <string name="widget_max_lines">노트당 최대 줄 수</string>
 </resources>

@@ -12,4 +12,7 @@
     <string name="new_markdown">Nuevo Markdown</string>
     <string name="new_todo">Nuevo Todo.txt</string>
     <string name="new_drawing">Nuevo dibujo</string>
+    <string name="widget_config_title">Configuración del widget</string>
+    <string name="widget_font_size">Tamaño de fuente</string>
+    <string name="widget_max_lines">Máx líneas por nota</string>
 </resources>

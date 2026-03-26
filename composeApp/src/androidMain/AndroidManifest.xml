@@ -38,7 +38,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
-            <!-- 接收文本, 文件, 链接, 网页分享 -->
+            <!-- 接收文本，文件，链接，网页分享 -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
 
@@ -73,6 +73,15 @@
 
                 <data android:scheme="kori" />
                 <data android:host="screen" />
+            </intent-filter>
+        </activity>
+
+        <!-- 小部件配置 Activity -->
+        <activity
+            android:name=".presentation.glance.WidgetConfigActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
 

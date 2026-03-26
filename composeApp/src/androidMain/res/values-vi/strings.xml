@@ -12,4 +12,7 @@
     <string name="new_markdown">Markdown mới</string>
     <string name="new_todo">Todo.txt mới</string>
     <string name="new_drawing">Bản vẽ mới</string>
+    <string name="widget_config_title">Cấu hình tiện ích</string>
+    <string name="widget_font_size">Kích thước phông chữ</string>
+    <string name="widget_max_lines">Số dòng tối đa mỗi ghi chú</string>
 </resources>

@@ -12,4 +12,7 @@
     <string name="new_markdown">Nowy Markdown</string>
     <string name="new_todo">Nowy Todo.txt</string>
     <string name="new_drawing">Nowy rysunek</string>
+    <string name="widget_config_title">Konfiguracja widżetu</string>
+    <string name="widget_font_size">Rozmiar czcionki</string>
+    <string name="widget_max_lines">Maks wierszy na notatkę</string>
 </resources>

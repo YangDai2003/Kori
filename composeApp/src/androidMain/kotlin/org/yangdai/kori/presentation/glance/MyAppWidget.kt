@@ -66,10 +66,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.yangdai.kori.MainActivity
 import org.yangdai.kori.R
+import org.yangdai.kori.data.dataStore
 import org.yangdai.kori.data.getDatabaseBuilder
 import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.data.local.entity.NoteType
 import org.yangdai.kori.data.local.getRoomDatabase
+import org.yangdai.kori.data.repository.DataStoreRepositoryImpl
 import org.yangdai.kori.data.repository.NoteRepositoryImpl
 import org.yangdai.kori.presentation.component.note.markdown.Properties.splitPropertiesAndContent
 import java.io.File
@@ -89,13 +91,17 @@ class MyAppWidget : GlanceAppWidget() {
     override val sizeMode = SizeMode.Responsive(setOf(EXTRA_SMALL, SMALL, MEDIUM, LARGE))
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-
         val database = getRoomDatabase(getDatabaseBuilder(context.applicationContext))
         val noteRepository = NoteRepositoryImpl(database.noteDao())
+        val dataStoreRepository = DataStoreRepositoryImpl(context.dataStore)
 
         provideContent {
             val notes by noteRepository.getAllNotes().collectAsState(initial = emptyList())
-            Content(notes)
+            val fontSize by dataStoreRepository.intFlow(WIDGET_FONT_SIZE, 14)
+                .collectAsState(initial = 14)
+            val maxLines by dataStoreRepository.intFlow(WIDGET_MAX_LINES, 3)
+                .collectAsState(initial = 3)
+            Content(notes, WidgetConfig(fontSize, maxLines))
         }
     }
 
@@ -118,12 +124,12 @@ class MyAppWidget : GlanceAppWidget() {
                     content = "This is a third sample note content with properties."
                 )
             )
-            Content(notes)
+            Content(notes, WidgetConfig(fontSize = 14, maxLines = 3))
         }
     }
 
     @Composable
-    private fun Content(notes: List<NoteEntity>) {
+    private fun Content(notes: List<NoteEntity>, config: WidgetConfig = WidgetConfig()) {
         val size = LocalSize.current
         GlanceTheme {
             if (size.height >= LARGE.height) {
@@ -197,11 +203,11 @@ class MyAppWidget : GlanceAppWidget() {
                         }
                     }
                 ) {
-                    NoteList(notes)
+                    NoteList(notes, config)
                 }
             } else if (size.height >= MEDIUM.height) {
                 Scaffold {
-                    NoteList(notes)
+                    NoteList(notes, config)
                     Box(
                         modifier = GlanceModifier.fillMaxSize().padding(bottom = 12.dp),
                         contentAlignment = Alignment.BottomEnd
@@ -285,7 +291,7 @@ class MyAppWidget : GlanceAppWidget() {
     }
 
     @Composable
-    private fun NoteList(notes: List<NoteEntity>) {
+    private fun NoteList(notes: List<NoteEntity>, config: WidgetConfig) {
         val size = LocalSize.current
         val spacerHeight =
             if (size.width >= MEDIUM.width && size.height < LARGE.height) 12.dp else 0.dp
@@ -313,7 +319,7 @@ class MyAppWidget : GlanceAppWidget() {
                                 text = it.title,
                                 style = TextStyle(
                                     color = GlanceTheme.colors.onSecondaryContainer,
-                                    fontSize = 14.sp,
+                                    fontSize = config.fontSize.sp,
                                     fontWeight = FontWeight.Medium,
                                 ),
                                 maxLines = 1
@@ -353,9 +359,9 @@ class MyAppWidget : GlanceAppWidget() {
                                 text = it.content.splitPropertiesAndContent().second,
                                 style = TextStyle(
                                     color = GlanceTheme.colors.onSurface,
-                                    fontSize = 13.sp
+                                    fontSize = config.fontSize.sp
                                 ),
-                                maxLines = 3
+                                maxLines = config.maxLines
                             )
                         }
                     }
@@ -392,3 +398,9 @@ private fun GlanceModifier.appWidgetInnerCornerRadius(widgetPadding: Dp): Glance
     if (widgetBackgroundRadiusDpValue < widgetPadding.value) return this
     return this.cornerRadius(Dp(widgetBackgroundRadiusDpValue - widgetPadding.value))
 }
+
+// Widget 配置数据类
+data class WidgetConfig(
+    val fontSize: Int = 14,
+    val maxLines: Int = 3
+)
