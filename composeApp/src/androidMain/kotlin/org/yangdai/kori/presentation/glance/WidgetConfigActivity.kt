@@ -32,7 +32,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -60,7 +59,7 @@ const val WIDGET_MAX_LINES = "widget_max_lines"
 class WidgetConfigActivity : ComponentActivity() {
 
     private var appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID
-    private val dataStoreRepository = DataStoreRepositoryImpl(dataStore)
+    private val dataStoreRepository by lazy { DataStoreRepositoryImpl(dataStore) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -71,12 +70,10 @@ class WidgetConfigActivity : ComponentActivity() {
         setResult(RESULT_CANCELED)
         setContent {
             KoriTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    WidgetConfigScreen(
-                        onNavigateBack = { finish() },
-                        onSaveConfig = { fontSize, maxLines -> onSave(fontSize, maxLines) }
-                    )
-                }
+                WidgetConfigScreen(
+                    onNavigateBack = { finish() },
+                    onSaveConfig = { fontSize, maxLines -> onSave(fontSize, maxLines) }
+                )
             }
         }
         // 获取小部件 ID
