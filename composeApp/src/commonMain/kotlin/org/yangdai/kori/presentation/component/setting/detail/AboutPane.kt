@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BugReport
+import androidx.compose.material.icons.outlined.Coffee
 import androidx.compose.material.icons.outlined.IosShare
 import androidx.compose.material.icons.outlined.PrivacyTip
 import androidx.compose.material.icons.outlined.Share
@@ -129,50 +130,32 @@ fun AboutPane() {
         Spacer(modifier = Modifier.height(16.dp))
 
         ListItem(
-            modifier = Modifier
-                .padding(bottom = 8.dp)
-                .clip(CircleShape)
-                .clickable {
-                    uriHandler.openUri("https://github.com/YangDai2003/Kori/issues")
-                },
+            modifier = Modifier.padding(bottom = 8.dp).clip(CircleShape),
+            onClick = { uriHandler.openUri("https://github.com/YangDai2003/Kori/issues") },
             leadingContent = {
                 Icon(imageVector = Icons.Outlined.BugReport, contentDescription = null)
             },
-            headlineContent = {
-                Text(text = stringResource(Res.string.report_a_bug_or_request_a_feature))
-            })
+            content = { Text(stringResource(Res.string.report_a_bug_or_request_a_feature)) })
 
         ListItem(
-            modifier = Modifier
-                .padding(bottom = 8.dp)
-                .clip(CircleShape)
-                .clickable {
-                    uriHandler.openUri("https://github.com/YangDai2003/Kori/blob/master/Guide.md")
-                },
+            modifier = Modifier.padding(bottom = 8.dp).clip(CircleShape),
+            onClick = { uriHandler.openUri("https://github.com/YangDai2003/Kori/blob/master/Guide.md") },
             leadingContent = {
                 Icon(imageVector = Icons.Outlined.TipsAndUpdates, contentDescription = null)
             },
-            headlineContent = {
-                Text(text = stringResource(Res.string.guide))
-            })
+            content = { Text(stringResource(Res.string.guide)) })
+
+        ListItem(
+            modifier = Modifier.padding(bottom = 8.dp).clip(CircleShape),
+            onClick = { uriHandler.openUri("https://github.com/YangDai2003/Kori/blob/master/PRIVACY_POLICY.md") },
+            leadingContent = {
+                Icon(imageVector = Icons.Outlined.PrivacyTip, contentDescription = null)
+            },
+            content = { Text(stringResource(Res.string.privacy_policy)) })
 
         ListItem(
             modifier = Modifier
                 .padding(bottom = 8.dp)
-                .clip(CircleShape)
-                .clickable {
-                    uriHandler.openUri("https://github.com/YangDai2003/Kori/blob/master/PRIVACY_POLICY.md")
-                },
-            leadingContent = {
-                Icon(imageVector = Icons.Outlined.PrivacyTip, contentDescription = null)
-            },
-            headlineContent = {
-                Text(text = stringResource(Res.string.privacy_policy))
-            })
-
-        ListItem(
-            modifier = Modifier
-                .padding(bottom = 16.dp)
                 .clip(CircleShape)
                 .clickToShareText(stringResource(Res.string.shareContent)),
             leadingContent = {
@@ -182,9 +165,15 @@ fun AboutPane() {
                     contentDescription = null
                 )
             },
-            headlineContent = {
-                Text(text = stringResource(Res.string.share_this_app))
-            })
+            headlineContent = { Text(stringResource(Res.string.share_this_app)) })
+
+        ListItem(
+            modifier = Modifier.padding(bottom = 8.dp).clip(CircleShape),
+            onClick = { uriHandler.openUri("https://ko-fi.com/yangs_codehub") },
+            leadingContent = {
+                Icon(imageVector = Icons.Outlined.Coffee, contentDescription = null)
+            },
+            content = { Text("Buy a Coffee for the developer") })
     }
 
     if (showConfetti) {
