@@ -53,6 +53,8 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
+            implementation("androidx.pdf:pdf-document-service:1.0.0-alpha18")
+            implementation("androidx.pdf:pdf-compose:1.0.0-alpha18")
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.appcompat)
             implementation(libs.androidx.biometric.compose)
@@ -91,6 +93,7 @@ kotlin {
 
             implementation(libs.coil.compose)
             implementation(libs.koog.agents)
+            implementation("ai.koog:koog-agents-additions:1.1.1-beta")
             implementation(libs.kotlinx.datetime)
         }
         commonTest.dependencies {
@@ -121,6 +124,7 @@ kotlin {
 android {
     namespace = "org.yangdai.kori"
     compileSdk = 36
+    compileSdkExtension = 19
 
     defaultConfig {
         applicationId = "org.yangdai.kori"

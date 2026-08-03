@@ -85,6 +85,7 @@ import org.yangdai.kori.presentation.component.note.todo.TodoFormat.priorityColo
 import org.yangdai.kori.presentation.component.note.todo.TodoFormat.projectRegex
 import org.yangdai.kori.presentation.component.note.todo.TodoFormat.projectStyle
 import org.yangdai.kori.presentation.component.note.toggleLineStart
+import kotlin.time.Duration.Companion.milliseconds
 
 @Stable
 data class TodoItem(
@@ -226,7 +227,7 @@ fun TodoViewer(textFieldState: TextFieldState, modifier: Modifier) {
     val activeMetadata = remember { mutableStateListOf<String>() }
 
     LaunchedEffect(textFieldState) {
-        snapshotFlow { textFieldState.text }.debounce(200L)
+        snapshotFlow { textFieldState.text }.debounce(200L.milliseconds)
             .mapLatest { text ->
                 val (undone, done) = processTodo(text)
                 val (contexts, projects, metadata) = extractFilters(text)
@@ -574,7 +575,7 @@ private fun SwipeableCard(
 @Composable
 private fun TodoCard(todoItem: TodoItem, toggleDoneState: (TodoItem) -> Unit) {
     val priorityColor = todoItem.priority?.let { c ->
-        priorityColors[(c - 'A').coerceIn(priorityColors.indices)]
+        Color(priorityColors[(c - 'A').coerceIn(priorityColors.indices)])
     } ?: MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f) // 无优先级时给一个中性色
 
     // 根据是否完成来确定UI样式

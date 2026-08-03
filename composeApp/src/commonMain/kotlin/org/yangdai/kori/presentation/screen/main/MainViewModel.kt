@@ -63,6 +63,7 @@ import org.yangdai.kori.presentation.util.SampleTodoNote
 import kotlin.io.encoding.Base64
 import kotlin.math.round
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -447,14 +448,14 @@ class MainViewModel(
         dataActionJob?.cancel()
         dataActionJob = viewModelScope.launch(Dispatchers.IO) {
             _dataActionState.value = DataActionState(infinite = true, progress = 0f)
-            delay(300L) // 等待进度弹窗出现
+            delay(300L.milliseconds) // 等待进度弹窗出现
             runCatching {
                 snapshotRepository.deleteAllSnapshots()
                 noteRepository.deleteAllNotes()
                 folderRepository.deleteAllFolders()
             }.onSuccess {
                 _dataActionState.update { it.copy(progress = 1f) }
-                delay(1500L)
+                delay(1500L.milliseconds)
                 _dataActionState.value = DataActionState()
             }.onFailure { throwable ->
                 _dataActionState.update { it.copy(message = throwable.message ?: "Error :(") }
@@ -467,7 +468,7 @@ class MainViewModel(
         dataActionJob?.cancel()
         dataActionJob = viewModelScope.launch(Dispatchers.IO) {
             _dataActionState.value = DataActionState(progress = 0f)
-            delay(300L)
+            delay(300L.milliseconds)
             runCatching {
                 files.forEachIndexed { index, it ->
                     val modified = it.lastModified().toString()
@@ -485,7 +486,7 @@ class MainViewModel(
                 }
                 _dataActionState.update { it.copy(progress = 1f) }
             }.onSuccess {
-                delay(3000L)
+                delay(3000L.milliseconds)
                 _dataActionState.value = DataActionState()
             }.onFailure { throwable ->
                 _dataActionState.update { it.copy(message = throwable.message ?: "Error :(") }
@@ -497,7 +498,7 @@ class MainViewModel(
         dataActionJob?.cancel()
         dataActionJob = viewModelScope.launch(Dispatchers.IO) {
             _dataActionState.value = DataActionState(infinite = true, progress = 0f)
-            delay(300L)
+            delay(300L.milliseconds)
             runCatching {
                 val notes = async {
                     (noteRepository.getAllNotes().firstOrNull() ?: emptyList())
@@ -517,12 +518,12 @@ class MainViewModel(
                 val backupData = BackupData(notes.await(), folders.await())
                 val jsonString = Json.encodeToString(backupData)
                 _dataActionState.update { it.copy(progress = 1f) }
-                delay(300L)
+                delay(300L.milliseconds)
                 withContext(Dispatchers.Main) {
                     onCreated(jsonString)
                 }
             }.onSuccess {
-                delay(1500L)
+                delay(1500L.milliseconds)
                 _dataActionState.value = DataActionState()
             }.onFailure { throwable ->
                 _dataActionState.update { it.copy(message = throwable.message ?: "Error :(") }
@@ -534,7 +535,7 @@ class MainViewModel(
         dataActionJob?.cancel()
         dataActionJob = viewModelScope.launch(Dispatchers.IO) {
             _dataActionState.value = DataActionState(infinite = true, progress = 0f)
-            delay(300L)
+            delay(300L.milliseconds)
             runCatching {
                 val backupData = Json.decodeFromString<BackupData>(json)
                 folderRepository.insertFolders(
@@ -559,7 +560,7 @@ class MainViewModel(
                 )
                 _dataActionState.update { it.copy(progress = 1f) }
             }.onSuccess {
-                delay(1500L)
+                delay(1500L.milliseconds)
                 _dataActionState.value = DataActionState()
             }.onFailure { throwable ->
                 _dataActionState.update { it.copy(message = throwable.message ?: "Error :(") }
@@ -572,7 +573,7 @@ class MainViewModel(
         dataActionJob?.cancel()
         dataActionJob = viewModelScope.launch(Dispatchers.IO) {
             _dataActionState.value = DataActionState(infinite = true, progress = 0f)
-            delay(300L)
+            delay(300L.milliseconds)
             runCatching {
                 val decryptedJson = decryptBackupDataWithCompatibility(json)
                 val backupData = Json.decodeFromString<OpenNoteBackupData>(decryptedJson)
@@ -602,7 +603,7 @@ class MainViewModel(
                 noteRepository.insertNotes(notes)
                 _dataActionState.update { it.copy(progress = 1f) }
             }.onSuccess {
-                delay(1500L)
+                delay(1500L.milliseconds)
                 _dataActionState.value = DataActionState()
             }.onFailure { throwable ->
                 _dataActionState.update { it.copy(message = throwable.message ?: "Error :(") }

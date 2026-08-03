@@ -78,6 +78,7 @@ import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.pr
 import org.yangdai.kori.presentation.util.clickToShareFile
 import org.yangdai.kori.presentation.util.clickToShareText
 import org.yangdai.kori.presentation.util.clipEntryOf
+import kotlin.time.Duration.Companion.milliseconds
 
 @Preview
 @Composable
@@ -123,7 +124,7 @@ private fun DialogWithoutButtons(
     val onDismiss = {
         scope.launch {
             showDialog = false
-            delay(300L)
+            delay(300L.milliseconds)
             onDismissRequest()
         }
     }

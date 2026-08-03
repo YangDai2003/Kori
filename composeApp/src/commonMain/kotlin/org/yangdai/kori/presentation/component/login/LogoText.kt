@@ -20,6 +20,7 @@ import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.app_name
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun LogoText() {
@@ -45,7 +46,7 @@ fun LogoText() {
                     easing = CubicBezierEasing(0.3f, 0f, 0.4f, 1f),
                 )
             )
-            delay(delay)
+            delay(delay.milliseconds)
         }
     }
 }

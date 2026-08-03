@@ -1,6 +1,7 @@
 package knet.ai
 
 import ai.koog.agents.core.agent.AIAgent
+import ai.koog.http.client.ktor.KtorKoogHttpClient
 import ai.koog.prompt.executor.clients.LLMClient
 import ai.koog.prompt.executor.clients.anthropic.AnthropicClientSettings
 import ai.koog.prompt.executor.clients.anthropic.AnthropicLLMClient
@@ -228,6 +229,8 @@ object AI {
         LMStudio.id to LMStudio
     )
 
+    val factory = KtorKoogHttpClient.Factory()
+
     private fun getClientAndModel(
         lLMProvider: LLMProvider,
         model: String,
@@ -237,42 +240,42 @@ object AI {
         LLMProvider.Google -> {
             val settings =
                 if (baseUrl.isNotBlank()) GoogleClientSettings(baseUrl = baseUrl) else GoogleClientSettings()
-            GoogleLLMClient(apiKey, settings) to Google.getModel(model)
+            GoogleLLMClient(apiKey, settings, factory) to Google.getModel(model)
         }
 
         LLMProvider.OpenAI -> {
             val settings =
                 if (baseUrl.isNotBlank()) OpenAIClientSettings(baseUrl = baseUrl) else OpenAIClientSettings()
-            OpenAILLMClient(apiKey, settings) to OpenAI.getModel(model)
+            OpenAILLMClient(apiKey, settings, factory) to OpenAI.getModel(model)
         }
 
         LLMProvider.Anthropic -> {
             val settings =
                 if (baseUrl.isNotBlank()) AnthropicClientSettings(baseUrl = baseUrl) else AnthropicClientSettings()
-            AnthropicLLMClient(apiKey, settings) to Anthropic.getModel(model)
+            AnthropicLLMClient(apiKey, settings, factory) to Anthropic.getModel(model)
         }
 
         LLMProvider.DeepSeek -> {
             val settings =
                 if (baseUrl.isNotBlank()) DeepSeekClientSettings(baseUrl = baseUrl) else DeepSeekClientSettings()
-            DeepSeekLLMClient(apiKey, settings) to DeepSeek.getModel(model)
+            DeepSeekLLMClient(apiKey, settings, factory) to DeepSeek.getModel(model)
         }
 
         LLMProvider.Alibaba -> {
             val settings =
                 if (baseUrl.isNotBlank()) DashscopeClientSettings(baseUrl = baseUrl) else DashscopeClientSettings()
-            DashscopeLLMClient(apiKey, settings) to Alibaba.getModel(model)
+            DashscopeLLMClient(apiKey, settings, factory) to Alibaba.getModel(model)
         }
 
         LLMProvider.MistralAI -> {
             val settings =
                 if (baseUrl.isNotBlank()) MistralAIClientSettings(baseUrl = baseUrl) else MistralAIClientSettings()
-            MistralAILLMClient(apiKey, settings) to Mistral.getModel(model)
+            MistralAILLMClient(apiKey, settings, factory) to Mistral.getModel(model)
         }
 
         LLMProvider.Ollama -> {
             val client =
-                if (baseUrl.isNotBlank()) OllamaClient(baseUrl = baseUrl) else OllamaClient()
+                if (baseUrl.isNotBlank()) OllamaClient(factory, baseUrl) else OllamaClient(factory)
             client to Ollama.getModel(model)
         }
 
@@ -288,7 +291,7 @@ object AI {
                 ),
                 contextLength = 4096L
             )
-            OpenAILLMClient(apiKey, settings) to llModel
+            OpenAILLMClient(apiKey, settings, factory) to llModel
         }
 
         else -> {

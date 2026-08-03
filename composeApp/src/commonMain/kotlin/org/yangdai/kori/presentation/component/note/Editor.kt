@@ -65,6 +65,7 @@ import org.yangdai.kori.presentation.component.VerticalScrollbar
 import org.yangdai.kori.presentation.util.rememberIsScreenWidthExpanded
 import kotlin.math.PI
 import kotlin.math.sin
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @Composable
@@ -207,7 +208,7 @@ fun Editor(
     val lintErrors by produceState(emptyList(), lint) {
         if (lint != null) {
             snapshotFlow { textFieldState.text.toString() }
-                .debounce(300L)
+                .debounce(300L.milliseconds)
                 .mapLatest { lint.validate(it) }
                 .flowOn(Dispatchers.Default)
                 .collect { value = it }

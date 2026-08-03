@@ -69,6 +69,7 @@ import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.util.ExternalUriHandler
 import java.awt.Desktop
 import java.awt.Dimension
+import kotlin.time.Duration.Companion.milliseconds
 
 fun main() {
     System.setProperty("compose.interop.blending", "true")
@@ -147,7 +148,7 @@ private fun ApplicationWindow(
     val isUnlocked by AppLockManager.isUnlocked.collectAsStateWithLifecycle()
     val isSystemInDarkTheme by produceState(initialValue = currentSystemTheme == org.jetbrains.skiko.SystemTheme.DARK) {
         while (true) {
-            delay(1000L)
+            delay(1000L.milliseconds)
             value = currentSystemTheme == org.jetbrains.skiko.SystemTheme.DARK
         }
     }

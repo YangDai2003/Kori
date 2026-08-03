@@ -55,6 +55,7 @@ import platform.WebKit.WKWebView
 import platform.WebKit.WKWebViewConfiguration
 import platform.WebKit.javaScriptEnabled
 import platform.darwin.NSObject
+import kotlin.time.Duration.Companion.milliseconds
 
 internal const val IOS_CUSTOM_SCHEME = "note-files"
 
@@ -138,7 +139,7 @@ actual fun MarkdownViewer(
         val currentWebView = webView ?: return@LaunchedEffect
         if (navigationDelegate.pageLoaded.value) {
             snapshotFlow { textFieldState.text }
-                .debounce(200L)
+                .debounce(200L.milliseconds)
                 .mapLatest { markdownText ->
                     // Escape HTML content for safe injection into a JavaScript template literal
                     processMarkdown(markdownText.toString()).escaped()

@@ -47,6 +47,7 @@ import org.yangdai.kori.presentation.component.note.markdown.MarkdownDefaults.pr
 import org.yangdai.kori.presentation.theme.AppConfig
 import org.yangdai.kori.presentation.util.toHexColor
 import java.io.File
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @SuppressLint("SetJavaScriptEnabled")
@@ -139,7 +140,7 @@ actual fun MarkdownViewer(
         val currentClient = wvClient ?: return@LaunchedEffect
         if (currentClient.pageLoaded.value) {
             snapshotFlow { textFieldState.text }
-                .debounce(200L)
+                .debounce(200L.milliseconds)
                 .mapLatest { markdownText ->
                     // Escape HTML content for safe injection into a JavaScript template literal
                     processMarkdown(markdownText.toString()).escaped()

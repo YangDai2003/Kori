@@ -5,9 +5,7 @@ import androidx.compose.runtime.Stable
 
 @Stable
 object DeepSeek {
-    val deepSeekModelMap = mapOf(
-        DeepSeekModels.DeepSeekChat.id to DeepSeekModels.DeepSeekChat
-    )
+    val deepSeekModelMap = DeepSeekModels.models.associateBy { it.id }
 
     fun getModel(id: String) = deepSeekModelMap[id] ?: deepSeekModelMap.values.first()
 }

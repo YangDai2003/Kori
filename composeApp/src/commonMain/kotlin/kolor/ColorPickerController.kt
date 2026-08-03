@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
+import kotlin.time.Duration.Companion.milliseconds
 
 /** Creates and remembers a [ColorPickerController] on the current composer. */
 @Composable
@@ -133,7 +134,7 @@ class ColorPickerController
 
     @OptIn(FlowPreview::class)
     fun getColorFlow(debounceDuration: Long = 0): Flow<ColorEnvelope> =
-        _colorFlow.filterNotNull().debounce(this.debounceDuration ?: debounceDuration)
+        _colorFlow.filterNotNull().debounce((this.debounceDuration ?: debounceDuration).milliseconds)
 
     // Function that takes a coordinate and obtains a color
     // Also returns an adjusted coordinate if appropriate

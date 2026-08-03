@@ -39,7 +39,7 @@ fun buildTodoAnnotatedString(text: String) =
                     val idx = priMatch.groupValues[1][0] - 'A'
                     if (idx in 0..25) {
                         addStyle(
-                            TodoFormat.priorityStyle.copy(TodoFormat.priorityColors[idx]),
+                            TodoFormat.priorityStyle.copy(Color(TodoFormat.priorityColors[idx])),
                             lineStart,
                             lineStart + priEnd
                         )

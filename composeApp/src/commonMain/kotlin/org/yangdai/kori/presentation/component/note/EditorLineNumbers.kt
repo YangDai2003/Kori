@@ -20,6 +20,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlin.math.max
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun EditorLineNumbers(
@@ -47,7 +48,7 @@ fun EditorLineNumbers(
         if (requiredWidth > value) {
             value = requiredWidth
         } else {
-            delay(200)
+            delay(200.milliseconds)
             value = requiredWidth
         }
     }

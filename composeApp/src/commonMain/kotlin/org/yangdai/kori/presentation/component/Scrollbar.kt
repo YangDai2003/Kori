@@ -39,6 +39,7 @@ import androidx.compose.ui.util.fastRoundToInt
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.max
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 expect fun VerticalScrollbar(modifier: Modifier, state: LazyGridState)
@@ -89,7 +90,7 @@ fun Scrollbar(
         if (state.isScrollInProgress || isDragged) {
             isVisible = true
         } else {
-            delay(hideDelayMillis)
+            delay(hideDelayMillis.milliseconds)
             isVisible = false
         }
     }

@@ -96,6 +96,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.yangdai.kori.presentation.component.login.brandColor1
 import org.yangdai.kori.presentation.component.login.brandColor2
 import org.yangdai.kori.presentation.component.login.brandColor3
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -301,7 +302,7 @@ fun AIAssist(
                 }
             )
             LaunchedEffect(Unit) {
-                delay(300L)
+                delay(300L.milliseconds)
                 focusRequester.requestFocus()
             }
         }

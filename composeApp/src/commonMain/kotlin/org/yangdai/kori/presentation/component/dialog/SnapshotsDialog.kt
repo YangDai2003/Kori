@@ -55,6 +55,7 @@ import org.yangdai.kori.data.local.entity.SnapshotEntity
 import org.yangdai.kori.isDesktop
 import org.yangdai.kori.presentation.component.note.DiffText
 import org.yangdai.kori.presentation.util.formatNumber
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
 
 @Composable
@@ -225,7 +226,7 @@ private fun SnapshotsDialogContent(
             textAlign = TextAlign.Center
         )
         LaunchedEffect(Unit) {
-            delay(1000L)
+            delay(1000L.milliseconds)
             onDismissRequest()
         }
     }

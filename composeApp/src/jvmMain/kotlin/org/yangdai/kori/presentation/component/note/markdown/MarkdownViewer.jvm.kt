@@ -40,6 +40,7 @@ import java.awt.Desktop
 import java.awt.event.MouseEvent
 import java.awt.event.MouseWheelEvent
 import java.net.URI
+import kotlin.time.Duration.Companion.milliseconds
 
 val jfxPanel = InteropPanel()
 
@@ -126,7 +127,7 @@ actual fun MarkdownViewer(
                 if (newState === Worker.State.SUCCEEDED) {
                     scope.launch {
                         snapshotFlow { textFieldState.text }
-                            .debounce(200L)
+                            .debounce(200L.milliseconds)
                             .mapLatest { markdownText ->
                                 // Escape HTML content for safe injection into a JavaScript template literal
                                 processMarkdown(markdownText.toString()).escaped()

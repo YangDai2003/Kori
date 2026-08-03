@@ -1,5 +1,6 @@
 package org.yangdai.kori.presentation.component.note.todo
 
+import androidx.collection.longListOf
 import androidx.compose.foundation.text.input.OutputTransformation
 import androidx.compose.foundation.text.input.TextFieldBuffer
 import androidx.compose.runtime.Immutable
@@ -8,7 +9,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
-import kotlinx.collections.immutable.persistentListOf
 
 class TodoTransformation : OutputTransformation {
     override fun TextFieldBuffer.transformOutput() {
@@ -30,7 +30,7 @@ class TodoTransformation : OutputTransformation {
                     val idx = priMatch.groupValues[1][0] - 'A'
                     if (idx in 0..25) {
                         addStyle(
-                            TodoFormat.priorityStyle.copy(color = TodoFormat.priorityColors[idx]),
+                            TodoFormat.priorityStyle.copy(color = Color(TodoFormat.priorityColors[idx])),
                             lineStart,
                             lineStart + priEnd
                         )
@@ -78,33 +78,33 @@ class TodoTransformation : OutputTransformation {
 @Immutable
 object TodoFormat {
     // A-Z颜色表
-    val priorityColors = persistentListOf(
-        Color(0xFFD32F2F), // A 红
-        Color(0xFFF57C00), // B 橙
-        Color(0xFFFBC02D), // C 黄
-        Color(0xFF388E3C), // D 绿
-        Color(0xFF1976D2), // E 蓝
-        Color(0xFF7B1FA2), // F 紫
-        Color(0xFF0097A7), // G 青
-        Color(0xFF5D4037), // H 棕
-        Color(0xFF0288D1), // I 靛
-        Color(0xFF388E3C), // J 绿
-        Color(0xFF8D6E63), // K 浅棕
-        Color(0xFF455A64), // L 蓝灰
-        Color(0xFFAFB42B), // M 橄榄
-        Color(0xFFEC407A), // N 粉
-        Color(0xFF00ACC1), // O 青
-        Color(0xFF43A047), // P 绿
-        Color(0xFF6D4C41), // Q 棕
-        Color(0xFF7E57C2), // R 紫
-        Color(0xFF26A69A), // S 蓝绿
-        Color(0xFF9E9D24), // T 黄绿
-        Color(0xFF8E24AA), // U 紫
-        Color(0xFF3949AB), // V 蓝
-        Color(0xFFD84315), // W 橙红
-        Color(0xFF00897B), // X 蓝绿
-        Color(0xFF6D4C41), // Y 棕
-        Color(0xFFBDBDBD)  // Z 灰
+    val priorityColors = longListOf(
+        0xFFD32F2F, // A 红
+        0xFFF57C00, // B 橙
+        0xFFFBC02D, // C 黄
+        0xFF388E3C, // D 绿
+        0xFF1976D2, // E 蓝
+        0xFF7B1FA2, // F 紫
+        0xFF0097A7, // G 青
+        0xFF5D4037, // H 棕
+        0xFF0288D1, // I 靛
+        0xFF388E3C, // J 绿
+        0xFF8D6E63, // K 浅棕
+        0xFF455A64, // L 蓝灰
+        0xFFAFB42B, // M 橄榄
+        0xFFEC407A, // N 粉
+        0xFF00ACC1, // O 青
+        0xFF43A047, // P 绿
+        0xFF6D4C41, // Q 棕
+        0xFF7E57C2, // R 紫
+        0xFF26A69A, // S 蓝绿
+        0xFF9E9D24, // T 黄绿
+        0xFF8E24AA, // U 紫
+        0xFF3949AB, // V 蓝
+        0xFFD84315, // W 橙红
+        0xFF00897B, // X 蓝绿
+        0xFF6D4C41, // Y 棕
+        0xFFBDBDBD  // Z 灰
     )
 
     // 优先级样式A-Z

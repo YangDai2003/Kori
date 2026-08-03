@@ -124,7 +124,7 @@ fun ImageBitmap.toUIImage(): UIImage? {
     val height = this.height
     val bytes = this.asSkiaBitmap().readPixels() ?: return null
     // BGRA to RGBA
-    for (i in 0 until bytes.size step 4) {
+    for (i in bytes.indices step 4) {
         val b = bytes[i]
         val g = bytes[i + 1]
         val r = bytes[i + 2]
