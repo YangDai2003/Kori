@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.VerticalAlignTop
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -39,7 +38,6 @@ import org.yangdai.kori.data.local.entity.NoteEntity
 import org.yangdai.kori.presentation.component.main.card.NoteItem
 import org.yangdai.kori.presentation.component.main.card.NoteItemProperties
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun Page(
     notes: List<NoteEntity>,

@@ -45,8 +45,6 @@ import androidx.compose.material.icons.outlined.Pinch
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -260,7 +258,7 @@ private fun Random.nextFloat(from: Float, until: Float): Float {
     return from + nextFloat() * (until - from)
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InkScreen(
     drawState: DrawState,
@@ -627,7 +625,6 @@ expect fun ShareImageButton(imageBitmap: ImageBitmap)
 @Composable
 expect fun SaveBitmapToFileOnDispose(imageBitmap: ImageBitmap?, uuid: String)
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BrushStylusPane(widthState: MutableState<Float>, colorState: MutableState<Color>) =
     Column(
@@ -748,7 +745,6 @@ private fun BrushStylusPane(widthState: MutableState<Float>, colorState: Mutable
         }
     }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EraserStylusPane(
     lastSelectedEraserMode: MutableState<ToolMode>,

@@ -36,7 +36,6 @@ import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.FormatSize
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -99,7 +98,7 @@ import org.yangdai.kori.presentation.util.Constants
 @Composable
 expect fun StylePane(mainViewModel: MainViewModel)
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ColumnScope.CommonStylePane(
     stylePaneState: StylePaneState,

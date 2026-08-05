@@ -10,7 +10,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldDecorator
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -35,7 +34,6 @@ import kori.composeapp.generated.resources.Res
 import kori.composeapp.generated.resources.title
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TitleTextField(
     state: TextFieldState,
@@ -92,7 +90,6 @@ fun TitleTextField(
     LaunchedEffect(initFocus) { if (initFocus) focusRequester.requestFocus() }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TitleText(
     state: TextFieldState,

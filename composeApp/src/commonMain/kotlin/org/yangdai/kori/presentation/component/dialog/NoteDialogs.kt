@@ -108,7 +108,7 @@ private fun ShareDialogPreview() {
     )
 }
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun DialogWithoutButtons(
     onDismissRequest: () -> Unit,

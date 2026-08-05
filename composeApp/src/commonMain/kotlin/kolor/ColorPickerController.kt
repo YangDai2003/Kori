@@ -134,7 +134,8 @@ class ColorPickerController
 
     @OptIn(FlowPreview::class)
     fun getColorFlow(debounceDuration: Long = 0): Flow<ColorEnvelope> =
-        _colorFlow.filterNotNull().debounce((this.debounceDuration ?: debounceDuration).milliseconds)
+        _colorFlow.filterNotNull()
+            .debounce((this.debounceDuration ?: debounceDuration).milliseconds)
 
     // Function that takes a coordinate and obtains a color
     // Also returns an adjusted coordinate if appropriate

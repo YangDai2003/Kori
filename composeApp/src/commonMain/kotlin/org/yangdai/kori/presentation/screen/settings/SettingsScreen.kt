@@ -18,7 +18,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -68,10 +67,7 @@ import org.yangdai.kori.presentation.component.setting.SettingsListPane
 import org.yangdai.kori.presentation.screen.main.MainViewModel
 import kotlin.coroutines.cancellation.CancellationException
 
-@OptIn(
-    ExperimentalMaterial3AdaptiveApi::class, ExperimentalComposeUiApi::class,
-    ExperimentalMaterial3ExpressiveApi::class
-)
+@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun SettingsScreen(mainViewModel: MainViewModel, navigateUp: () -> Unit) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Int>()

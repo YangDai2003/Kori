@@ -7,7 +7,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MediumFlexibleTopAppBar
 import androidx.compose.material3.Text
@@ -36,12 +35,11 @@ enum class PlatformTopAppBarType {
     SmallPinned, CenteredPinned, Flexible
 }
 
-data class PlatformStyleTopAppBarState @OptIn(ExperimentalMaterial3Api::class) constructor(
+data class PlatformStyleTopAppBarState(
     val type: PlatformTopAppBarType,
     val scrollBehavior: TopAppBarScrollBehavior
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun rememberPlatformStyleTopAppBarState(
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -60,7 +58,7 @@ fun rememberPlatformStyleTopAppBarState(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SingleRowTopAppBar(
     modifier: Modifier = Modifier,
@@ -83,7 +81,7 @@ fun SingleRowTopAppBar(
     colors = colors
 )
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun PlatformStyleTopAppBar(
     state: PlatformStyleTopAppBarState,

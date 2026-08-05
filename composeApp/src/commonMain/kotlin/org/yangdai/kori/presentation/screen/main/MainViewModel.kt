@@ -65,7 +65,6 @@ import kotlin.math.round
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class MainViewModel(
@@ -237,7 +236,6 @@ class MainViewModel(
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     fun duplicateNotes(noteIds: Set<String>) {
         viewModelScope.launch {
             noteIds.forEach { noteId ->
@@ -312,7 +310,6 @@ class MainViewModel(
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     suspend fun addSampleNote(noteType: NoteType): String {
         val noteId = Uuid.random().toString()
         noteRepository.insertNote(
@@ -463,7 +460,6 @@ class MainViewModel(
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     fun importFiles(files: List<PlatformFile>, folderId: String?) {
         dataActionJob?.cancel()
         dataActionJob = viewModelScope.launch(Dispatchers.IO) {
@@ -568,7 +564,6 @@ class MainViewModel(
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     fun restoreFromOpenNoteJson(json: String) {
         dataActionJob?.cancel()
         dataActionJob = viewModelScope.launch(Dispatchers.IO) {

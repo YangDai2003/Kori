@@ -65,7 +65,6 @@ import org.yangdai.kori.presentation.util.SampleMarkdownNote
 import org.yangdai.kori.presentation.util.SampleTodoNote
 import org.yangdai.kori.presentation.util.formatInstant
 import kotlin.time.Instant
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Composable
@@ -165,7 +164,6 @@ fun CardPane(mainViewModel: MainViewModel) {
     }
 }
 
-@OptIn(ExperimentalUuidApi::class)
 val sampleNotes = listOf(
     NoteEntity(
         id = Uuid.random().toString(),

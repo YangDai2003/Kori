@@ -41,7 +41,6 @@ import org.yangdai.kori.presentation.screen.settings.TemplatePaneState
 import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.util.Constants.LLMConfig.getLLMConfig
 import kotlin.time.Clock
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -174,7 +173,6 @@ class FileViewModel(
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     fun saveNoteAsTemplate() {
         viewModelScope.launch {
             val currentTime = Clock.System.now().toString()

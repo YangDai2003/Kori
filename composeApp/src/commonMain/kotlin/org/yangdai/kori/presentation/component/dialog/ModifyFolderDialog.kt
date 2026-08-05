@@ -1,9 +1,6 @@
-@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
-
 package org.yangdai.kori.presentation.component.dialog
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -41,7 +38,6 @@ import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.Icon
@@ -92,7 +88,7 @@ import org.yangdai.kori.data.local.entity.folderColorOptions
 import org.yangdai.kori.presentation.component.HorizontalScrollbar
 import org.yangdai.kori.presentation.util.toHexColor
 
-@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SharedTransitionScope.ModifyFolderDialog(
     folder: FolderEntity?,

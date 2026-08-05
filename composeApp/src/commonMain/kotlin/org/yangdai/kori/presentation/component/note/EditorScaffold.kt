@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.union
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,6 +26,7 @@ fun EditorScaffold(
     modifier = modifier.imePadding(),
     topBar = topBar,
     bottomBar = bottomBar,
+    containerColor = MaterialTheme.colorScheme.surface,
     contentWindowInsets = WindowInsets.displayCutout.union(WindowInsets.navigationBars)
         .only(WindowInsetsSides.Horizontal)
 ) { innerPadding ->

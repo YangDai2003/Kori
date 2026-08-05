@@ -98,7 +98,7 @@ import org.yangdai.kori.presentation.component.login.brandColor2
 import org.yangdai.kori.presentation.component.login.brandColor3
 import kotlin.time.Duration.Companion.milliseconds
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun LoadingScrim() {
     BackHandler {}

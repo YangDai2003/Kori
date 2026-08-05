@@ -37,10 +37,9 @@ import org.yangdai.kori.presentation.screen.settings.EditorPaneState
 import org.yangdai.kori.presentation.util.Constants
 import org.yangdai.kori.presentation.util.Constants.LLMConfig.getLLMConfig
 import kotlin.time.Clock
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalUuidApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 class TemplateViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val dataStoreRepository: DataStoreRepository,

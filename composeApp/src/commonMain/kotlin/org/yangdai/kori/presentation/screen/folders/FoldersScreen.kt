@@ -37,7 +37,6 @@ import androidx.compose.material.icons.filled.SortByAlpha
 import androidx.compose.material.icons.outlined.CreateNewFolder
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -88,13 +87,9 @@ import org.yangdai.kori.presentation.component.dialog.FolderSortOptionBottomShee
 import org.yangdai.kori.presentation.component.dialog.ModifyFolderDialog
 import org.yangdai.kori.presentation.component.dialog.WarningDialog
 import org.yangdai.kori.presentation.component.rememberPlatformStyleTopAppBarState
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(
-    ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class,
-    ExperimentalComposeUiApi::class, ExperimentalUuidApi::class
-)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun FoldersScreen(
     viewModel: FoldersViewModel = koinViewModel(),
