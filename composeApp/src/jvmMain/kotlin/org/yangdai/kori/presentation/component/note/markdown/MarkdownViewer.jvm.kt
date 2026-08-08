@@ -42,7 +42,7 @@ import java.awt.event.MouseWheelEvent
 import java.net.URI
 import kotlin.time.Duration.Companion.milliseconds
 
-val jfxPanel = InteropPanel()
+val jfxPanel by lazy { InteropPanel() }
 
 private object StaticUris {
     val MERMAID = Res.getUri("files/mermaid.min.js")
