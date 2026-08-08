@@ -189,9 +189,9 @@ actual fun MarkdownViewer(
         }
     }
 
-    val isUnlocked by AppLockManager.isUnlocked.collectAsStateWithLifecycle()
-    LaunchedEffect(isSheetVisible, isUnlocked) {
-        if (isSheetVisible || !isUnlocked) {
+    // val isUnlocked by AppLockManager.isUnlocked.collectAsStateWithLifecycle()
+    LaunchedEffect(isSheetVisible) {
+        if (isSheetVisible) {
             jfxPanel.disableMouseEvent()
         } else {
             jfxPanel.enableMouseEvent()
