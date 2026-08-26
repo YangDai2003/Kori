@@ -42,7 +42,7 @@ import java.awt.event.MouseWheelEvent
 import java.net.URI
 import kotlin.time.Duration.Companion.milliseconds
 
-val jfxPanel = InteropPanel()
+val jfxPanel by lazy { InteropPanel() }
 
 private object StaticUris {
     val MERMAID = Res.getUri("files/mermaid.min.js")
@@ -189,9 +189,9 @@ actual fun MarkdownViewer(
         }
     }
 
-    val isUnlocked by AppLockManager.isUnlocked.collectAsStateWithLifecycle()
-    LaunchedEffect(isSheetVisible, isUnlocked) {
-        if (isSheetVisible || !isUnlocked) {
+    // val isUnlocked by AppLockManager.isUnlocked.collectAsStateWithLifecycle()
+    LaunchedEffect(isSheetVisible) {
+        if (isSheetVisible) {
             jfxPanel.disableMouseEvent()
         } else {
             jfxPanel.enableMouseEvent()
